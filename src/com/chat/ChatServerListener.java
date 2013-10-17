@@ -26,8 +26,16 @@ public class ChatServerListener implements Runnable {
             DataInputStream din = new DataInputStream( socket.getInputStream() );
 
             while(true) {
+                short length = din.readShort();
                 byte msgType = din.readByte();
                 MessageTypes type = MessageTypes.lookup(msgType);
+
+                if (type == null) {
+                    byte[] msg = new byte[length];
+                    din.read(msg);
+                    System.out.println("Received unknown msg: " + new String(msg));
+                    continue;
+                }
 
                 switch (type) {
                     case REGISTER:

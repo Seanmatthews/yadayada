@@ -33,10 +33,12 @@ public class ChatClient {
     private void registerAndLogin(String user, String password) {
         try {
             System.out.println("Registering user: " + user);
+            dataOutput.writeShort( 1 + getLength(user) + getLength(password) );
             dataOutput.writeByte(MessageTypes.REGISTER.getId());
             dataOutput.writeUTF(user);
             dataOutput.writeUTF(password);
 
+            dataInput.readShort(); // size
             MessageTypes msgType = MessageTypes.lookup(dataInput.readByte());
             switch(msgType) {
                 case REGISTER_ACCEPT:
@@ -50,10 +52,12 @@ public class ChatClient {
             }
 
             System.out.println("Logging in user: " + user);
+            dataOutput.writeShort( 1 + getLength(user) + getLength(password) );
             dataOutput.writeByte(MessageTypes.LOGIN.getId());
             dataOutput.writeUTF(user);
             dataOutput.writeUTF(password);
 
+            dataInput.readShort(); // size
             msgType = MessageTypes.lookup(dataInput.readByte());
             switch(msgType) {
                 case LOGIN_ACCEPT:
@@ -75,6 +79,7 @@ public class ChatClient {
     private void readChat() {
         try {
            while(true) {
+                dataInput.readShort(); // size
                 byte messageType = dataInput.readByte();
                 MessageTypes msgType = MessageTypes.lookup(messageType);
 
@@ -96,8 +101,13 @@ public class ChatClient {
     }
 
     public void sendMessage(String message) throws IOException {
+        dataOutput.writeShort( 1 + 8 + getLength(message) );
         dataOutput.writeByte(MessageTypes.SUBMIT_MESSAGE.getId());
         dataOutput.writeLong(userId);
         dataOutput.writeUTF(message);
+    }
+
+    private int getLength(String str) {
+        return 2 + str.length();
     }
 }

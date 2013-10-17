@@ -55,6 +55,7 @@ public class ChatServer {
         synchronized (socketStreamMap) {
             for (DataOutputStream dataOutputStream : socketStreamMap.values()) {
                 try {
+                    dataOutputStream.writeShort(1 + 8 + 8 + getLength(user.login) + getLength(msg.message));
                     dataOutputStream.writeByte(MessageTypes.MESSAGE.getId());
                     dataOutputStream.writeLong(msg.id);
                     dataOutputStream.writeLong(userId);
@@ -99,10 +100,13 @@ public class ChatServer {
 
             try {
                 if (id == 0) {
+                    String msg = "Registration failure. " + user.login + " already exists";
+                    dataOutputStream.writeShort(1 + getLength(msg));
                     dataOutputStream.writeByte(MessageTypes.REGISTER_REJECT.getId());
-                    dataOutputStream.writeUTF("Registration failure. " + user.login + " already exists");
+                    dataOutputStream.writeUTF(msg);
                 }
                 else {
+                    dataOutputStream.writeShort(1 + 8);
                     dataOutputStream.writeByte(MessageTypes.REGISTER_ACCEPT.getId());
                     dataOutputStream.writeLong(user.id);
                 }
@@ -120,22 +124,31 @@ public class ChatServer {
 
             try {
                 if (existingUser == null) {
+                    String msg = "Invalid user: " + user.login;
+                    dataOutputStream.writeShort(1 + getLength(msg));
                     dataOutputStream.writeByte(MessageTypes.LOGIN_REJECT.getId());
-                    dataOutputStream.writeUTF("Invalid user: " + user.login);
+                    dataOutputStream.writeUTF(msg);
                     return;
                 }
 
                 if (!existingUser.password.equals(user.password)) {
+                    String msg = "Invalid password";
+                    dataOutputStream.writeShort(1 + getLength(msg));
                     dataOutputStream.writeByte(MessageTypes.LOGIN_REJECT.getId());
-                    dataOutputStream.writeUTF("Invalid password");
+                    dataOutputStream.writeUTF(msg);
                     return;
                 }
 
+                dataOutputStream.writeShort(1 + 8);
                 dataOutputStream.writeByte(MessageTypes.LOGIN_ACCEPT.getId());
                 dataOutputStream.writeLong(existingUser.id);
             } catch (IOException e) {
                 removeConnection(socket);
             }
         }
+    }
+
+    private int getLength(String str) {
+        return 2 + str.length();
     }
 }
