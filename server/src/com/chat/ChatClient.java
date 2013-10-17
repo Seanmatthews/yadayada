@@ -87,6 +87,7 @@ public class ChatClient {
                     case MESSAGE:
                         long msgID = dataInput.readLong();
                         long userId = dataInput.readLong();
+                        long chatroomId = dataInput.readLong();
                         String userName = dataInput.readUTF();
                         String message = dataInput.readUTF();
                         System.out.println(userName + ": " + message);
@@ -101,9 +102,10 @@ public class ChatClient {
     }
 
     public void sendMessage(String message) throws IOException {
-        dataOutput.writeShort( 1 + 8 + getLength(message) );
+        dataOutput.writeShort(1 + 8 + getLength(message));
         dataOutput.writeByte(MessageTypes.SUBMIT_MESSAGE.getId());
         dataOutput.writeLong(userId);
+        dataOutput.writeLong(1);
         dataOutput.writeUTF(message);
     }
 

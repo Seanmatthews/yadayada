@@ -14,7 +14,6 @@ public class ChatServerListener implements Runnable {
     private final ChatServer server;
     private final Socket socket;
 
-
     public ChatServerListener(ChatServer server, Socket socket) {
         this.server = server;
         this.socket = socket;
@@ -38,25 +37,26 @@ public class ChatServerListener implements Runnable {
                 }
 
                 switch (type) {
+                    case CREATE_CHATROOM:
+                        break;
+
+                    case JOIN_CHATROOM:
+                        break;
+
                     case REGISTER:
-                        User u = new User();
-                        u.login = din.readUTF();
-                        u.password = din.readUTF();
-                        server.registerUser(socket, u);
+                        server.registerUser(socket, din.readUTF(), din.readUTF());
                         break;
 
                     case LOGIN:
-                        User user = new User();
-                        user.login = din.readUTF();
-                        user.password = din.readUTF();
-                        server.login(socket, user);
+                        server.login(socket, din.readUTF(), din.readUTF());
                         break;
 
                     case SUBMIT_MESSAGE:
                         long userId = din.readLong();
+                        long chatroomId = din.readLong();
                         String message = din.readUTF();
                         System.out.println("Sending " + message);
-                        server.newMessage(userId, message);
+                        server.newMessage(userId, chatroomId, message);
                         break;
                 }
             }

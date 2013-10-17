@@ -3,9 +3,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,11 +15,8 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatServer {
-    private final Map<String, User> users = new HashMap<String, User>();
-    private final Map<Long, User> idToUser = new HashMap<Long, User>();
-    private long nextUserId = 1;
-
-    private final Map<Socket, DataOutputStream> socketStreamMap = new HashMap<Socket, DataOutputStream>();
+    private final UserRepository userRepo = new UserRepository();
+    private final Map<Socket, DataOutputStream> streams = new HashMap<Socket, DataOutputStream>();
     private final ExecutorService execService = Executors.newFixedThreadPool(100);
     private ServerSocket serverSocket;
     private long nextMessageId = 1;
@@ -40,29 +35,36 @@ public class ChatServer {
             System.out.println("Connection from: " + socket);
 
             DataOutputStream stream = new DataOutputStream(socket.getOutputStream());
-            socketStreamMap.put(socket, stream);
+            streams.put(socket, stream);
             execService.submit(new ChatServerListener(this, socket));
         }
     }
 
-    public void newMessage(long userId, String message) {
+    public void newMessage(long userId, long chatroomId, String message) {
         Message msg = new Message();
         msg.message = message;
+        msg.chatroomId = chatroomId;
         msg.id = nextMessageId++;
 
-        User user = idToUser.get(userId);
+        User user = userRepo.get(userId);
 
-        synchronized (socketStreamMap) {
-            for (DataOutputStream dataOutputStream : socketStreamMap.values()) {
+        if (user == null) {
+            System.out.println("Dropping message. Unknown user: " + userId);
+            return;
+        }
+
+        synchronized (streams) {
+            for (DataOutputStream dout : streams.values()) {
                 try {
-                    dataOutputStream.writeShort(1 + 8 + 8 + getLength(user.login) + getLength(msg.message));
-                    dataOutputStream.writeByte(MessageTypes.MESSAGE.getId());
-                    dataOutputStream.writeLong(msg.id);
-                    dataOutputStream.writeLong(userId);
-                    dataOutputStream.writeUTF(user.login);
-                    dataOutputStream.writeUTF(msg.message);
+                    dout.writeShort(1 + 8 + 8 + getLength(user.login) + getLength(msg.message));
+                    dout.writeByte(MessageTypes.MESSAGE.getId());
+                    dout.writeLong(msg.id);
+                    dout.writeLong(chatroomId);
+                    dout.writeLong(userId);
+                    dout.writeUTF(user.login);
+                    dout.writeUTF(msg.message);
                 } catch (IOException e) {
-                    System.out.println("Error writing to " + dataOutputStream);
+                    System.out.println("Error writing to " + dout);
                     e.printStackTrace();
                 }
             }
@@ -72,8 +74,8 @@ public class ChatServer {
     public void removeConnection(Socket socket) {
         System.out.println("Removing connection to " + socket);
 
-        synchronized (socketStreamMap) {
-            socketStreamMap.remove(socket);
+        synchronized (streams) {
+            streams.remove(socket);
 
             try {
                 socket.close();
@@ -84,22 +86,14 @@ public class ChatServer {
         }
     }
 
-    public void registerUser(Socket socket, User user) {
-        User existingUser = users.get(user.login);
+    public void registerUser(Socket socket, String login, String password) {
+        User user = userRepo.registerUser(login, password);
 
-        long id = 0;
-        if (existingUser == null) {
-            user.id = nextUserId++;
-            users.put(user.login, user);
-            idToUser.put(user.id, user);
-            id = user.id;
-        }
-
-        synchronized (socketStreamMap) {
-            DataOutputStream dataOutputStream = socketStreamMap.get(socket);
+        synchronized (streams) {
+            DataOutputStream dataOutputStream = streams.get(socket);
 
             try {
-                if (id == 0) {
+                if (user == null) {
                     String msg = "Registration failure. " + user.login + " already exists";
                     dataOutputStream.writeShort(1 + getLength(msg));
                     dataOutputStream.writeByte(MessageTypes.REGISTER_REJECT.getId());
@@ -111,28 +105,21 @@ public class ChatServer {
                     dataOutputStream.writeLong(user.id);
                 }
             } catch (IOException e) {
+                System.out.println("Error writing to client when registering user");
                 removeConnection(socket);
             }
         }
     }
 
-    public void login(Socket socket, User user) {
-        User existingUser = users.get(user.login);
+    public void login(Socket socket, String login, String password) {
+        User user = userRepo.login(login, password);
 
-        synchronized (socketStreamMap) {
-            DataOutputStream dataOutputStream = socketStreamMap.get(socket);
+        synchronized (streams) {
+            DataOutputStream dataOutputStream = streams.get(socket);
 
             try {
-                if (existingUser == null) {
-                    String msg = "Invalid user: " + user.login;
-                    dataOutputStream.writeShort(1 + getLength(msg));
-                    dataOutputStream.writeByte(MessageTypes.LOGIN_REJECT.getId());
-                    dataOutputStream.writeUTF(msg);
-                    return;
-                }
-
-                if (!existingUser.password.equals(user.password)) {
-                    String msg = "Invalid password";
+                if (user == null) {
+                    String msg = "Invalid user or password: " + login;
                     dataOutputStream.writeShort(1 + getLength(msg));
                     dataOutputStream.writeByte(MessageTypes.LOGIN_REJECT.getId());
                     dataOutputStream.writeUTF(msg);
@@ -141,7 +128,7 @@ public class ChatServer {
 
                 dataOutputStream.writeShort(1 + 8);
                 dataOutputStream.writeByte(MessageTypes.LOGIN_ACCEPT.getId());
-                dataOutputStream.writeLong(existingUser.id);
+                dataOutputStream.writeLong(user.id);
             } catch (IOException e) {
                 removeConnection(socket);
             }

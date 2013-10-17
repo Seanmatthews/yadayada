@@ -18,7 +18,16 @@ public enum MessageTypes {
     LOGIN_REJECT((byte)13),
 
     SUBMIT_MESSAGE((byte)21),
-    MESSAGE((byte)22);
+    MESSAGE((byte)22),
+
+    VIEW_CHATROOMS((byte)31),
+    JOIN_CHATROOM((byte)32),
+    LEAVE_CHATROOM((byte)33),
+    CREATE_CHATROOM((byte)34),
+    CHATROOM_CREATED((byte)35),
+
+    ACK((byte)51),
+    NAK((byte)52);
 
     private final byte id;
 
