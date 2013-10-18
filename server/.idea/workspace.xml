@@ -4,8 +4,8 @@
     <list default="true" id="d96136dc-97d8-4b70-a4df-84f8054cdc9c" name="Default" comment="" />
     <ignored path="server.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/ChatServerListener.java" changelist="d96136dc-97d8-4b70-a4df-84f8054cdc9c" time="1382104286927" ignored="false" />
-    <file path="/ChatServer.java" changelist="d96136dc-97d8-4b70-a4df-84f8054cdc9c" time="1382114079665" ignored="false" />
+    <file path="/ChatServerListener.java" changelist="d96136dc-97d8-4b70-a4df-84f8054cdc9c" time="1382119128149" ignored="false" />
+    <file path="/ChatServer.java" changelist="d96136dc-97d8-4b70-a4df-84f8054cdc9c" time="1382119183144" ignored="false" />
     <file path="/fragment.java" changelist="d96136dc-97d8-4b70-a4df-84f8054cdc9c" time="1382113272386" ignored="false" />
     <file path="/UserRepositoryImpl.java" changelist="d96136dc-97d8-4b70-a4df-84f8054cdc9c" time="1382059390980" ignored="false" />
     <file path="/ChatClientMain.java" changelist="d96136dc-97d8-4b70-a4df-84f8054cdc9c" time="1382058175594" ignored="false" />
@@ -81,15 +81,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ChatClientMain.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/chat/client/ChatClientMain.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="19" selection-start="391" selection-end="391" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Main.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/chat/Main.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -99,10 +90,19 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="Message.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/chat/Message.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="13" selection-start="187" selection-end="187" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="Chatroom.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/chat/Chatroom.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="15" selection-start="599" selection-end="599" vertical-scroll-proportion="0.0">
+            <state line="24" column="16" selection-start="486" selection-end="486" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -111,43 +111,43 @@
       <file leaf-file-name="ChatClient.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/chat/client/ChatClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="120" column="42" selection-start="4259" selection-end="4259" vertical-scroll-proportion="0.0">
+            <state line="81" column="42" selection-start="2742" selection-end="2742" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChatClientListener.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/chat/client/ChatClientListener.java">
+      <file leaf-file-name="ChatroomSearchCriteria.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/chat/ChatroomSearchCriteria.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="26" selection-start="536" selection-end="536" vertical-scroll-proportion="0.0">
+            <state line="9" column="13" selection-start="187" selection-end="187" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChatServer.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ChatServer.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/chat/ChatServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="45" selection-start="2803" selection-end="2803" vertical-scroll-proportion="0.0">
+            <state line="203" column="21" selection-start="7087" selection-end="7087" vertical-scroll-proportion="0.7746781">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChatClientInput.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/chat/client/ChatClientInput.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="29" selection-start="683" selection-end="683" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ChatServerListener.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ChatServerListener.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/chat/ChatServerListener.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="61" column="34" selection-start="2144" selection-end="2144" vertical-scroll-proportion="0.22532189">
+            <state line="64" column="38" selection-start="2349" selection-end="2349" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MessageTypes.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/chat/MessageTypes.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="34" column="92" selection-start="703" selection-end="703" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -197,10 +197,10 @@
         <option value="$PROJECT_DIR$/src/com/chat/Main.java" />
         <option value="$PROJECT_DIR$/src/com/chat/client/ChatClientMain.java" />
         <option value="$PROJECT_DIR$/src/com/chat/Chatroom.java" />
-        <option value="$PROJECT_DIR$/src/com/chat/ChatServer.java" />
         <option value="$PROJECT_DIR$/src/com/chat/client/ChatClient.java" />
         <option value="$PROJECT_DIR$/src/com/chat/impl/ChatroomRepositoryImpl.java" />
         <option value="$PROJECT_DIR$/src/com/chat/ChatServerListener.java" />
+        <option value="$PROJECT_DIR$/src/com/chat/ChatServer.java" />
       </list>
     </option>
   </component>
@@ -606,27 +606,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/chat/MessageTypes.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="12" selection-start="510" selection-end="510" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/src.zip!/java/io/DataInputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="314" column="0" selection-start="12008" selection-end="12008" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/src.zip!/java/util/concurrent/Executors.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="470" column="0" selection-start="20205" selection-end="20205" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/src.zip!/java/util/concurrent/FutureTask.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="261" column="0" selection-start="8759" selection-end="8759" vertical-scroll-proportion="0.0">
@@ -641,23 +620,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chat/impl/UserRepositoryImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="13" selection-start="297" selection-end="297" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/chat/client/ChatClientListener.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="20" column="26" selection-start="536" selection-end="536" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chat/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="19" selection-start="570" selection-end="570" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -669,20 +634,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chat/Chatroom.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="15" selection-start="599" selection-end="599" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chat/ChatServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="45" selection-start="2803" selection-end="2803" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/chat/client/ChatClientInput.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="27" column="29" selection-start="683" selection-end="683" vertical-scroll-proportion="0.0">
@@ -690,16 +641,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chat/client/ChatClient.java">
+    <entry file="file://$PROJECT_DIR$/src/com/chat/impl/UserRepositoryImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="120" column="42" selection-start="4259" selection-end="4259" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chat/ChatroomRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="13" selection-start="361" selection-end="361" vertical-scroll-proportion="0.0">
+        <state line="15" column="13" selection-start="297" selection-end="297" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -715,9 +659,65 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chat/ChatroomRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="13" selection-start="361" selection-end="361" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chat/ChatroomSearchCriteria.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="13" selection-start="187" selection-end="187" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chat/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="19" selection-start="570" selection-end="570" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chat/Message.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="13" selection-start="187" selection-end="187" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chat/MessageTypes.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="92" selection-start="703" selection-end="703" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chat/client/ChatClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="81" column="42" selection-start="2742" selection-end="2742" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/chat/ChatServerListener.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="34" selection-start="2144" selection-end="2144" vertical-scroll-proportion="0.22532189">
+        <state line="64" column="38" selection-start="2349" selection-end="2349" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chat/Chatroom.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="16" selection-start="486" selection-end="486" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chat/ChatServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="203" column="21" selection-start="7087" selection-end="7087" vertical-scroll-proportion="0.7746781">
           <folding />
         </state>
       </provider>

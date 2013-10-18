@@ -198,6 +198,14 @@ public class ChatServer {
         // TODO: send a response?
     }
 
+
+    public void leaveChatroom(Socket socket, User user, Chatroom chatroom) {
+        System.out.println("Removing " + user.login + " from " + chatroom.name);
+        chatroom.removeUser(user);
+
+        // TODO: send a response?
+    }
+
     private static int getLength(String str) {
         return 2 + str.length();
     }

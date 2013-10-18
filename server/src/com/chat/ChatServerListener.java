@@ -59,6 +59,12 @@ public class ChatServerListener implements Runnable {
                         server.joinChatroom(socket, jcUser, jcChatroom);
                         break;
 
+                    case LEAVE_CHATROOM:
+                        User lcUser = getAndValidateUser(din.readLong());
+                        Chatroom lcChatroom = getAndValidateChatroom(din.readLong());
+                        server.leaveChatroom(socket, lcUser, lcChatroom);
+                        break;
+
                     case REGISTER:
                         System.out.println("about to register...");
                         String regLogin = din.readUTF();
