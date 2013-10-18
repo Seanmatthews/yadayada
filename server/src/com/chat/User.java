@@ -1,3 +1,5 @@
+package com.chat;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco

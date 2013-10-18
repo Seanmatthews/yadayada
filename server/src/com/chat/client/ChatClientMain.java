@@ -1,3 +1,5 @@
+package com.chat.client;
+
 import java.io.IOException;
 
 /**
@@ -8,7 +10,7 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatClientMain {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         int port = Integer.parseInt(args[1]);
         new ChatClient(args[0], port, args[2], args[3]);
     }

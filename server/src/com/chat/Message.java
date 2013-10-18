@@ -1,3 +1,5 @@
+package com.chat;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -7,7 +9,7 @@
  */
 public class Message {
     public long id;
-    public long chatroomId;
+    public Chatroom chatroom;
     public String message;
 
     @Override

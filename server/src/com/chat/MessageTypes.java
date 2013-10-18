@@ -1,3 +1,5 @@
+package com.chat;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,30 +22,28 @@ public enum MessageTypes {
     SUBMIT_MESSAGE((byte)21),
     MESSAGE((byte)22),
 
-    VIEW_CHATROOMS((byte)31),
-    JOIN_CHATROOM((byte)32),
-    LEAVE_CHATROOM((byte)33),
-    CREATE_CHATROOM((byte)34),
-    CHATROOM_CREATED((byte)35),
+    SEARCH_CHATROOMS((byte)31),
+    CHATROOM((byte)32),
 
-    ACK((byte)51),
-    NAK((byte)52);
+    JOIN_CHATROOM((byte)33),
+    LEAVE_CHATROOM((byte)34),
+    CREATE_CHATROOM((byte)35);
 
-    private final byte id;
+    private final byte value;
 
-    MessageTypes(byte id) {
-        this.id = id;
+    MessageTypes(byte value) {
+        this.value = value;
     }
 
-    public byte getId() {
-        return id;
+    public byte getValue() {
+        return value;
     }
 
     private static Map<Byte, MessageTypes> idToMsgMap = new HashMap<Byte, MessageTypes>();
 
     static {
         for (MessageTypes type : MessageTypes.values()) {
-            idToMsgMap.put(type.getId(), type);
+            idToMsgMap.put(type.getValue(), type);
         }
     }
 

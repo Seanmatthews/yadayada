@@ -1,4 +1,7 @@
+package com.chat;
+
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -13,6 +16,7 @@ public class Chatroom {
 
     public String name;
     public long id;
+    public User owner;
 
     public void addUser(User user) {
         users.add(user);
@@ -20,6 +24,10 @@ public class Chatroom {
 
     public void removeUser(User user) {
         users.remove(user);
+    }
+
+    public Iterator<User> getUsers() {
+        return users.iterator();
     }
 
     @Override
