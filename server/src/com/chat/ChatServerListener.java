@@ -44,7 +44,9 @@ public class ChatServerListener implements Runnable {
                         break;
 
                     case REGISTER:
+                        System.out.println("about to register...");
                         server.registerUser(socket, din.readUTF(), din.readUTF());
+                        System.out.println("registered a fuckin user");
                         break;
 
                     case LOGIN:
