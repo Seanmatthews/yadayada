@@ -10,6 +10,7 @@ package com.chat;
 public class Message {
     public long id;
     public Chatroom chatroom;
+    public User sender;
     public String message;
 
     @Override

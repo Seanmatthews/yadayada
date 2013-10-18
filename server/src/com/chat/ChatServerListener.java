@@ -1,9 +1,11 @@
 package com.chat;
 
+import com.chat.*;
+import com.chat.impl.ChatStreamServer;
+
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,13 +16,13 @@ import java.net.Socket;
  */
 public class ChatServerListener implements Runnable {
     private final ChatServer server;
-    private final Socket socket;
+    private final Connection connection;
     private final UserRepository userRepo;
     private final ChatroomRepository chatroomRepo;
 
-    public ChatServerListener(ChatServer server, Socket socket, UserRepository userRepo, ChatroomRepository chatroomRepo) {
+    public ChatServerListener(ChatServer server, Connection connection, UserRepository userRepo, ChatroomRepository chatroomRepo) {
         this.server = server;
-        this.socket = socket;
+        this.connection = connection;
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
     }
@@ -28,75 +30,73 @@ public class ChatServerListener implements Runnable {
     @Override
     public void run() {
         try {
-            DataInputStream din = new DataInputStream( socket.getInputStream() );
-
             while(true) {
-                short length = din.readShort();
-                byte msgType = din.readByte();
+                short length = connection.readShort();
+                byte msgType = connection.readByte();
                 MessageTypes type = MessageTypes.lookup(msgType);
 
                 if (type == null) {
-                    byte[] msg = new byte[length];
-                    din.read(msg);
+                    byte[] msg = connection.read(length);
                     System.out.println("Received unknown msg: " + new String(msg));
                     continue;
                 }
 
                 switch (type) {
                     case SEARCH_CHATROOMS:
-                        server.searchChatrooms(socket);
+                        server.searchChatrooms(connection);
                         break;
 
                     case CREATE_CHATROOM:
-                        User ccUser = getAndValidateUser(din.readLong());
-                        String ccChatroomName = din.readUTF();
-                        server.createChatroom(socket, ccUser, ccChatroomName);
+                        User ccUser = getAndValidateUser(connection.readLong());
+                        String ccChatroomName = connection.readString();
+                        server.createChatroom(connection, ccUser, ccChatroomName);
                         break;
 
                     case JOIN_CHATROOM:
-                        User jcUser = getAndValidateUser(din.readLong());
-                        Chatroom jcChatroom = getAndValidateChatroom(din.readLong());
-                        server.joinChatroom(socket, jcUser, jcChatroom);
+                        User jcUser = getAndValidateUser(connection.readLong());
+                        Chatroom jcChatroom = getAndValidateChatroom(connection.readLong());
+                        server.joinChatroom(connection, jcUser, jcChatroom);
                         break;
 
                     case LEAVE_CHATROOM:
-                        User lcUser = getAndValidateUser(din.readLong());
-                        Chatroom lcChatroom = getAndValidateChatroom(din.readLong());
-                        server.leaveChatroom(socket, lcUser, lcChatroom);
+                        User lcUser = getAndValidateUser(connection.readLong());
+                        Chatroom lcChatroom = getAndValidateChatroom(connection.readLong());
+                        server.leaveChatroom(connection, lcUser, lcChatroom);
                         break;
 
                     case REGISTER:
                         System.out.println("about to register...");
-                        String regLogin = din.readUTF();
-                        String regPassword = din.readUTF();
-                        server.registerUser(socket, regLogin, regPassword);
+                        String regLogin = connection.readString();
+                        String regPassword = connection.readString();
+                        server.registerUser(connection, regLogin, regPassword);
                         System.out.println("registered a fuckin user");
                         break;
 
                     case LOGIN:
-                        String logLogin = din.readUTF();
-                        String logPassword = din.readUTF();
-                        server.login(socket, logLogin, logPassword);
+                        String logLogin = connection.readString();
+                        String logPassword = connection.readString();
+                        server.login(connection, logLogin, logPassword);
                         break;
 
                     case SUBMIT_MESSAGE:
-                        User user = getAndValidateUser(din.readLong());
-                        Chatroom chatroom = getAndValidateChatroom(din.readLong());
-                        String message = din.readUTF();
+                        User user = getAndValidateUser(connection.readLong());
+                        Chatroom chatroom = getAndValidateChatroom(connection.readLong());
+                        String message = connection.readString();
                         System.out.println("Sending " + message);
-                        server.newMessage(socket, user, chatroom, message);
+                        server.newMessage(connection, user, chatroom, message);
                         break;
                 }
             }
         } catch (EOFException e) {
-            // nothing
+            System.out.println("Customer hang up");
         } catch (IOException e) {
+            System.out.println("Cannot write to connection");
             e.printStackTrace();
         } catch (ValidationError e) {
-            System.err.println("Validation error. " + e.getMessage());
+            System.err.println("Validation error " + e.getMessage());
             e.printStackTrace();
         } finally {
-            server.removeConnection(socket);
+            server.removeConnection(connection);
         }
     }
 

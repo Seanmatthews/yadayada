@@ -13,7 +13,7 @@ import java.util.Map;
  * Time: 11:55 AM
  * To change this template use File | Settings | File Templates.
  */
-public class UserRepositoryImpl implements UserRepository {
+public class InMemoryUserRepository implements UserRepository {
     private long nextUserId = 1;
 
     private final Map<String, User> loginToUserMap = new HashMap<String, User>();
