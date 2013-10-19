@@ -8,6 +8,8 @@ import com.chat.client.ClientConnection;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -30,13 +32,13 @@ public class ChatGUI implements ChatClient {
     private final ClientConnection connection;
 
     DefaultListModel<Chatroom> model = new DefaultListModel<Chatroom>();
-    private final List<Chatroom> chatrooms = new ArrayList<Chatroom>();
 
-    private JButton createChatButton;
+    private JButton createChatroomButton;
     private JPanel panel1;
-    private JButton joinChatButton;
+    private JButton joinChatroomButton;
     private JTabbedPane tabbedPane1;
     private JList chatList;
+    private JButton searchChatroomsButton;
 
     public ChatGUI(String host, int port, String user, String password) throws IOException {
         socket = new Socket(host, port);
@@ -48,16 +50,31 @@ public class ChatGUI implements ChatClient {
 
         connection = new ClientConnection(din, dout);
         connection.registerAndLogin(user, password);
-        connection.searchChatrooms();
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatClientListener(this, din));
 
+        setupChatroomList();
+    }
+
+    private void setupChatroomList() {
         chatList.setModel(model);
         chatList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 Chatroom chatroom = model.get(e.getFirstIndex());
+            }
+        });
+
+        searchChatroomsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    connection.searchChatrooms();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                    System.exit(0);
+                }
             }
         });
     }
@@ -82,6 +99,14 @@ public class ChatGUI implements ChatClient {
         Chatroom chatroom = new Chatroom();
         chatroom.id = chatroomId;
         chatroom.name = chatroomName;
+
+        for(int i=0; i<model.getSize(); i++) {
+            if (model.get(i).equals(chatroom)) {
+                System.out.println("Duplicate chatroom: " + chatroomName);
+                return;
+            }
+        }
+
         model.addElement(chatroom);
     }
 
