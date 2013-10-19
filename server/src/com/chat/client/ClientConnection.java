@@ -1,7 +1,8 @@
 package com.chat.client;
 
-import com.chat.MessageTypes;
-import com.chat.Utilities;
+import com.chat.*;
+import com.chat.impl.InMemoryChatroomRepository;
+import com.chat.impl.InMemoryUserRepository;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -18,9 +19,12 @@ import java.net.Socket;
 public class ClientConnection {
     private final DataInputStream din;
     private final DataOutputStream dout;
-    private long userId;
+    private final ChatClient client;
 
-    public ClientConnection(DataInputStream din, DataOutputStream dout) throws IOException {
+    public ClientConnection(ChatClient client,
+                            DataInputStream din,
+                            DataOutputStream dout) throws IOException {
+        this.client = client;
         this.din = din;
         this.dout = dout;
     }
@@ -43,18 +47,22 @@ public class ClientConnection {
         dout.writeByte(MessageTypes.SEARCH_CHATROOMS.getValue());
     }
 
-    private void loginUser(String user, String password) throws IOException {
-        System.out.println("Logging in user: " + user);
-        dout.writeShort(1 + Utilities.getStringLength(user) + Utilities.getStringLength(password));
+    private void loginUser(String login, String password) throws IOException {
+        System.out.println("Logging in user: " + login);
+        dout.writeShort(1 + Utilities.getStringLength(login) + Utilities.getStringLength(password));
         dout.writeByte(MessageTypes.LOGIN.getValue());
-        dout.writeUTF(user);
+        dout.writeUTF(login);
         dout.writeUTF(password);
 
         din.readShort(); // size
         MessageTypes msgType = MessageTypes.lookup(din.readByte());
         switch(msgType) {
             case LOGIN_ACCEPT:
-                this.userId = din.readLong();
+                long userId = din.readLong();
+                User user = new User();
+                user.id = userId;
+                user.login = login;
+                client.onUserLoggedIn(user);
                 System.out.println("Login accepted. UserId: " + userId);
                 break;
             case LOGIN_REJECT:
@@ -75,7 +83,7 @@ public class ClientConnection {
         MessageTypes msgType = MessageTypes.lookup(din.readByte());
         switch(msgType) {
             case REGISTER_ACCEPT:
-                this.userId = din.readLong();
+                din.readLong();
                 System.out.println("Registration accepted. UserId: " + user);
                 break;
             case REGISTER_REJECT:
@@ -85,7 +93,11 @@ public class ClientConnection {
         }
     }
 
-    public long getUserId() {
-        return userId;
+    public void joinChatroom(User user, Chatroom chatroom) throws IOException {
+        System.out.println("Joining chatroom: " + chatroom);
+        dout.writeShort(17);
+        dout.writeByte(MessageTypes.JOIN_CHATROOM.getValue());
+        dout.writeLong(user.id);
+        dout.writeLong(chatroom.id);
     }
 }

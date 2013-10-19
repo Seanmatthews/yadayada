@@ -1,8 +1,8 @@
 package com.chat.client;
 
-import com.chat.Chatroom;
-import com.chat.MessageTypes;
-import com.chat.Utilities;
+import com.chat.*;
+import com.chat.impl.InMemoryChatroomRepository;
+import com.chat.impl.InMemoryUserRepository;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -22,11 +22,11 @@ import java.util.concurrent.Executors;
  */
 public class CommandLineChatClient implements ChatClient {
     private final Socket socket;
-    private final ClientConnection utilities;
+    private final ClientConnection connection;
     private final DataOutputStream dout;
 
-    private Map<Long, Chatroom> chatroomIdToChatroom = new HashMap<Long, Chatroom>();
-    private long subscribedChatroom;
+    private Chatroom subscribedChatroom;
+    private User user;
 
     public CommandLineChatClient(String host, int port, String user, String password) throws IOException, InterruptedException {
         socket = new Socket(host, port);
@@ -36,47 +36,50 @@ public class CommandLineChatClient implements ChatClient {
         DataInputStream din = new DataInputStream(socket.getInputStream());
         dout = new DataOutputStream(socket.getOutputStream());
 
-        utilities = new ClientConnection(din, dout);
-        utilities.registerAndLogin(user, password);
-        utilities.searchChatrooms();
+        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+        InMemoryUserRepository userRepo = new InMemoryUserRepository();
+
+        connection = new ClientConnection(this, din, dout);
+        connection.registerAndLogin(user, password);
+        connection.searchChatrooms();
 
         ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(new ChatClientInput(this));
-        pool.submit(new ChatClientListener(this, din));
+        pool.submit(new ChatClientInput(this, chatroomRepo, userRepo));
+        pool.submit(new ChatClientListener(this, din, chatroomRepo, userRepo));
     }
 
     @Override
-    public void onChatroom(long chatroomId, String chatroomName, long ownerUserId, String ownerName) throws IOException {
-        System.out.println("New chatroom: " + chatroomName + " by " + ownerName);
-
-        Chatroom chatroom = new Chatroom();
-        chatroom.id = chatroomId;
-        chatroom.name = chatroomName;
-        chatroomIdToChatroom.put(chatroomId, chatroom);
+    public void onChatroom(Chatroom chatroom) throws IOException {
+        System.out.println("New chatroom: " + chatroom.name + " by " + chatroom.owner.login);
 
         // Subscribe to the first one!
-        if (chatroomName.equalsIgnoreCase("Global")) {
+        if (chatroom.name.equalsIgnoreCase("Global")) {
             dout.writeShort(1 + 8 + 8);
             dout.writeByte(MessageTypes.JOIN_CHATROOM.getValue());
-            dout.writeLong(utilities.getUserId());
-            dout.writeLong(chatroomId);
+            dout.writeLong(user.id);
+            dout.writeLong(chatroom.id);
 
-            subscribedChatroom = chatroomId;
+            subscribedChatroom = chatroom;
         }
     }
 
     @Override
-    public void onMessage(String userName, String message) {
-        System.out.println(userName + ": " + message);
+    public void onMessage(Message message) {
+        System.out.println(message.chatroom.name + " " + message.sender.login + ": " + message.message);
     }
 
     @Override
     public void sendMessage(String message) throws IOException {
         dout.writeShort(1 + 8 + Utilities.getStringLength(message));
         dout.writeByte(MessageTypes.SUBMIT_MESSAGE.getValue());
-        dout.writeLong(utilities.getUserId());
-        dout.writeLong(subscribedChatroom);
+        dout.writeLong(user.id);
+        dout.writeLong(subscribedChatroom.id);
         dout.writeUTF(message);
+    }
+
+    @Override
+    public void onUserLoggedIn(User user) {
+        this.user = user;
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {

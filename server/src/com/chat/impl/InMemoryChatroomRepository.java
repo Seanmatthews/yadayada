@@ -17,7 +17,7 @@ import java.util.Map;
  * Time: 8:47 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ChatroomRepositoryImpl implements ChatroomRepository {
+public class InMemoryChatroomRepository implements ChatroomRepository {
     private final Map<Long, Chatroom> chatroomIdMap = new HashMap<Long, Chatroom>();
     private final List<Chatroom> allChatrooms = new ArrayList<Chatroom>();
 
@@ -44,5 +44,11 @@ public class ChatroomRepositoryImpl implements ChatroomRepository {
     @Override
     public Chatroom get(long chatroomId) {
         return chatroomIdMap.get(chatroomId);
+    }
+
+    @Override
+    public void addChatroom(Chatroom chatroom) {
+        chatroomIdMap.put(chatroom.id, chatroom);
+        allChatrooms.add(chatroom);
     }
 }

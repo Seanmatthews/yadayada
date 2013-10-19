@@ -1,21 +1,22 @@
 package com.chat.client.gui;
 
-import com.chat.Chatroom;
+import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientListener;
 import com.chat.client.ClientConnection;
+import com.chat.impl.InMemoryChatroomRepository;
+import com.chat.impl.InMemoryUserRepository;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,18 +28,23 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatGUI implements ChatClient {
-    private final Socket socket;
-    private final DataOutputStream dout;
-    private final ClientConnection connection;
-
-    DefaultListModel<Chatroom> model = new DefaultListModel<Chatroom>();
-
-    private JButton createChatroomButton;
+    private JButton createButton;
     private JPanel panel1;
     private JButton joinChatroomButton;
     private JTabbedPane tabbedPane1;
     private JList chatList;
     private JButton searchChatroomsButton;
+
+    private final DefaultListModel<Chatroom> model;
+
+    private final Socket socket;
+    private final DataOutputStream dout;
+    private final ClientConnection connection;
+
+    private final ChatroomRepository chatroomRepo;
+    private final UserRepository userRepo;
+
+    private User user;
 
     public ChatGUI(String host, int port, String user, String password) throws IOException {
         socket = new Socket(host, port);
@@ -48,11 +54,16 @@ public class ChatGUI implements ChatClient {
         DataInputStream din = new DataInputStream(socket.getInputStream());
         dout = new DataOutputStream(socket.getOutputStream());
 
-        connection = new ClientConnection(din, dout);
+        connection = new ClientConnection(this, din, dout);
         connection.registerAndLogin(user, password);
 
+        model = new DefaultListModel<Chatroom>();
+
+        chatroomRepo = new InMemoryChatroomRepository();
+        userRepo = new InMemoryUserRepository();
+
         ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(new ChatClientListener(this, din));
+        pool.submit(new ChatClientListener(this, din, chatroomRepo, userRepo));
 
         setupChatroomList();
     }
@@ -77,6 +88,25 @@ public class ChatGUI implements ChatClient {
                 }
             }
         });
+
+        joinChatroomButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (user == null)
+                        return;
+
+                    Chatroom chatroom = (Chatroom) chatList.getSelectedValue();
+                    connection.joinChatroom(user, chatroom);
+
+                    JTextPane text = new JTextPane();
+                    tabbedPane1.addTab(chatroom.name, text);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                    System.exit(0);
+                }
+            }
+        });
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -93,16 +123,12 @@ public class ChatGUI implements ChatClient {
     }
 
     @Override
-    public void onChatroom(long chatroomId, String chatroomName, long ownerUserId, String ownerName) throws IOException {
-        System.out.println("New chatroom: " + chatroomName + " by " + ownerName);
-
-        Chatroom chatroom = new Chatroom();
-        chatroom.id = chatroomId;
-        chatroom.name = chatroomName;
+    public void onChatroom(Chatroom chatroom) throws IOException {
+        System.out.println("New chatroom: " + chatroom.name + " by " + chatroom.owner.login);
 
         for(int i=0; i<model.getSize(); i++) {
             if (model.get(i).equals(chatroom)) {
-                System.out.println("Duplicate chatroom: " + chatroomName);
+                System.out.println("Duplicate chatroom: " + chatroom.name);
                 return;
             }
         }
@@ -111,8 +137,15 @@ public class ChatGUI implements ChatClient {
     }
 
     @Override
-    public void onMessage(String userName, String message) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void onUserLoggedIn(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public void onMessage(Message message) {
+        JTextPane chat = (JTextPane) tabbedPane1.getComponentAt(0);
+        String text = chat.getText();
+        chat.setText(text + message.sender.login + ": " + message.message + "\n");
     }
 
     @Override

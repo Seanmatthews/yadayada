@@ -56,7 +56,7 @@ public class ChatStreamServer {
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
         User admin = userRepo.registerUser("admin", "admin");
 
-        ChatroomRepositoryImpl chatroomRepo = new ChatroomRepositoryImpl();
+        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         chatroomRepo.createChatroom(admin, "Global");
 
         MessageRepository repo = new InMemoryMessageRepository();

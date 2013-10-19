@@ -11,4 +11,5 @@ public interface UserRepository {
     User registerUser(String login, String password);
     User login(String login, String password);
     User get(long id);
+    void addUser(User user);
 }

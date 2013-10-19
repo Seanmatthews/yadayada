@@ -26,18 +26,7 @@
         </constraints>
         <properties/>
         <border type="none"/>
-        <children>
-          <grid id="8d84d" layout-manager="FormLayout">
-            <rowspec value="center:d:grow"/>
-            <colspec value="fill:d:grow"/>
-            <constraints>
-              <tabbedpane title="Chats"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children/>
-          </grid>
-        </children>
+        <children/>
       </tabbedpane>
       <component id="33663" class="javax.swing.JList" binding="chatList">
         <constraints>
@@ -59,16 +48,16 @@
           <forms/>
         </constraints>
         <properties>
-          <text value="Join Chatroom"/>
+          <text value="Join"/>
         </properties>
       </component>
-      <component id="7eb82" class="javax.swing.JButton" binding="createChatroomButton" default-binding="true">
+      <component id="7eb82" class="javax.swing.JButton" binding="createButton" default-binding="true">
         <constraints>
           <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <forms/>
         </constraints>
         <properties>
-          <text value="Create Chatroom"/>
+          <text value="Create"/>
         </properties>
       </component>
       <component id="d41a1" class="javax.swing.JButton" binding="searchChatroomsButton" default-binding="true">
@@ -77,7 +66,7 @@
           <forms/>
         </constraints>
         <properties>
-          <text value="Search Chatrooms"/>
+          <text value="Search"/>
         </properties>
       </component>
     </children>

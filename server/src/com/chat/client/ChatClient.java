@@ -1,5 +1,9 @@
 package com.chat.client;
 
+import com.chat.Chatroom;
+import com.chat.Message;
+import com.chat.User;
+
 import java.io.IOException;
 
 /**
@@ -10,7 +14,8 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public interface ChatClient {
-    void onChatroom(long chatroomId, String chatroomName, long ownerUserId, String ownerName) throws IOException;
-    void onMessage(String userName, String message);
+    void onChatroom(Chatroom chatroom) throws IOException;
+    void onMessage(Message message);
     void sendMessage(String msg) throws IOException;
+    void onUserLoggedIn(User user);
 }

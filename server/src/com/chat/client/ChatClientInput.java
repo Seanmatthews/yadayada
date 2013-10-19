@@ -1,5 +1,8 @@
 package com.chat.client;
 
+import com.chat.impl.InMemoryChatroomRepository;
+import com.chat.impl.InMemoryUserRepository;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,7 +17,7 @@ import java.io.InputStreamReader;
 public class ChatClientInput implements Runnable {
     private final ChatClient client;
 
-    public ChatClientInput(ChatClient client) {
+    public ChatClientInput(ChatClient client, InMemoryChatroomRepository chatroomRepo, InMemoryUserRepository userRepo) {
         this.client = client;
     }
 

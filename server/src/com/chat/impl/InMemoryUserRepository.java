@@ -53,4 +53,10 @@ public class InMemoryUserRepository implements UserRepository {
     public User get(long id) {
         return idToUserMap.get(id);
     }
+
+    @Override
+    public void addUser(User user) {
+        loginToUserMap.put(user.login, user);
+        idToUserMap.put(user.id, user);
+    }
 }
