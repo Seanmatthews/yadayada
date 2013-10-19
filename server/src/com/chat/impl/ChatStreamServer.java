@@ -28,7 +28,7 @@ public class ChatStreamServer {
                             UserRepository userRepo,
                             ChatroomRepository chatroomRepo,
                             MessageRepository messageRepo) throws IOException {
-        // not really an Impl - what's that pattern
+        // not really an Impl - what's that pattern?
         this.server = new ChatServerImpl(userRepo, chatroomRepo, messageRepo);
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
@@ -50,5 +50,17 @@ public class ChatStreamServer {
         }
     }
 
+    public static void main(String[] args) throws IOException {
+        int port = Integer.parseInt(args[0]);
 
+        InMemoryUserRepository userRepo = new InMemoryUserRepository();
+        User admin = userRepo.registerUser("admin", "admin");
+
+        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+        chatroomRepo.createChatroom(admin, "Global");
+
+        MessageRepository repo = new InMemoryMessageRepository();
+
+        new ChatStreamServer(port, userRepo, chatroomRepo, repo);
+    }
 }

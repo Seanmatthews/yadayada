@@ -13,4 +13,5 @@ public interface ChatroomRepository {
     Chatroom createChatroom(User owner, String name);
     List<Chatroom> search(ChatroomSearchCriteria search);
     Chatroom get(long chatroomId);
+    void addChatroom(Chatroom chatroom);
 }

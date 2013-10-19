@@ -35,9 +35,9 @@ public class Chatroom {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        User user = (User) o;
+        Chatroom chatroom = (Chatroom) o;
 
-        if (id != user.id) return false;
+        if (id != chatroom.id) return false;
 
         return true;
     }
@@ -45,5 +45,10 @@ public class Chatroom {
     @Override
     public int hashCode() {
         return (int) (id ^ (id >>> 32));
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
