@@ -53,6 +53,7 @@
 		6472B96C181030C100491C32 /* chattertestTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "chattertestTests-Info.plist"; sourceTree = "<group>"; };
 		6472B96E181030C100491C32 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6472B970181030C100491C32 /* chattertestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = chattertestTests.m; sourceTree = "<group>"; };
+		6472B97A1812D9AC00491C32 /* MessageTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageTypes.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +113,7 @@
 		6472B94B181030C100491C32 /* chattertest */ = {
 			isa = PBXGroup;
 			children = (
+				6472B97A1812D9AC00491C32 /* MessageTypes.h */,
 				6472B954181030C100491C32 /* AppDelegate.h */,
 				6472B955181030C100491C32 /* AppDelegate.m */,
 				6472B957181030C100491C32 /* Main.storyboard */,
@@ -460,6 +462,7 @@
 				6472B976181030C100491C32 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6472B977181030C100491C32 /* Build configuration list for PBXNativeTarget "chattertestTests" */ = {
 			isa = XCConfigurationList;
@@ -468,6 +471,7 @@
 				6472B979181030C100491C32 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "MessageTypes.h"
 
 @interface ViewController ()
 
@@ -77,16 +78,7 @@
                     len = [is read:buffer maxLength:1024];
                     NSLog(@"%i bytes",len);
                     if (len > 0) {
-                        short msglen = ntohs(*(short*)buffer);
-                        Byte msgType = buffer[2];
-                        userId = CFSwapInt64(*(long long*)&buffer[3]);
-                        NSLog(@"%i, %i, %lli",msglen,msgType,userId);
-                        NSLog(@"%x %x %x %x %x %x %x %x",buffer[3],buffer[4],buffer[5],buffer[6],buffer[7],buffer[8],buffer[9],buffer[10]);
-                        NSString *output = [[NSString alloc] initWithBytes:buffer length:len encoding:NSASCIIStringEncoding];
-                        
-                        if (nil != output) {
-                            NSLog(@"server response: %@", output);
-                        }
+                        parseMessage(buffer);
                     }
                 }
             }
@@ -108,6 +100,34 @@
         default:
             NSLog(@"unknown event");
     }
+}
+
+- (void) parseMessage:(uint8_t*)buffer
+{
+    short msglen = ntohs(*(short*)buffer);
+    Byte msgType = buffer[2];
+    
+    switch (msgType) {
+        case REGISTER_ACCEPT:
+            userId = CFSwapInt64(*(long long*)&buffer[3]);
+            break;
+        case REGISTER_REJECT:
+            break;
+        case LOGIN_ACCEPT:
+            break;
+        case LOGIN_REJECT:
+            break;
+        case MESSAGE:
+            break;
+        case CHATROOM:
+            break;
+        case JOIN_CHATROOM_REJECT:
+            break;
+        default:
+            NSLog(@"Unrecognized message from server");
+    }
+    
+    //NSLog(@"%i, %i, %lli",msglen,msgType,userId);
 }
 
 - (IBAction)registerButtonPressed:(id)sender

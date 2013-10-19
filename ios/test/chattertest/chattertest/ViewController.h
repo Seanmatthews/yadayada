@@ -19,6 +19,7 @@
 }
 
 - (void)initConnection;
+- (void)parseMessage:(uint8_t*)buffer;
 
 - (IBAction)registerButtonPressed:(id)sender;
 - (IBAction)loginButtonPressed:(id)sender;
