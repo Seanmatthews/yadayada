@@ -8,8 +8,6 @@ import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,12 +34,15 @@ public class ChatGUI implements ChatClient {
     private JPanel panel1;
     private JButton joinChatroomButton;
     private JTabbedPane tabbedPane1;
-    private JList chatList;
+    private JList chatroomList;
     private JButton searchChatroomsButton;
-    private JTextArea chatBox;
+    private JButton leaveButton;
+    private JTextField chatTextField;
+    private JTextField createChatTextField;
 
     private final DefaultListModel<Chatroom> model = new DefaultListModel<>();
     private final Map<Component, Chatroom> componentChatroomMap = new HashMap<>();
+    private final Map<Chatroom, JTextPane> chatroomComponentMap = new HashMap<>();
 
     private final Socket socket;
     private final DataOutputStream dout;
@@ -73,7 +74,7 @@ public class ChatGUI implements ChatClient {
     }
 
     private void setupChatroomList() {
-        chatList.setModel(model);
+        chatroomList.setModel(model);
 
         searchChatroomsButton.addActionListener(new ActionListener() {
             @Override
@@ -94,12 +95,13 @@ public class ChatGUI implements ChatClient {
                     if (user == null)
                         return;
 
-                    Chatroom chatroom = (Chatroom) chatList.getSelectedValue();
+                    Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
                     connection.joinChatroom(user, chatroom);
 
                     JTextPane text = new JTextPane();
                     tabbedPane1.addTab(chatroom.name, text);
 
+                    chatroomComponentMap.put(chatroom, text);
                     componentChatroomMap.put(text, chatroom);
                 } catch (IOException e1) {
                     e1.printStackTrace();
@@ -108,7 +110,23 @@ public class ChatGUI implements ChatClient {
             }
         });
 
-        chatBox.addKeyListener(new KeyListener() {
+        createButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = createChatTextField.getText();
+
+                if (text != null && text.length() > 0) {
+                    try {
+                        connection.createChatroom(user, text);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                        System.exit(0);
+                    }
+                }
+            }
+        } );
+
+        chatTextField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
             }
@@ -121,11 +139,11 @@ public class ChatGUI implements ChatClient {
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     Chatroom chatroom = componentChatroomMap.get(tabbedPane1.getSelectedComponent());
-                    String textToSend = chatBox.getText();
+                    String textToSend = chatTextField.getText();
 
                     try {
                         connection.sendMessage(user, chatroom, textToSend);
-                        chatBox.setText("");
+                        chatTextField.setText("");
                     } catch (IOException e1) {
                         e1.printStackTrace();
                         System.exit(0);
@@ -174,7 +192,7 @@ public class ChatGUI implements ChatClient {
 
     @Override
     public void onMessage(Message message) {
-        JTextPane chat = (JTextPane) tabbedPane1.getComponentAt(0);
+        JTextPane chat = chatroomComponentMap.get(message.chatroom);
         String text = chat.getText();
         chat.setText(text + message.sender.login + ": " + message.message + "\n");
     }

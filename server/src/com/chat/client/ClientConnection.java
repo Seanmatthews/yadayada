@@ -109,4 +109,12 @@ public class ClientConnection {
         dout.writeLong(chatroom.id);
         dout.writeUTF(textToSend);
     }
+
+    public void createChatroom(User user, String chatroomName) throws IOException {
+        System.out.println("Creating chatroom: " + chatroomName);
+        dout.writeShort(1 + 8 + Utilities.getStringLength(chatroomName));
+        dout.writeByte(MessageTypes.CREATE_CHATROOM.getValue());
+        dout.writeLong(user.id);
+        dout.writeUTF(chatroomName);
+    }
 }
