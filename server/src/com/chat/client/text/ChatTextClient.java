@@ -6,6 +6,7 @@ import com.chat.client.ChatClientListener;
 import com.chat.client.ClientConnection;
 import com.chat.server.impl.InMemoryChatroomRepository;
 import com.chat.server.impl.InMemoryUserRepository;
+import com.chat.server.impl.SocketConnection;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -20,33 +21,29 @@ import java.util.concurrent.Executors;
  * Date: 10/17/13
  * Time: 8:50 AM
  * To change this template use File | Settings | File Templates.
- */
-public class ChatTextClient implements ChatClient {
-    private final Socket socket;
+ */public class ChatTextClient implements ChatClient {
     private final ClientConnection connection;
-    private final DataOutputStream dout;
+    private final Connection dout;
 
     private Chatroom subscribedChatroom;
     private User user;
 
     public ChatTextClient(String host, int port, String user, String password) throws IOException, InterruptedException {
-        socket = new Socket(host, port);
+        Socket socket = new Socket(host, port);
+        dout = new SocketConnection(socket);
 
         System.out.println("Connected to " + socket);
-
-        DataInputStream din = new DataInputStream(socket.getInputStream());
-        dout = new DataOutputStream(socket.getOutputStream());
 
         InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
 
-        connection = new ClientConnection(this, din, dout);
+        connection = new ClientConnection(this, dout);
         connection.registerAndLogin(user, password);
         connection.searchChatrooms();
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatTextInput(this));
-        pool.submit(new ChatClientListener(this, din, chatroomRepo, userRepo));
+        pool.submit(new ChatClientListener(this, dout, chatroomRepo, userRepo));
     }
 
     @Override
@@ -75,7 +72,7 @@ public class ChatTextClient implements ChatClient {
         dout.writeByte(MessageTypes.SUBMIT_MESSAGE.getValue());
         dout.writeLong(user.getId());
         dout.writeLong(subscribedChatroom.getId());
-        dout.writeUTF(message);
+        dout.writeString(message);
     }
 
     @Override

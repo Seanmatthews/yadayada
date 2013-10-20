@@ -14,11 +14,11 @@ import java.io.IOException;
  */
 public class ChatClientListener implements Runnable {
     private final ChatClient client;
-    private final DataInputStream din;
+    private final Connection din;
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
 
-    public ChatClientListener(ChatClient client, DataInputStream stream, ChatroomRepository chatroomRepo, UserRepository userRepo) {
+    public ChatClientListener(ChatClient client, Connection stream, ChatroomRepository chatroomRepo, UserRepository userRepo) {
         this.client = client;
         this.din = stream;
         this.chatroomRepo = chatroomRepo;
@@ -42,7 +42,7 @@ public class ChatClientListener implements Runnable {
                     System.err.println("Unknown message type " + (int) messageType);
 
                     // get rid of remaining
-                    din.read(new byte[size - 1]);
+                    din.read(size - 1);
                     continue;
                 }
 
@@ -50,7 +50,7 @@ public class ChatClientListener implements Runnable {
                     case JOINED_CHATROOM:
                         long jcChatroomId = din.readLong();
                         long jcUserId = din.readLong();
-                        String jcUserName = din.readUTF();
+                        String jcUserName = din.readString();
 
                         User jcUser = getOrCreateUser(jcUserId, jcUserName);
                         Chatroom jcChatroom = chatroomRepo.get(jcChatroomId);
@@ -60,8 +60,8 @@ public class ChatClientListener implements Runnable {
                     case CHATROOM:
                         long chatroomId = din.readLong();
                         long ownerId = din.readLong();
-                        String chatroomName = din.readUTF();
-                        String ownerName = din.readUTF();
+                        String chatroomName = din.readString();
+                        String ownerName = din.readString();
 
                         User owner = getOrCreateUser(ownerId, ownerName);
                         Chatroom chatroom = getOrCreateChatroom(chatroomId, chatroomName, owner);
@@ -74,8 +74,8 @@ public class ChatClientListener implements Runnable {
                         long millis = din.readLong();
                         long userId = din.readLong();
                         long chatId = din.readLong();
-                        String userName = din.readUTF();
-                        String message = din.readUTF();
+                        String userName = din.readString();
+                        String message = din.readString();
 
                         User sender = getOrCreateUser(userId, userName);
                         Chatroom chat = chatroomRepo.get(chatId);

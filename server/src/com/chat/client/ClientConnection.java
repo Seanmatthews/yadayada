@@ -1,6 +1,8 @@
 package com.chat.client;
 
 import com.chat.*;
+import com.chat.client.gui.ChatGUI;
+import com.chat.server.impl.SocketConnection;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,14 +16,12 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class ClientConnection {
-    private final DataInputStream din;
-    private final DataOutputStream dout;
     private final ChatClient client;
+    private final Connection connection;
 
-    public ClientConnection(ChatClient client, DataInputStream din, DataOutputStream dout) throws IOException {
+    public ClientConnection(ChatClient client, Connection connection) {
         this.client = client;
-        this.din = din;
-        this.dout = dout;
+        this.connection = connection;
     }
 
     public void registerAndLogin(String user, String password) {
@@ -38,28 +38,28 @@ public class ClientConnection {
     public void searchChatrooms() throws IOException {
         System.out.println("Searching for chatrooms");
 
-        dout.writeShort(1);
-        dout.writeByte(MessageTypes.SEARCH_CHATROOMS.getValue());
+        connection.writeShort(1);
+        connection.writeByte(MessageTypes.SEARCH_CHATROOMS.getValue());
     }
 
     private void loginUser(String login, String password) throws IOException {
         System.out.println("Logging in user: " + login);
-        dout.writeShort(1 + Utilities.getStringLength(login) + Utilities.getStringLength(password));
-        dout.writeByte(MessageTypes.LOGIN.getValue());
-        dout.writeUTF(login);
-        dout.writeUTF(password);
+        connection.writeShort(1 + Utilities.getStringLength(login) + Utilities.getStringLength(password));
+        connection.writeByte(MessageTypes.LOGIN.getValue());
+        connection.writeString(login);
+        connection.writeString(password);
 
-        din.readShort(); // size
-        MessageTypes msgType = MessageTypes.lookup(din.readByte());
+        connection.readShort(); // size
+        MessageTypes msgType = MessageTypes.lookup(connection.readByte());
         switch(msgType) {
             case LOGIN_ACCEPT:
-                long userId = din.readLong();
+                long userId = connection.readLong();
                 User user = new User(userId, login, password, login);
                 client.onUserLoggedIn(user);
                 System.out.println("Login accepted. UserId: " + userId);
                 break;
             case LOGIN_REJECT:
-                String msg = din.readUTF();
+                String msg = connection.readString();
                 System.out.println("Login rejected: " + msg);
                 break;
         }
@@ -67,20 +67,20 @@ public class ClientConnection {
 
     private void registerNewUser(String user, String password) throws IOException {
         System.out.println("Registering user: " + user);
-        dout.writeShort(1 + Utilities.getStringLength(user) + Utilities.getStringLength(password));
-        dout.writeByte(MessageTypes.REGISTER.getValue());
-        dout.writeUTF(user);
-        dout.writeUTF(password);
+        connection.writeShort(1 + Utilities.getStringLength(user) + Utilities.getStringLength(password));
+        connection.writeByte(MessageTypes.REGISTER.getValue());
+        connection.writeString(user);
+        connection.writeString(password);
 
-        din.readShort(); // size
-        MessageTypes msgType = MessageTypes.lookup(din.readByte());
+        connection.readShort(); // size
+        MessageTypes msgType = MessageTypes.lookup(connection.readByte());
         switch(msgType) {
             case REGISTER_ACCEPT:
-                din.readLong();
+                connection.readLong();
                 System.out.println("Registration accepted. UserId: " + user);
                 break;
             case REGISTER_REJECT:
-                String msg = din.readUTF();
+                String msg = connection.readString();
                 System.out.println("Failed to register user: " + msg);
                 break;
         }
@@ -88,26 +88,26 @@ public class ClientConnection {
 
     public void joinChatroom(User user, Chatroom chatroom) throws IOException {
         System.out.println("Joining chatroom: " + chatroom);
-        dout.writeShort(17);
-        dout.writeByte(MessageTypes.JOIN_CHATROOM.getValue());
-        dout.writeLong(user.getId());
-        dout.writeLong(chatroom.getId());
+        connection.writeShort(17);
+        connection.writeByte(MessageTypes.JOIN_CHATROOM.getValue());
+        connection.writeLong(user.getId());
+        connection.writeLong(chatroom.getId());
     }
 
     public void sendMessage(User user, Chatroom chatroom, String textToSend) throws IOException {
         System.out.println("Sending message: " + textToSend);
-        dout.writeShort(1 + 8 + 8 + Utilities.getStringLength(textToSend));
-        dout.writeByte(MessageTypes.SUBMIT_MESSAGE.getValue());
-        dout.writeLong(user.getId());
-        dout.writeLong(chatroom.getId());
-        dout.writeUTF(textToSend);
+        connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(textToSend));
+        connection.writeByte(MessageTypes.SUBMIT_MESSAGE.getValue());
+        connection.writeLong(user.getId());
+        connection.writeLong(chatroom.getId());
+        connection.writeString(textToSend);
     }
 
     public void createChatroom(User user, String chatroomName) throws IOException {
         System.out.println("Creating chatroom: " + chatroomName);
-        dout.writeShort(1 + 8 + Utilities.getStringLength(chatroomName));
-        dout.writeByte(MessageTypes.CREATE_CHATROOM.getValue());
-        dout.writeLong(user.getId());
-        dout.writeUTF(chatroomName);
+        connection.writeShort(1 + 8 + Utilities.getStringLength(chatroomName));
+        connection.writeByte(MessageTypes.CREATE_CHATROOM.getValue());
+        connection.writeLong(user.getId());
+        connection.writeString(chatroomName);
     }
 }

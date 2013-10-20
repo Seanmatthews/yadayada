@@ -6,6 +6,7 @@ import com.chat.client.ChatClientListener;
 import com.chat.client.ClientConnection;
 import com.chat.server.impl.InMemoryChatroomRepository;
 import com.chat.server.impl.InMemoryUserRepository;
+import com.chat.server.impl.SocketConnection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,8 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
@@ -44,8 +43,6 @@ public class ChatGUI implements ChatClient {
     private final Map<Component, Chatroom> componentChatroomMap = new HashMap<>();
     private final Map<Chatroom, JTextPane> chatroomComponentMap = new HashMap<>();
 
-    private final Socket socket;
-    private final DataOutputStream dout;
     private final ClientConnection connection;
 
     private final ChatroomRepository chatroomRepo;
@@ -54,21 +51,19 @@ public class ChatGUI implements ChatClient {
     private User user;
 
     public ChatGUI(String host, int port, String user, String password) throws IOException {
-        socket = new Socket(host, port);
+        Socket socket = new Socket(host, port);
+        SocketConnection socketConnection = new SocketConnection(socket);
 
         System.out.println("Connected to " + socket);
 
-        DataInputStream din = new DataInputStream(socket.getInputStream());
-        dout = new DataOutputStream(socket.getOutputStream());
-
-        connection = new ClientConnection(this, din, dout);
+        connection = new ClientConnection(this, socketConnection);
         connection.registerAndLogin(user, password);
 
         chatroomRepo = new InMemoryChatroomRepository();
         userRepo = new InMemoryUserRepository();
 
         ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(new ChatClientListener(this, din, chatroomRepo, userRepo));
+        pool.submit(new ChatClientListener(this, socketConnection, chatroomRepo, userRepo));
 
         setupChatroomList();
     }
