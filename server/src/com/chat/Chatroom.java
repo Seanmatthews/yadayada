@@ -51,4 +51,8 @@ public class Chatroom {
     public String toString() {
         return name;
     }
+
+    public void addMessage(String message) {
+        //To change body of created methods use File | Settings | File Templates.
+    }
 }

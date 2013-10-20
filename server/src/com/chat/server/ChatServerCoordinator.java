@@ -1,7 +1,6 @@
 package com.chat.server;
 
 import com.chat.*;
-import com.chat.server.ChatServer;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -48,6 +47,7 @@ public class ChatServerCoordinator implements ChatServer {
     @Override
     public void newMessage(Connection sendingConnection, User sender, Chatroom chatroom, String message) {
         Message msg = messageRepo.create(chatroom, sender, message);
+        chatroom.addMessage(message);
 
         Iterator<User> chatUsers = chatroom.getUsers();
         while (chatUsers.hasNext()) {
@@ -150,7 +150,13 @@ public class ChatServerCoordinator implements ChatServer {
         System.out.println("Adding " + user.login + " to " + chatroom.name);
         chatroom.addUser(user);
 
-        // TODO: send a response?
+        try {
+            connection.writeShort(1 + 8);
+            connection.writeByte(MessageTypes.JOIN_CHATROOM_SUCCESS.getValue());
+            connection.writeLong(chatroom.id);
+        } catch (IOException e) {
+            removeConnection(connection);
+        }
     }
 
      @Override
