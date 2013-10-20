@@ -19,12 +19,14 @@ public class ChatServerListener implements Runnable {
     private final Connection connection;
     private final UserRepository userRepo;
     private final ChatroomRepository chatroomRepo;
+    private final MessageRepository msgRepo;
 
-    public ChatServerListener(ChatServer server, Connection connection, UserRepository userRepo, ChatroomRepository chatroomRepo) {
+    public ChatServerListener(ChatServer server, Connection connection, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository msgRepo) {
         this.server = server;
         this.connection = connection;
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
+        this.msgRepo = msgRepo;
     }
 
     @Override
@@ -81,9 +83,9 @@ public class ChatServerListener implements Runnable {
                     case SUBMIT_MESSAGE:
                         User user = getAndValidateUser(connection.readLong());
                         Chatroom chatroom = getAndValidateChatroom(connection.readLong());
-                        String message = connection.readString();
-                        System.out.println("Sending " + message);
-                        server.newMessage(connection, user, chatroom, message);
+                        String msg = connection.readString();
+                        System.out.println("Sending " + msg);
+                        server.newMessage(connection, user, chatroom, msg);
                         break;
                 }
             }

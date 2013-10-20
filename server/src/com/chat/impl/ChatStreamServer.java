@@ -46,7 +46,7 @@ public class ChatStreamServer {
             System.out.println("Connection from: " + socket);
 
             Connection connection = new SocketConnection(socket);
-            execService.submit(new ChatServerListener(server, connection, userRepo, chatroomRepo));
+            execService.submit(new ChatServerListener(server, connection, userRepo, chatroomRepo, messageRepo));
         }
     }
 

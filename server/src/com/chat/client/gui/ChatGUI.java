@@ -50,8 +50,6 @@ public class ChatGUI implements ChatClient {
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
 
-    //private final
-
     private User user;
 
     public ChatGUI(String host, int port, String user, String password) throws IOException {
@@ -144,8 +142,13 @@ public class ChatGUI implements ChatClient {
         String password = args[3];
 
         JFrame frame = new JFrame("MyForm");
-        frame.setContentPane(new ChatGUI(host, port, username, password).panel1);
+        ChatGUI chatGUI = new ChatGUI(host, port, username, password);
+        chatGUI.panel1.setPreferredSize(new Dimension(600, 400));
+        chatGUI.tabbedPane1.setPreferredSize(new Dimension(400, 400));
+
+        frame.setContentPane(chatGUI.panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         frame.pack();
         frame.setVisible(true);
     }
@@ -178,6 +181,6 @@ public class ChatGUI implements ChatClient {
 
     @Override
     public void sendMessage(String msg) throws IOException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // from the command line
     }
 }

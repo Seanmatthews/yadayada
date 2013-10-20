@@ -28,7 +28,7 @@ public class ChatServerImpl implements ChatServer {
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
         this.messageRepo = messageRepo;
-        this.userConnections =  new ConcurrentHashMap<User, Connection>();
+        this.userConnections =  new ConcurrentHashMap<>();
     }
 
     @Override
@@ -38,22 +38,22 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void newMessage(Connection connection, User sender, Chatroom chatroom, String message) {
+    public void newMessage(Connection sendingConnection, User sender, Chatroom chatroom, String message) {
         Message msg = messageRepo.create(chatroom, sender, message);
 
         Iterator<User> chatUsers = chatroom.getUsers();
         while (chatUsers.hasNext()) {
             User user = chatUsers.next();
-            Connection dout = userConnections.get(user);
-            if (dout != null) {
+            Connection connection = userConnections.get(user);
+            if (connection != null) {
                 try {
-                    dout.writeShort(1 + 8 + 8 + getLength(sender.login) + getLength(msg.message));
-                    dout.writeByte(MessageTypes.MESSAGE.getValue());
-                    dout.writeLong(msg.id);
-                    dout.writeLong(msg.sender.id);
-                    dout.writeLong(msg.chatroom.id);
-                    dout.writeString(msg.sender.login);
-                    dout.writeString(msg.message);
+                    connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(sender.login) + Utilities.getStringLength(msg.message));
+                    connection.writeByte(MessageTypes.MESSAGE.getValue());
+                    connection.writeLong(msg.id);
+                    connection.writeLong(msg.sender.id);
+                    connection.writeLong(msg.chatroom.id);
+                    connection.writeString(msg.sender.login);
+                    connection.writeString(msg.message);
                 } catch (IOException e) {
                     removeConnection(connection);
                 }
@@ -74,7 +74,7 @@ public class ChatServerImpl implements ChatServer {
         try {
             if (user == null) {
                 String msg = "Registration failure. " + login + " already exists";
-                connection.writeShort(1 + getLength(msg));
+                connection.writeShort(1 + Utilities.getStringLength(msg));
                 connection.writeByte(MessageTypes.REGISTER_REJECT.getValue());
                 connection.writeString(msg);
             }
@@ -96,7 +96,7 @@ public class ChatServerImpl implements ChatServer {
         try {
             if (user == null) {
                 String msg = "Invalid user or password: " + login;
-                connection.writeShort(1 + getLength(msg));
+                connection.writeShort(1 + Utilities.getStringLength(msg));
                 connection.writeByte(MessageTypes.LOGIN_REJECT.getValue());
                 connection.writeString(msg);
                 return;
@@ -122,7 +122,7 @@ public class ChatServerImpl implements ChatServer {
 
     private void sendChatroom(Connection connection, Chatroom chatroom) {
         try {
-            int msgBytes = 1 + 8 + getLength(chatroom.name) + 8 + getLength(chatroom.owner.login);
+            int msgBytes = 1 + 8 + Utilities.getStringLength(chatroom.name) + 8 + Utilities.getStringLength(chatroom.owner.login);
 
             connection.writeShort(msgBytes);
             connection.writeByte(MessageTypes.CHATROOM.getValue());
@@ -148,9 +148,5 @@ public class ChatServerImpl implements ChatServer {
         chatroom.removeUser(user);
 
         // TODO: send a response?
-    }
-
-    private static int getLength(String str) {
-        return 2 + str.length();
     }
 }

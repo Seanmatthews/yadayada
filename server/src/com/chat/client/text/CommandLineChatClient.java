@@ -1,6 +1,9 @@
-package com.chat.client;
+package com.chat.client.text;
 
 import com.chat.*;
+import com.chat.client.ChatClient;
+import com.chat.client.ChatClientListener;
+import com.chat.client.ClientConnection;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
 
@@ -8,8 +11,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -44,7 +45,7 @@ public class CommandLineChatClient implements ChatClient {
         connection.searchChatrooms();
 
         ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(new ChatClientInput(this, chatroomRepo, userRepo));
+        pool.submit(new CommandLineInput(this, chatroomRepo, userRepo));
         pool.submit(new ChatClientListener(this, din, chatroomRepo, userRepo));
     }
 
