@@ -4,7 +4,6 @@ import com.chat.*;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,9 +22,7 @@ public class ChatServerCoordinator implements ChatServer {
     private final Map<User, Connection> userConnectionMap;
     private final Map<Connection, User> connectionUserMap;
 
-    public ChatServerCoordinator(UserRepository userRepo,
-                                 ChatroomRepository chatroomRepo,
-                                 MessageRepository messageRepo) {
+    public ChatServerCoordinator(UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) {
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
         this.messageRepo = messageRepo;
@@ -35,19 +32,22 @@ public class ChatServerCoordinator implements ChatServer {
 
     @Override
     public void removeConnection(Connection connection) {
+        System.out.println("Removing connection to " + connection);
+
         User user = connectionUserMap.remove(connection);
 
         if (user != null)
             userConnectionMap.remove(user);
 
-        System.out.println("Removing connection to " + connection);
         connection.close();
     }
 
     @Override
     public void newMessage(Connection sendingConnection, User sender, Chatroom chatroom, String message) {
+        System.out.println("New message from " + sender + " " + message);
+
         Message msg = messageRepo.create(chatroom, sender, message);
-        chatroom.addMessage(message);
+        chatroom.addMessage(msg);
 
         Iterator<User> chatUsers = chatroom.getUsers();
         while (chatUsers.hasNext()) {
@@ -55,13 +55,7 @@ public class ChatServerCoordinator implements ChatServer {
             Connection connection = userConnectionMap.get(user);
             if (connection != null) {
                 try {
-                    connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(sender.login) + Utilities.getStringLength(msg.message));
-                    connection.writeByte(MessageTypes.MESSAGE.getValue());
-                    connection.writeLong(msg.id);
-                    connection.writeLong(msg.sender.id);
-                    connection.writeLong(msg.chatroom.id);
-                    connection.writeString(msg.sender.login);
-                    connection.writeString(msg.message);
+                    writeMessage(connection, msg);
                 } catch (IOException e) {
                     removeConnection(connection);
                 }
@@ -69,14 +63,30 @@ public class ChatServerCoordinator implements ChatServer {
         }
     }
 
+    private void writeMessage(Connection connection, Message msg) throws IOException {
+        System.out.println("Sending message " + msg);
+
+        connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(msg.sender.login) + Utilities.getStringLength(msg.message));
+        connection.writeByte(MessageTypes.MESSAGE.getValue());
+        connection.writeLong(msg.id);
+        connection.writeLong(msg.sender.id);
+        connection.writeLong(msg.chatroom.id);
+        connection.writeString(msg.sender.login);
+        connection.writeString(msg.message);
+    }
+
     @Override
     public void createChatroom(Connection connection, User user, String name) {
+        System.out.println("Creating chatroom " + name + " by " + user);
+
         Chatroom chatroom = chatroomRepo.createChatroom(user, name);
         sendChatroom(connection, chatroom);
     }
 
     @Override
     public void registerUser(Connection connection, String login, String password) {
+        System.out.println("Registering user " + login);
+
         User user = userRepo.registerUser(login, password);
 
         try {
@@ -99,6 +109,8 @@ public class ChatServerCoordinator implements ChatServer {
 
     @Override
     public void login(Connection connection, String login, String password) {
+        System.out.println("Logging in user " + login);
+
         User user = userRepo.login(login, password);
 
         try {
@@ -123,14 +135,18 @@ public class ChatServerCoordinator implements ChatServer {
 
     @Override
     public void searchChatrooms(Connection connection) {
-        List<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria());
+        System.out.println("Searching chatrooms " + connection);
 
-        for (Chatroom chatroom : chatrooms) {
-            sendChatroom(connection, chatroom);
+        Iterator<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria());
+
+        while(chatrooms.hasNext()) {
+            sendChatroom(connection, chatrooms.next());
         }
     }
 
     private void sendChatroom(Connection connection, Chatroom chatroom) {
+        System.out.println("Send chatroom " + chatroom);
+
         try {
             int msgBytes = 1 + 8 + Utilities.getStringLength(chatroom.name) + 8 + Utilities.getStringLength(chatroom.owner.login);
 
@@ -151,9 +167,21 @@ public class ChatServerCoordinator implements ChatServer {
         chatroom.addUser(user);
 
         try {
-            connection.writeShort(1 + 8);
-            connection.writeByte(MessageTypes.JOIN_CHATROOM_SUCCESS.getValue());
-            connection.writeLong(chatroom.id);
+            Iterator<User> users = chatroom.getUsers();
+            while(users.hasNext()) {
+                User next = users.next();
+
+                connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(next.login));
+                connection.writeByte(MessageTypes.JOINED_CHATROOM.getValue());
+                connection.writeLong(chatroom.id);
+                connection.writeLong(next.id);
+                connection.writeString(next.login);
+            }
+
+            Iterator<Message> recentMessages = chatroom.getRecentMessages();
+            while(recentMessages.hasNext()) {
+                writeMessage(connection, recentMessages.next());
+            }
         } catch (IOException e) {
             removeConnection(connection);
         }

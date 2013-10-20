@@ -27,7 +27,7 @@ public enum MessageTypes {
 
     JOIN_CHATROOM((byte)33),
     JOIN_CHATROOM_FAILURE((byte)36),
-    JOIN_CHATROOM_SUCCESS((byte)37),
+    JOINED_CHATROOM((byte)37),
 
     LEAVE_CHATROOM((byte)34),
     CREATE_CHATROOM((byte)35);

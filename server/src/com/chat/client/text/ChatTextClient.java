@@ -79,6 +79,11 @@ public class ChatTextClient implements ChatClient {
     }
 
     @Override
+    public void onJoinedChatroom(Chatroom chat, User user) {
+        System.out.println(user + " has joined " + chat);
+    }
+
+    @Override
     public void onUserLoggedIn(User user) {
         this.user = user;
     }

@@ -96,13 +96,14 @@ public class ChatGUI implements ChatClient {
                         return;
 
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.joinChatroom(user, chatroom);
 
                     JTextPane text = new JTextPane();
                     tabbedPane1.addTab(chatroom.name, text);
 
                     chatroomComponentMap.put(chatroom, text);
                     componentChatroomMap.put(text, chatroom);
+
+                    connection.joinChatroom(user, chatroom);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -200,5 +201,10 @@ public class ChatGUI implements ChatClient {
     @Override
     public void sendMessage(String msg) throws IOException {
         // from the command line
+    }
+
+    @Override
+    public void onJoinedChatroom(Chatroom chat, User user) {
+        System.out.println(user + " has joined " + chat);
     }
 }

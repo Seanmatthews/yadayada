@@ -12,6 +12,7 @@ public class Message {
     public Chatroom chatroom;
     public User sender;
     public String message;
+    public long timestamp;
 
     @Override
     public boolean equals(Object o) {
@@ -28,5 +29,10 @@ public class Message {
     @Override
     public int hashCode() {
         return (int) (id ^ (id >>> 32));
+    }
+
+    @Override
+    public String toString() {
+        return chatroom.name + " " + sender.login + ": " + message;
     }
 }

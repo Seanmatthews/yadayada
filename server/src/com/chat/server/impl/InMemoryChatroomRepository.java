@@ -5,10 +5,7 @@ import com.chat.ChatroomRepository;
 import com.chat.ChatroomSearchCriteria;
 import com.chat.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,8 +15,8 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryChatroomRepository implements ChatroomRepository {
-    private final Map<Long, Chatroom> chatroomIdMap = new HashMap<Long, Chatroom>();
-    private final List<Chatroom> allChatrooms = new ArrayList<Chatroom>();
+    private final Map<Long, Chatroom> chatroomIdMap = new HashMap<>();
+    private final List<Chatroom> allChatrooms = new ArrayList<>();
 
     private int nextChatroomId = 1;
 
@@ -37,8 +34,8 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
     }
 
     @Override
-    public List<Chatroom> search(ChatroomSearchCriteria search) {
-        return allChatrooms;
+    public Iterator<Chatroom> search(ChatroomSearchCriteria search) {
+        return allChatrooms.iterator();
     }
 
     @Override

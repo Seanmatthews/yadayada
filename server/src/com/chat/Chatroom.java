@@ -1,8 +1,10 @@
 package com.chat;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +14,11 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class Chatroom {
-    private final Set<User> users = new HashSet<User>();
+    private static final int MESSAGES_TO_STORE = 20;
+
+    private final Set<User> users = Collections.newSetFromMap(new ConcurrentHashMap<User, Boolean>());
+    private final Queue<Message> recentMessages = new ConcurrentLinkedQueue<>();
+    private volatile int messageCount = 0;
 
     public String name;
     public long id;
@@ -52,7 +58,17 @@ public class Chatroom {
         return name;
     }
 
-    public void addMessage(String message) {
-        //To change body of created methods use File | Settings | File Templates.
+    public void addMessage(Message message) {
+        int count = messageCount++;
+
+        if (count > MESSAGES_TO_STORE) {
+            recentMessages.remove();
+        }
+
+        recentMessages.add(message);
+    }
+
+    public Iterator<Message> getRecentMessages() {
+        return recentMessages.iterator();
     }
 }

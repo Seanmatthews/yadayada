@@ -16,8 +16,8 @@ import java.util.Map;
 public class InMemoryUserRepository implements UserRepository {
     private long nextUserId = 1;
 
-    private final Map<String, User> loginToUserMap = new HashMap<String, User>();
-    private final Map<Long, User> idToUserMap = new HashMap<Long, User>();
+    private final Map<String, User> loginToUserMap = new HashMap<>();
+    private final Map<Long, User> idToUserMap = new HashMap<>();
 
     public User registerUser(String login, String password) {
         User user = loginToUserMap.get(login);

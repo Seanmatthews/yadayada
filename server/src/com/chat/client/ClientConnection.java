@@ -18,9 +18,7 @@ public class ClientConnection {
     private final DataOutputStream dout;
     private final ChatClient client;
 
-    public ClientConnection(ChatClient client,
-                            DataInputStream din,
-                            DataOutputStream dout) throws IOException {
+    public ClientConnection(ChatClient client, DataInputStream din, DataOutputStream dout) throws IOException {
         this.client = client;
         this.din = din;
         this.dout = dout;

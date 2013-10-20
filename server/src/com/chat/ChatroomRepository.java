@@ -1,5 +1,6 @@
 package com.chat;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public interface ChatroomRepository {
     Chatroom createChatroom(User owner, String name);
-    List<Chatroom> search(ChatroomSearchCriteria search);
+    Iterator<Chatroom> search(ChatroomSearchCriteria search);
     Chatroom get(long chatroomId);
     void addChatroom(Chatroom chatroom);
 }

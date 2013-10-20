@@ -18,4 +18,5 @@ public interface ChatClient {
     void onChatroom(Chatroom chatroom) throws IOException;
     void onMessage(Message message);
     void sendMessage(String msg) throws IOException;
+    void onJoinedChatroom(Chatroom chat, User user);
 }

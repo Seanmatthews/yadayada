@@ -18,10 +18,7 @@ public class ChatClientListener implements Runnable {
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
 
-    public ChatClientListener(ChatClient client,
-                              DataInputStream stream,
-                              ChatroomRepository chatroomRepo,
-                              UserRepository userRepo) {
+    public ChatClientListener(ChatClient client, DataInputStream stream, ChatroomRepository chatroomRepo, UserRepository userRepo) {
         this.client = client;
         this.din = stream;
         this.chatroomRepo = chatroomRepo;
@@ -34,13 +31,32 @@ public class ChatClientListener implements Runnable {
             try {
                 short size = din.readShort();
 
+                if (size <= 0) {
+                    System.err.println("Bad size: " + size);
+                    System.exit(0);
+                }
+
                 byte messageType = din.readByte();
                 MessageTypes types = MessageTypes.lookup(messageType);
                 if (types == null) {
                     System.err.println("Unknown message type " + (int) messageType);
+
+                    // get rid of remaining
+                    din.read(new byte[size - 1]);
+                    continue;
                 }
 
                 switch(types) {
+                    case JOINED_CHATROOM:
+                        long jcChatroomId = din.readLong();
+                        long jcUserId = din.readLong();
+                        String jcUserName = din.readUTF();
+
+                        User jcUser = getOrCreateUser(jcUserId, jcUserName);
+                        Chatroom jcChatroom = chatroomRepo.get(jcChatroomId);
+                        client.onJoinedChatroom(jcChatroom, jcUser);
+                        break;
+
                     case CHATROOM:
                         long chatroomId = din.readLong();
                         String chatroomName = din.readUTF();
@@ -49,6 +65,7 @@ public class ChatClientListener implements Runnable {
 
                         User owner = getOrCreateUser(ownerId, ownerName);
                         Chatroom chatroom = getOrCreateChatroom(chatroomId, chatroomName, owner);
+
                         client.onChatroom(chatroom);
                         break;
 
@@ -68,6 +85,7 @@ public class ChatClientListener implements Runnable {
                         msg.message = message;
 
                         client.onMessage(msg);
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
