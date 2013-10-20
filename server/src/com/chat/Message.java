@@ -8,11 +8,39 @@ package com.chat;
  * To change this template use File | Settings | File Templates.
  */
 public class Message {
-    public long id;
-    public Chatroom chatroom;
-    public User sender;
-    public String message;
-    public long timestamp;
+    private final long id;
+    private final Chatroom chatroom;
+    private final User sender;
+    private final String message;
+    private final long timestamp;
+
+    public Message(long id, Chatroom chatroom, User sender, String message, long timestamp) {
+        this.id = id;
+        this.chatroom = chatroom;
+        this.sender = sender;
+        this.message = message;
+        this.timestamp = timestamp;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public Chatroom getChatroom() {
+        return chatroom;
+    }
+
+    public User getSender() {
+        return sender;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -21,7 +49,7 @@ public class Message {
 
         User user = (User) o;
 
-        if (id != user.id) return false;
+        if (id != user.getId()) return false;
 
         return true;
     }
@@ -33,6 +61,6 @@ public class Message {
 
     @Override
     public String toString() {
-        return chatroom.name + " " + sender.login + ": " + message;
+        return chatroom.getName() + " " + sender.getHandle() + ": " + message;
     }
 }

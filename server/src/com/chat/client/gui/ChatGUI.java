@@ -98,7 +98,7 @@ public class ChatGUI implements ChatClient {
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
 
                     JTextPane text = new JTextPane();
-                    tabbedPane1.addTab(chatroom.name, text);
+                    tabbedPane1.addTab(chatroom.getName(), text);
 
                     chatroomComponentMap.put(chatroom, text);
                     componentChatroomMap.put(text, chatroom);
@@ -174,11 +174,11 @@ public class ChatGUI implements ChatClient {
 
     @Override
     public void onChatroom(Chatroom chatroom) throws IOException {
-        System.out.println("New chatroom: " + chatroom.name + " by " + chatroom.owner.login);
+        System.out.println("New chatroom: " + chatroom.getName() + " by " + chatroom.getOwner().getHandle());
 
         for(int i=0; i<model.getSize(); i++) {
             if (model.get(i).equals(chatroom)) {
-                System.out.println("Duplicate chatroom: " + chatroom.name);
+                System.out.println("Duplicate chatroom: " + chatroom.getName());
                 return;
             }
         }
@@ -193,9 +193,9 @@ public class ChatGUI implements ChatClient {
 
     @Override
     public void onMessage(Message message) {
-        JTextPane chat = chatroomComponentMap.get(message.chatroom);
+        JTextPane chat = chatroomComponentMap.get(message.getChatroom());
         String text = chat.getText();
-        chat.setText(text + message.sender.login + ": " + message.message + "\n");
+        chat.setText(text + message.getSender().getHandle() + ": " + message.getMessage() + "\n");
     }
 
     @Override

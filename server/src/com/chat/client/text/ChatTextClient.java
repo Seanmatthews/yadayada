@@ -51,14 +51,14 @@ public class ChatTextClient implements ChatClient {
 
     @Override
     public void onChatroom(Chatroom chatroom) throws IOException {
-        System.out.println("New chatroom: " + chatroom.name + " by " + chatroom.owner.login);
+        System.out.println("New chatroom: " + chatroom.getName() + " by " + chatroom.getOwner().getHandle());
 
         // Subscribe to the first one!
-        if (chatroom.name.equalsIgnoreCase("Global")) {
+        if (chatroom.getName().equalsIgnoreCase("Global")) {
             dout.writeShort(1 + 8 + 8);
             dout.writeByte(MessageTypes.JOIN_CHATROOM.getValue());
-            dout.writeLong(user.id);
-            dout.writeLong(chatroom.id);
+            dout.writeLong(user.getId());
+            dout.writeLong(chatroom.getId());
 
             subscribedChatroom = chatroom;
         }
@@ -66,15 +66,15 @@ public class ChatTextClient implements ChatClient {
 
     @Override
     public void onMessage(Message message) {
-        System.out.println(message.chatroom.name + " " + message.sender.login + ": " + message.message);
+        System.out.println(message.getChatroom().getName() + " " + message.getSender().getHandle() + ": " + message.getMessage());
     }
 
     @Override
     public void sendMessage(String message) throws IOException {
         dout.writeShort(1 + 8 + Utilities.getStringLength(message));
         dout.writeByte(MessageTypes.SUBMIT_MESSAGE.getValue());
-        dout.writeLong(user.id);
-        dout.writeLong(subscribedChatroom.id);
+        dout.writeLong(user.getId());
+        dout.writeLong(subscribedChatroom.getId());
         dout.writeUTF(message);
     }
 

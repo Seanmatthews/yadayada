@@ -5,6 +5,7 @@ import com.chat.UserRepository;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,10 +15,10 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryUserRepository implements UserRepository {
-    private long nextUserId = 1;
+    private volatile long nextUserId = 1;
 
-    private final Map<String, User> loginToUserMap = new HashMap<>();
-    private final Map<Long, User> idToUserMap = new HashMap<>();
+    private final Map<String, User> loginToUserMap = new ConcurrentHashMap<>();
+    private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
 
     public User registerUser(String login, String password) {
         User user = loginToUserMap.get(login);
@@ -26,13 +27,10 @@ public class InMemoryUserRepository implements UserRepository {
         if (user != null)
             return null;
 
-        user = new User();
-        user.id = nextUserId++;
-        user.login = login;
-        user.password = password;
+        user = new User(nextUserId++, login, password, login);
 
-        loginToUserMap.put(user.login, user);
-        idToUserMap.put(user.id, user);
+        loginToUserMap.put(user.getLogin(), user);
+        idToUserMap.put(user.getId(), user);
 
         return user;
     }
@@ -44,7 +42,7 @@ public class InMemoryUserRepository implements UserRepository {
         if (user == null)
             return null;
 
-        if (!user.password.equals(password))
+        if (!user.getPassword().equals(password))
             return null;
 
         return user;
@@ -56,7 +54,6 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public void addUser(User user) {
-        loginToUserMap.put(user.login, user);
-        idToUserMap.put(user.id, user);
+        idToUserMap.put(user.getId(), user);
     }
 }

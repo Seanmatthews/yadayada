@@ -23,7 +23,6 @@ public class ChatStreamServer {
 
     private final UserRepository userRepo;
     private final ChatroomRepository chatroomRepo;
-    private final MessageRepository messageRepo;
 
     private final ChatServer server;
 
@@ -35,7 +34,6 @@ public class ChatStreamServer {
         this.server = new ChatServerCoordinator(userRepo, chatroomRepo, messageRepo);
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
-        this.messageRepo = messageRepo;
 
         listen(port);
     }

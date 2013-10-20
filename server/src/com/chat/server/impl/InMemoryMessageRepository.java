@@ -13,15 +13,12 @@ import com.chat.User;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryMessageRepository implements MessageRepository {
-    private long nextMessageId = 1;
+    private volatile long nextMessageId = 1;
 
     @Override
     public Message create(Chatroom chatroom, User sender, String message) {
-        Message msg = new Message();
-        msg.id = nextMessageId++;
-        msg.chatroom = chatroom;
-        msg.sender = sender;
-        msg.message = message;
+        Message msg = new Message(nextMessageId++, chatroom, sender, message, System.currentTimeMillis());
+        // don't store these currently
         return msg;
     }
 }

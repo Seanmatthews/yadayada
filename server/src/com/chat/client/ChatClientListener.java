@@ -59,8 +59,8 @@ public class ChatClientListener implements Runnable {
 
                     case CHATROOM:
                         long chatroomId = din.readLong();
-                        String chatroomName = din.readUTF();
                         long ownerId = din.readLong();
+                        String chatroomName = din.readUTF();
                         String ownerName = din.readUTF();
 
                         User owner = getOrCreateUser(ownerId, ownerName);
@@ -71,18 +71,15 @@ public class ChatClientListener implements Runnable {
 
                     case MESSAGE:
                         long msgID = din.readLong();
+                        long millis = din.readLong();
                         long userId = din.readLong();
                         long chatId = din.readLong();
                         String userName = din.readUTF();
                         String message = din.readUTF();
 
-                        User user = getOrCreateUser(userId, userName);
+                        User sender = getOrCreateUser(userId, userName);
                         Chatroom chat = chatroomRepo.get(chatId);
-                        Message msg = new Message();
-                        msg.id = msgID;
-                        msg.sender = user;
-                        msg.chatroom = chat;
-                        msg.message = message;
+                        Message msg = new Message(msgID, chat, sender, message, millis);
 
                         client.onMessage(msg);
                         break;
@@ -99,10 +96,7 @@ public class ChatClientListener implements Runnable {
         synchronized (chatroomRepo) {
             chatroom = chatroomRepo.get(chatroomId);
             if (chatroom == null) {
-                chatroom = new Chatroom();
-                chatroom.id = chatroomId;
-                chatroom.name = chatroomName;
-                chatroom.owner = owner;
+                chatroom = new Chatroom(chatroomId, chatroomName, owner);
                 chatroomRepo.addChatroom(chatroom);
             }
         }
@@ -114,9 +108,7 @@ public class ChatClientListener implements Runnable {
         synchronized (userRepo) {
             owner = userRepo.get(userId);
             if (owner == null) {
-                owner = new User();
-                owner.id = userId;
-                owner.login = userName;
+                owner = new User(userId, userName, "", userName);
                 userRepo.addUser(owner);
             }
         }

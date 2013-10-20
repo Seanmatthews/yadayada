@@ -6,6 +6,7 @@ import com.chat.ChatroomSearchCriteria;
 import com.chat.User;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,27 +16,23 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryChatroomRepository implements ChatroomRepository {
-    private final Map<Long, Chatroom> chatroomIdMap = new HashMap<>();
-    private final List<Chatroom> allChatrooms = new ArrayList<>();
-
-    private int nextChatroomId = 1;
+    // We have lots of threads accessing this repository
+    // We need to keep nextChatroomId and the map in sync
+    private volatile long nextChatroomId = 1;
+    private final Map<Long, Chatroom> chatroomIdMap = new ConcurrentHashMap<>();
 
     @Override
     public Chatroom createChatroom(User owner, String name) {
-        Chatroom chatroom = new Chatroom();
-        chatroom.id = nextChatroomId++;
-        chatroom.name = name;
-        chatroom.owner = owner;
+        Chatroom chatroom = new Chatroom(nextChatroomId++, name, owner);
         chatroom.addUser(owner);
 
-        chatroomIdMap.put(chatroom.id, chatroom);
-        allChatrooms.add(chatroom);
+        chatroomIdMap.put(chatroom.getId(), chatroom);
         return chatroom;
     }
 
     @Override
     public Iterator<Chatroom> search(ChatroomSearchCriteria search) {
-        return allChatrooms.iterator();
+        return chatroomIdMap.values().iterator();
     }
 
     @Override
@@ -45,7 +42,6 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
 
     @Override
     public void addChatroom(Chatroom chatroom) {
-        chatroomIdMap.put(chatroom.id, chatroom);
-        allChatrooms.add(chatroom);
+        chatroomIdMap.put(chatroom.getId(), chatroom);
     }
 }

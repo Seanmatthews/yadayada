@@ -20,9 +20,27 @@ public class Chatroom {
     private final Queue<Message> recentMessages = new ConcurrentLinkedQueue<>();
     private volatile int messageCount = 0;
 
-    public String name;
-    public long id;
-    public User owner;
+    private final long id;
+    private final String name;
+    private final User owner;
+
+    public Chatroom(long id, String name, User owner) {
+        this.id = id;
+        this.name = name;
+        this.owner = owner;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
 
     public void addUser(User user) {
         users.add(user);
@@ -61,6 +79,7 @@ public class Chatroom {
     public void addMessage(Message message) {
         int count = messageCount++;
 
+        // don't want to get recentMessages.size() because it iterates through the entire list
         if (count > MESSAGES_TO_STORE) {
             recentMessages.remove();
         }

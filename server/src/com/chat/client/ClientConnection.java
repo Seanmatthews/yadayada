@@ -54,9 +54,7 @@ public class ClientConnection {
         switch(msgType) {
             case LOGIN_ACCEPT:
                 long userId = din.readLong();
-                User user = new User();
-                user.id = userId;
-                user.login = login;
+                User user = new User(userId, login, password, login);
                 client.onUserLoggedIn(user);
                 System.out.println("Login accepted. UserId: " + userId);
                 break;
@@ -92,16 +90,16 @@ public class ClientConnection {
         System.out.println("Joining chatroom: " + chatroom);
         dout.writeShort(17);
         dout.writeByte(MessageTypes.JOIN_CHATROOM.getValue());
-        dout.writeLong(user.id);
-        dout.writeLong(chatroom.id);
+        dout.writeLong(user.getId());
+        dout.writeLong(chatroom.getId());
     }
 
     public void sendMessage(User user, Chatroom chatroom, String textToSend) throws IOException {
         System.out.println("Sending message: " + textToSend);
         dout.writeShort(1 + 8 + 8 + Utilities.getStringLength(textToSend));
         dout.writeByte(MessageTypes.SUBMIT_MESSAGE.getValue());
-        dout.writeLong(user.id);
-        dout.writeLong(chatroom.id);
+        dout.writeLong(user.getId());
+        dout.writeLong(chatroom.getId());
         dout.writeUTF(textToSend);
     }
 
@@ -109,7 +107,7 @@ public class ClientConnection {
         System.out.println("Creating chatroom: " + chatroomName);
         dout.writeShort(1 + 8 + Utilities.getStringLength(chatroomName));
         dout.writeByte(MessageTypes.CREATE_CHATROOM.getValue());
-        dout.writeLong(user.id);
+        dout.writeLong(user.getId());
         dout.writeUTF(chatroomName);
     }
 }
