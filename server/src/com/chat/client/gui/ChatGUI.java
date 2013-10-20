@@ -13,10 +13,14 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,8 +38,10 @@ public class ChatGUI implements ChatClient {
     private JTabbedPane tabbedPane1;
     private JList chatList;
     private JButton searchChatroomsButton;
+    private JTextArea chatBox;
 
-    private final DefaultListModel<Chatroom> model;
+    private final DefaultListModel<Chatroom> model = new DefaultListModel<>();
+    private final Map<Component, Chatroom> componentChatroomMap = new HashMap<>();
 
     private final Socket socket;
     private final DataOutputStream dout;
@@ -43,6 +49,8 @@ public class ChatGUI implements ChatClient {
 
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
+
+    //private final
 
     private User user;
 
@@ -57,8 +65,6 @@ public class ChatGUI implements ChatClient {
         connection = new ClientConnection(this, din, dout);
         connection.registerAndLogin(user, password);
 
-        model = new DefaultListModel<Chatroom>();
-
         chatroomRepo = new InMemoryChatroomRepository();
         userRepo = new InMemoryUserRepository();
 
@@ -70,12 +76,6 @@ public class ChatGUI implements ChatClient {
 
     private void setupChatroomList() {
         chatList.setModel(model);
-        chatList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                Chatroom chatroom = model.get(e.getFirstIndex());
-            }
-        });
 
         searchChatroomsButton.addActionListener(new ActionListener() {
             @Override
@@ -101,9 +101,37 @@ public class ChatGUI implements ChatClient {
 
                     JTextPane text = new JTextPane();
                     tabbedPane1.addTab(chatroom.name, text);
+
+                    componentChatroomMap.put(text, chatroom);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
+                }
+            }
+        });
+
+        chatBox.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    Chatroom chatroom = componentChatroomMap.get(tabbedPane1.getSelectedComponent());
+                    String textToSend = chatBox.getText();
+
+                    try {
+                        connection.sendMessage(user, chatroom, textToSend);
+                        chatBox.setText("");
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                        System.exit(0);
+                    }
                 }
             }
         });

@@ -50,8 +50,8 @@ public class ChatServerImpl implements ChatServer {
                     dout.writeShort(1 + 8 + 8 + getLength(sender.login) + getLength(msg.message));
                     dout.writeByte(MessageTypes.MESSAGE.getValue());
                     dout.writeLong(msg.id);
-                    dout.writeLong(msg.chatroom.id);
                     dout.writeLong(msg.sender.id);
+                    dout.writeLong(msg.chatroom.id);
                     dout.writeString(msg.sender.login);
                     dout.writeString(msg.message);
                 } catch (IOException e) {

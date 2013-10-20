@@ -100,4 +100,13 @@ public class ClientConnection {
         dout.writeLong(user.id);
         dout.writeLong(chatroom.id);
     }
+
+    public void sendMessage(User user, Chatroom chatroom, String textToSend) throws IOException {
+        System.out.println("Sending message: " + textToSend);
+        dout.writeShort(1 + 8 + 8 + Utilities.getStringLength(textToSend));
+        dout.writeByte(MessageTypes.SUBMIT_MESSAGE.getValue());
+        dout.writeLong(user.id);
+        dout.writeLong(chatroom.id);
+        dout.writeUTF(textToSend);
+    }
 }
