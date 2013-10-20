@@ -3,7 +3,7 @@ package com.chat.client.gui;
 import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientListener;
-import com.chat.client.ClientConnection;
+import com.chat.client.ClientMessageSender;
 import com.chat.server.impl.InMemoryChatroomRepository;
 import com.chat.server.impl.InMemoryUserRepository;
 import com.chat.server.impl.SocketConnection;
@@ -43,7 +43,7 @@ public class ChatGUI implements ChatClient {
     private final Map<Component, Chatroom> componentChatroomMap = new HashMap<>();
     private final Map<Chatroom, JTextPane> chatroomComponentMap = new HashMap<>();
 
-    private final ClientConnection connection;
+    private final ClientMessageSender connection;
 
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
@@ -56,7 +56,7 @@ public class ChatGUI implements ChatClient {
 
         System.out.println("Connected to " + socket);
 
-        connection = new ClientConnection(this, socketConnection);
+        connection = new ClientMessageSender(this, socketConnection);
         connection.registerAndLogin(user, password);
 
         chatroomRepo = new InMemoryChatroomRepository();

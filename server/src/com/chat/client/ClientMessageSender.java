@@ -15,11 +15,11 @@ import java.io.IOException;
  * Time: 5:39 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ClientConnection {
+public class ClientMessageSender {
     private final ChatClient client;
     private final Connection connection;
 
-    public ClientConnection(ChatClient client, Connection connection) {
+    public ClientMessageSender(ChatClient client, Connection connection) {
         this.client = client;
         this.connection = connection;
     }

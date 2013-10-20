@@ -3,13 +3,11 @@ package com.chat.client.text;
 import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientListener;
-import com.chat.client.ClientConnection;
+import com.chat.client.ClientMessageSender;
 import com.chat.server.impl.InMemoryChatroomRepository;
 import com.chat.server.impl.InMemoryUserRepository;
 import com.chat.server.impl.SocketConnection;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +20,7 @@ import java.util.concurrent.Executors;
  * Time: 8:50 AM
  * To change this template use File | Settings | File Templates.
  */public class ChatTextClient implements ChatClient {
-    private final ClientConnection connection;
+    private final ClientMessageSender connection;
     private final Connection dout;
 
     private Chatroom subscribedChatroom;
@@ -37,7 +35,7 @@ import java.util.concurrent.Executors;
         InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
 
-        connection = new ClientConnection(this, dout);
+        connection = new ClientMessageSender(this, dout);
         connection.registerAndLogin(user, password);
         connection.searchChatrooms();
 
