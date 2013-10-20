@@ -39,9 +39,10 @@ public class ChatGUI implements ChatClient {
     private JTextField chatTextField;
     private JTextField createChatTextField;
 
-    private final DefaultListModel<Chatroom> model = new DefaultListModel<>();
+    private final DefaultListModel<Chatroom> chatroomModel = new DefaultListModel<>();
     private final Map<Component, Chatroom> componentChatroomMap = new HashMap<>();
-    private final Map<Chatroom, JTextPane> chatroomComponentMap = new HashMap<>();
+    private final Map<Chatroom, JTextPane> chatroomTextMap = new HashMap<>();
+    private final Map<Chatroom, JList<User>> chatroomListMap = new HashMap<>();
 
     private final ClientMessageSender connection;
 
@@ -69,7 +70,7 @@ public class ChatGUI implements ChatClient {
     }
 
     private void setupChatroomList() {
-        chatroomList.setModel(model);
+        chatroomList.setModel(chatroomModel);
 
         searchChatroomsButton.addActionListener(new ActionListener() {
             @Override
@@ -91,13 +92,6 @@ public class ChatGUI implements ChatClient {
                         return;
 
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-
-                    JTextPane text = new JTextPane();
-                    tabbedPane1.addTab(chatroom.getName(), text);
-
-                    chatroomComponentMap.put(chatroom, text);
-                    componentChatroomMap.put(text, chatroom);
-
                     connection.joinChatroom(user, chatroom);
                 } catch (IOException e1) {
                     e1.printStackTrace();
@@ -155,7 +149,7 @@ public class ChatGUI implements ChatClient {
         String username = args[2];
         String password = args[3];
 
-        JFrame frame = new JFrame("MyForm");
+        JFrame frame = new JFrame("Chatter");
         ChatGUI chatGUI = new ChatGUI(host, port, username, password);
         chatGUI.panel1.setPreferredSize(new Dimension(600, 400));
         chatGUI.tabbedPane1.setPreferredSize(new Dimension(400, 400));
@@ -171,14 +165,14 @@ public class ChatGUI implements ChatClient {
     public void onChatroom(Chatroom chatroom) throws IOException {
         System.out.println("New chatroom: " + chatroom.getName() + " by " + chatroom.getOwner().getHandle());
 
-        for(int i=0; i<model.getSize(); i++) {
-            if (model.get(i).equals(chatroom)) {
+        for(int i=0; i< chatroomModel.getSize(); i++) {
+            if (chatroomModel.get(i).equals(chatroom)) {
                 System.out.println("Duplicate chatroom: " + chatroom.getName());
                 return;
             }
         }
 
-        model.addElement(chatroom);
+        chatroomModel.addElement(chatroom);
     }
 
     @Override
@@ -188,7 +182,7 @@ public class ChatGUI implements ChatClient {
 
     @Override
     public void onMessage(Message message) {
-        JTextPane chat = chatroomComponentMap.get(message.getChatroom());
+        JTextPane chat = chatroomTextMap.get(message.getChatroom());
         String text = chat.getText();
         chat.setText(text + message.getSender().getHandle() + ": " + message.getMessage() + "\n");
     }
@@ -199,7 +193,33 @@ public class ChatGUI implements ChatClient {
     }
 
     @Override
-    public void onJoinedChatroom(Chatroom chat, User user) {
-        System.out.println(user + " has joined " + chat);
+    public void onJoinedChatroom(Chatroom chatroom, User user) {
+        System.out.println(user + " has joined " + chatroom);
+
+        //JTextPane text = chatroomComponentMap.get(chatroom);
+
+        JList<User> userJList = chatroomListMap.get(chatroom);
+
+        if (userJList == null) {
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(1, 2, 15, 15));
+
+            JTextPane text = new JTextPane();
+            panel.add(text);
+
+            userJList = new JList<>();
+            userJList.setModel(new DefaultListModel<User>());
+            panel.add(userJList);
+
+            tabbedPane1.addTab(chatroom.getName(), panel);
+
+            chatroomTextMap.put(chatroom, text);
+            chatroomListMap.put(chatroom, userJList);
+            componentChatroomMap.put(panel, chatroom);
+        }
+
+        if (!userJList.getSelectedValuesList().contains(user)) {
+            ((DefaultListModel<User>)userJList.getModel()).addElement(user);
+        }
     }
 }

@@ -50,9 +50,9 @@ public class ChatClientListener implements Runnable {
                     case JOINED_CHATROOM:
                         long jcChatroomId = din.readLong();
                         long jcUserId = din.readLong();
-                        String jcUserName = din.readString();
+                        String jcHandle = din.readString();
 
-                        User jcUser = getOrCreateUser(jcUserId, jcUserName);
+                        User jcUser = getOrCreateUser(jcUserId, jcHandle);
                         Chatroom jcChatroom = chatroomRepo.get(jcChatroomId);
                         client.onJoinedChatroom(jcChatroom, jcUser);
                         break;
