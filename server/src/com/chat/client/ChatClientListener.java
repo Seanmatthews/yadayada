@@ -50,20 +50,8 @@ public class ChatClientListener implements Runnable {
                         String ownerName = din.readUTF();
 
                         User owner = getOrCreateUser(ownerId, ownerName);
-
-                        Chatroom chatroom;
-                        synchronized (chatroomRepo) {
-                            chatroom = chatroomRepo.get(chatroomId);
-                            if (chatroom == null) {
-                                chatroom = new Chatroom();
-                                chatroom.id = chatroomId;
-                                chatroom.name = chatroomName;
-                                chatroom.owner = owner;
-                            }
-                        }
-
+                        Chatroom chatroom = getOrCreateChatroom(chatroomId, chatroomName, owner);
                         client.onChatroom(chatroom);
-
                         break;
 
                     case MESSAGE:
@@ -88,6 +76,21 @@ public class ChatClientListener implements Runnable {
                 System.exit(0);
             }
         }
+    }
+
+    private Chatroom getOrCreateChatroom(long chatroomId, String chatroomName, User owner) {
+        Chatroom chatroom;
+        synchronized (chatroomRepo) {
+            chatroom = chatroomRepo.get(chatroomId);
+            if (chatroom == null) {
+                chatroom = new Chatroom();
+                chatroom.id = chatroomId;
+                chatroom.name = chatroomName;
+                chatroom.owner = owner;
+                chatroomRepo.addChatroom(chatroom);
+            }
+        }
+        return chatroom;
     }
 
     private User getOrCreateUser(long userId, String userName) {
