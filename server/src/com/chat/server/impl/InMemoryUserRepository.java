@@ -1,4 +1,4 @@
-package com.chat.impl;
+package com.chat.server.impl;
 
 import com.chat.User;
 import com.chat.UserRepository;

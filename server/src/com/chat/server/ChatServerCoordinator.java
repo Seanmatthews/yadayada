@@ -1,6 +1,7 @@
-package com.chat.impl;
+package com.chat.server;
 
 import com.chat.*;
+import com.chat.server.ChatServer;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -15,24 +16,31 @@ import java.util.concurrent.ConcurrentHashMap;
  * Time: 2:50 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ChatServerImpl implements ChatServer {
+public class ChatServerCoordinator implements ChatServer {
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
     private final MessageRepository messageRepo;
 
-    private final Map<User, Connection> userConnections;
+    private final Map<User, Connection> userConnectionMap;
+    private final Map<Connection, User> connectionUserMap;
 
-    public ChatServerImpl(UserRepository userRepo,
-                          ChatroomRepository chatroomRepo,
-                          MessageRepository messageRepo) {
+    public ChatServerCoordinator(UserRepository userRepo,
+                                 ChatroomRepository chatroomRepo,
+                                 MessageRepository messageRepo) {
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
         this.messageRepo = messageRepo;
-        this.userConnections =  new ConcurrentHashMap<>();
+        this.userConnectionMap =  new ConcurrentHashMap<>();
+        this.connectionUserMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public void removeConnection(Connection connection) {
+        User user = connectionUserMap.remove(connection);
+
+        if (user != null)
+            userConnectionMap.remove(user);
+
         System.out.println("Removing connection to " + connection);
         connection.close();
     }
@@ -44,7 +52,7 @@ public class ChatServerImpl implements ChatServer {
         Iterator<User> chatUsers = chatroom.getUsers();
         while (chatUsers.hasNext()) {
             User user = chatUsers.next();
-            Connection connection = userConnections.get(user);
+            Connection connection = userConnectionMap.get(user);
             if (connection != null) {
                 try {
                     connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(sender.login) + Utilities.getStringLength(msg.message));
@@ -106,12 +114,14 @@ public class ChatServerImpl implements ChatServer {
             connection.writeByte(MessageTypes.LOGIN_ACCEPT.getValue());
             connection.writeLong(user.id);
 
-            userConnections.put(user, connection);
+            userConnectionMap.put(user, connection);
+            connectionUserMap.put(connection, user);
         } catch (IOException e) {
             removeConnection(connection);
         }
     }
 
+    @Override
     public void searchChatrooms(Connection connection) {
         List<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria());
 
@@ -135,6 +145,7 @@ public class ChatServerImpl implements ChatServer {
         }
     }
 
+    @Override
     public void joinChatroom(Connection connection, User user, Chatroom chatroom) {
         System.out.println("Adding " + user.login + " to " + chatroom.name);
         chatroom.addUser(user);
@@ -142,7 +153,7 @@ public class ChatServerImpl implements ChatServer {
         // TODO: send a response?
     }
 
-
+     @Override
     public void leaveChatroom(Connection connection, User user, Chatroom chatroom) {
         System.out.println("Removing " + user.login + " from " + chatroom.name);
         chatroom.removeUser(user);

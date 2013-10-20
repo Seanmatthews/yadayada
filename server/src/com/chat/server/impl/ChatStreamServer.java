@@ -1,6 +1,9 @@
-package com.chat.impl;
+package com.chat.server.impl;
 
 import com.chat.*;
+import com.chat.server.ChatServer;
+import com.chat.server.ChatServerCoordinator;
+import com.chat.server.ChatServerListener;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -29,7 +32,7 @@ public class ChatStreamServer {
                             ChatroomRepository chatroomRepo,
                             MessageRepository messageRepo) throws IOException {
         // not really an Impl - what's that pattern?
-        this.server = new ChatServerImpl(userRepo, chatroomRepo, messageRepo);
+        this.server = new ChatServerCoordinator(userRepo, chatroomRepo, messageRepo);
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
         this.messageRepo = messageRepo;
@@ -46,21 +49,7 @@ public class ChatStreamServer {
             System.out.println("Connection from: " + socket);
 
             Connection connection = new SocketConnection(socket);
-            execService.submit(new ChatServerListener(server, connection, userRepo, chatroomRepo, messageRepo));
+            execService.submit(new ChatServerListener(server, connection, userRepo, chatroomRepo));
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        int port = Integer.parseInt(args[0]);
-
-        InMemoryUserRepository userRepo = new InMemoryUserRepository();
-        User admin = userRepo.registerUser("admin", "admin");
-
-        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-        chatroomRepo.createChatroom(admin, "Global");
-
-        MessageRepository repo = new InMemoryMessageRepository();
-
-        new ChatStreamServer(port, userRepo, chatroomRepo, repo);
     }
 }

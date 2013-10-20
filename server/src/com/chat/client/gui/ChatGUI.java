@@ -4,8 +4,8 @@ import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientListener;
 import com.chat.client.ClientConnection;
-import com.chat.impl.InMemoryChatroomRepository;
-import com.chat.impl.InMemoryUserRepository;
+import com.chat.server.impl.InMemoryChatroomRepository;
+import com.chat.server.impl.InMemoryUserRepository;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,8 +1,8 @@
 package com.chat.client.text;
 
 import com.chat.client.ChatClient;
-import com.chat.impl.InMemoryChatroomRepository;
-import com.chat.impl.InMemoryUserRepository;
+import com.chat.server.impl.InMemoryChatroomRepository;
+import com.chat.server.impl.InMemoryUserRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,10 +15,10 @@ import java.io.InputStreamReader;
  * Time: 8:57 AM
  * To change this template use File | Settings | File Templates.
  */
-public class CommandLineInput implements Runnable {
+public class ChatTextInput implements Runnable {
     private final ChatClient client;
 
-    public CommandLineInput(ChatClient client, InMemoryChatroomRepository chatroomRepo, InMemoryUserRepository userRepo) {
+    public ChatTextInput(ChatClient client) {
         this.client = client;
     }
 

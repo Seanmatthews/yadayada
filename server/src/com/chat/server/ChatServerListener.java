@@ -1,9 +1,7 @@
-package com.chat;
+package com.chat.server;
 
 import com.chat.*;
-import com.chat.impl.ChatStreamServer;
 
-import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -19,14 +17,12 @@ public class ChatServerListener implements Runnable {
     private final Connection connection;
     private final UserRepository userRepo;
     private final ChatroomRepository chatroomRepo;
-    private final MessageRepository msgRepo;
 
-    public ChatServerListener(ChatServer server, Connection connection, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository msgRepo) {
+    public ChatServerListener(ChatServer server, Connection connection, UserRepository userRepo, ChatroomRepository chatroomRepo) {
         this.server = server;
         this.connection = connection;
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
-        this.msgRepo = msgRepo;
     }
 
     @Override

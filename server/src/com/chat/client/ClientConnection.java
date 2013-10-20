@@ -1,13 +1,10 @@
 package com.chat.client;
 
 import com.chat.*;
-import com.chat.impl.InMemoryChatroomRepository;
-import com.chat.impl.InMemoryUserRepository;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * Created with IntelliJ IDEA.

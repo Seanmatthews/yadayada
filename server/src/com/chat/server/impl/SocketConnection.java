@@ -1,4 +1,4 @@
-package com.chat.impl;
+package com.chat.server.impl;
 
 import com.chat.Connection;
 
@@ -21,14 +21,6 @@ public class SocketConnection implements Connection {
         this.socket = socket;
         this.din = new DataInputStream(socket.getInputStream());
         this.dout = new DataOutputStream(socket.getOutputStream());
-    }
-
-    public DataOutputStream getOutputStream() {
-        return dout;
-    }
-
-    public DataInputStream getInputStream() {
-        return din;
     }
 
     @Override
@@ -110,5 +102,4 @@ public class SocketConnection implements Connection {
     public String toString() {
         return socket.toString();
     }
-
 }

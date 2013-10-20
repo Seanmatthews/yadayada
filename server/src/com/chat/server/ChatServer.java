@@ -1,4 +1,8 @@
-package com.chat;
+package com.chat.server;
+
+import com.chat.Chatroom;
+import com.chat.Connection;
+import com.chat.User;
 
 /**
  * Created with IntelliJ IDEA.

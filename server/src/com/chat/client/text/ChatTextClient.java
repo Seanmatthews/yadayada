@@ -4,8 +4,8 @@ import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientListener;
 import com.chat.client.ClientConnection;
-import com.chat.impl.InMemoryChatroomRepository;
-import com.chat.impl.InMemoryUserRepository;
+import com.chat.server.impl.InMemoryChatroomRepository;
+import com.chat.server.impl.InMemoryUserRepository;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
  * Time: 8:50 AM
  * To change this template use File | Settings | File Templates.
  */
-public class CommandLineChatClient implements ChatClient {
+public class ChatTextClient implements ChatClient {
     private final Socket socket;
     private final ClientConnection connection;
     private final DataOutputStream dout;
@@ -29,7 +29,7 @@ public class CommandLineChatClient implements ChatClient {
     private Chatroom subscribedChatroom;
     private User user;
 
-    public CommandLineChatClient(String host, int port, String user, String password) throws IOException, InterruptedException {
+    public ChatTextClient(String host, int port, String user, String password) throws IOException, InterruptedException {
         socket = new Socket(host, port);
 
         System.out.println("Connected to " + socket);
@@ -45,7 +45,7 @@ public class CommandLineChatClient implements ChatClient {
         connection.searchChatrooms();
 
         ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(new CommandLineInput(this, chatroomRepo, userRepo));
+        pool.submit(new ChatTextInput(this));
         pool.submit(new ChatClientListener(this, din, chatroomRepo, userRepo));
     }
 
@@ -85,6 +85,6 @@ public class CommandLineChatClient implements ChatClient {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int port = Integer.parseInt(args[1]);
-        new CommandLineChatClient(args[0], port, args[2], args[3]);
+        new ChatTextClient(args[0], port, args[2], args[3]);
     }
 }
