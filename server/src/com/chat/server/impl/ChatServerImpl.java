@@ -38,8 +38,14 @@ public class ChatServerImpl implements ChatServer {
 
         User user = connectionUserMap.remove(connection);
 
-        if (user != null)
+        if (user != null) {
+            Iterator<Chatroom> chatrooms = user.getChatrooms();
+            while(chatrooms.hasNext()) {
+                leaveChatroom(connection, user, chatrooms.next());
+            }
+
             userConnectionMap.remove(user);
+        }
 
         connection.close();
     }
@@ -80,10 +86,10 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void registerUser(ChatClientSender senderConnection, String login, String password) {
+    public void registerUser(ChatClientSender senderConnection, String login, String password, String handle) {
         System.out.println("Registering user " + login);
 
-        User user = userRepo.registerUser(login, password);
+        User user = userRepo.registerUser(login, password, handle);
 
         try {
             if (user == null) {
@@ -92,6 +98,19 @@ public class ChatServerImpl implements ChatServer {
             else {
                 senderConnection.sendRegisterAccept(user);
             }
+        } catch (IOException e) {
+            removeConnection(senderConnection);
+        }
+    }
+
+    @Override
+    public void quickRegisterUser(ChatClientSender senderConnection, String handle) {
+        System.out.println("Quick registering user " + handle);
+
+        User user = userRepo.quickRegisterUser(handle);
+
+        try {
+            senderConnection.sendRegisterAccept(user);
         } catch (IOException e) {
             removeConnection(senderConnection);
         }
@@ -160,6 +179,7 @@ public class ChatServerImpl implements ChatServer {
 
         // Now add our user
         chatroom.addUser(sender);
+        sender.addToChatroom(chatroom);
 
         try {
             // Give me confirmation that I've joined the chat
@@ -201,5 +221,6 @@ public class ChatServerImpl implements ChatServer {
 
         // Now remove our user
         chatroom.removeUser(sender);
+        sender.removeFromChatroom(chatroom);
     }
 }

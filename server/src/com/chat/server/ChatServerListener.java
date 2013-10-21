@@ -66,10 +66,16 @@ public class ChatServerListener implements Runnable {
                         break;
 
                     case REGISTER:
-                        System.out.println("about to register...");
                         String regLogin = connection.readString();
                         String regPassword = connection.readString();
-                        server.registerUser(sender, regLogin, regPassword);
+                        String handle = connection.readString();
+                        server.registerUser(sender, regLogin, regPassword, handle);
+                        System.out.println("registered a fuckin user");
+                        break;
+
+                    case QUICK_REGISTER:
+                        String qrHandle = connection.readString();
+                        server.quickRegisterUser(sender, qrHandle);
                         System.out.println("registered a fuckin user");
                         break;
 

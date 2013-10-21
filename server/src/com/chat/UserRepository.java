@@ -8,7 +8,8 @@ package com.chat;
  * To change this template use File | Settings | File Templates.
  */
 public interface UserRepository {
-    User registerUser(String login, String password);
+    User registerUser(String login, String password, String handle);
+    User quickRegisterUser(String handle);
     User login(String login, String password);
     User get(long id);
     void addUser(User user);

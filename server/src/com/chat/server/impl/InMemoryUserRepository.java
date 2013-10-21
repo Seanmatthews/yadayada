@@ -3,7 +3,6 @@ package com.chat.server.impl;
 import com.chat.User;
 import com.chat.UserRepository;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,16 +19,25 @@ public class InMemoryUserRepository implements UserRepository {
     private final Map<String, User> loginToUserMap = new ConcurrentHashMap<>();
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
 
-    public User registerUser(String login, String password) {
+    public User registerUser(String login, String password, String handle) {
         User user = loginToUserMap.get(login);
 
         // already registered
         if (user != null)
             return null;
 
-        user = new User(nextUserId++, login, password, login);
+        user = new User(nextUserId++, login, password, handle);
 
         loginToUserMap.put(user.getLogin(), user);
+        idToUserMap.put(user.getId(), user);
+
+        return user;
+    }
+
+    @Override
+    public User quickRegisterUser(String handle) {
+        User user = new User(nextUserId++, "<QUICK>", "<QUICK>", handle);
+
         idToUserMap.put(user.getId(), user);
 
         return user;

@@ -13,7 +13,8 @@ import com.chat.User;
 public interface ChatServer {
     void removeConnection(ChatClientSender sender);
 
-    void registerUser(ChatClientSender sender, String login, String password);
+    void registerUser(ChatClientSender sender, String login, String password, String handle);
+    void quickRegisterUser(ChatClientSender sender, String qrHandle);
     void login(ChatClientSender sender, String login, String password);
 
     void createChatroom(ChatClientSender sender, User user, String name);
