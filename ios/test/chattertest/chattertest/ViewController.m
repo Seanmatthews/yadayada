@@ -126,18 +126,20 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     switch (msgType) {
         case REGISTER_ACCEPT:
             userId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            NSLog(@"REGISTER_ACCEPT [%lli]",userId);
             break;
             
         case REGISTER_REJECT:
             // we should get a 2 byte length for each string field received
             strLen = ntohs(*(short*)(buffer+idx));
             idx += 2;
-            // TODO: Is this char conversion OK?
             error = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            NSLog(@"REGISTER_REJECT [%@]",error);
             break;
             
         case LOGIN_ACCEPT:
             loginUserId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            NSLog(@"LOGIN_ACCEPT [%lli]",loginUserId);
             break;
             
         case LOGIN_REJECT:
@@ -146,7 +148,9 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             idx += 2;
             // TODO: Is this char conversion OK?
             error = [NSString stringWithUTF8String:(char*)(buffer+idx)];
+            NSLog(@"LOGIN_REJECT [%@]",error);
             break;
+            
         case MESSAGE:
             msgId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             idx += 8;
@@ -160,9 +164,8 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             idx += strLen;
             strLen = ntohs(*(short*)(buffer+idx));
             idx += 2;
-            username = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
-            
-            NSLog(@"%@: %@",username,message);
+            message = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            NSLog(@"MESSAGE [%lli, %lli, %lli, %@, %@]",msgId,loginUserId,chatId,username,message);
             break;
             
         case CHATROOM:
@@ -183,6 +186,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             longitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             idx += 8;
             radius = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            NSLog(@"CHATROOM [%lli, %lli, %@, %@, %lli, %lli, %lli]", chatId,chatOwnerId,chatName,chatOwnerHandle,latitude,longitude,radius);
             break;
             
         case JOIN_CHATROOM_FAILURE:
@@ -195,6 +199,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
             idx += 2;
             error = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            NSLog(@"JOIN_CHATROOM_FAILURE [%lli, %@, %@]",chatId,chatName,error);
             break;
             
         case JOINED_CHATROOM:
@@ -205,6 +210,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
             idx += 2;
             handle = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            NSLog(@"JOINED_CHATROOM [%lli, %lli, %@]",chatId,loginUserId,handle);
             break;
             
         case LEFT_CHATROOM:
@@ -212,6 +218,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             idx += 8;
             loginUserId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             idx += 8;
+            NSLog(@"LEFT_CHATROOM [%lli, %lli]",chatId,loginUserId);
             break;
             
         default:
