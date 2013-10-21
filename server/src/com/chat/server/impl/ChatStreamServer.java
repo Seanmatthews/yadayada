@@ -2,7 +2,6 @@ package com.chat.server.impl;
 
 import com.chat.*;
 import com.chat.server.ChatServer;
-import com.chat.server.ChatServerCoordinator;
 import com.chat.server.ChatServerListener;
 
 import java.io.IOException;
@@ -26,12 +25,9 @@ public class ChatStreamServer {
 
     private final ChatServer server;
 
-    public ChatStreamServer(int port,
-                            UserRepository userRepo,
-                            ChatroomRepository chatroomRepo,
-                            MessageRepository messageRepo) throws IOException {
+    public ChatStreamServer(int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
         // not really an Impl - what's that pattern?
-        this.server = new ChatServerCoordinator(userRepo, chatroomRepo, messageRepo);
+        this.server = new ChatServerImpl(userRepo, chatroomRepo, messageRepo);
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
 
