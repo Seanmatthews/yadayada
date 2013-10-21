@@ -86,10 +86,10 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void registerUser(ChatClientSender senderConnection, String login, String password) {
+    public void registerUser(ChatClientSender senderConnection, String login, String password, String handle) {
         System.out.println("Registering user " + login);
 
-        User user = userRepo.registerUser(login, password);
+        User user = userRepo.registerUser(login, password, handle);
 
         try {
             if (user == null) {
@@ -98,6 +98,19 @@ public class ChatServerImpl implements ChatServer {
             else {
                 senderConnection.sendRegisterAccept(user);
             }
+        } catch (IOException e) {
+            removeConnection(senderConnection);
+        }
+    }
+
+    @Override
+    public void quickRegisterUser(ChatClientSender senderConnection, String handle) {
+        System.out.println("Quick registering user " + handle);
+
+        User user = userRepo.quickRegisterUser(handle);
+
+        try {
+            senderConnection.sendRegisterAccept(user);
         } catch (IOException e) {
             removeConnection(senderConnection);
         }

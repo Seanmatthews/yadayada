@@ -71,6 +71,7 @@ public class ClientMessageSender {
         connection.writeByte(MessageTypes.REGISTER.getValue());
         connection.writeString(user);
         connection.writeString(password);
+        connection.writeString(user);
 
         connection.readShort(); // size
         MessageTypes msgType = MessageTypes.lookup(connection.readByte());

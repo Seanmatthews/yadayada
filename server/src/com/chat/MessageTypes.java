@@ -14,6 +14,7 @@ public enum MessageTypes {
     REGISTER((byte)1),
     REGISTER_ACCEPT((byte)2),
     REGISTER_REJECT((byte)3),
+    QUICK_REGISTER((byte)4),
 
     LOGIN((byte)11),
     LOGIN_ACCEPT((byte)12),

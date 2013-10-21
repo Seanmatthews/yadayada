@@ -19,7 +19,7 @@ public class Main {
         int port = Integer.parseInt(args[0]);
 
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
-        User admin = userRepo.registerUser("admin", "admin");
+        User admin = userRepo.registerUser("admin", "admin", "admin");
 
         InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         chatroomRepo.createChatroom(admin, "Global");
