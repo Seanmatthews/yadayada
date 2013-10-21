@@ -1,7 +1,6 @@
 package com.chat.server;
 
 import com.chat.Chatroom;
-import com.chat.Connection;
 import com.chat.User;
 
 /**
@@ -12,15 +11,15 @@ import com.chat.User;
  * To change this template use File | Settings | File Templates.
  */
 public interface ChatServer {
-    void removeConnection(Connection socket);
+    void removeConnection(ChatClientSender sender);
 
-    void registerUser(Connection socket, String login, String password);
-    void login(Connection socket, String login, String password);
+    void registerUser(ChatClientSender sender, String login, String password);
+    void login(ChatClientSender sender, String login, String password);
 
-    void createChatroom(Connection socket, User user, String name);
-    void newMessage(Connection connection, User sender, Chatroom chatroom, String message);
+    void createChatroom(ChatClientSender sender, User user, String name);
+    void newMessage(ChatClientSender sender, User senderUser, Chatroom chatroom, String message);
 
-    void searchChatrooms(Connection socket);
-    void joinChatroom(Connection socket, User user, Chatroom chatroom);
-    void leaveChatroom(Connection socket, User user, Chatroom chatroom);
+    void searchChatrooms(ChatClientSender sender);
+    void joinChatroom(ChatClientSender sender, User user, Chatroom chatroom);
+    void leaveChatroom(ChatClientSender sender, User user, Chatroom chatroom);
 }
