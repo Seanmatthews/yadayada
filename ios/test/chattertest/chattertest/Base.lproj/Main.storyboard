@@ -87,6 +87,9 @@
                                 <state key="normal" title="SearchChatrooms">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="searchChatsButtonPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="wBQ-p2-093"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tEv-N5-ZP3">
                                 <rect key="frame" x="20" y="258" width="85" height="30"/>
@@ -94,6 +97,9 @@
                                 <state key="normal" title="Join Chat">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="joinChatButtonPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="g2L-xU-pte"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Chat ID" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="h5A-KM-jGf">
                                 <rect key="frame" x="220" y="259" width="80" height="30"/>
@@ -107,6 +113,9 @@
                                 <state key="normal" title="Create Chatroom">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="createChatButtonPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="r7r-Fw-TFD"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="juu-Fz-FL4">
                                 <rect key="frame" x="22" y="324" width="192" height="30"/>
@@ -126,12 +135,18 @@
                                 <state key="normal" title="Leave Chat">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="leaveChatButtonPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Nwb-xs-WD9"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="xkh-Ax-2bQ"/>
                     <connections>
+                        <outlet property="chatIdTextField" destination="h5A-KM-jGf" id="owB-Pj-8i3"/>
+                        <outlet property="chatNameTextField" destination="juu-Fz-FL4" id="9Sc-zU-l8v"/>
+                        <outlet property="chatRadiusTextField" destination="tjf-Yf-Jo9" id="ve2-3a-oTg"/>
                         <outlet property="loginPassTextField" destination="ERO-pD-arz" id="XHU-KS-XBh"/>
                         <outlet property="loginUserTextField" destination="tSN-0g-u5Q" id="hAg-Ea-sM6"/>
                         <outlet property="msgTextField" destination="Wb5-7n-cDp" id="ew7-5K-6Vb"/>

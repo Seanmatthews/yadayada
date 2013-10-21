@@ -17,15 +17,31 @@
     long long userId;
     long long currentChatroomId;
     long long currentLat, currentLong;
+    NSString* userHandle;
 }
 
 - (void)initConnection;
 - (void)parseMessage:(uint8_t*)buffer;
 - (void)writeString:(NSString*)string;
+- (void)sendMessage:(NSString*)message toChat:(long long)chatId;
+- (void)loginWithUsername:(NSString*)user password:(NSString*)pass;
+- (void)registerUsername:(NSString*)user password:(NSString*)pass handle:(NSString*)hand;
+- (void)registerHandle:(NSString*)hand;
+- (void)leaveChatroomWithId:(long long)chatId;
+- (void)joinChatroomWithId:(long long)chatId;
+- (void)searchChatrooms;
+- (void)createChatroomWithName:(NSString*)name radius:(long long)chatRadius;
+
+
 
 - (IBAction)registerButtonPressed:(id)sender;
 - (IBAction)loginButtonPressed:(id)sender;
 - (IBAction)sendMessageButtonPressed:(id)sender;
+- (IBAction)joinChatButtonPressed:(id)sender;
+- (IBAction)leaveChatButtonPressed:(id)sender;
+- (IBAction)createChatButtonPressed:(id)sender;
+- (IBAction)searchChatsButtonPressed:(id)sender;
+
 
 @property (nonatomic, retain) IBOutlet UITextField* registerUserTextField;
 @property (nonatomic, retain) IBOutlet UITextField* registerPassTextField;
@@ -33,5 +49,8 @@
 @property (nonatomic, retain) IBOutlet UITextField* loginUserTextField;
 @property (nonatomic, retain) IBOutlet UITextField* loginPassTextField;
 @property (nonatomic, retain) IBOutlet UITextField* msgTextField;
+@property (nonatomic, retain) IBOutlet UITextField* chatIdTextField;
+@property (nonatomic, retain) IBOutlet UITextField* chatNameTextField;
+@property (nonatomic, retain) IBOutlet UITextField* chatRadiusTextField;
 
 @end

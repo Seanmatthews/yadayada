@@ -24,6 +24,9 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 @synthesize registerPassTextField;
 @synthesize registerHandTextField;
 @synthesize msgTextField;
+@synthesize chatIdTextField;
+@synthesize chatNameTextField;
+@synthesize chatRadiusTextField;
 
 - (void)viewDidLoad
 {
@@ -228,6 +231,8 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     //NSLog(@"%i, %i, %lli",msglen,msgType,userId);
 }
 
+#pragma mark - UI element actions
+
 - (IBAction)registerButtonPressed:(id)sender
 {
     NSString* user = registerUserTextField.text;
@@ -286,14 +291,32 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 - (IBAction)sendMessageButtonPressed:(id)sender
 {
     NSString* text = msgTextField.text;
-    NSLog(@"%@",text);
-    
     
 }
 
-- (IBAction)createChatroomButtonPressed:(id)sender
+- (IBAction)joinChatButtonPressed:(id)sender
 {
+    long long chatId = [chatIdTextField.text longLongValue];
+    [self joinChatroomWithId:chatId];
     
+}
+
+- (IBAction)leaveChatButtonPressed:(id)sender
+{
+    long long chatId = [chatIdTextField.text longLongValue];
+    [self leaveChatroomWithId:chatId];
+}
+
+- (IBAction)createChatButtonPressed:(id)sender
+{
+    long long radius = [chatRadiusTextField.text longLongValue];
+    NSString* name = chatNameTextField.text;
+    [self createChatroomWithName:name radius:radius];
+}
+
+- (IBAction)searchChatsButtonPressed:(id)sender
+{
+    [self searchChatrooms];
 }
 
 
@@ -361,6 +384,16 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     [self writeMessageHeaderWithSize:msgLen ofType:LOGIN];
     [self writeString:user];
     [self writeString:pass];
+}
+
+- (void)sendMessage:(NSString*)message toChat:(long long)chatId
+{
+    int msgLen = [message lengthOfBytesUsingEncoding:STRENC] +
+                 [userHandle lengthOfBytesUsingEncoding:STRENC] + 33;
+    [self writeMessageHeaderWithSize:msgLen ofType:SUBMIT_MESSAGE];
+    [self writeLong:userId];
+    [self writeLong:chatId];
+    [self writeString:message];
 }
 
 
