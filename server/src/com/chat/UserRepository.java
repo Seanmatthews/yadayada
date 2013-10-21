@@ -1,5 +1,7 @@
 package com.chat;
 
+import java.util.concurrent.Future;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -8,9 +10,11 @@ package com.chat;
  * To change this template use File | Settings | File Templates.
  */
 public interface UserRepository {
-    User registerUser(String login, String password, String handle);
-    User quickRegisterUser(String handle);
-    User login(String login, String password);
-    User get(long id);
+    Future<User> registerUser(String login, String password, String handle, UserCompletionHandler completionHandler);
+    Future<User> quickRegisterUser(String handle, UserCompletionHandler completionHandler);
+    Future<User> login(String login, String password, UserCompletionHandler completionHandler);
+    Future<User> get(long id, UserCompletionHandler completionHandler);
+
+    // Todo: Testing only...remove
     void addUser(User user);
 }

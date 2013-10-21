@@ -4,6 +4,7 @@ import com.chat.*;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,8 +28,8 @@ public class ChatClientListener implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            try {
+        try {
+            while (true) {
                 short size = din.readShort();
 
                 if (size <= 0) {
@@ -40,10 +41,7 @@ public class ChatClientListener implements Runnable {
                 MessageTypes types = MessageTypes.lookup(messageType);
                 if (types == null) {
                     System.err.println("Unknown message type " + (int) messageType);
-
-                    // get rid of remaining
-                    din.read(size - 1);
-                    continue;
+                    System.exit(0);
                 }
 
                 switch(types) {
@@ -61,7 +59,7 @@ public class ChatClientListener implements Runnable {
                         long lcChatroomId = din.readLong();
                         long lcUserId = din.readLong();
 
-                        User lcUser = userRepo.get(lcUserId);
+                        User lcUser = userRepo.get(lcUserId, null).get();
                         Chatroom lcChatroom = chatroomRepo.get(lcChatroomId);
                         client.onLeftChatroom(lcChatroom, lcUser);
                         break;
@@ -93,10 +91,15 @@ public class ChatClientListener implements Runnable {
                         client.onMessage(msg);
                         break;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.exit(0);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ExecutionException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } finally {
+            System.exit(0);
         }
     }
 
@@ -112,10 +115,10 @@ public class ChatClientListener implements Runnable {
         return chatroom;
     }
 
-    private User getOrCreateUser(long userId, String userName) {
+    private User getOrCreateUser(long userId, String userName) throws ExecutionException, InterruptedException {
         User owner;
         synchronized (userRepo) {
-            owner = userRepo.get(userId);
+            owner = userRepo.get(userId, null).get();
             if (owner == null) {
                 owner = new User(userId, userName, "", userName);
                 userRepo.addUser(owner);

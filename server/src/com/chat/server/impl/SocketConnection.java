@@ -69,7 +69,7 @@ public class SocketConnection implements Connection {
     @Override
     public byte[] read(int length) throws IOException {
         byte[] bytes = new byte[length];
-        din.read(bytes);
+        int ignored = din.read(bytes);
         return bytes;
     }
 

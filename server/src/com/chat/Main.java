@@ -6,6 +6,7 @@ import com.chat.server.impl.InMemoryMessageRepository;
 import com.chat.server.impl.InMemoryUserRepository;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,11 +16,11 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
         int port = Integer.parseInt(args[0]);
 
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
-        User admin = userRepo.registerUser("admin", "admin", "admin");
+        User admin = userRepo.registerUser("admin", "admin", "admin", null).get();
 
         InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         chatroomRepo.createChatroom(admin, "Global");

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 /**
  * Created with IntelliJ IDEA.
@@ -86,55 +87,64 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void registerUser(ChatClientSender senderConnection, String login, String password, String handle) {
+    public void registerUser(final ChatClientSender senderConnection, final String login, String password, String handle) {
         System.out.println("Registering user " + login);
 
-        User user = userRepo.registerUser(login, password, handle);
-
-        try {
-            if (user == null) {
-                senderConnection.sendRegisterReject(user, "Registration failure. " + login + " already exists");
+        userRepo.registerUser(login, password, handle, new UserCompletionHandler() {
+            @Override
+            public void onCompletion(User user) {
+                try {
+                    if (user == null) {
+                        senderConnection.sendRegisterReject(user, "Registration failure. " + login + " already exists");
+                    }
+                    else {
+                        senderConnection.sendRegisterAccept(user);
+                    }
+                } catch (IOException e) {
+                    removeConnection(senderConnection);
+                }
             }
-            else {
-                senderConnection.sendRegisterAccept(user);
-            }
-        } catch (IOException e) {
-            removeConnection(senderConnection);
-        }
+        });
     }
 
     @Override
-    public void quickRegisterUser(ChatClientSender senderConnection, String handle) {
+    public void quickRegisterUser(final ChatClientSender senderConnection, String handle) {
         System.out.println("Quick registering user " + handle);
 
-        User user = userRepo.quickRegisterUser(handle);
-
-        try {
-            senderConnection.sendRegisterAccept(user);
-        } catch (IOException e) {
-            removeConnection(senderConnection);
-        }
+        userRepo.quickRegisterUser(handle, new UserCompletionHandler() {
+            @Override
+            public void onCompletion(User user) {
+                try {
+                    senderConnection.sendRegisterAccept(user);
+                } catch (IOException e) {
+                    removeConnection(senderConnection);
+                }
+            }
+        });
     }
 
     @Override
-    public void login(ChatClientSender senderConnection, String login, String password) {
+    public void login(final ChatClientSender senderConnection, final String login, String password) {
         System.out.println("Logging in user " + login);
 
-        User user = userRepo.login(login, password);
+        userRepo.login(login, password, new UserCompletionHandler() {
+            @Override
+            public void onCompletion(User user) {
+                try {
+                    if (user == null) {
+                        senderConnection.sendLoginReject("Invalid user or password: " + login);
+                        return;
+                    }
 
-        try {
-            if (user == null) {
-                senderConnection.sendLoginReject("Invalid user or password: " + login);
-                return;
+                    senderConnection.sendLoginAccept(user);
+
+                    userConnectionMap.put(user, senderConnection);
+                    connectionUserMap.put(senderConnection, user);
+                } catch (IOException e) {
+                    removeConnection(senderConnection);
+                }
             }
-
-            senderConnection.sendLoginAccept(user);
-
-            userConnectionMap.put(user, senderConnection);
-            connectionUserMap.put(senderConnection, user);
-        } catch (IOException e) {
-            removeConnection(senderConnection);
-        }
+        });
     }
 
     @Override

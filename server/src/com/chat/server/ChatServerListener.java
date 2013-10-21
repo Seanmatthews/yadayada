@@ -5,6 +5,7 @@ import com.chat.server.impl.ChatServerSenderImpl;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -102,13 +103,18 @@ public class ChatServerListener implements Runnable {
         } catch (ValidationError e) {
             System.err.println("Validation error " + e.getMessage());
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         } finally {
             server.removeConnection(sender);
         }
     }
 
-    private User getAndValidateUser(long userId) throws ValidationError {
-        User user = userRepo.get(userId);
+    private User getAndValidateUser(long userId) throws ValidationError, ExecutionException, InterruptedException {
+        // TODO: Gotta fix this one
+        User user = userRepo.get(userId, null).get();
 
         if (user == null) {
             throw new ValidationError("Unknown user: " + userId);

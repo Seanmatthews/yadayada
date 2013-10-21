@@ -7,6 +7,19 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../apis/aws/aws-java-sdk-1.6.2/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../apis/aws/aws-java-sdk-1.6.2/lib" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/../apis/aws/aws-java-sdk-1.6.2/lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/../apis/aws/aws-java-sdk-1.6.2/lib" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
