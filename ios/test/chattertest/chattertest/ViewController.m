@@ -63,12 +63,6 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
     NSLog(@"stream event %i",eventCode);
-    if ([is hasBytesAvailable]) {
-        NSLog(@"BYTESSSSSS");
-    }
-    else {
-        NSLog(@"no bytes");
-    }
     
     switch (eventCode) {
         case NSStreamEventOpenCompleted:
@@ -241,51 +235,14 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     NSLog(@"%@ : %@",user,pass);
     
     [self registerUsername:user password:pass handle:hand];
-    
-//    short userLenBytes = [textUsername lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-//    short passLenBytes = [textPassword lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-//    short msgLengthBytes = userLenBytes+passLenBytes;
-//    unsigned char msgType = 1;
-//
-//    short msgLen = htons(msgLengthBytes);
-//    short userLen = htons(userLenBytes);
-//    short passLen = htons(passLenBytes);
-//    unsigned char* user = (unsigned char*)[textUsername UTF8String];
-//    unsigned char* pass = (unsigned char*)[textPassword UTF8String];
-//    
-//    [os write:(BUFTYPE)&msgLen maxLength:sizeof(short)];
-//    [os write:&msgType maxLength:sizeof(unsigned char)];
-//    [os write:(BUFTYPE)&userLen maxLength:sizeof(short)];
-//    [os write:user maxLength:userLenBytes];
-//    [os write:(BUFTYPE)&passLen maxLength:sizeof(short)];
-//    [os write:pass maxLength:passLenBytes];
 }
 
 - (IBAction)loginButtonPressed:(id)sender
 {
     NSString* user = loginUserTextField.text;
     NSString* pass = loginPassTextField.text;
-    NSLog(@"%@ : %@",user,pass);
     
     [self loginWithUsername:user password:pass];
-    
-    //short userLenBytes = [textUsername lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-    //short passLenBytes = [textPassword lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-    //short msgLengthBytes = userLenBytes+passLenBytes;
-    //unsigned char msgType = 11;
-    
-    //short msgLen = htons(msgLengthBytes);
-    //short userLen = htons(userLenBytes);
-    //short passLen = htons(passLenBytes);
-    //unsigned char* user = (unsigned char*)[textUsername UTF8String];
-    //unsigned char* pass = (unsigned char*)[textPassword UTF8String];
-    
-    //[os write:(BUFTYPE)&msgLen maxLength:sizeof(short)];
-    //[os write:&msgType maxLength:sizeof(unsigned char)];
-    //[os write:(BUFTYPE)&userLen maxLength:sizeof(short)];
-    //[os write:user maxLength:userLenBytes];
-    //[os write:(BUFTYPE)&passLen maxLength:sizeof(short)];
-    //[os write:pass maxLength:passLenBytes];
 }
 
 - (IBAction)sendMessageButtonPressed:(id)sender
@@ -325,7 +282,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 - (void)createChatroomWithName:(NSString*)name radius:(long long)chatRadius
 {
     if (currentChatroomId < 0) {
-        short msgLen = [name lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 33;
+        short msgLen = [name lengthOfBytesUsingEncoding:STRENC] + 33;
         [self writeShort:msgLen];
         [self writeByte:CREATE_CHATROOM];
         [self writeLong:userId];
@@ -361,16 +318,16 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)registerHandle:(NSString*)hand
 {
-    int msgLen = [hand lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    int msgLen = [hand lengthOfBytesUsingEncoding:STRENC];
     [self writeMessageHeaderWithSize:msgLen ofType:QUICK_REGISTER];
     [self writeString:hand];
 }
 
 - (void)registerUsername:(NSString*)user password:(NSString*)pass handle:(NSString*)hand
 {
-    int msgLen = [user lengthOfBytesUsingEncoding:NSUTF8StringEncoding] +
-                 [pass lengthOfBytesUsingEncoding:NSUTF8StringEncoding] +
-                 [hand lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1;
+    int msgLen = [user lengthOfBytesUsingEncoding:STRENC] +
+                 [pass lengthOfBytesUsingEncoding:STRENC] +
+                 [hand lengthOfBytesUsingEncoding:STRENC] + 7;
     [self writeMessageHeaderWithSize:msgLen ofType:REGISTER];
     [self writeString:user];
     [self writeString:pass];
@@ -379,8 +336,8 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)loginWithUsername:(NSString*)user password:(NSString*)pass
 {
-    int msgLen = [user lengthOfBytesUsingEncoding:NSUTF8StringEncoding] +
-                 [pass lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1;
+    int msgLen = [user lengthOfBytesUsingEncoding:STRENC] +
+                 [pass lengthOfBytesUsingEncoding:STRENC] + 1;
     [self writeMessageHeaderWithSize:msgLen ofType:LOGIN];
     [self writeString:user];
     [self writeString:pass];
@@ -401,19 +358,17 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)writeString:(NSString*)string
 {
-    short len = CFSwapInt16HostToBig([string lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
-    unsigned char* cString = (unsigned char*)[string UTF8String];
-    [os write:(BUFTYPE)&len maxLength:sizeof(short)];
-    [os write:cString maxLength:len];
+    short len = CFSwapInt16HostToBig([string lengthOfBytesUsingEncoding:STRENC]);
+    //NSLog(@"writeString len: %d",[string lengthOfBytesUsingEncoding:STRENC]);
+    //NSLog(@"%s",(const uint8_t*)[string UTF8String]);
+    [self writeShort:len];
+    [os write:(BUFTYPE)[string cStringUsingEncoding:STRENC] maxLength:len];
 }
 
 - (void)writeMessageHeaderWithSize:(short)size ofType:(MessageTypes)type
 {
     [self writeShort:size];
     [self writeByte:type];
-    //short s = CFSwapInt16HostToBig(size);
-    //[os write:(BUFTYPE)&s maxLength:sizeof(short)];
-    //[os write:(BUFTYPE)type maxLength:1];
 }
                
 - (void)writeByte:(unsigned char)aByte

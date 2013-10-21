@@ -31,8 +31,8 @@
                                     <action selector="registerButtonPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Qoo-ND-RRx"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="new username" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iDU-Xs-aaD">
-                                <rect key="frame" x="20" y="50" width="137" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="username" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iDU-Xs-aaD">
+                                <rect key="frame" x="20" y="50" width="85" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -75,8 +75,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="new password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="q21-As-U90">
-                                <rect key="frame" x="165" y="50" width="135" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="q21-As-U90">
+                                <rect key="frame" x="113" y="51" width="92" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -139,6 +139,12 @@
                                     <action selector="leaveChatButtonPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Nwb-xs-WD9"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="handle" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tcJ-Pg-gzY">
+                                <rect key="frame" x="213" y="51" width="89" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -150,6 +156,7 @@
                         <outlet property="loginPassTextField" destination="ERO-pD-arz" id="XHU-KS-XBh"/>
                         <outlet property="loginUserTextField" destination="tSN-0g-u5Q" id="hAg-Ea-sM6"/>
                         <outlet property="msgTextField" destination="Wb5-7n-cDp" id="ew7-5K-6Vb"/>
+                        <outlet property="registerHandTextField" destination="tcJ-Pg-gzY" id="y2A-1X-c1N"/>
                         <outlet property="registerPassTextField" destination="q21-As-U90" id="1mH-2r-aPi"/>
                         <outlet property="registerUserTextField" destination="iDU-Xs-aaD" id="Y1w-qX-lXA"/>
                     </connections>
