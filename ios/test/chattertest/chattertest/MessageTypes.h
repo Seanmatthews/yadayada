@@ -13,6 +13,7 @@ typedef enum {
     REGISTER = 1,
     REGISTER_ACCEPT = 2,
     REGISTER_REJECT = 3,
+    QUICK_REGISTER = 4,
     LOGIN = 11,
     LOGIN_ACCEPT = 12,
     LOGIN_REJECT = 13,
@@ -23,7 +24,9 @@ typedef enum {
     JOIN_CHATROOM = 33,
     LEAVE_CHATROOM = 34,
     CREATE_CHATROOM = 35,
-    JOIN_CHATROOM_REJECT = 36
+    JOIN_CHATROOM_FAILURE = 36,
+    JOINED_CHATROOM = 37,
+    LEFT_CHATROOM = 38
 } MessageTypes;
 
 #endif

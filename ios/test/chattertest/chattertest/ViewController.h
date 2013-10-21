@@ -16,6 +16,7 @@
     NSOutputStream *os;
     long long userId;
     long long currentChatroomId;
+    long long currentLat, currentLong;
 }
 
 - (void)initConnection;

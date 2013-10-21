@@ -10,6 +10,7 @@
 #import "MessageTypes.h"
 
 typedef const uint8_t* BUFTYPE;
+const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 @interface ViewController ()
 
@@ -112,15 +113,19 @@ typedef const uint8_t* BUFTYPE;
     NSString *error;
     short strLen = 0;
     int idx = 3;
-    long long loginUserId, msgId, chatId;
+    long long loginUserId, msgId, chatId, chatOwnerId;
+    NSString* chatOwnerHandle;
     NSString* username;
     NSString* message;
+    NSString* chatName;
+    NSString* handle;
+    long long latitude, longitude, radius;
     
     NSLog(@"msg len: %d, msg type: %d",msglen,msgType);
     
     switch (msgType) {
         case REGISTER_ACCEPT:
-            userId = CFSwapInt64(*(long long*)&buffer[idx]);
+            userId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             break;
             
         case REGISTER_REJECT:
@@ -128,11 +133,11 @@ typedef const uint8_t* BUFTYPE;
             strLen = ntohs(*(short*)(buffer+idx));
             idx += 2;
             // TODO: Is this char conversion OK?
-            error = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:NSASCIIStringEncoding];
+            error = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
             break;
             
         case LOGIN_ACCEPT:
-            
+            loginUserId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             break;
             
         case LOGIN_REJECT:
@@ -143,7 +148,7 @@ typedef const uint8_t* BUFTYPE;
             error = [NSString stringWithUTF8String:(char*)(buffer+idx)];
             break;
         case MESSAGE:
-            msgId = CFSwapInt64(*(long long*)&buffer[idx]);
+            msgId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             idx += 8;
             loginUserId = CFSwapInt64(*(long long*)&buffer[idx]);
             idx += 8;
@@ -151,21 +156,64 @@ typedef const uint8_t* BUFTYPE;
             idx += 8;
             strLen = ntohs(*(short*)(buffer+idx));
             idx += 2;
-            username = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:NSASCIIStringEncoding];
+            username = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
             idx += strLen;
             strLen = ntohs(*(short*)(buffer+idx));
             idx += 2;
-            username = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:NSASCIIStringEncoding];
+            username = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
             
             NSLog(@"%@: %@",username,message);
             break;
-        case CHATROOM:
-            break;
-        case JOIN_CHATROOM_REJECT:
             
-            // TODO: Is this char conversion OK?
-            error = [NSString stringWithUTF8String:(char*)buffer];
+        case CHATROOM:
+            chatId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            chatOwnerId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
+            idx += 2;
+            chatName = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            idx += strLen;
+            strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
+            idx += 2;
+            chatOwnerHandle = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            idx += strLen;
+            latitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            longitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            radius = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             break;
+            
+        case JOIN_CHATROOM_FAILURE:
+            chatId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
+            idx += 2;
+            chatName = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            idx += strLen;
+            strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
+            idx += 2;
+            error = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            break;
+            
+        case JOINED_CHATROOM:
+            chatId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            loginUserId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
+            idx += 2;
+            handle = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            break;
+            
+        case LEFT_CHATROOM:
+            chatId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            loginUserId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            break;
+            
         default:
             NSLog(@"Unrecognized message from server");
     }
@@ -244,24 +292,48 @@ typedef const uint8_t* BUFTYPE;
 
 #pragma mark - message to server functions
 
-- (void)createChatroomWithName:(NSString*)name
+- (void)createChatroomWithName:(NSString*)name radius:(long long)chatRadius
 {
     if (currentChatroomId < 0) {
-        short msgLen = [name lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 9;
+        short msgLen = [name lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 33;
         [self writeShort:msgLen];
         [self writeByte:CREATE_CHATROOM];
         [self writeLong:userId];
         [self writeString:name];
+        [self writeLong:currentLat];
+        [self writeLong:currentLong];
+        [self writeLong:chatRadius];
     }
+}
+
+- (void)searchChatrooms
+{
+    [self writeMessageHeaderWithSize:17 ofType:CREATE_CHATROOM];
+    [self writeLong:currentLat];
+    [self writeLong:currentLong];
 }
 
 - (void)joinChatroomWithId:(long long)chatId
 {
-    if (currentChatroomId < 0) {
-        [self writeMessageHeaderWithSize:17 ofType:JOIN_CHATROOM];
-        [self writeLong:userId];
-        [self writeLong:chatId];
-    }
+    [self writeMessageHeaderWithSize:17 ofType:JOIN_CHATROOM];
+    [self writeLong:userId];
+    [self writeLong:chatId];
+    [self writeLong:currentLat];
+    [self writeLong:currentLong];
+}
+
+- (void)leaveChatroomWithId:(long long)chatId
+{
+    [self writeMessageHeaderWithSize:17 ofType:LEAVE_CHATROOM];
+    [self writeLong:userId];
+    [self writeLong:chatId];
+}
+
+- (void)registerHandle:(NSString*)hand
+{
+    int msgLen = [hand lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    [self writeMessageHeaderWithSize:msgLen ofType:QUICK_REGISTER];
+    [self writeString:hand];
 }
 
 - (void)registerUsername:(NSString*)user password:(NSString*)pass handle:(NSString*)hand
