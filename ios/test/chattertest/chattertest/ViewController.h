@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
-@interface ViewController : UIViewController <NSStreamDelegate>
+@interface ViewController : UIViewController <NSStreamDelegate, UITextFieldDelegate>
 {
 
     NSInputStream *is;
@@ -21,7 +21,7 @@
 }
 
 - (void)initConnection;
-- (void)parseMessage:(uint8_t*)buffer;
+- (void)parseMessage:(uint8_t*)buffer withLength:(int)length;
 - (void)writeString:(NSString*)string;
 - (void)sendMessage:(NSString*)message toChat:(long long)chatId;
 - (void)loginWithUsername:(NSString*)user password:(NSString*)pass;
@@ -52,5 +52,6 @@
 @property (nonatomic, retain) IBOutlet UITextField* chatIdTextField;
 @property (nonatomic, retain) IBOutlet UITextField* chatNameTextField;
 @property (nonatomic, retain) IBOutlet UITextField* chatRadiusTextField;
+@property (nonatomic, retain) IBOutlet UITextField* currentChatIdTextField;
 
 @end
