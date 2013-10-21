@@ -43,7 +43,9 @@ public class SocketConnection implements Connection {
 
     @Override
     public String readString() throws IOException {
-        return din.readUTF();
+        byte[] ascii = new byte[din.readShort()];
+        int ignored = din.read(ascii);
+        return new String(ascii);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class SocketConnection implements Connection {
     @Override
     public byte[] read(int length) throws IOException {
         byte[] bytes = new byte[length];
-        din.read(bytes);
+        int ignored = din.read(bytes);
         return bytes;
     }
 
@@ -95,7 +97,8 @@ public class SocketConnection implements Connection {
 
     @Override
     public void writeString(String value) throws IOException {
-        dout.writeUTF(value);
+        dout.writeShort(value.length());
+        dout.write(value.getBytes());
     }
 
     @Override
