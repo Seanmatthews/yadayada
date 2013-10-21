@@ -134,23 +134,35 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void joinChatroom(ChatClientSender connection, User user, Chatroom chatroom) {
+    public void joinChatroom(ChatClientSender senderConnection, User user, Chatroom chatroom) {
         System.out.println("Adding " + user.getLogin() + " to " + chatroom.getName());
-        chatroom.addUser(user);
 
         try {
             Iterator<User> users = chatroom.getUsers();
             while(users.hasNext()) {
+                // notify new entrant of the users in the chat
                 User next = users.next();
-                connection.sendJoinChatroom(chatroom, next);
+                senderConnection.sendJoinChatroom(chatroom, next);
+
+                // notify others that we have joined the chatroom
+                if (!user.equals(next)) {
+                    ChatClientSender chatSender = userConnectionMap.get(next);
+                    if (chatSender != null) {
+                        chatSender.sendJoinChatroom(chatroom, user);
+                    }
+                }
             }
 
+            chatroom.addUser(user);
+            senderConnection.sendJoinChatroom(chatroom, user);
+
+            // send the new entrant the last N messages
             Iterator<Message> recentMessages = chatroom.getRecentMessages();
             while(recentMessages.hasNext()) {
-                connection.sendMessage(recentMessages.next());
+                senderConnection.sendMessage(recentMessages.next());
             }
         } catch (IOException e) {
-            removeConnection(connection);
+            removeConnection(senderConnection);
         }
     }
 
