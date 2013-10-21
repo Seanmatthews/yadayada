@@ -79,6 +79,11 @@ import java.util.concurrent.Executors;
     }
 
     @Override
+    public void onLeftChatroom(Chatroom chatroom, User user) {
+        System.out.println(user + " has left " + chatroom);
+    }
+
+    @Override
     public void onUserLoggedIn(User user) {
         this.user = user;
     }

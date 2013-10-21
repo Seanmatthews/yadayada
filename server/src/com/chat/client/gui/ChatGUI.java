@@ -43,13 +43,14 @@ public class ChatGUI implements ChatClient {
     private final Map<Component, Chatroom> componentChatroomMap = new HashMap<>();
     private final Map<Chatroom, JTextPane> chatroomTextMap = new HashMap<>();
     private final Map<Chatroom, JList<User>> chatroomListMap = new HashMap<>();
+    private final Map<Chatroom, JPanel> chatroomPanelMap = new HashMap<>();
 
     private final ClientMessageSender connection;
 
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
 
-    private User user;
+    private User loggedInUser;
 
     public ChatGUI(String host, int port, String user, String password) throws IOException {
         Socket socket = new Socket(host, port);
@@ -72,6 +73,19 @@ public class ChatGUI implements ChatClient {
     private void setupChatroomList() {
         chatroomList.setModel(chatroomModel);
 
+        leaveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
+                    connection.leaveChatroom(loggedInUser, chatroom);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                    System.exit(0);
+                }
+            }
+        });
+
         searchChatroomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,11 +102,11 @@ public class ChatGUI implements ChatClient {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (user == null)
+                    if (loggedInUser == null)
                         return;
 
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.joinChatroom(user, chatroom);
+                    connection.joinChatroom(loggedInUser, chatroom);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -107,7 +121,7 @@ public class ChatGUI implements ChatClient {
 
                 if (text != null && text.length() > 0) {
                     try {
-                        connection.createChatroom(user, text);
+                        connection.createChatroom(loggedInUser, text);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                         System.exit(0);
@@ -132,7 +146,7 @@ public class ChatGUI implements ChatClient {
                     String textToSend = chatTextField.getText();
 
                     try {
-                        connection.sendMessage(user, chatroom, textToSend);
+                        connection.sendMessage(loggedInUser, chatroom, textToSend);
                         chatTextField.setText("");
                     } catch (IOException e1) {
                         e1.printStackTrace();
@@ -177,7 +191,7 @@ public class ChatGUI implements ChatClient {
 
     @Override
     public void onUserLoggedIn(User user) {
-        this.user = user;
+        this.loggedInUser = user;
     }
 
     @Override
@@ -196,8 +210,6 @@ public class ChatGUI implements ChatClient {
     public void onJoinedChatroom(Chatroom chatroom, User user) {
         System.out.println(user + " has joined " + chatroom);
 
-        //JTextPane text = chatroomComponentMap.get(chatroom);
-
         JList<User> userJList = chatroomListMap.get(chatroom);
 
         if (userJList == null) {
@@ -213,6 +225,7 @@ public class ChatGUI implements ChatClient {
 
             tabbedPane1.addTab(chatroom.getName(), panel);
 
+            chatroomPanelMap.put(chatroom, panel);
             chatroomTextMap.put(chatroom, text);
             chatroomListMap.put(chatroom, userJList);
             componentChatroomMap.put(panel, chatroom);
@@ -220,6 +233,28 @@ public class ChatGUI implements ChatClient {
 
         if (!userJList.getSelectedValuesList().contains(user)) {
             ((DefaultListModel<User>)userJList.getModel()).addElement(user);
+        }
+    }
+
+    @Override
+    public void onLeftChatroom(Chatroom chatroom, User user) {
+        System.out.println(user + " has left " + chatroom);
+
+        JList<User> userJList = chatroomListMap.get(chatroom);
+
+        if (userJList != null) {
+            ((DefaultListModel<User>)userJList.getModel()).removeElement(user);
+        }
+
+        if (user.equals(this.loggedInUser)) {
+            JPanel panel = chatroomPanelMap.get(chatroom);
+            if (panel != null) {
+                tabbedPane1.remove(panel);
+
+                chatroomListMap.remove(chatroom);
+                chatroomPanelMap.remove(chatroom);
+                chatroomTextMap.remove(chatroom);
+            }
         }
     }
 }

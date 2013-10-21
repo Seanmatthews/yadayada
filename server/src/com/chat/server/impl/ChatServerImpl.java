@@ -45,7 +45,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void newMessage(ChatClientSender sendingConnection, User sender, Chatroom chatroom, String message) {
+    public void newMessage(ChatClientSender senderConnection, User sender, Chatroom chatroom, String message) {
         System.out.println("New message from " + sender + " " + message);
 
         Message msg = messageRepo.create(chatroom, sender, message);
@@ -67,99 +67,30 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void createChatroom(ChatClientSender connection, User user, String name) {
-        System.out.println("Creating chatroom " + name + " by " + user);
+    public void createChatroom(ChatClientSender senderConnection, User sender, String name) {
+        System.out.println("Creating chatroom " + name + " by " + sender);
 
-        Chatroom chatroom = chatroomRepo.createChatroom(user, name);
+        Chatroom chatroom = chatroomRepo.createChatroom(sender, name);
 
         try {
-            connection.sendChatroom(chatroom);
+            senderConnection.sendChatroom(chatroom);
         } catch (IOException e) {
-            removeConnection(connection);
+            removeConnection(senderConnection);
         }
     }
 
     @Override
-    public void registerUser(ChatClientSender connection, String login, String password) {
+    public void registerUser(ChatClientSender senderConnection, String login, String password) {
         System.out.println("Registering user " + login);
 
         User user = userRepo.registerUser(login, password);
 
         try {
             if (user == null) {
-                connection.sendRegisterReject(user, "Registration failure. " + login + " already exists");
+                senderConnection.sendRegisterReject(user, "Registration failure. " + login + " already exists");
             }
             else {
-                connection.sendRegisterAccept(user);
-            }
-        } catch (IOException e) {
-            removeConnection(connection);
-        }
-    }
-
-    @Override
-    public void login(ChatClientSender connection, String login, String password) {
-        System.out.println("Logging in user " + login);
-
-        User user = userRepo.login(login, password);
-
-        try {
-            if (user == null) {
-                connection.sendLoginReject("Invalid user or password: " + login);
-                return;
-            }
-
-            connection.sendLoginAccept(user);
-
-            userConnectionMap.put(user, connection);
-            connectionUserMap.put(connection, user);
-        } catch (IOException e) {
-            removeConnection(connection);
-        }
-    }
-
-    @Override
-    public void searchChatrooms(ChatClientSender connection) {
-        System.out.println("Searching chatrooms " + connection);
-
-        Iterator<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria());
-
-        while(chatrooms.hasNext()) {
-            try {
-                connection.sendChatroom(chatrooms.next());
-            } catch (IOException e) {
-                removeConnection(connection);
-            }
-        }
-    }
-
-    @Override
-    public void joinChatroom(ChatClientSender senderConnection, User user, Chatroom chatroom) {
-        System.out.println("Adding " + user.getLogin() + " to " + chatroom.getName());
-
-        try {
-            Iterator<User> users = chatroom.getUsers();
-            while(users.hasNext()) {
-                // notify new entrant of the users in the chat
-                User next = users.next();
-                senderConnection.sendJoinChatroom(chatroom, next);
-
-                // notify others that we have joined the chatroom
-                if (!user.equals(next)) {
-                    ChatClientSender chatSender = userConnectionMap.get(next);
-                    if (chatSender != null) {
-                        chatSender.sendJoinChatroom(chatroom, user);
-                    }
-                }
-            }
-
-            chatroom.addUser(user);
-            senderConnection.sendJoinChatroom(chatroom, user);
-
-            // send the new entrant the last N messages
-            Iterator<Message> recentMessages = chatroom.getRecentMessages();
-            while(recentMessages.hasNext()) {
-                senderConnection.sendMessage(recentMessages.next());
+                senderConnection.sendRegisterAccept(user);
             }
         } catch (IOException e) {
             removeConnection(senderConnection);
@@ -167,10 +98,108 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void leaveChatroom(ChatClientSender connection, User user, Chatroom chatroom) {
-        System.out.println("Removing " + user.getLogin() + " from " + chatroom.getName());
-        chatroom.removeUser(user);
+    public void login(ChatClientSender senderConnection, String login, String password) {
+        System.out.println("Logging in user " + login);
 
-        // TODO: send a response?
+        User user = userRepo.login(login, password);
+
+        try {
+            if (user == null) {
+                senderConnection.sendLoginReject("Invalid user or password: " + login);
+                return;
+            }
+
+            senderConnection.sendLoginAccept(user);
+
+            userConnectionMap.put(user, senderConnection);
+            connectionUserMap.put(senderConnection, user);
+        } catch (IOException e) {
+            removeConnection(senderConnection);
+        }
+    }
+
+    @Override
+    public void searchChatrooms(ChatClientSender senderConnection) {
+        System.out.println("Searching chatrooms " + senderConnection);
+
+        Iterator<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria());
+
+        while(chatrooms.hasNext()) {
+            try {
+                senderConnection.sendChatroom(chatrooms.next());
+            } catch (IOException e) {
+                removeConnection(senderConnection);
+            }
+        }
+    }
+
+    @Override
+    public void joinChatroom(ChatClientSender senderConnection, User sender, Chatroom chatroom) {
+        System.out.println("Adding " + sender.getLogin() + " to " + chatroom.getName());
+
+        Iterator<User> users = chatroom.getUsers();
+        while(users.hasNext()) {
+            // notify me about other user joining chat
+            User chatMember = users.next();
+            try {
+                senderConnection.sendJoinedChatroom(chatroom, chatMember);
+            } catch (IOException e) {
+                removeConnection(senderConnection);
+            }
+
+            // notify other user about me joining chat
+            ChatClientSender chatMemberSender = userConnectionMap.get(chatMember);
+            if (chatMemberSender != null) {
+                try {
+                    chatMemberSender.sendJoinedChatroom(chatroom, sender);
+                } catch (IOException e) {
+                    removeConnection(chatMemberSender);
+                }
+            }
+        }
+
+        // Now add our user
+        chatroom.addUser(sender);
+
+        try {
+            // Give me confirmation that I've joined the chat
+            senderConnection.sendJoinedChatroom(chatroom, sender);
+        } catch (IOException e) {
+            removeConnection(senderConnection);
+        }
+
+        // send the new entrant the last N messages
+        Iterator<Message> recentMessages = chatroom.getRecentMessages();
+        while(recentMessages.hasNext()) {
+            try {
+                senderConnection.sendMessage(recentMessages.next());
+            } catch (IOException e) {
+                removeConnection(senderConnection);
+            }
+        }
+    }
+
+    @Override
+    public void leaveChatroom(ChatClientSender senderConnection, User sender, Chatroom chatroom) {
+        System.out.println("Removing " + sender.getLogin() + " from " + chatroom.getName());
+
+        Iterator<User> users = chatroom.getUsers();
+        while(users.hasNext()) {
+            // notify me about other user joining chat
+            User chatMember = users.next();
+
+            // notify other user about me joining chat
+            ChatClientSender chatMemberSender = userConnectionMap.get(chatMember);
+            if (chatMemberSender != null) {
+                try {
+                    chatMemberSender.sendLeftChatroom(chatroom, sender);
+                } catch (IOException e) {
+                    removeConnection(chatMemberSender);
+                }
+            }
+        }
+
+        // Now remove our user
+        chatroom.removeUser(sender);
     }
 }

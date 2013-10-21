@@ -57,6 +57,15 @@ public class ChatClientListener implements Runnable {
                         client.onJoinedChatroom(jcChatroom, jcUser);
                         break;
 
+                    case LEFT_CHATROOM:
+                        long lcChatroomId = din.readLong();
+                        long lcUserId = din.readLong();
+
+                        User lcUser = userRepo.get(lcUserId);
+                        Chatroom lcChatroom = chatroomRepo.get(lcChatroomId);
+                        client.onLeftChatroom(lcChatroom, lcUser);
+                        break;
+
                     case CHATROOM:
                         long chatroomId = din.readLong();
                         long ownerId = din.readLong();

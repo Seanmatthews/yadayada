@@ -20,6 +20,7 @@ public interface ChatClientSender {
     void sendLoginReject(String reason) throws IOException;
     void sendMessage(Message message) throws IOException;
     void sendChatroom(Chatroom chatroom) throws IOException;
-    void sendJoinChatroom(Chatroom chatroom, User user) throws IOException;
+    void sendJoinedChatroom(Chatroom chatroom, User user) throws IOException;
+    void sendLeftChatroom(Chatroom chatroom, User user) throws IOException;
     void close();
 }

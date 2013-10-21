@@ -110,4 +110,12 @@ public class ClientMessageSender {
         connection.writeLong(user.getId());
         connection.writeString(chatroomName);
     }
+
+    public void leaveChatroom(User user, Chatroom chatroom) throws IOException {
+        System.out.println("Leaving chatroom: " + chatroom);
+        connection.writeShort(17);
+        connection.writeByte(MessageTypes.LEAVE_CHATROOM.getValue());
+        connection.writeLong(user.getId());
+        connection.writeLong(chatroom.getId());
+    }
 }

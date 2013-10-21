@@ -30,6 +30,8 @@ public enum MessageTypes {
     JOINED_CHATROOM((byte)37),
 
     LEAVE_CHATROOM((byte)34),
+    LEFT_CHATROOM((byte)38),
+
     CREATE_CHATROOM((byte)35);
 
     private final byte value;

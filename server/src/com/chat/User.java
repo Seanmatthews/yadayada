@@ -1,5 +1,10 @@
 package com.chat;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -12,6 +17,8 @@ public class User {
     private final String login;
     private final String password;
     private final String handle;
+
+    private final Set<Chatroom> chatrooms = Collections.newSetFromMap(new ConcurrentHashMap<Chatroom, Boolean>());
 
     public User(long id, String login, String password, String handle) {
         this.id = id;
@@ -34,6 +41,18 @@ public class User {
 
     public String getHandle() {
         return handle;
+    }
+
+    public void addToChatroom(Chatroom chatroom) {
+        chatrooms.add(chatroom);
+    }
+
+    public void removeFromChatroom(Chatroom chatroom) {
+        chatrooms.remove(chatroom);
+    }
+
+    public Iterator<Chatroom> getChatrooms() {
+        return chatrooms.iterator();
     }
 
     @Override

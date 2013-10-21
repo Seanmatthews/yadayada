@@ -86,13 +86,23 @@ public class ChatServerSenderImpl implements ChatClientSender {
     }
 
     @Override
-    public void sendJoinChatroom(Chatroom chatroom, User user) throws IOException {
+    public void sendJoinedChatroom(Chatroom chatroom, User user) throws IOException {
         synchronized (connection) {
             connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(user.getHandle()));
             connection.writeByte(MessageTypes.JOINED_CHATROOM.getValue());
             connection.writeLong(chatroom.getId());
             connection.writeLong(user.getId());
             connection.writeString(user.getHandle());
+        }
+    }
+
+    @Override
+    public void sendLeftChatroom(Chatroom chatroom, User user) throws IOException {
+        synchronized (connection) {
+            connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(user.getHandle()));
+            connection.writeByte(MessageTypes.LEFT_CHATROOM.getValue());
+            connection.writeLong(chatroom.getId());
+            connection.writeLong(user.getId());
         }
     }
 
