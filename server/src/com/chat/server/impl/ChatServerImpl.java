@@ -38,8 +38,14 @@ public class ChatServerImpl implements ChatServer {
 
         User user = connectionUserMap.remove(connection);
 
-        if (user != null)
+        if (user != null) {
+            Iterator<Chatroom> chatrooms = user.getChatrooms();
+            while(chatrooms.hasNext()) {
+                leaveChatroom(connection, user, chatrooms.next());
+            }
+
             userConnectionMap.remove(user);
+        }
 
         connection.close();
     }
@@ -160,6 +166,7 @@ public class ChatServerImpl implements ChatServer {
 
         // Now add our user
         chatroom.addUser(sender);
+        sender.addToChatroom(chatroom);
 
         try {
             // Give me confirmation that I've joined the chat
@@ -201,5 +208,6 @@ public class ChatServerImpl implements ChatServer {
 
         // Now remove our user
         chatroom.removeUser(sender);
+        sender.removeFromChatroom(chatroom);
     }
 }
