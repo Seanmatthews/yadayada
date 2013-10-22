@@ -10,7 +10,7 @@
 #import "MessageTypes.h"
 
 typedef const uint8_t* BUFTYPE;
-const NSStringEncoding STRENC = NSASCIIStringEncoding;
+const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 @interface ViewController ()
 
@@ -56,7 +56,39 @@ const NSStringEncoding STRENC = NSASCIIStringEncoding;
     [chatRadiusTextField setDelegate:self];
     [currentChatIdTextField setDelegate:self];
     
+    backgroundQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    timerSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, backgroundQueue);
+    dispatch_source_set_timer(timerSource, dispatch_time(DISPATCH_TIME_NOW, 0), 10.0*NSEC_PER_SEC, 0*NSEC_PER_SEC);
+    dispatch_source_set_event_handler(timerSource, ^{[self updateLocation];});
+    dispatch_resume(timerSource);
+    
+    
+    // Location services
+    locationMeasurements = [[NSMutableArray alloc] init];
+    locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    // This is the most important property to set for the manager.
+    // It ultimately determines how the manager will attempt to
+    // acquire location and thus, the amount of power that
+    // will be consumed.
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;//[[setupInfo objectForKey:kSetupInfoKeyAccuracy] doubleValue];
+    
+    currentLat = currentLong = 0;
+    
     [self initConnection];
+}
+
+- (void)updateLocation
+{
+    NSLog(@"Updating location");
+    [locationManager startUpdatingLocation];
+    sleep(5);
+    [locationManager stopUpdatingLocation];
+    //NSLog(@"location : %f : %f, %f", [bestEffortAtLocation.timestamp timeIntervalSince1970],
+    //      bestEffortAtLocation.coordinate.latitude, bestEffortAtLocation.coordinate.longitude);
+    
+    currentLat = (bestEffortAtLocation.coordinate.latitude + 400) * 1000000;
+    currentLong = (bestEffortAtLocation.coordinate.longitude + 400) * 1000000;
 }
 
 - (void)didReceiveMemoryWarning
@@ -139,7 +171,7 @@ const NSStringEncoding STRENC = NSASCIIStringEncoding;
     NSString *error;
     short strLen = 0;
     int idx = 0;
-    long long loginUserId, msgId, chatId, chatOwnerId;
+    long long loginUserId, msgId, chatId, chatOwnerId, timestamp;
     NSString* chatOwnerHandle;
     NSString* username;
     NSString* message;
@@ -191,15 +223,17 @@ const NSStringEncoding STRENC = NSASCIIStringEncoding;
         case MESSAGE:
             msgId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             idx += 8;
-            loginUserId = CFSwapInt64(*(long long*)&buffer[idx]);
+            timestamp = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             idx += 8;
-            chatId = CFSwapInt64(*(long long*)&buffer[idx]);
+            loginUserId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
             idx += 8;
-            strLen = ntohs(*(short*)(buffer+idx));
+            chatId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            strLen = CFSwapInt16BigToHost(*(short*)(buffer+idx));
             idx += 2;
             username = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
             idx += strLen;
-            strLen = ntohs(*(short*)(buffer+idx));
+            strLen = CFSwapInt16BigToHost(*(short*)(buffer+idx));
             idx += 2;
             message = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
             idx += strLen;
@@ -219,13 +253,13 @@ const NSStringEncoding STRENC = NSASCIIStringEncoding;
             idx += 2;
             chatOwnerHandle = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
             idx += strLen;
-            //latitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            //idx += 8;
-            //longitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            //idx += 8;
-            //radius = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            //idx += 8;
-            NSLog(@"CHATROOM [%lli, %lli, %@, %@]", chatId,chatOwnerId,chatName,chatOwnerHandle);//,latitude,longitude,radius);
+            latitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            longitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            radius = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            NSLog(@"CHATROOM [%lli, %lli, %@, %@, %lli, %lli, %lli]", chatId,chatOwnerId,chatName,chatOwnerHandle,latitude,longitude,radius);
             break;
             
         case JOIN_CHATROOM_FAILURE:
@@ -266,8 +300,6 @@ const NSStringEncoding STRENC = NSASCIIStringEncoding;
             NSLog(@"Unrecognized message from server");
     }
     }
-    
-    //NSLog(@"%i, %i, %lli",msglen,msgType,userId);
 }
 
 #pragma mark - UI element actions
@@ -403,10 +435,6 @@ const NSStringEncoding STRENC = NSASCIIStringEncoding;
 
 - (void)writeString:(NSString*)string
 {
-    //short len = CFSwapInt16HostToBig();
-    //len = [string lengthOfBytesUsingEncoding:STRENC];
-    //NSLog(@"writeString len: %d",[string lengthOfBytesUsingEncoding:STRENC]);
-    //NSLog(@"%s",(const uint8_t*)[string UTF8String]);
     short len = (short)[string lengthOfBytesUsingEncoding:STRENC];
     [self writeShort:len];
     [os write:(BUFTYPE)[string cStringUsingEncoding:STRENC] maxLength:len];
@@ -434,6 +462,74 @@ const NSStringEncoding STRENC = NSASCIIStringEncoding;
     long long l = CFSwapInt64HostToBig(aLong);
     [os write:(BUFTYPE)&l maxLength:8];
 }
+
+
+#pragma mark - CoreLocation functions
+
+/*
+ * We want to get and store a location measurement that 
+ * meets the desired accuracy. For this example, we are
+ * going to use horizontal accuracy as the deciding factor. 
+ * In other cases, you may wish to use vertical accuracy, 
+ * or both together.
+ */
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
+    
+    //NSLog(@"got new gps");
+    NSLog(@"got new gps location: %f, %f", newLocation.coordinate.latitude, newLocation.coordinate.longitude);
+    
+    // store all of the measurements, just so we can see what kind of data we might receive
+    [locationMeasurements addObject:newLocation];
+    // test the age of the location measurement to determine if the measurement is cached
+    // in most cases you will not want to rely on cached measurements
+    NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
+    if (locationAge > 5.0) return;
+    // test that the horizontal accuracy does not indicate an invalid measurement
+    if (newLocation.horizontalAccuracy < 0) return;
+    // test the measurement to see if it is more accurate than the previous measurement
+    if (bestEffortAtLocation == nil || bestEffortAtLocation.horizontalAccuracy > newLocation.horizontalAccuracy) {
+        // store the location as the "best effort"
+        bestEffortAtLocation = newLocation;
+        // test the measurement to see if it meets the desired accuracy
+        //
+        // IMPORTANT!!! kCLLocationAccuracyBest should not be used for comparison with location coordinate or altitidue
+        // accuracy because it is a negative value. Instead, compare against some predetermined "real" measure of
+        // acceptable accuracy, or depend on the timeout to stop updating. This sample depends on the timeout.
+        //
+        if (newLocation.horizontalAccuracy <= locationManager.desiredAccuracy) {
+            // we have a measurement that meets our requirements, so we can stop updating the location
+            //
+            // IMPORTANT!!! Minimize power usage by stopping the location manager as soon as possible.
+            //
+            [self stopUpdatingLocation:NSLocalizedString(@"Acquired Location", @"Acquired Location")];
+            // we can also cancel our previous performSelector:withObject:afterDelay: - it's no longer necessary
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(stopUpdatingLocation:) object:nil];
+        }
+    }
+}
+
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    // The location "unknown" error simply means the manager
+    // is currently unable to get the location.
+    // We can ignore this error for the scenario of getting
+    // a single location fix, because we already have a
+    // timeout that will stop the location manager to save power.
+    if ([error code] != kCLErrorLocationUnknown) {
+        [self stopUpdatingLocation:NSLocalizedString(@"Error", @"Error")];
+    }
+}
+
+
+- (void)stopUpdatingLocation:(NSString *)state {
+    //self.stateString = state;
+    
+    NSLog(@"location manager failed with error: %@",state);
+    
+    [locationManager stopUpdatingLocation];
+    locationManager.delegate = nil;
+}
+
 
 
 @end

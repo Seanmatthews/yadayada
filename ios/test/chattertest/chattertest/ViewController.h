@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import <CoreLocation/CoreLocation.h>
 
-@interface ViewController : UIViewController <NSStreamDelegate, UITextFieldDelegate>
+@interface ViewController : UIViewController <NSStreamDelegate, UITextFieldDelegate, CLLocationManagerDelegate>
 {
 
     NSInputStream *is;
@@ -18,9 +19,17 @@
     long long currentChatroomId;
     long long currentLat, currentLong;
     NSString* userHandle;
+    dispatch_queue_t backgroundQueue;
+    dispatch_source_t timerSource;
+    
+    // Location vars
+    CLLocationManager *locationManager;
+    NSMutableArray *locationMeasurements;
+    CLLocation *bestEffortAtLocation;
 }
 
 - (void)initConnection;
+- (void)updateLocation;
 - (void)parseMessage:(uint8_t*)buffer withLength:(int)length;
 - (void)writeString:(NSString*)string;
 - (void)sendMessage:(NSString*)message toChat:(long long)chatId;
