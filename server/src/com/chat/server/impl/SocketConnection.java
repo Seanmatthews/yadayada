@@ -1,6 +1,7 @@
 package com.chat.server.impl;
 
 import com.chat.Connection;
+import com.chat.Utilities;
 
 import java.io.*;
 import java.net.Socket;
@@ -16,6 +17,9 @@ public class SocketConnection implements Connection {
     private final Socket socket;
     private final DataInputStream din;
     private final DataOutputStream dout;
+
+    private int readBytes;
+    private int msgBytes;
 
     public SocketConnection(Socket socket) throws IOException {
         this.socket = socket;
@@ -42,38 +46,67 @@ public class SocketConnection implements Connection {
     }
 
     @Override
-    public String readString() throws IOException {
-        return din.readUTF();
+    public void startReadingMessage(int messageBytes) throws IOException {
+        if (messageBytes <= 0 || messageBytes > 1000)
+            throw new IOException("Invalid incoming data. Bytes in message: " + messageBytes);
 
-        //byte[] ascii = new byte[din.readShort()];
-        //int ignored = din.read(ascii);
-        //return new String(ascii);
+        msgBytes = messageBytes;
+        readBytes = 0;
+    }
+
+    @Override
+    public void finishReadingMessage() throws IOException {
+        if (readBytes > msgBytes) {
+            // wtf, this is a mal-formed message
+            throw new IOException("Invalid incoming data. Expected=" + msgBytes + " Read=" + readBytes);
+        }
+
+        if (readBytes < msgBytes) {
+            // clear it out
+            read(msgBytes - readBytes);
+        }
+    }
+
+    @Override
+    public String readString() throws IOException {
+        String str = din.readUTF();
+        readBytes += Utilities.getStringLength(str);
+        return str;
     }
 
     @Override
     public long readLong() throws IOException {
-        return din.readLong();
+        long value = din.readLong();
+        readBytes += 8;
+        return value;
     }
 
     @Override
     public int readInt() throws IOException {
-        return din.readInt();
+        int value = din.readInt();
+        readBytes += 4;
+        return value;
     }
 
     @Override
     public short readShort() throws IOException {
-        return din.readShort();
+        short value = din.readShort();
+        readBytes += 2;
+        return value;
     }
 
     @Override
     public byte readByte() throws IOException {
-        return din.readByte();
+        byte value = din.readByte();
+        readBytes++;
+        return value;
     }
 
     @Override
     public byte[] read(int length) throws IOException {
         byte[] bytes = new byte[length];
         int ignored = din.read(bytes);
+        readBytes += length;
         return bytes;
     }
 
@@ -100,9 +133,6 @@ public class SocketConnection implements Connection {
     @Override
     public void writeString(String value) throws IOException {
         dout.writeUTF(value);
-
-        //dout.writeShort(value.length());
-        //dout.write(value.getBytes());
     }
 
     @Override

@@ -50,11 +50,7 @@ import java.util.concurrent.Executors;
 
         // Subscribe to the first one!
         if (chatroom.getName().equalsIgnoreCase("Global")) {
-            dout.writeShort(1 + 8 + 8);
-            dout.writeByte(MessageTypes.JOIN_CHATROOM.getValue());
-            dout.writeLong(user.getId());
-            dout.writeLong(chatroom.getId());
-
+            connection.joinChatroom(user, chatroom);
             subscribedChatroom = chatroom;
         }
     }
@@ -66,11 +62,7 @@ import java.util.concurrent.Executors;
 
     @Override
     public void sendMessage(String message) throws IOException {
-        dout.writeShort(1 + 8 + Utilities.getStringLength(message));
-        dout.writeByte(MessageTypes.SUBMIT_MESSAGE.getValue());
-        dout.writeLong(user.getId());
-        dout.writeLong(subscribedChatroom.getId());
-        dout.writeString(message);
+        connection.sendMessage(user, subscribedChatroom, message);
     }
 
     @Override

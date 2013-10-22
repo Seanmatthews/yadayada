@@ -67,7 +67,7 @@ public class ClientMessageSender {
 
     private void registerNewUser(String user, String password) throws IOException {
         System.out.println("Registering user: " + user);
-        connection.writeShort(1 + Utilities.getStringLength(user) + Utilities.getStringLength(password));
+        connection.writeShort(1 + Utilities.getStringLength(user) + Utilities.getStringLength(password) + Utilities.getStringLength(user));
         connection.writeByte(MessageTypes.REGISTER.getValue());
         connection.writeString(user);
         connection.writeString(password);

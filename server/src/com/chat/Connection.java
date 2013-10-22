@@ -12,11 +12,14 @@ import java.io.*;
 public interface Connection {
     void close();
 
-    String readString() throws IOException;
-    long readLong() throws IOException;
-    int readInt() throws IOException;
-    short readShort() throws IOException;
+    void startReadingMessage(int desiredBytes) throws IOException;
+    void finishReadingMessage() throws IOException;
+
     byte readByte() throws IOException;
+    short readShort() throws IOException;
+    int readInt() throws IOException;
+    long readLong() throws IOException;
+    String readString() throws IOException;
     byte[] read(int length) throws IOException;
 
     void writeByte(int value) throws IOException;
