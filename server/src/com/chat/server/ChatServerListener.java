@@ -114,7 +114,7 @@ public class ChatServerListener implements Runnable {
 
     private User getAndValidateUser(long userId) throws ValidationError, ExecutionException, InterruptedException {
         // TODO: Gotta fix this one
-        User user = userRepo.get(userId, null).get();
+        User user = userRepo.get(userId, null).get().getUser();
 
         if (user == null) {
             throw new ValidationError("Unknown user: " + userId);

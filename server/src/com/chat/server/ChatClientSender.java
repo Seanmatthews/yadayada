@@ -15,11 +15,12 @@ import java.io.IOException;
  */
 public interface ChatClientSender {
     void sendRegisterAccept(User user) throws IOException;
-    void sendRegisterReject(User user, String reason) throws IOException;
+    void sendRegisterReject(String reason) throws IOException;
     void sendLoginAccept(User user) throws IOException;
     void sendLoginReject(String reason) throws IOException;
     void sendMessage(Message message) throws IOException;
     void sendChatroom(Chatroom chatroom) throws IOException;
+    void sendJoinChatroomReject(Chatroom chatroom, String reason) throws IOException;
     void sendJoinedChatroom(Chatroom chatroom, User user) throws IOException;
     void sendLeftChatroom(Chatroom chatroom, User user) throws IOException;
     void close();

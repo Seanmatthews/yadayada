@@ -1,11 +1,12 @@
 package com.chat.server.impl;
 
 import com.chat.User;
-import com.chat.UserCompletionHandler;
 import com.chat.UserRepository;
 
 import java.util.Map;
 import java.util.concurrent.*;
+
+import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,15 +21,13 @@ public class InMemoryUserRepository implements UserRepository {
     private final Map<String, User> loginToUserMap = new ConcurrentHashMap<>();
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
 
-    public Future<User> registerUser(String login, String password, String handle, UserCompletionHandler handler) {
+    public Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, UserRepositoryCompletionHandler handler) {
         User user = loginToUserMap.get(login);
 
         // already registered
         if (user != null) {
-            if (handler != null)
-                handler.onCompletion(user);
-
-            return new UserFuture(null);
+            UserRepositoryActionResult result = new UserRepositoryActionResult(UserAlreadyExists, "User already exists");
+            return new UserFuture(result, handler);
         }
 
         user = new User(nextUserId++, login, password, handle);
@@ -36,45 +35,37 @@ public class InMemoryUserRepository implements UserRepository {
         loginToUserMap.put(user.getLogin(), user);
         idToUserMap.put(user.getId(), user);
 
-        if (handler != null)
-            handler.onCompletion(user);
-
-        return new UserFuture(user);
+        return new UserFuture(new UserRepositoryActionResult(user), handler);
     }
 
     @Override
-    public Future<User> quickRegisterUser(String handle, UserCompletionHandler handler) {
-        User user = new User(nextUserId++, "<QUICK>", "<QUICK>", handle);
+    public Future<UserRepositoryActionResult> quickRegisterUser(String handle, UserRepositoryCompletionHandler handler) {
+        User user = new User(nextUserId++, handle);
 
         idToUserMap.put(user.getId(), user);
 
-        if (handler != null)
-            handler.onCompletion(user);
-
-        return new UserFuture(user);
+        return new UserFuture(new UserRepositoryActionResult(user), handler);
     }
 
-    public Future<User> login(String login, String password, UserCompletionHandler handler) {
+    public Future<UserRepositoryActionResult> login(String login, String password, UserRepositoryCompletionHandler handler) {
         User user = loginToUserMap.get(login);
 
         // don't know this user
         if (user == null || !user.getPassword().equals(password)) {
-            user = null;
+            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserNameOrPassword, "Invalid username or password"), handler);
         }
 
-        if (handler != null)
-            handler.onCompletion(user);
-
-        return new UserFuture(user);
+        return new UserFuture(new UserRepositoryActionResult(user), handler);
     }
 
-    public Future<User> get(long id, UserCompletionHandler handler) {
+    public Future<UserRepositoryActionResult> get(long id, UserRepositoryCompletionHandler handler) {
         User user = idToUserMap.get(id);
 
-        if (handler != null)
-            handler.onCompletion(user);
+        if (user == null) {
+            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserId, "Unknown user id " + id), handler);
+        }
 
-        return new UserFuture(user);
+        return new UserFuture(new UserRepositoryActionResult(user), handler);
     }
 
     @Override
@@ -82,11 +73,14 @@ public class InMemoryUserRepository implements UserRepository {
         idToUserMap.put(user.getId(), user);
     }
 
-    private static class UserFuture implements Future<User> {
-        private final User user;
+    private static class UserFuture implements Future<UserRepositoryActionResult> {
+        private final UserRepositoryActionResult user;
 
-        public UserFuture(User user) {
+        public UserFuture(UserRepositoryActionResult user, UserRepositoryCompletionHandler handler) {
             this.user = user;
+
+            if (handler != null)
+                handler.onCompletion(user);
         }
 
         @Override
@@ -105,12 +99,12 @@ public class InMemoryUserRepository implements UserRepository {
         }
 
         @Override
-        public User get() throws InterruptedException, ExecutionException {
+        public UserRepositoryActionResult get() throws InterruptedException, ExecutionException {
             return user;
         }
 
         @Override
-        public User get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+        public UserRepositoryActionResult get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             return user;
         }
     }

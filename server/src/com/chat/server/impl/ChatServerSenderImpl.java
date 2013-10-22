@@ -29,7 +29,7 @@ public class ChatServerSenderImpl implements ChatClientSender {
     }
 
     @Override
-    public void sendRegisterReject(User user, String reason) throws IOException {
+    public void sendRegisterReject(String reason) throws IOException {
         synchronized (connection) {
             connection.writeShort(1 + Utilities.getStringLength(reason));
             connection.writeByte(MessageTypes.REGISTER_REJECT.getValue());
@@ -86,6 +86,16 @@ public class ChatServerSenderImpl implements ChatClientSender {
     }
 
     @Override
+    public void sendJoinChatroomReject(Chatroom chatroom, String reason) throws IOException {
+        synchronized (connection) {
+            connection.writeShort(1 + 8 + Utilities.getStringLength(reason));
+            connection.writeByte(MessageTypes.JOIN_CHATROOM_REJECT.getValue());
+            connection.writeLong(chatroom.getId());
+            connection.writeString(reason);
+        }
+    }
+
+    @Override
     public void sendJoinedChatroom(Chatroom chatroom, User user) throws IOException {
         synchronized (connection) {
             connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(user.getHandle()));
@@ -111,5 +121,10 @@ public class ChatServerSenderImpl implements ChatClientSender {
         synchronized (connection) {
             connection.close();
         }
+    }
+
+    @Override
+    public String toString() {
+        return connection.toString();
     }
 }
