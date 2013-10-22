@@ -80,15 +80,16 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)updateLocation
 {
-    NSLog(@"Updating location");
     [locationManager startUpdatingLocation];
     sleep(5);
     [locationManager stopUpdatingLocation];
     //NSLog(@"location : %f : %f, %f", [bestEffortAtLocation.timestamp timeIntervalSince1970],
     //      bestEffortAtLocation.coordinate.latitude, bestEffortAtLocation.coordinate.longitude);
     
-    currentLat = (bestEffortAtLocation.coordinate.latitude + 400) * 1000000;
-    currentLong = (bestEffortAtLocation.coordinate.longitude + 400) * 1000000;
+    currentLat = (long long)(bestEffortAtLocation.coordinate.latitude + 400.) * 1000000.;
+    currentLong = (long long)(bestEffortAtLocation.coordinate.longitude + 400.) * 1000000.;
+    
+    NSLog(@"Updating location %lli, %lli",currentLat,currentLong);
 }
 
 - (void)didReceiveMemoryWarning
@@ -361,8 +362,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 - (void)createChatroomWithName:(NSString*)name radius:(long long)chatRadius
 {
     short msgLen = [name lengthOfBytesUsingEncoding:STRENC] + 35;
-    [self writeShort:msgLen];
-    [self writeByte:CREATE_CHATROOM];
+    [self writeMessageHeaderWithSize:msgLen ofType:CREATE_CHATROOM];
     [self writeLong:userId];
     [self writeString:name];
     [self writeLong:currentLat];
@@ -476,7 +476,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
     
     //NSLog(@"got new gps");
-    NSLog(@"got new gps location: %f, %f", newLocation.coordinate.latitude, newLocation.coordinate.longitude);
+    //NSLog(@"got new gps location: %f, %f", newLocation.coordinate.latitude, newLocation.coordinate.longitude);
     
     // store all of the measurements, just so we can see what kind of data we might receive
     [locationMeasurements addObject:newLocation];
