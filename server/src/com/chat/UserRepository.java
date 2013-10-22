@@ -1,5 +1,7 @@
 package com.chat;
 
+import java.io.InvalidObjectException;
+import java.sql.SQLException;
 import java.util.concurrent.Future;
 
 /**
@@ -16,5 +18,5 @@ public interface UserRepository {
     Future<User> get(long id, UserCompletionHandler completionHandler);
 
     // Todo: Testing only...remove
-    void addUser(User user);
+    void addUser(User user) throws InvalidObjectException;
 }

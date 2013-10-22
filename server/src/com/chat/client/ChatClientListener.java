@@ -4,6 +4,7 @@ import com.chat.*;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -115,7 +116,7 @@ public class ChatClientListener implements Runnable {
         return chatroom;
     }
 
-    private User getOrCreateUser(long userId, String userName) throws ExecutionException, InterruptedException {
+    private User getOrCreateUser(long userId, String userName) throws ExecutionException, InterruptedException, InvalidObjectException {
         User owner;
         synchronized (userRepo) {
             owner = userRepo.get(userId, null).get();

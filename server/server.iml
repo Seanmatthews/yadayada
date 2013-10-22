@@ -10,14 +10,10 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../apis/aws/aws-java-sdk-1.6.2/lib" />
+          <root url="jar://$MODULE_DIR$/../apis/mysql/mysql-connector-java-5.1.26/mysql-connector-java-5.1.26-bin.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../apis/aws/aws-java-sdk-1.6.2/lib" />
-        </SOURCES>
-        <jarDirectory url="file://$MODULE_DIR$/../apis/aws/aws-java-sdk-1.6.2/lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../apis/aws/aws-java-sdk-1.6.2/lib" recursive="false" type="SOURCES" />
+        <SOURCES />
       </library>
     </orderEntry>
   </component>
