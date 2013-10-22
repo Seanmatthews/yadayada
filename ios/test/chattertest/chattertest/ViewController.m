@@ -10,7 +10,7 @@
 #import "MessageTypes.h"
 
 typedef const uint8_t* BUFTYPE;
-const NSStringEncoding STRENC = NSUTF8StringEncoding;
+const NSStringEncoding STRENC = NSASCIIStringEncoding;
 
 @interface ViewController ()
 
@@ -27,11 +27,34 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 @synthesize chatIdTextField;
 @synthesize chatNameTextField;
 @synthesize chatRadiusTextField;
+@synthesize currentChatIdTextField;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    loginUserTextField.returnKeyType = UIReturnKeyDone;
+    loginPassTextField.returnKeyType = UIReturnKeyDone;
+    registerUserTextField.returnKeyType = UIReturnKeyDone;
+    registerPassTextField.returnKeyType = UIReturnKeyDone;
+    registerHandTextField.returnKeyType = UIReturnKeyDone;
+    msgTextField.returnKeyType = UIReturnKeyDone;
+    chatIdTextField.returnKeyType = UIReturnKeyDone;
+    chatNameTextField.returnKeyType = UIReturnKeyDone;
+    chatRadiusTextField.returnKeyType = UIReturnKeyDone;
+    currentChatIdTextField.returnKeyType = UIReturnKeyDone;
+    
+    [loginUserTextField setDelegate:self];
+    [loginPassTextField setDelegate:self];
+    [registerUserTextField setDelegate:self];
+    [registerPassTextField setDelegate:self];
+    [registerHandTextField setDelegate:self];
+    [msgTextField setDelegate:self];
+    [chatIdTextField setDelegate:self];
+    [chatNameTextField setDelegate:self];
+    [chatRadiusTextField setDelegate:self];
+    [currentChatIdTextField setDelegate:self];
     
     [self initConnection];
 }
@@ -40,6 +63,12 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
 }
 
 - (void)initConnection
@@ -62,13 +91,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
-    NSLog(@"stream event %i",eventCode);
-    if ([is hasBytesAvailable]) {
-        NSLog(@"BYTESSSSSS");
-    }
-    else {
-        NSLog(@"no bytes");
-    }
+    //NSLog(@"stream event %i",eventCode);
     
     switch (eventCode) {
         case NSStreamEventOpenCompleted:
@@ -85,7 +108,8 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
                     len = [is read:buffer maxLength:1024];
                     NSLog(@"%i bytes",len);
                     if (len > 0) {
-                        [self parseMessage:buffer];
+                        [self parseMessage:buffer withLength:len];
+                        //NSLog(@"LEN: %d",len);
                     }
                 }
             }
@@ -109,13 +133,12 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     }
 }
 
-- (void)parseMessage:(uint8_t*)buffer
+- (void)parseMessage:(uint8_t*)buffer withLength:(int)length
 {
-    short msglen = ntohs(*(short*)buffer);
-    Byte msgType = buffer[2];
+    
     NSString *error;
     short strLen = 0;
-    int idx = 3;
+    int idx = 0;
     long long loginUserId, msgId, chatId, chatOwnerId;
     NSString* chatOwnerHandle;
     NSString* username;
@@ -124,11 +147,19 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     NSString* handle;
     long long latitude, longitude, radius;
     
-    NSLog(@"msg len: %d, msg type: %d",msglen,msgType);
     
+    
+    while (idx < length-1) {
+        short msglen = ntohs(*(short*)&buffer[idx]);
+        idx += 2;
+        Byte msgType = buffer[idx];
+        idx += 1;
+        NSLog(@"msg len: %d, msg type: %d",msglen,msgType);
+        
     switch (msgType) {
         case REGISTER_ACCEPT:
             userId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
             NSLog(@"REGISTER_ACCEPT [%lli]",userId);
             break;
             
@@ -137,20 +168,23 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             strLen = ntohs(*(short*)(buffer+idx));
             idx += 2;
             error = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            idx += strLen;
             NSLog(@"REGISTER_REJECT [%@]",error);
             break;
             
         case LOGIN_ACCEPT:
-            loginUserId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            NSLog(@"LOGIN_ACCEPT [%lli]",loginUserId);
+            //TODO: userId should be persistent and not taken from here
+            userId = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            NSLog(@"LOGIN_ACCEPT [%lli]",userId);
             break;
             
         case LOGIN_REJECT:
             // we should get a 2 byte length for each string field received
             strLen = ntohs(*(short*)(buffer+idx));
             idx += 2;
-            // TODO: Is this char conversion OK?
-            error = [NSString stringWithUTF8String:(char*)(buffer+idx)];
+            error = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            idx += strLen;
             NSLog(@"LOGIN_REJECT [%@]",error);
             break;
             
@@ -168,6 +202,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             strLen = ntohs(*(short*)(buffer+idx));
             idx += 2;
             message = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            idx += strLen;
             NSLog(@"MESSAGE [%lli, %lli, %lli, %@, %@]",msgId,loginUserId,chatId,username,message);
             break;
             
@@ -184,12 +219,13 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             idx += 2;
             chatOwnerHandle = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
             idx += strLen;
-            latitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            idx += 8;
-            longitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            idx += 8;
-            radius = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            NSLog(@"CHATROOM [%lli, %lli, %@, %@, %lli, %lli, %lli]", chatId,chatOwnerId,chatName,chatOwnerHandle,latitude,longitude,radius);
+            //latitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            //idx += 8;
+            //longitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            //idx += 8;
+            //radius = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            //idx += 8;
+            NSLog(@"CHATROOM [%lli, %lli, %@, %@]", chatId,chatOwnerId,chatName,chatOwnerHandle);//,latitude,longitude,radius);
             break;
             
         case JOIN_CHATROOM_FAILURE:
@@ -202,6 +238,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
             idx += 2;
             error = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            idx += strLen;
             NSLog(@"JOIN_CHATROOM_FAILURE [%lli, %@, %@]",chatId,chatName,error);
             break;
             
@@ -213,6 +250,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
             idx += 2;
             handle = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            idx += strLen;
             NSLog(@"JOINED_CHATROOM [%lli, %lli, %@]",chatId,loginUserId,handle);
             break;
             
@@ -226,6 +264,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             
         default:
             NSLog(@"Unrecognized message from server");
+    }
     }
     
     //NSLog(@"%i, %i, %lli",msglen,msgType,userId);
@@ -241,56 +280,21 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     NSLog(@"%@ : %@",user,pass);
     
     [self registerUsername:user password:pass handle:hand];
-    
-//    short userLenBytes = [textUsername lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-//    short passLenBytes = [textPassword lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-//    short msgLengthBytes = userLenBytes+passLenBytes;
-//    unsigned char msgType = 1;
-//
-//    short msgLen = htons(msgLengthBytes);
-//    short userLen = htons(userLenBytes);
-//    short passLen = htons(passLenBytes);
-//    unsigned char* user = (unsigned char*)[textUsername UTF8String];
-//    unsigned char* pass = (unsigned char*)[textPassword UTF8String];
-//    
-//    [os write:(BUFTYPE)&msgLen maxLength:sizeof(short)];
-//    [os write:&msgType maxLength:sizeof(unsigned char)];
-//    [os write:(BUFTYPE)&userLen maxLength:sizeof(short)];
-//    [os write:user maxLength:userLenBytes];
-//    [os write:(BUFTYPE)&passLen maxLength:sizeof(short)];
-//    [os write:pass maxLength:passLenBytes];
 }
 
 - (IBAction)loginButtonPressed:(id)sender
 {
     NSString* user = loginUserTextField.text;
     NSString* pass = loginPassTextField.text;
-    NSLog(@"%@ : %@",user,pass);
     
     [self loginWithUsername:user password:pass];
-    
-    //short userLenBytes = [textUsername lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-    //short passLenBytes = [textPassword lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-    //short msgLengthBytes = userLenBytes+passLenBytes;
-    //unsigned char msgType = 11;
-    
-    //short msgLen = htons(msgLengthBytes);
-    //short userLen = htons(userLenBytes);
-    //short passLen = htons(passLenBytes);
-    //unsigned char* user = (unsigned char*)[textUsername UTF8String];
-    //unsigned char* pass = (unsigned char*)[textPassword UTF8String];
-    
-    //[os write:(BUFTYPE)&msgLen maxLength:sizeof(short)];
-    //[os write:&msgType maxLength:sizeof(unsigned char)];
-    //[os write:(BUFTYPE)&userLen maxLength:sizeof(short)];
-    //[os write:user maxLength:userLenBytes];
-    //[os write:(BUFTYPE)&passLen maxLength:sizeof(short)];
-    //[os write:pass maxLength:passLenBytes];
 }
 
 - (IBAction)sendMessageButtonPressed:(id)sender
 {
     NSString* text = msgTextField.text;
+    long long chatId = [currentChatIdTextField.text longLongValue];
+    [self sendMessage:text toChat:chatId];
     
 }
 
@@ -324,21 +328,19 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)createChatroomWithName:(NSString*)name radius:(long long)chatRadius
 {
-    if (currentChatroomId < 0) {
-        short msgLen = [name lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 33;
-        [self writeShort:msgLen];
-        [self writeByte:CREATE_CHATROOM];
-        [self writeLong:userId];
-        [self writeString:name];
-        [self writeLong:currentLat];
-        [self writeLong:currentLong];
-        [self writeLong:chatRadius];
-    }
+    short msgLen = [name lengthOfBytesUsingEncoding:STRENC] + 35;
+    [self writeShort:msgLen];
+    [self writeByte:CREATE_CHATROOM];
+    [self writeLong:userId];
+    [self writeString:name];
+    [self writeLong:currentLat];
+    [self writeLong:currentLong];
+    [self writeLong:chatRadius];
 }
 
 - (void)searchChatrooms
 {
-    [self writeMessageHeaderWithSize:17 ofType:CREATE_CHATROOM];
+    [self writeMessageHeaderWithSize:17 ofType:SEARCH_CHATROOMS];
     [self writeLong:currentLat];
     [self writeLong:currentLong];
 }
@@ -361,16 +363,16 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)registerHandle:(NSString*)hand
 {
-    int msgLen = [hand lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    int msgLen = [hand lengthOfBytesUsingEncoding:STRENC];
     [self writeMessageHeaderWithSize:msgLen ofType:QUICK_REGISTER];
     [self writeString:hand];
 }
 
 - (void)registerUsername:(NSString*)user password:(NSString*)pass handle:(NSString*)hand
 {
-    int msgLen = [user lengthOfBytesUsingEncoding:NSUTF8StringEncoding] +
-                 [pass lengthOfBytesUsingEncoding:NSUTF8StringEncoding] +
-                 [hand lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1;
+    int msgLen = [user lengthOfBytesUsingEncoding:STRENC] +
+                 [pass lengthOfBytesUsingEncoding:STRENC] +
+                 [hand lengthOfBytesUsingEncoding:STRENC] + 7;
     [self writeMessageHeaderWithSize:msgLen ofType:REGISTER];
     [self writeString:user];
     [self writeString:pass];
@@ -379,8 +381,8 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)loginWithUsername:(NSString*)user password:(NSString*)pass
 {
-    int msgLen = [user lengthOfBytesUsingEncoding:NSUTF8StringEncoding] +
-                 [pass lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1;
+    int msgLen = [user lengthOfBytesUsingEncoding:STRENC] +
+                 [pass lengthOfBytesUsingEncoding:STRENC] + 5;
     [self writeMessageHeaderWithSize:msgLen ofType:LOGIN];
     [self writeString:user];
     [self writeString:pass];
@@ -401,19 +403,19 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)writeString:(NSString*)string
 {
-    short len = CFSwapInt16HostToBig([string lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
-    unsigned char* cString = (unsigned char*)[string UTF8String];
-    [os write:(BUFTYPE)&len maxLength:sizeof(short)];
-    [os write:cString maxLength:len];
+    //short len = CFSwapInt16HostToBig();
+    //len = [string lengthOfBytesUsingEncoding:STRENC];
+    //NSLog(@"writeString len: %d",[string lengthOfBytesUsingEncoding:STRENC]);
+    //NSLog(@"%s",(const uint8_t*)[string UTF8String]);
+    short len = (short)[string lengthOfBytesUsingEncoding:STRENC];
+    [self writeShort:len];
+    [os write:(BUFTYPE)[string cStringUsingEncoding:STRENC] maxLength:len];
 }
 
 - (void)writeMessageHeaderWithSize:(short)size ofType:(MessageTypes)type
 {
     [self writeShort:size];
     [self writeByte:type];
-    //short s = CFSwapInt16HostToBig(size);
-    //[os write:(BUFTYPE)&s maxLength:sizeof(short)];
-    //[os write:(BUFTYPE)type maxLength:1];
 }
                
 - (void)writeByte:(unsigned char)aByte
