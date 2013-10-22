@@ -81,12 +81,15 @@ public class ChatServerSenderImpl implements ChatClientSender {
         synchronized (connection) {
             System.out.println("Send chatroom " + chatroom);
 
-            connection.writeShort(1 + 8 + getStringLength(chatroom.getName()) + 8 + getStringLength(chatroom.getOwner().getHandle()));
+            String chatroomName = chatroom.getName();
+            String ownerHandle = chatroom.getOwner().getHandle();
+
+            connection.writeShort(1 + (2 * 8) + getStringLength(chatroomName) + 8 + getStringLength(ownerHandle));
             connection.writeByte(MessageTypes.CHATROOM.getValue());
             connection.writeLong(chatroom.getId());
             connection.writeLong(chatroom.getOwner().getId());
-            connection.writeString(chatroom.getName());
-            connection.writeString(chatroom.getOwner().getHandle());
+            connection.writeString(chatroomName);
+            connection.writeString(ownerHandle);
         }
     }
 
