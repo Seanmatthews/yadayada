@@ -93,10 +93,16 @@ public class ClientMessageSender {
 
     private void registerNewUser(String user, String password) throws IOException {
         System.out.println("Registering user: " + user);
-        connection.startWriting(1 + getStrLen(user) + getStrLen(password) + getStrLen(user));
+        /*connection.startWriting(1 + getStrLen(user) + getStrLen(password) + getStrLen(user));
         connection.writeByte(MessageTypes.REGISTER.getValue());
         connection.writeString(user);
         connection.writeString(password);
+        connection.writeString(user);
+        connection.finishWriting();*/
+
+        // Quick Register
+        connection.startWriting(1 + getStrLen(user));
+        connection.writeByte(MessageTypes.QUICK_REGISTER.getValue());
         connection.writeString(user);
         connection.finishWriting();
 

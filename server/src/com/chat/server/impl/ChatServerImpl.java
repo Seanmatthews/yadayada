@@ -66,7 +66,7 @@ public class ChatServerImpl implements ChatServer {
         try {
             uuidConnectionMap.put(uuid, senderConnection);
 
-            senderConnection.sendConnectionAccept(1, uuid, 1);
+            senderConnection.sendConnectAccept(1, uuid, 1);
         } catch (IOException e) {
             removeConnection(senderConnection);
         }
@@ -111,7 +111,7 @@ public class ChatServerImpl implements ChatServer {
     public void registerUser(final ClientConnection senderConnection, final String login, String password, String handle) {
         System.out.println("Registering user " + login);
 
-        userRepo.registerUser(login, password, handle, new UserRepositoryCompletionHandler() {
+        userRepo.registerUser(login, password, handle, senderConnection.getUUID(), new UserRepositoryCompletionHandler() {
             @Override
             public void onCompletion(UserRepositoryActionResult result) {
                 try {
@@ -139,7 +139,7 @@ public class ChatServerImpl implements ChatServer {
     public void quickRegisterUser(final ClientConnection senderConnection, String handle) {
         System.out.println("Quick registering user " + handle);
 
-        userRepo.quickRegisterUser(handle, new UserRepositoryCompletionHandler() {
+        userRepo.quickRegisterUser(handle, senderConnection.getUUID(), new UserRepositoryCompletionHandler() {
             @Override
             public void onCompletion(UserRepositoryActionResult result) {
                 try {

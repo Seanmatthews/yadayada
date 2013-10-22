@@ -30,8 +30,8 @@ public interface ClientConnection {
     SubmitMessageMessage recvSubmitMessage() throws IOException;
     void recvUnknown() throws IOException;
 
-    void sendConnectionAccept(int apiVersion, String uuid, long globalChatId) throws IOException;
-    void sendConnectionReject(String reason) throws IOException;
+    void sendConnectAccept(int apiVersion, String uuid, long globalChatId) throws IOException;
+    void sendConnectReject(String reason) throws IOException;
     void sendRegisterAccept(User user) throws IOException;
     void sendRegisterReject(String reason) throws IOException;
     void sendLoginAccept(User user) throws IOException;

@@ -30,7 +30,7 @@ public class AwsRdsUserRepository implements UserRepository {
     }
 
     @Override
-    public Future<UserRepositoryActionResult> registerUser(final String login, final String password, final String handle, final UserRepositoryCompletionHandler completionHandler) {
+    public Future<UserRepositoryActionResult> registerUser(final String login, final String password, final String handle, final String UUID, final UserRepositoryCompletionHandler completionHandler) {
         final UserFuture future = new UserFuture(completionHandler);
 
         // submit a new thread to contact the database and let us know when we've inserted
@@ -67,12 +67,13 @@ public class AwsRdsUserRepository implements UserRepository {
 
                 try {
                     // let's insert!
-                    insertUserStatement = connect.prepareStatement("insert into userdb.User (Login, Password, Handle) values (?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                    insertUserStatement = connect.prepareStatement("insert into userdb.User (Login, Password, Handle, UUID) values (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
                     future.addStatement(insertUserStatement);
 
                     insertUserStatement.setString(1, login);
                     insertUserStatement.setString(2, password);
                     insertUserStatement.setString(3, handle);
+                    insertUserStatement.setString(4, UUID);
                     int rowsUpdated = insertUserStatement.executeUpdate();
 
                     if (rowsUpdated != 0) {
@@ -102,8 +103,49 @@ public class AwsRdsUserRepository implements UserRepository {
     }
 
     @Override
-    public Future<UserRepositoryActionResult> quickRegisterUser(String handle, UserRepositoryCompletionHandler completionHandler) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Future<UserRepositoryActionResult> quickRegisterUser(final String handle, final String UUID, UserRepositoryCompletionHandler completionHandler) {
+        final UserFuture future = new UserFuture(completionHandler);
+
+        // submit a new thread to contact the database and let us know when we've inserted
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                // okay, now we know that a user with this login doesn't exist
+                PreparedStatement insertUserStatement = null;
+
+                try {
+                    // let's insert!
+                    insertUserStatement = connect.prepareStatement("insert into userdb.User (Handle, UUID) values (?,?)", Statement.RETURN_GENERATED_KEYS);
+                    future.addStatement(insertUserStatement);
+
+                    insertUserStatement.setString(1, handle);
+                    insertUserStatement.setString(2, UUID);
+                    int rowsUpdated = insertUserStatement.executeUpdate();
+
+                    if (rowsUpdated != 0) {
+                        ResultSet generatedKeys = insertUserStatement.getGeneratedKeys();
+
+                        if (generatedKeys.next()) {
+                            long id = generatedKeys.getLong("GENERATED_KEY");
+                            User user = new User(id, handle);
+                            idToUserMap.put(id, user);
+
+                            future.setResult(new UserRepositoryActionResult(user));
+                        } else {
+                            // Hmm weird, we didn't generate a key
+                            future.setResult(new UserRepositoryActionResult(ConnectionError, "Unknown connection error"));
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot insert new user"));
+                } finally {
+                    future.removeStatement(insertUserStatement);
+                }
+            }
+        });
+
+        return future;
     }
 
     @Override

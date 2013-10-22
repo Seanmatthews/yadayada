@@ -126,7 +126,7 @@ public class ClientConnectionImpl implements ClientConnection {
     }
 
     @Override
-    public void sendConnectionAccept(int apiVersion, String uuid, long globalChatId) throws IOException {
+    public void sendConnectAccept(int apiVersion, String uuid, long globalChatId) throws IOException {
         synchronized (stream) {
             this.uuid = uuid;
 
@@ -139,7 +139,7 @@ public class ClientConnectionImpl implements ClientConnection {
     }
 
     @Override
-    public void sendConnectionReject(String reason) throws IOException {
+    public void sendConnectReject(String reason) throws IOException {
         synchronized (stream) {
             stream.startWriting(1 + getStrLen(reason));
             stream.writeByte(MessageTypes.CONNECT_REJECT.getValue());
