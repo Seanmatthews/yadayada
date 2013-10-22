@@ -84,7 +84,7 @@ public class ChatServerSenderImpl implements ChatClientSender {
             String chatroomName = chatroom.getName();
             String ownerHandle = chatroom.getOwner().getHandle();
 
-            connection.writeShort(1 + (2 * 8) + getStringLength(chatroomName) + 8 + getStringLength(ownerHandle));
+            connection.writeShort(1 + (2 * 8) + getStringLength(chatroomName) + getStringLength(ownerHandle));
             connection.writeByte(MessageTypes.CHATROOM.getValue());
             connection.writeLong(chatroom.getId());
             connection.writeLong(chatroom.getOwner().getId());
