@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public interface ChatClientSender {
     void sendRegisterAccept(User user) throws IOException;
-    void sendRegisterReject(User user, String reason) throws IOException;
+    void sendRegisterReject(String reason) throws IOException;
     void sendLoginAccept(User user) throws IOException;
     void sendLoginReject(String reason) throws IOException;
     void sendMessage(Message message) throws IOException;

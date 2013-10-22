@@ -20,6 +20,13 @@ public class User {
 
     private final Set<Chatroom> chatrooms = Collections.newSetFromMap(new ConcurrentHashMap<Chatroom, Boolean>());
 
+    public User(long id, String handle) {
+        this.id = id;
+        this.handle = handle;
+        this.login = "<QUICK>";
+        this.password = "<QUICK>";
+    }
+
     public User(long id, String login, String password, String handle) {
         this.id = id;
         this.login = login;

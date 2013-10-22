@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
+
+import static com.chat.UserRepository.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -90,15 +91,22 @@ public class ChatServerImpl implements ChatServer {
     public void registerUser(final ChatClientSender senderConnection, final String login, String password, String handle) {
         System.out.println("Registering user " + login);
 
-        userRepo.registerUser(login, password, handle, new UserCompletionHandler() {
+        userRepo.registerUser(login, password, handle, new UserRepositoryCompletionHandler() {
             @Override
-            public void onCompletion(User user) {
+            public void onCompletion(UserRepositoryActionResult result) {
                 try {
-                    if (user == null) {
-                        senderConnection.sendRegisterReject(user, "Registration failure. " + login + " already exists");
-                    }
-                    else {
-                        senderConnection.sendRegisterAccept(user);
+                    switch (result.getCode()) {
+                        case OK:
+                            senderConnection.sendRegisterAccept(result.getUser());
+                            break;
+                        case ConnectionError:
+                            senderConnection.sendRegisterReject("Connection error");
+                            break;
+                        case UserAlreadyExists:
+                        case InvalidUserNameOrPassword:
+                        default:
+                            senderConnection.sendRegisterReject(result.getMessage());
+                            break;
                     }
                 } catch (IOException e) {
                     removeConnection(senderConnection);
@@ -111,11 +119,22 @@ public class ChatServerImpl implements ChatServer {
     public void quickRegisterUser(final ChatClientSender senderConnection, String handle) {
         System.out.println("Quick registering user " + handle);
 
-        userRepo.quickRegisterUser(handle, new UserCompletionHandler() {
+        userRepo.quickRegisterUser(handle, new UserRepositoryCompletionHandler() {
             @Override
-            public void onCompletion(User user) {
+            public void onCompletion(UserRepositoryActionResult result) {
                 try {
-                    senderConnection.sendRegisterAccept(user);
+                    switch (result.getCode()) {
+                        case OK:
+                            senderConnection.sendRegisterAccept(result.getUser());
+                            break;
+                        case ConnectionError:
+                            senderConnection.sendRegisterReject("Connection error");
+                            break;
+                        case UserAlreadyExists:
+                        default:
+                            senderConnection.sendRegisterReject(result.getMessage());
+                            break;
+                    }
                 } catch (IOException e) {
                     removeConnection(senderConnection);
                 }
@@ -127,19 +146,25 @@ public class ChatServerImpl implements ChatServer {
     public void login(final ChatClientSender senderConnection, final String login, String password) {
         System.out.println("Logging in user " + login);
 
-        userRepo.login(login, password, new UserCompletionHandler() {
+        userRepo.login(login, password, new UserRepositoryCompletionHandler() {
             @Override
-            public void onCompletion(User user) {
+            public void onCompletion(UserRepositoryActionResult result) {
                 try {
-                    if (user == null) {
-                        senderConnection.sendLoginReject("Invalid user or password: " + login);
-                        return;
+                    switch (result.getCode()) {
+                        case OK:
+                            User user = result.getUser();
+                            senderConnection.sendLoginAccept(user);
+                            userConnectionMap.put(user, senderConnection);
+                            connectionUserMap.put(senderConnection, user);
+                            break;
+                        case ConnectionError:
+                            senderConnection.sendLoginReject("Connection error");
+                            break;
+                        case InvalidUserNameOrPassword:
+                        default:
+                            senderConnection.sendLoginReject(result.getMessage());
+                            break;
                     }
-
-                    senderConnection.sendLoginAccept(user);
-
-                    userConnectionMap.put(user, senderConnection);
-                    connectionUserMap.put(senderConnection, user);
                 } catch (IOException e) {
                     removeConnection(senderConnection);
                 }

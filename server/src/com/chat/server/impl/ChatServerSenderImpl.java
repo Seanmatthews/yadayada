@@ -29,7 +29,7 @@ public class ChatServerSenderImpl implements ChatClientSender {
     }
 
     @Override
-    public void sendRegisterReject(User user, String reason) throws IOException {
+    public void sendRegisterReject(String reason) throws IOException {
         synchronized (connection) {
             connection.writeShort(1 + Utilities.getStringLength(reason));
             connection.writeByte(MessageTypes.REGISTER_REJECT.getValue());

@@ -60,7 +60,7 @@ public class ChatClientListener implements Runnable {
                         long lcChatroomId = din.readLong();
                         long lcUserId = din.readLong();
 
-                        User lcUser = userRepo.get(lcUserId, null).get();
+                        User lcUser = userRepo.get(lcUserId, null).get().getUser();
                         Chatroom lcChatroom = chatroomRepo.get(lcChatroomId);
                         client.onLeftChatroom(lcChatroom, lcUser);
                         break;
@@ -119,7 +119,7 @@ public class ChatClientListener implements Runnable {
     private User getOrCreateUser(long userId, String userName) throws ExecutionException, InterruptedException, InvalidObjectException {
         User owner;
         synchronized (userRepo) {
-            owner = userRepo.get(userId, null).get();
+            owner = userRepo.get(userId, null).get().getUser();
             if (owner == null) {
                 owner = new User(userId, userName, "", userName);
                 userRepo.addUser(owner);

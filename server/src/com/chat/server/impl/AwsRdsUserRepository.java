@@ -1,14 +1,14 @@
 package com.chat.server.impl;
 
 import com.chat.User;
-import com.chat.UserCompletionHandler;
 import com.chat.UserRepository;
 
 import java.io.InvalidObjectException;
 import java.sql.*;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
+
+import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,95 +21,173 @@ public class AwsRdsUserRepository implements UserRepository {
     private final Connection connect;
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
+
+    // cache
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
 
-    public AwsRdsUserRepository(String connectionString, String user, String password) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
-        // Setup the connection with the DB
-        connect = DriverManager.getConnection(connectionString, user, password);
+    public AwsRdsUserRepository(Connection connection) throws ClassNotFoundException, SQLException {
+        this.connect = connection;
     }
 
     @Override
-    public Future<User> registerUser(final String login, final String password, final String handle, final UserCompletionHandler completionHandler) {
-        try {
-            final Statement statement = connect.createStatement();
-            final UserFuture future = new UserFuture(statement);
+    public Future<UserRepositoryActionResult> registerUser(final String login, final String password, final String handle, final UserRepositoryCompletionHandler completionHandler) {
+        final UserFuture future = new UserFuture(completionHandler);
 
-            executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        User user = null;
+        // submit a new thread to contact the database and let us know when we've inserted
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                PreparedStatement userExistsStatement = null;
 
-                        // insert a new row, we're using uniqueness of login
-                        // to accept/reject this
-                        int rows = statement.executeUpdate("Insert Into userdb.User (Login, Password, Handle) values ('" +
-                                                           login + "','" + password + "','" + handle + "')",
-                                                           Statement.RETURN_GENERATED_KEYS);
+                try {
+                    userExistsStatement = connect.prepareStatement("select UserId from userdb.User where Login = ?");
+                    future.addStatement(userExistsStatement);
 
-                        if (rows != 0) {
-                            ResultSet generatedKeys = statement.getGeneratedKeys();
-                            if (generatedKeys.next()) {
-                                long id = generatedKeys.getLong("GENERATED_KEY");
-                                user = new User(id, login, password, handle);
-                                future.setUser(user);
-                            }
-                            else {
-                                future.setUser(null);
-                            }
-                        }
-                        else {
-                            future.setUser(null);
-                        }
+                    // does this user exist?
+                    userExistsStatement.setString(1, login);
+                    ResultSet set = userExistsStatement.executeQuery();
 
-                        if (completionHandler != null)
-                            completionHandler.onCompletion(user);
-
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-
-                        if (completionHandler != null)
-                            completionHandler.onCompletion(null);
+                    if (set.next()) {
+                        // yep, set result and bail out
+                        future.setResult(new UserRepositoryActionResult(UserAlreadyExists, login + " is already taken"));
+                        return;
                     }
+                } catch (Exception e) {
+                    // SQL error
+                    e.printStackTrace();
+                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot check if user exists"));
+                    return;
+                } finally {
+                    future.removeStatement(userExistsStatement);
                 }
-            });
 
-            return future;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new UserFuture(null);
-        }
-    }
+                // okay, now we know that a user with this login doesn't exist
 
-    @Override
-    public Future<User> quickRegisterUser(String handle, UserCompletionHandler completionHandler) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+                PreparedStatement insertUserStatement = null;
 
-    @Override
-    public Future<User> login(String login, String password, UserCompletionHandler completionHandler) {
-        User user = null;
+                try {
+                    // let's insert!
+                    insertUserStatement = connect.prepareStatement("insert into userdb.User (Login, Password, Handle) values (?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                    future.addStatement(insertUserStatement);
 
-        try {
-            ResultSet results = connect.createStatement().executeQuery("select UserId, Handle from userdb.User where Login = '" + login + "' and Password = '" + password + "'");
-            if (results.next()) {
-                long id = results.getLong("UserId");
-                String handle = results.getString("Handle");
-                user = new User(id, login, password, handle);
+                    insertUserStatement.setString(1, login);
+                    insertUserStatement.setString(2, password);
+                    insertUserStatement.setString(3, handle);
+                    int rowsUpdated = insertUserStatement.executeUpdate();
+
+                    if (rowsUpdated != 0) {
+                        ResultSet generatedKeys = insertUserStatement.getGeneratedKeys();
+
+                        if (generatedKeys.next()) {
+                            long id = generatedKeys.getLong("GENERATED_KEY");
+                            User user = new User(id, login, password, handle);
+                            idToUserMap.put(id, user);
+
+                            future.setResult(new UserRepositoryActionResult(user));
+                        } else {
+                            // Hmm weird, we didn't generate a key
+                            future.setResult(new UserRepositoryActionResult(ConnectionError, "Unknown connection error"));
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot insert new user"));
+                } finally {
+                    future.removeStatement(insertUserStatement);
+                }
             }
-        }
-        catch(SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        });
 
-        completionHandler.onCompletion(user);
-
-        return null;
+        return future;
     }
 
     @Override
-    public Future<User> get(long id, UserCompletionHandler completionHandler) {
+    public Future<UserRepositoryActionResult> quickRegisterUser(String handle, UserRepositoryCompletionHandler completionHandler) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Future<UserRepositoryActionResult> login(final String login, final String password, UserRepositoryCompletionHandler completionHandler) {
+        final UserFuture future = new UserFuture(completionHandler);
+
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                PreparedStatement loginStatement = null;
+
+                try {
+                    loginStatement = connect.prepareStatement("select UserId, Handle from userdb.User where Login = ? and Password = ?");
+                    future.addStatement(loginStatement);
+
+                    loginStatement.setString(1, login);
+                    loginStatement.setString(2, password);
+                    ResultSet results = loginStatement.executeQuery();
+
+                    if (results.next()) {
+                        long id = results.getLong("UserId");
+                        String handle = results.getString("Handle");
+                        User user = new User(id, login, password, handle);
+
+                        future.setResult(new UserRepositoryActionResult(user));
+                    }
+                    else {
+                        // login/password combo doesn't exist
+                        future.setResult(new UserRepositoryActionResult(InvalidUserNameOrPassword, "Invalid user name or password"));
+                    }
+                } catch(SQLException e) {
+                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Could not log user in"));
+                } finally {
+                    future.removeStatement(loginStatement);
+                }
+            }
+        });
+
+       return future;
+    }
+
+    @Override
+    public Future<UserRepositoryActionResult> get(final long id, UserRepositoryCompletionHandler completionHandler) {
+        User user = idToUserMap.get(id);
+
+        if (user != null) {
+            return new UserFuture(user, completionHandler);
+        }
+
+        final UserFuture future = new UserFuture(completionHandler);
+
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                PreparedStatement findStatement = null;
+
+                try {
+                    findStatement = connect.prepareStatement("select Login, Handle from userdb.User where UserId = ?");
+                    future.addStatement(findStatement);
+
+                    findStatement.setLong(1, id);
+                    ResultSet results = findStatement.executeQuery();
+
+                    if (results.next()) {
+                        String login = results.getString("Login");
+                        String handle = results.getString("Handle");
+                        User user2 = new User(id, login, "<BLANK>", handle);
+                        idToUserMap.put(id, user2);
+
+                        future.setResult(new UserRepositoryActionResult(user2));
+                    }
+                    else {
+                        future.setResult(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserId, "Unknown user id"));
+                    }
+                } catch(SQLException e) {
+                    e.printStackTrace();
+                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot insert new user"));
+                } finally {
+                    future.removeStatement(findStatement);
+                }
+            }
+        });
+
+        return future;
     }
 
     @Override
@@ -117,30 +195,40 @@ public class AwsRdsUserRepository implements UserRepository {
         throw new InvalidObjectException("Cannot call addUser for a AwsRdsUserRepository");
     }
 
-    private static class UserFuture implements Future<User> {
-        private static final int TIMEOUT_INTERNAL_MS = 10;
+    private static class UserFuture implements Future<UserRepositoryActionResult> {
+        private final CountDownLatch latch;
+        private volatile UserRepositoryActionResult result;
 
-        private final Statement statement;
-        private volatile boolean userSet;
-        private volatile User user;
+        private final UserRepositoryCompletionHandler handler;
+        private final ConcurrentLinkedQueue<Statement> statements = new ConcurrentLinkedQueue<>();
 
-        public UserFuture(Statement statement) {
-            this.statement = statement;
+        public UserFuture(UserRepositoryCompletionHandler handler) {
+            this.handler = handler;
+            this.latch = new CountDownLatch(1);
         }
 
-        private void setUser(User user) {
-            this.user = user;
-            this.userSet = true;
+        public UserFuture(User user, UserRepositoryCompletionHandler handler) {
+            this.result = new UserRepositoryActionResult(user);
+            this.handler = handler;
+            this.latch = new CountDownLatch(0);
+        }
+
+        public void setResult(UserRepositoryActionResult result) {
+            this.result = result;
+
+            if (handler != null)
+                handler.onCompletion(result);
+
+            latch.countDown();
         }
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
             try {
-                if (statement.isClosed()) {
-                    return true;
+                for (Statement statement : statements) {
+                    statement.close();
                 }
 
-                statement.close();
                 return true;
             } catch (SQLException e) {
                 return true;
@@ -150,7 +238,12 @@ public class AwsRdsUserRepository implements UserRepository {
         @Override
         public boolean isCancelled() {
             try {
-                return statement.isClosed();
+                for (Statement statement : statements) {
+                    if (!statement.isClosed())
+                        return false;
+                }
+
+                return true;
             } catch (SQLException e) {
                 return true;
             }
@@ -158,32 +251,35 @@ public class AwsRdsUserRepository implements UserRepository {
 
         @Override
         public boolean isDone() {
-            return userSet;
+            return latch.getCount() > 0;
         }
 
         @Override
-        public User get() throws InterruptedException, ExecutionException {
-            while(!userSet) {
-                Thread.sleep(TIMEOUT_INTERNAL_MS);
-            }
-
-            return user;
+        public UserRepositoryActionResult get() throws InterruptedException, ExecutionException {
+            latch.await();
+            return result;
         }
 
         @Override
-        public User get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-            long time = System.currentTimeMillis();
-            timeout = time + unit.toMillis(timeout);
+        public UserRepositoryActionResult get(long timeout, TimeUnit unit) throws InterruptedException {
+            latch.await(timeout, unit);
+            return result;
+        }
 
-            while(!userSet) {
-                Thread.sleep(TIMEOUT_INTERNAL_MS);
+        public void addStatement(Statement statement) {
+            statements.add(statement);
+        }
 
-                if (System.currentTimeMillis() >= timeout) {
-                    return null;
+        public void removeStatement(Statement statement) {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ignored) {
                 }
+
+                statements.remove(statement);
             }
 
-            return user;
         }
     }
 }
