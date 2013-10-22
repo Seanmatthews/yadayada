@@ -2,11 +2,11 @@ package com.chat.client.text;
 
 import com.chat.*;
 import com.chat.client.ChatClient;
-import com.chat.client.ChatClientListener;
+import com.chat.client.ChatClientDispatcher;
 import com.chat.client.ClientMessageSender;
+import com.chat.server.impl.DataStream;
 import com.chat.server.impl.InMemoryChatroomRepository;
 import com.chat.server.impl.InMemoryUserRepository;
-import com.chat.server.impl.SocketConnection;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -21,14 +21,14 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */public class ChatTextClient implements ChatClient {
     private final ClientMessageSender connection;
-    private final Connection dout;
+    private final BinaryStream dout;
 
     private Chatroom subscribedChatroom;
     private User user;
 
     public ChatTextClient(String host, int port, String user, String password) throws IOException, InterruptedException {
         Socket socket = new Socket(host, port);
-        dout = new SocketConnection(socket);
+        dout = new DataStream(socket);
 
         System.out.println("Connected to " + socket);
 
@@ -41,7 +41,7 @@ import java.util.concurrent.Executors;
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatTextInput(this));
-        pool.submit(new ChatClientListener(this, dout, chatroomRepo, userRepo));
+        pool.submit(new ChatClientDispatcher(this, dout, chatroomRepo, userRepo));
     }
 
     @Override

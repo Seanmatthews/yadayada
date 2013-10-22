@@ -1,7 +1,8 @@
 package com.chat.server;
 
 import com.chat.*;
-import com.chat.server.impl.ChatServerSenderImpl;
+import com.chat.server.impl.ClientConnectionImpl;
+import com.chat.msgs.v1.*;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -14,102 +15,90 @@ import java.util.concurrent.ExecutionException;
  * Time: 9:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ChatServerListener implements Runnable {
+public class ChatServerDispatcher implements Runnable {
     private final ChatServer server;
-    private final Connection connection;
     private final UserRepository userRepo;
     private final ChatroomRepository chatroomRepo;
-    private final ChatClientSender sender;
+    private final ClientConnection connection;
 
-    public ChatServerListener(ChatServer server, Connection connection, UserRepository userRepo, ChatroomRepository chatroomRepo) {
+    public ChatServerDispatcher(ChatServer server, BinaryStream stream, UserRepository userRepo, ChatroomRepository chatroomRepo) {
         this.server = server;
-        this.connection = connection;
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
-        this.sender = new ChatServerSenderImpl(connection);
+        this.connection = new ClientConnectionImpl(stream);
     }
 
     @Override
     public void run() {
         try {
             while(true) {
-                MessageTypes type = connection.startReading();
+                MessageTypes type = connection.recvMsgType();
 
                 switch (type) {
                     case SEARCH_CHATROOMS:
-                        connection.finishReading();
-                        server.searchChatrooms(sender);
+                        SearchChatroomsMessage scMsg = connection.recvSearchChatrooms();
+                        server.searchChatrooms(connection);
                         break;
 
                     case CREATE_CHATROOM:
-                        User ccUser = getAndValidateUser(connection.readLong());
-                        String ccChatroomName = connection.readString();
-                        connection.finishReading();
-
-                        server.createChatroom(sender, ccUser, ccChatroomName);
+                        CreateChatroomMessage ccMsg = connection.recvCreateChatroom();
+                        User ccUser = getAndValidateUser(ccMsg.getUserId());
+                        server.createChatroom(connection, ccUser, ccMsg.getChatroomName());
                         break;
 
                     case JOIN_CHATROOM:
-                        User jcUser = getAndValidateUser(connection.readLong());
-                        Chatroom jcChatroom = getAndValidateChatroom(connection.readLong());
-                        connection.finishReading();
-
-                        server.joinChatroom(sender, jcUser, jcChatroom);
+                        JoinChatroomMessage jcMsg = connection.recvJoinChatroom();
+                        User jcUser = getAndValidateUser(jcMsg.getUserId());
+                        Chatroom jcChatroom = getAndValidateChatroom(jcMsg.getChatroomId());
+                        server.joinChatroom(connection, jcUser, jcChatroom);
                         break;
 
                     case LEAVE_CHATROOM:
-                        User lcUser = getAndValidateUser(connection.readLong());
-                        Chatroom lcChatroom = getAndValidateChatroom(connection.readLong());
-                        connection.finishReading();
-
-                        server.leaveChatroom(sender, lcUser, lcChatroom);
+                        LeaveChatroomMessage lcMsg = connection.recvLeaveChatroom();
+                        User lcUser = getAndValidateUser(lcMsg.getUserId());
+                        Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
+                        server.leaveChatroom(connection, lcUser, lcChatroom);
                         break;
 
                     case REGISTER:
-                        String regLogin = connection.readString();
-                        String regPassword = connection.readString();
-                        String handle = connection.readString();
-                        connection.finishReading();
-
-                        server.registerUser(sender, regLogin, regPassword, handle);
+                        RegisterMessage rMsg = connection.recvRegister();
+                        server.registerUser(connection, rMsg.getLogin(), rMsg.getPassword(), rMsg.getHandle());
                         System.out.println("registered a fuckin user");
                         break;
 
                     case QUICK_REGISTER:
-                        String qrHandle = connection.readString();
-                        connection.finishReading();
-
-                        server.quickRegisterUser(sender, qrHandle);
+                        QuickRegisterMessage qrMsg = connection.recvQuickRegister();
+                        server.quickRegisterUser(connection, qrMsg.getHandle());
                         System.out.println("registered a fuckin user");
                         break;
 
                     case LOGIN:
-                        String logLogin = connection.readString();
-                        String logPassword = connection.readString();
-                        connection.finishReading();
+                        LoginMessage lMsg = connection.recvLogin();
+                        server.login(connection, lMsg.getLogin(), lMsg.getPassword());
+                        break;
 
-                        server.login(sender, logLogin, logPassword);
+                    case CONNECT:
+                        ConnectMessage cMsg = connection.recvConnect();
+                        server.connect(connection, cMsg.getApiVersion(), cMsg.getUuid());
                         break;
 
                     case SUBMIT_MESSAGE:
-                        User user = getAndValidateUser(connection.readLong());
-                        Chatroom chatroom = getAndValidateChatroom(connection.readLong());
-                        String msg = connection.readString();
-                        connection.finishReading();
-
-                        System.out.println("Sending " + msg);
-                        server.newMessage(sender, user, chatroom, msg);
+                        SubmitMessageMessage smMsg = connection.recvSubmitMessage();
+                        User user = getAndValidateUser(smMsg.getUserId());
+                        Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());
+                        System.out.println("Sending " + smMsg.getMsg());
+                        server.newMessage(connection, user, chatroom, smMsg.getMsg());
                         break;
 
                     default:
                         System.err.println("Unhandled message: " + type);
-                        connection.finishReading();
+                        connection.recvUnknown();
                 }
             }
         } catch (EOFException e) {
             System.out.println("Customer hang up");
         } catch (IOException e) {
-            System.out.println("Cannot write to connection");
+            System.out.println("Cannot write to stream");
             e.printStackTrace();
         } catch (ValidationError e) {
             System.err.println("Validation error " + e.getMessage());
@@ -119,7 +108,7 @@ public class ChatServerListener implements Runnable {
         } catch (ExecutionException e) {
             e.printStackTrace();
         } finally {
-            server.removeConnection(sender);
+            server.removeConnection(connection);
         }
     }
 

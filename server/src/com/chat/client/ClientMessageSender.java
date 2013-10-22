@@ -15,19 +15,42 @@ import static com.chat.Utilities.getStrLen;
  */
 public class ClientMessageSender {
     private final ChatClient client;
-    private final Connection connection;
+    private final BinaryStream connection;
 
-    public ClientMessageSender(ChatClient client, Connection connection) {
+    public ClientMessageSender(ChatClient client, BinaryStream connection) {
         this.client = client;
         this.connection = connection;
     }
 
     public void registerAndLogin(String user, String password) {
         try {
+            connect();
             registerNewUser(user, password);
             loginUser(user, password);
         } catch (IOException e) {
             System.out.println("Error registering and logging in");
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    private void connect() {
+        try {
+            String UUID = "FOO";
+            connection.startWriting(1 + 4 + getStrLen(UUID));
+            connection.writeByte(MessageTypes.CONNECT.getValue());
+            connection.writeInt(1);
+            connection.writeString(UUID);
+            connection.finishWriting();
+
+            connection.startReading();
+            if (MessageTypes.lookup(connection.readByte()) != MessageTypes.CONNECT_ACCEPT) {
+                System.out.println("Did not accept connection. WTF!");
+                System.exit(0);
+            }
+            connection.finishReading();
+        } catch (IOException e) {
+            System.out.println("Error connecting");
             e.printStackTrace();
             System.exit(0);
         }
@@ -49,7 +72,8 @@ public class ClientMessageSender {
         connection.writeString(password);
         connection.finishWriting();
 
-        MessageTypes msgType = connection.startReading();
+        connection.startReading();
+        MessageTypes msgType = MessageTypes.lookup(connection.readByte());
 
         switch(msgType) {
             case LOGIN_ACCEPT:
@@ -63,6 +87,7 @@ public class ClientMessageSender {
                 System.out.println("Login rejected: " + msg);
                 break;
         }
+
         connection.finishReading();
     }
 
@@ -75,7 +100,8 @@ public class ClientMessageSender {
         connection.writeString(user);
         connection.finishWriting();
 
-        MessageTypes msgType = connection.startReading();
+        connection.startReading();
+        MessageTypes msgType = MessageTypes.lookup(connection.readByte());
 
         switch(msgType) {
             case REGISTER_ACCEPT:
@@ -87,6 +113,7 @@ public class ClientMessageSender {
                 System.out.println("Failed to register user: " + msg);
                 break;
         }
+
         connection.finishReading();
     }
 
