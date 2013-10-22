@@ -1,6 +1,7 @@
 package com.chat.server.impl;
 
 import com.chat.Connection;
+import com.chat.MessageTypes;
 import com.chat.Utilities;
 
 import java.io.*;
@@ -19,7 +20,10 @@ public class SocketConnection implements Connection {
     private final DataOutputStream dout;
 
     private int readBytes;
-    private int msgBytes;
+    private int readMsgBytes;
+
+    private int writtenBytes;
+    private int writeMsgBytes;
 
     public SocketConnection(Socket socket) throws IOException {
         this.socket = socket;
@@ -46,31 +50,42 @@ public class SocketConnection implements Connection {
     }
 
     @Override
-    public void startReadingMessage(int messageBytes) throws IOException {
+    public MessageTypes startReading() throws IOException {
+        short messageBytes = readShort();
+
         if (messageBytes <= 0 || messageBytes > 1000)
             throw new IOException("Invalid incoming data. Bytes in message: " + messageBytes);
 
-        msgBytes = messageBytes;
+        readMsgBytes = messageBytes;
         readBytes = 0;
+
+        byte msgTypeByte = readByte();
+        MessageTypes msgType = MessageTypes.lookup(msgTypeByte);
+
+        if (msgType == null)
+            throw new IOException("Unknown message type: " + (int)msgTypeByte);
+
+        return msgType;
+
     }
 
     @Override
-    public void finishReadingMessage() throws IOException {
-        if (readBytes > msgBytes) {
+    public void finishReading() throws IOException {
+        if (readBytes > readMsgBytes) {
             // wtf, this is a mal-formed message
-            throw new IOException("Invalid incoming data. Expected=" + msgBytes + " Read=" + readBytes);
+            throw new IOException("Invalid incoming data. Expected=" + readMsgBytes + " Read=" + readBytes);
         }
 
-        if (readBytes < msgBytes) {
+        if (readBytes < readMsgBytes) {
             // clear it out
-            read(msgBytes - readBytes);
+            read(readMsgBytes - readBytes);
         }
     }
 
     @Override
     public String readString() throws IOException {
         String str = din.readUTF();
-        readBytes += Utilities.getStringLength(str);
+        readBytes += Utilities.getStrLen(str);
         return str;
     }
 
@@ -111,28 +126,57 @@ public class SocketConnection implements Connection {
     }
 
     @Override
+    public void startWriting(int msgLength) throws IOException {
+        writeShort(msgLength);
+
+        writeMsgBytes = msgLength;
+        writtenBytes = 0;
+    }
+
+    @Override
+    public void finishWriting() throws IOException {
+        if (writtenBytes > writeMsgBytes) {
+            throw new IOException("Wrote too many bytes. Expected=" + writeMsgBytes + " Sent=" + writeMsgBytes);
+        }
+
+        if (writtenBytes < writeMsgBytes) {
+            throw new IOException("Wrote too few bytes. Expected=" + writeMsgBytes + " Sent=" + writeMsgBytes);
+        }
+    }
+
+    @Override
     public void writeByte(int value) throws IOException {
         dout.writeByte(value);
+
+        writtenBytes++;
     }
 
     @Override
     public void writeShort(int value) throws IOException {
         dout.writeShort(value);
+
+        writtenBytes += 2;
     }
 
     @Override
     public void writeInt(int value) throws IOException {
         dout.writeInt(value);
+
+        writtenBytes += 4;
     }
 
     @Override
     public void writeLong(long value) throws IOException {
         dout.writeLong(value);
+
+        writtenBytes += 8;
     }
 
     @Override
     public void writeString(String value) throws IOException {
         dout.writeUTF(value);
+
+        writtenBytes += Utilities.getStrLen(value);
     }
 
     @Override

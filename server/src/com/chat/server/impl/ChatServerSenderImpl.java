@@ -24,36 +24,40 @@ public class ChatServerSenderImpl implements ChatClientSender {
     @Override
     public void sendRegisterAccept(User user) throws IOException {
         synchronized (connection) {
-            connection.writeShort(1 + 8);
+            connection.startWriting(1 + 8);
             connection.writeByte(MessageTypes.REGISTER_ACCEPT.getValue());
             connection.writeLong(user.getId());
+            connection.finishWriting();
         }
     }
 
     @Override
     public void sendRegisterReject(String reason) throws IOException {
         synchronized (connection) {
-            connection.writeShort(1 + getStringLength(reason));
+            connection.startWriting(1 + getStrLen(reason));
             connection.writeByte(MessageTypes.REGISTER_REJECT.getValue());
             connection.writeString(reason);
+            connection.finishWriting();
         }
     }
 
     @Override
     public void sendLoginAccept(User user) throws IOException {
         synchronized (connection) {
-            connection.writeShort(1 + 8);
+            connection.startWriting(1 + 8);
             connection.writeByte(MessageTypes.LOGIN_ACCEPT.getValue());
             connection.writeLong(user.getId());
+            connection.finishWriting();
         }
     }
 
     @Override
     public void sendLoginReject(String reason) throws IOException {
         synchronized (connection) {
-            connection.writeShort(1 + getStringLength(reason));
+            connection.startWriting(1 + getStrLen(reason));
             connection.writeByte(MessageTypes.LOGIN_REJECT.getValue());
             connection.writeString(reason);
+            connection.finishWriting();
         }
     }
 
@@ -65,7 +69,7 @@ public class ChatServerSenderImpl implements ChatClientSender {
             String handle = msg.getSender().getHandle();
             String message = msg.getMessage();
 
-            connection.writeShort(1 + (4 * 8) + getStringLength(handle) + getStringLength(message));
+            connection.startWriting(1 + (4 * 8) + getStrLen(handle) + getStrLen(message));
             connection.writeByte(MessageTypes.MESSAGE.getValue());
             connection.writeLong(msg.getId());
             connection.writeLong(msg.getTimestamp());
@@ -73,6 +77,7 @@ public class ChatServerSenderImpl implements ChatClientSender {
             connection.writeLong(msg.getChatroom().getId());
             connection.writeString(handle);
             connection.writeString(message);
+            connection.finishWriting();
         }
     }
 
@@ -84,43 +89,47 @@ public class ChatServerSenderImpl implements ChatClientSender {
             String chatroomName = chatroom.getName();
             String ownerHandle = chatroom.getOwner().getHandle();
 
-            connection.writeShort(1 + (2 * 8) + getStringLength(chatroomName) + getStringLength(ownerHandle));
+            connection.startWriting((1 + (2 * 8) + getStrLen(chatroomName) + getStrLen(ownerHandle)));
             connection.writeByte(MessageTypes.CHATROOM.getValue());
             connection.writeLong(chatroom.getId());
             connection.writeLong(chatroom.getOwner().getId());
             connection.writeString(chatroomName);
             connection.writeString(ownerHandle);
+            connection.finishWriting();
         }
     }
 
     @Override
     public void sendJoinChatroomReject(Chatroom chatroom, String reason) throws IOException {
         synchronized (connection) {
-            connection.writeShort(1 + 8 + getStringLength(reason));
+            connection.startWriting(1 + 8 + getStrLen(reason));
             connection.writeByte(MessageTypes.JOIN_CHATROOM_REJECT.getValue());
             connection.writeLong(chatroom.getId());
             connection.writeString(reason);
+            connection.finishWriting();
         }
     }
 
     @Override
     public void sendJoinedChatroom(Chatroom chatroom, User user) throws IOException {
         synchronized (connection) {
-            connection.writeShort(1 + 8 + 8 + getStringLength(user.getHandle()));
+            connection.startWriting(1 + 8 + 8 + getStrLen(user.getHandle()));
             connection.writeByte(MessageTypes.JOINED_CHATROOM.getValue());
             connection.writeLong(chatroom.getId());
             connection.writeLong(user.getId());
             connection.writeString(user.getHandle());
+            connection.finishWriting();
         }
     }
 
     @Override
     public void sendLeftChatroom(Chatroom chatroom, User user) throws IOException {
         synchronized (connection) {
-            connection.writeShort(1 + 8 + 8 + getStringLength(user.getHandle()));
+            connection.startWriting(1 + 8 + 8);
             connection.writeByte(MessageTypes.LEFT_CHATROOM.getValue());
             connection.writeLong(chatroom.getId());
             connection.writeLong(user.getId());
+            connection.finishWriting();
         }
     }
 

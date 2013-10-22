@@ -26,7 +26,7 @@ public class Utilities {
         return count;
     }
 
-    public static int getStringLength(String str) {
+    public static int getStrLen(String str) {
         return 2 + utfLength(str);
     }
 }

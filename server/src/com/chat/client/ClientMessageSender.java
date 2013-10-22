@@ -1,12 +1,10 @@
 package com.chat.client;
 
 import com.chat.*;
-import com.chat.client.gui.ChatGUI;
-import com.chat.server.impl.SocketConnection;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+
+import static com.chat.Utilities.getStrLen;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,19 +36,21 @@ public class ClientMessageSender {
     public void searchChatrooms() throws IOException {
         System.out.println("Searching for chatrooms");
 
-        connection.writeShort(1);
+        connection.startWriting(1);
         connection.writeByte(MessageTypes.SEARCH_CHATROOMS.getValue());
+        connection.finishWriting();
     }
 
     private void loginUser(String login, String password) throws IOException {
         System.out.println("Logging in user: " + login);
-        connection.writeShort(1 + Utilities.getStringLength(login) + Utilities.getStringLength(password));
+        connection.startWriting(1 + getStrLen(login) + getStrLen(password));
         connection.writeByte(MessageTypes.LOGIN.getValue());
         connection.writeString(login);
         connection.writeString(password);
+        connection.finishWriting();
 
-        connection.readShort(); // size
-        MessageTypes msgType = MessageTypes.lookup(connection.readByte());
+        MessageTypes msgType = connection.startReading();
+
         switch(msgType) {
             case LOGIN_ACCEPT:
                 long userId = connection.readLong();
@@ -63,18 +63,20 @@ public class ClientMessageSender {
                 System.out.println("Login rejected: " + msg);
                 break;
         }
+        connection.finishReading();
     }
 
     private void registerNewUser(String user, String password) throws IOException {
         System.out.println("Registering user: " + user);
-        connection.writeShort(1 + Utilities.getStringLength(user) + Utilities.getStringLength(password) + Utilities.getStringLength(user));
+        connection.startWriting(1 + getStrLen(user) + getStrLen(password) + getStrLen(user));
         connection.writeByte(MessageTypes.REGISTER.getValue());
         connection.writeString(user);
         connection.writeString(password);
         connection.writeString(user);
+        connection.finishWriting();
 
-        connection.readShort(); // size
-        MessageTypes msgType = MessageTypes.lookup(connection.readByte());
+        MessageTypes msgType = connection.startReading();
+
         switch(msgType) {
             case REGISTER_ACCEPT:
                 connection.readLong();
@@ -85,38 +87,43 @@ public class ClientMessageSender {
                 System.out.println("Failed to register user: " + msg);
                 break;
         }
+        connection.finishReading();
     }
 
     public void joinChatroom(User user, Chatroom chatroom) throws IOException {
         System.out.println("Joining chatroom: " + chatroom);
-        connection.writeShort(17);
+        connection.startWriting(17);
         connection.writeByte(MessageTypes.JOIN_CHATROOM.getValue());
         connection.writeLong(user.getId());
         connection.writeLong(chatroom.getId());
+        connection.finishWriting();
     }
 
     public void sendMessage(User user, Chatroom chatroom, String textToSend) throws IOException {
         System.out.println("Sending message: " + textToSend);
-        connection.writeShort(1 + 8 + 8 + Utilities.getStringLength(textToSend));
+        connection.startWriting(1 + 8 + 8 + getStrLen(textToSend));
         connection.writeByte(MessageTypes.SUBMIT_MESSAGE.getValue());
         connection.writeLong(user.getId());
         connection.writeLong(chatroom.getId());
         connection.writeString(textToSend);
+        connection.finishWriting();
     }
 
     public void createChatroom(User user, String chatroomName) throws IOException {
         System.out.println("Creating chatroom: " + chatroomName);
-        connection.writeShort(1 + 8 + Utilities.getStringLength(chatroomName));
+        connection.startWriting(1 + 8 + getStrLen(chatroomName));
         connection.writeByte(MessageTypes.CREATE_CHATROOM.getValue());
         connection.writeLong(user.getId());
         connection.writeString(chatroomName);
+        connection.finishWriting();
     }
 
     public void leaveChatroom(User user, Chatroom chatroom) throws IOException {
         System.out.println("Leaving chatroom: " + chatroom);
-        connection.writeShort(17);
+        connection.startWriting(17);
         connection.writeByte(MessageTypes.LEAVE_CHATROOM.getValue());
         connection.writeLong(user.getId());
         connection.writeLong(chatroom.getId());
+        connection.finishWriting();
     }
 }
