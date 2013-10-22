@@ -27,7 +27,7 @@ public enum MessageTypes {
     CHATROOM((byte)32),
 
     JOIN_CHATROOM((byte)33),
-    JOIN_CHATROOM_FAILURE((byte)36),
+    JOIN_CHATROOM_REJECT((byte)36),
     JOINED_CHATROOM((byte)37),
 
     LEAVE_CHATROOM((byte)34),

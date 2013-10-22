@@ -91,4 +91,8 @@ public class Chatroom {
     public Iterator<Message> getRecentMessages() {
         return recentMessages.iterator();
     }
+
+    public boolean containsUser(User sender) {
+        return users.contains(sender);
+    }
 }

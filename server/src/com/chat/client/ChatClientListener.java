@@ -42,7 +42,8 @@ public class ChatClientListener implements Runnable {
                 MessageTypes types = MessageTypes.lookup(messageType);
                 if (types == null) {
                     System.err.println("Unknown message type " + (int) messageType);
-                    System.exit(0);
+                    byte[] read = din.read(size - 1);
+                    continue;
                 }
 
                 switch(types) {
@@ -90,6 +91,11 @@ public class ChatClientListener implements Runnable {
                         Message msg = new Message(msgID, chat, sender, message, millis);
 
                         client.onMessage(msg);
+                        break;
+
+                    default:
+                        System.err.println("Ignoring unhandled message: " + types);
+                        byte[] read = din.read(size - 1);
                         break;
                 }
             }

@@ -191,6 +191,15 @@ public class ChatServerImpl implements ChatServer {
     public void joinChatroom(ChatClientSender senderConnection, User sender, Chatroom chatroom) {
         System.out.println("Adding " + sender.getLogin() + " to " + chatroom.getName());
 
+        if (chatroom.containsUser(sender)) {
+            try {
+                senderConnection.sendJoinChatroomReject(chatroom, sender + " is already in " + chatroom);
+            } catch (IOException e) {
+                removeConnection(senderConnection);
+            }
+            return;
+        }
+
         Iterator<User> users = chatroom.getUsers();
         while(users.hasNext()) {
             // notify me about other user joining chat
