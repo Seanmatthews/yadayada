@@ -73,6 +73,12 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
+    public void mapClientConnectionToUser(ClientConnection senderConnection, User user) {
+        userConnectionMap.put(user, senderConnection);
+        connectionUserMap.put(senderConnection, user);
+    }
+
+    @Override
     public void newMessage(ClientConnection senderConnection, User sender, Chatroom chatroom, String message) {
         System.out.println("New message from " + sender + " " + message);
 
@@ -209,7 +215,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void joinChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom) {
-        System.out.println("Adding " + sender.getLogin() + " to " + chatroom.getName());
+        System.out.println("Adding " + sender + " to " + chatroom);
 
         if (chatroom.containsUser(sender)) {
             try {
@@ -265,7 +271,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom) {
-        System.out.println("Removing " + sender.getLogin() + " from " + chatroom.getName());
+        System.out.println("Removing " + sender + " from " + chatroom);
 
         Iterator<User> users = chatroom.getUsers();
         while(users.hasNext()) {

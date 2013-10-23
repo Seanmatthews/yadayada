@@ -30,6 +30,4 @@ public interface BinaryStream {
     void writeInt(int value) throws IOException;
     void writeLong(long value) throws IOException;
     void writeString(String value) throws IOException;
-
-
 }

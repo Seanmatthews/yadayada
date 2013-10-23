@@ -43,7 +43,7 @@ public class ClientConnectionImpl implements ClientConnection {
     @Override
     public ConnectMessage recvConnect() throws IOException {
         int apiVersion = stream.readInt();
-        String uuid = stream.readString();
+        uuid = stream.readString();
         stream.finishReading();
 
         return new ConnectMessage(apiVersion, uuid);

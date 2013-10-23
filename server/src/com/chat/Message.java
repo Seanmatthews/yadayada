@@ -61,6 +61,6 @@ public class Message {
 
     @Override
     public String toString() {
-        return chatroom.getName() + " " + sender.getHandle() + ": " + message;
+        return chatroom + " " + sender + ": " + message;
     }
 }

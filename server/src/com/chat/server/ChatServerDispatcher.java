@@ -34,6 +34,20 @@ public class ChatServerDispatcher implements Runnable {
             while(true) {
                 MessageTypes type = connection.recvMsgType();
 
+                if (type == MessageTypes.CONNECT) {
+                    ConnectMessage cMsg = connection.recvConnect();
+                    server.connect(connection, cMsg.getApiVersion(), cMsg.getUuid());
+                    continue;
+                }
+                else {
+                    if (connection.getUUID() == null) {
+                        System.err.println("Customer sent us " + type + " instead of connect");
+                        // we haven't called connect before
+                        server.removeConnection(connection);
+                        return;
+                    }
+                }
+
                 switch (type) {
                     case SEARCH_CHATROOMS:
                         SearchChatroomsMessage scMsg = connection.recvSearchChatrooms();
@@ -77,11 +91,6 @@ public class ChatServerDispatcher implements Runnable {
                         server.login(connection, lMsg.getLogin(), lMsg.getPassword());
                         break;
 
-                    case CONNECT:
-                        ConnectMessage cMsg = connection.recvConnect();
-                        server.connect(connection, cMsg.getApiVersion(), cMsg.getUuid());
-                        break;
-
                     case SUBMIT_MESSAGE:
                         SubmitMessageMessage smMsg = connection.recvSubmitMessage();
                         User user = getAndValidateUser(smMsg.getUserId());
@@ -119,6 +128,7 @@ public class ChatServerDispatcher implements Runnable {
             throw new ValidationError("Unknown user: " + userId);
         }
 
+        server.mapClientConnectionToUser(connection, user);
         return user;
     }
 

@@ -57,7 +57,7 @@ import java.util.concurrent.Executors;
 
     @Override
     public void onMessage(Message message) {
-        System.out.println(message.getChatroom().getName() + " " + message.getSender().getHandle() + ": " + message.getMessage());
+        System.out.println(message);
     }
 
     @Override
