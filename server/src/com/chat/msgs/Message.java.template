@@ -5,7 +5,7 @@ public class ${msg.name}Message {
     private final $field.type $field.name;
 #end for
 
-    public ${msg.name}Message(#echo ', '.join($msg.fieldNames)#) {
+    public ${msg.name}Message(#echo ', '.join($msg.fieldTypeNames)#) {
     #for $field in $msg.fields
         this.$field.name = $field.name;
     #end for

@@ -1,6 +1,7 @@
 package com.chat.server.impl;
 
 import com.chat.*;
+import com.chat.MessageTypes;
 import com.chat.server.ClientConnection;
 import com.chat.msgs.v1.*;
 

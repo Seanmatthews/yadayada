@@ -1,0 +1,21 @@
+package $package;
+
+import com.chat.MessageTypes;
+
+import java.io.IOException;
+
+public interface ${clientOrServer}Connection {
+    String getUUID();
+    void setUUID(String UUID);
+    MessageTypes recvMsgType() throws IOException;
+    void recvUnknown() throws IOException;
+    void close();
+
+#for $msg in $recvMsgs
+    ${msg.name}Message recv${msg.name}() throws IOException;
+#end for
+    
+#for $msg in $sendMsgs
+    void send${msg.name}(${msg.name}Message msg) throws IOException;
+#end for    
+}

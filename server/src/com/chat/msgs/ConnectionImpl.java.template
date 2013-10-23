@@ -1,0 +1,82 @@
+package $package;
+
+import com.chat.BinaryStream;
+import com.chat.MessageTypes;
+
+import java.io.IOException;
+
+import static com.chat.Utilities.*;
+
+public class ${clientOrServer}ConnectionImpl implements ${clientOrServer}Connection {
+    private final BinaryStream stream;
+    private String uuid;
+
+    public ${clientOrServer}ConnectionImpl(BinaryStream stream) {
+       this.stream = stream;
+    }
+
+    @Override
+    public String getUUID() {
+       return uuid;
+    }
+
+    @Override
+    public void setUUID(String UUID) {
+       this.uuid = UUID;
+    }
+
+    @Override 
+    public MessageTypes recvMsgType() throws IOException {
+        stream.startReading();
+        byte msgTypeByte = stream.readByte();
+        MessageTypes msgType = MessageTypes.lookup(msgTypeByte);
+
+        if (msgType == null)
+            throw new IOException("Unknown message type: " + (int)msgTypeByte);
+
+        return msgType;        
+    }
+
+    @Override
+    public void recvUnknown() throws IOException {
+        stream.finishReading();
+    }
+
+    @Override
+    public void close() {
+        synchronized (stream) {
+            stream.close();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return stream.toString();
+    }
+#for $msg in $recvMsgs
+
+    @Override
+    public ${msg.name}Message recv${msg.name}() throws IOException {
+    #for $field in $msg.fields
+        $field.type $field.name = stream.read${field.type.capitalize()}();  
+    #end for 
+        stream.finishReading();
+                
+        return new ${msg.name}Message(#echo ', '.join($msg.fieldNames)#);
+    }
+#end for
+#for $msg in $sendMsgs
+    
+    @Override
+    public void send${msg.name}(${msg.name}Message msg) throws IOException {
+        synchronized(stream) {
+            stream.startWriting(${msg.length});
+            stream.writeByte(${msg.val});
+        #for $field in $msg.fields
+            stream.write${field.type.capitalize()}(msg.get#echo $field.name[0].capitalize() + $field.name[1:]#());
+        #end for
+            stream.finishWriting();
+        }
+    }
+#end for    
+}
