@@ -183,7 +183,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     
     
     while (idx < length-1) {
-        short msglen = ntohs(*(short*)&buffer[idx]);
+        short msglen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
         idx += 2;
         Byte msgType = buffer[idx];
         idx += 1;
@@ -254,13 +254,13 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             idx += 2;
             chatOwnerHandle = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
             idx += strLen;
-            latitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            idx += 8;
-            longitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            idx += 8;
-            radius = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
-            idx += 8;
-            NSLog(@"CHATROOM [%lli, %lli, %@, %@, %lli, %lli, %lli]", chatId,chatOwnerId,chatName,chatOwnerHandle,latitude,longitude,radius);
+            //latitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            //idx += 8;
+            //longitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            //idx += 8;
+            //radius = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
+            //idx += 8;
+            NSLog(@"CHATROOM [%lli, %lli, %@, %@]", chatId,chatOwnerId,chatName,chatOwnerHandle);//,latitude,longitude,radius);
             break;
             
         case JOIN_CHATROOM_FAILURE:
@@ -379,7 +379,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)joinChatroomWithId:(long long)chatId
 {
-    [self writeMessageHeaderWithSize:17 ofType:JOIN_CHATROOM];
+    [self writeMessageHeaderWithSize:33 ofType:JOIN_CHATROOM];
     [self writeLong:userId];
     [self writeLong:chatId];
     [self writeLong:currentLat];
@@ -422,8 +422,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 - (void)sendMessage:(NSString*)message toChat:(long long)chatId
 {
-    int msgLen = [message lengthOfBytesUsingEncoding:STRENC] +
-                 [userHandle lengthOfBytesUsingEncoding:STRENC] + 33;
+    int msgLen = [message lengthOfBytesUsingEncoding:STRENC] + 19;
     [self writeMessageHeaderWithSize:msgLen ofType:SUBMIT_MESSAGE];
     [self writeLong:userId];
     [self writeLong:chatId];
