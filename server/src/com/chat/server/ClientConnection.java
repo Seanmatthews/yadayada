@@ -26,7 +26,6 @@ public interface ClientConnection {
     LeaveChatroomMessage recvLeaveChatroom() throws IOException;
     RegisterMessage recvRegister() throws IOException;
     LoginMessage recvLogin() throws IOException;
-    QuickRegisterMessage recvQuickRegister() throws IOException;
     SubmitMessageMessage recvSubmitMessage() throws IOException;
     void recvUnknown() throws IOException;
 

@@ -38,15 +38,6 @@ public class InMemoryUserRepository implements UserRepository {
         return new UserFuture(new UserRepositoryActionResult(user), handler);
     }
 
-    @Override
-    public Future<UserRepositoryActionResult> quickRegisterUser(String handle, String UUID, UserRepositoryCompletionHandler handler) {
-        User user = new User(nextUserId++, handle);
-
-        idToUserMap.put(user.getId(), user);
-
-        return new UserFuture(new UserRepositoryActionResult(user), handler);
-    }
-
     public Future<UserRepositoryActionResult> login(String login, String password, UserRepositoryCompletionHandler handler) {
         User user = loginToUserMap.get(login);
 

@@ -142,33 +142,6 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void quickRegisterUser(final ClientConnection senderConnection, String handle) {
-        System.out.println("Quick registering user " + handle);
-
-        userRepo.quickRegisterUser(handle, senderConnection.getUUID(), new UserRepositoryCompletionHandler() {
-            @Override
-            public void onCompletion(UserRepositoryActionResult result) {
-                try {
-                    switch (result.getCode()) {
-                        case OK:
-                            senderConnection.sendRegisterAccept(result.getUser());
-                            break;
-                        case ConnectionError:
-                            senderConnection.sendRegisterReject("BinaryStream error");
-                            break;
-                        case UserAlreadyExists:
-                        default:
-                            senderConnection.sendRegisterReject(result.getMessage());
-                            break;
-                    }
-                } catch (IOException e) {
-                    removeConnection(senderConnection);
-                }
-            }
-        });
-    }
-
-    @Override
     public void login(final ClientConnection senderConnection, final String login, String password) {
         System.out.println("Logging in user " + login);
 

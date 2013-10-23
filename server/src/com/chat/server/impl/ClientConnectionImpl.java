@@ -108,14 +108,6 @@ public class ClientConnectionImpl implements ClientConnection {
     }
 
     @Override
-    public QuickRegisterMessage recvQuickRegister() throws IOException {
-        String qrHandle = stream.readString();
-        stream.finishReading();
-
-        return new QuickRegisterMessage(qrHandle);
-    }
-
-    @Override
     public SubmitMessageMessage recvSubmitMessage() throws IOException {
         long userId = stream.readLong();
         long chatroomId = stream.readLong();

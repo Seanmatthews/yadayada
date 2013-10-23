@@ -27,7 +27,7 @@ public class ClientMessageSender {
         try {
             connect(new Random().nextInt());
             registerNewUser(user, password);
-            //loginUser(user, password);
+            loginUser(user, password);
         } catch (IOException e) {
             System.out.println("Error registering and logging in");
             e.printStackTrace();
@@ -92,37 +92,17 @@ public class ClientMessageSender {
         connection.finishReading();
     }
 
-    private void registerNewUser(String userName, String password) throws IOException {
-        System.out.println("Registering user: " + userName);
-        /*connection.startWriting(1 + getStrLen(user) + getStrLen(password) + getStrLen(user));
+    private void registerNewUser(String user, String password) throws IOException {
+        System.out.println("Registering user: " + user);
+        connection.startWriting(1 + getStrLen(user) + getStrLen(password) + getStrLen(user));
         connection.writeByte(MessageTypes.REGISTER.getValue());
         connection.writeString(user);
         connection.writeString(password);
         connection.writeString(user);
-        connection.finishWriting();*/
-
-        // Quick Register
-        connection.startWriting(1 + getStrLen(userName));
-        connection.writeByte(MessageTypes.QUICK_REGISTER.getValue());
-        connection.writeString(userName);
         connection.finishWriting();
 
+        // skip incoming message
         connection.startReading();
-        MessageTypes msgType = MessageTypes.lookup(connection.readByte());
-
-        switch(msgType) {
-            case REGISTER_ACCEPT:
-                long userId = connection.readLong();
-                User user = new User(userId, userName);
-                client.onUserLoggedIn(user);
-                System.out.println("Registration accepted. UserId: " + user);
-                break;
-            case REGISTER_REJECT:
-                String msg = connection.readString();
-                System.out.println("Failed to register user: " + msg);
-                break;
-        }
-
         connection.finishReading();
     }
 

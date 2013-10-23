@@ -80,12 +80,6 @@ public class ChatServerDispatcher implements Runnable {
                         System.out.println("registered a fuckin user");
                         break;
 
-                    case QUICK_REGISTER:
-                        QuickRegisterMessage qrMsg = connection.recvQuickRegister();
-                        server.quickRegisterUser(connection, qrMsg.getHandle());
-                        System.out.println("registered a fuckin user");
-                        break;
-
                     case LOGIN:
                         LoginMessage lMsg = connection.recvLogin();
                         server.login(connection, lMsg.getLogin(), lMsg.getPassword());

@@ -12,7 +12,6 @@ import java.util.concurrent.Future;
  */
 public interface UserRepository {
     Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, UserRepositoryCompletionHandler completionHandler);
-    Future<UserRepositoryActionResult> quickRegisterUser(String handle, String UUID, UserRepositoryCompletionHandler completionHandler);
     Future<UserRepositoryActionResult> login(String login, String password, UserRepositoryCompletionHandler completionHandler);
     Future<UserRepositoryActionResult> get(long id, UserRepositoryCompletionHandler completionHandler);
 
