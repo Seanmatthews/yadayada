@@ -1,9 +1,9 @@
 package com.chat;
 
-import com.chat.server.impl.ChatStreamServer;
-import com.chat.server.impl.InMemoryChatroomRepository;
-import com.chat.server.impl.InMemoryMessageRepository;
-import com.chat.server.impl.InMemoryUserRepository;
+import com.chat.server.ChatStreamServer;
+import com.chat.impl.InMemoryChatroomRepository;
+import com.chat.impl.InMemoryMessageRepository;
+import com.chat.impl.InMemoryUserRepository;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;

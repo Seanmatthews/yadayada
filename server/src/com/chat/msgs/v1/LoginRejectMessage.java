@@ -1,19 +1,13 @@
 package com.chat.msgs.v1;
 
 public class LoginRejectMessage {
-    private final int APIVersion;
-    private final String UUID;
+    private final String reason;
 
-    public LoginRejectMessage(int APIVersion, String UUID) {
-        this.APIVersion = APIVersion;
-        this.UUID = UUID;
+    public LoginRejectMessage(String reason) {
+        this.reason = reason;
     }
 
-    public int getAPIVersion() {
-        return APIVersion;
-    }
-
-    public String getUUID() {
-        return UUID;
+    public String getReason() {
+        return reason;
     }
 } 

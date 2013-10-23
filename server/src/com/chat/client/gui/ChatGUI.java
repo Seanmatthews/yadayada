@@ -3,10 +3,11 @@ package com.chat.client.gui;
 import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientDispatcher;
-import com.chat.client.ClientMessageSender;
-import com.chat.server.impl.DataStream;
-import com.chat.server.impl.InMemoryChatroomRepository;
-import com.chat.server.impl.InMemoryUserRepository;
+import com.chat.client.ChatClientUtilities;
+import com.chat.msgs.v1.*;
+import com.chat.impl.DataStream;
+import com.chat.impl.InMemoryChatroomRepository;
+import com.chat.impl.InMemoryUserRepository;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,7 +46,7 @@ public class ChatGUI implements ChatClient {
     private final Map<Chatroom, JList<User>> chatroomListMap = new HashMap<>();
     private final Map<Chatroom, JPanel> chatroomPanelMap = new HashMap<>();
 
-    private final ClientMessageSender connection;
+    private final ServerConnection connection;
 
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
@@ -58,19 +59,21 @@ public class ChatGUI implements ChatClient {
 
         System.out.println("Connected to " + socket);
 
-        connection = new ClientMessageSender(this, dataStream);
-        connection.registerAndLogin(user, password);
+        connection = new ServerConnectionImpl(dataStream);
+        long userId = ChatClientUtilities.initialConnect(connection, user, password);
+        loggedInUser = new User(userId, user);
 
         chatroomRepo = new InMemoryChatroomRepository();
         userRepo = new InMemoryUserRepository();
+        userRepo.addUser(loggedInUser);
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatClientDispatcher(this, dataStream, chatroomRepo, userRepo));
 
-        setupChatroomList();
+        setupActions();
     }
 
-    private void setupChatroomList() {
+    private void setupActions() {
         chatroomList.setModel(chatroomModel);
 
         leaveButton.addActionListener(new ActionListener() {
@@ -78,7 +81,7 @@ public class ChatGUI implements ChatClient {
             public void actionPerformed(ActionEvent e) {
                 try {
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.leaveChatroom(loggedInUser, chatroom);
+                    connection.sendLeaveChatroom(new LeaveChatroomMessage(loggedInUser.getId(), chatroom.getId()));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -90,7 +93,7 @@ public class ChatGUI implements ChatClient {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    connection.searchChatrooms();
+                    connection.sendSearchChatrooms(new SearchChatroomsMessage(0, 0));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -106,7 +109,7 @@ public class ChatGUI implements ChatClient {
                         return;
 
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.joinChatroom(loggedInUser, chatroom);
+                    connection.sendJoinChatroom(new JoinChatroomMessage(loggedInUser.getId(), chatroom.getId(), 0, 0));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -121,7 +124,7 @@ public class ChatGUI implements ChatClient {
 
                 if (text != null && text.length() > 0) {
                     try {
-                        connection.createChatroom(loggedInUser, text);
+                        connection.sendCreateChatroom(new CreateChatroomMessage(loggedInUser.getId(), text, 0, 0, 0));
                     } catch (IOException e1) {
                         e1.printStackTrace();
                         System.exit(0);
@@ -146,7 +149,7 @@ public class ChatGUI implements ChatClient {
                     String textToSend = chatTextField.getText();
 
                     try {
-                        connection.sendMessage(loggedInUser, chatroom, textToSend);
+                        connection.sendSubmitMessage(new SubmitMessageMessage(loggedInUser.getId(), chatroom.getId(), textToSend));
                         chatTextField.setText("");
                     } catch (IOException e1) {
                         e1.printStackTrace();
@@ -187,11 +190,6 @@ public class ChatGUI implements ChatClient {
         }
 
         chatroomModel.addElement(chatroom);
-    }
-
-    @Override
-    public void onUserLoggedIn(User user) {
-        this.loggedInUser = user;
     }
 
     @Override

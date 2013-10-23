@@ -1,7 +1,5 @@
 package com.chat.msgs.v1;
 
-import com.chat.MessageTypes;
-
 import java.io.IOException;
 
 public interface ClientConnection {
@@ -13,6 +11,7 @@ public interface ClientConnection {
 
     RegisterMessage recvRegister() throws IOException;
     LoginMessage recvLogin() throws IOException;
+    ConnectMessage recvConnect() throws IOException;
     SubmitMessageMessage recvSubmitMessage() throws IOException;
     SearchChatroomsMessage recvSearchChatrooms() throws IOException;
     JoinChatroomMessage recvJoinChatroom() throws IOException;
@@ -23,13 +22,12 @@ public interface ClientConnection {
     void sendRegisterReject(RegisterRejectMessage msg) throws IOException;
     void sendLoginAccept(LoginAcceptMessage msg) throws IOException;
     void sendLoginReject(LoginRejectMessage msg) throws IOException;
-    void sendConnect(ConnectMessage msg) throws IOException;
     void sendConnectAccept(ConnectAcceptMessage msg) throws IOException;
     void sendConnectReject(ConnectRejectMessage msg) throws IOException;
     void sendMessage(MessageMessage msg) throws IOException;
     void sendChatroom(ChatroomMessage msg) throws IOException;
-    void sendJoinChatroomFailure(JoinChatroomFailureMessage msg) throws IOException;
+    void sendJoinChatroomReject(JoinChatroomRejectMessage msg) throws IOException;
     void sendJoinedChatroom(JoinedChatroomMessage msg) throws IOException;
     void sendLeftChatroom(LeftChatroomMessage msg) throws IOException;
-    void sendCreateChatroomFailure(CreateChatroomFailureMessage msg) throws IOException;
+    void sendCreateChatroomReject(CreateChatroomRejectMessage msg) throws IOException;
 }

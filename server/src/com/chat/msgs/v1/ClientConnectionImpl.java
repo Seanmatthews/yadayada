@@ -1,7 +1,6 @@
 package com.chat.msgs.v1;
 
 import com.chat.BinaryStream;
-import com.chat.MessageTypes;
 
 import java.io.IOException;
 
@@ -74,6 +73,15 @@ public class ClientConnectionImpl implements ClientConnection {
     }
 
     @Override
+    public ConnectMessage recvConnect() throws IOException {
+        int APIVersion = stream.readInt();  
+        String UUID = stream.readString();  
+        stream.finishReading();
+                
+        return new ConnectMessage(APIVersion, UUID);
+    }
+
+    @Override
     public SubmitMessageMessage recvSubmitMessage() throws IOException {
         long userId = stream.readLong();  
         long chatroomId = stream.readLong();  
@@ -128,7 +136,7 @@ public class ClientConnectionImpl implements ClientConnection {
     public void sendRegisterAccept(RegisterAcceptMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8);
-            stream.writeByte(2);
+            stream.writeByte(MessageTypes.RegisterAccept.getValue());
             stream.writeLong(msg.getUserId());
             stream.finishWriting();
         }
@@ -138,7 +146,7 @@ public class ClientConnectionImpl implements ClientConnection {
     public void sendRegisterReject(RegisterRejectMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getReason()));
-            stream.writeByte(3);
+            stream.writeByte(MessageTypes.RegisterReject.getValue());
             stream.writeString(msg.getReason());
             stream.finishWriting();
         }
@@ -147,9 +155,9 @@ public class ClientConnectionImpl implements ClientConnection {
     @Override
     public void sendLoginAccept(LoginAcceptMessage msg) throws IOException {
         synchronized(stream) {
-            stream.startWriting(1 + getStrLen(msg.getReason()));
-            stream.writeByte(12);
-            stream.writeString(msg.getReason());
+            stream.startWriting(1 + 8);
+            stream.writeByte(MessageTypes.LoginAccept.getValue());
+            stream.writeLong(msg.getUserId());
             stream.finishWriting();
         }
     }
@@ -157,21 +165,9 @@ public class ClientConnectionImpl implements ClientConnection {
     @Override
     public void sendLoginReject(LoginRejectMessage msg) throws IOException {
         synchronized(stream) {
-            stream.startWriting(1 + 4 + getStrLen(msg.getUUID()));
-            stream.writeByte(13);
-            stream.writeInt(msg.getAPIVersion());
-            stream.writeString(msg.getUUID());
-            stream.finishWriting();
-        }
-    }
-    
-    @Override
-    public void sendConnect(ConnectMessage msg) throws IOException {
-        synchronized(stream) {
-            stream.startWriting(1 + 4 + getStrLen(msg.getUUID()));
-            stream.writeByte(16);
-            stream.writeInt(msg.getAPIVersion());
-            stream.writeString(msg.getUUID());
+            stream.startWriting(1 + getStrLen(msg.getReason()));
+            stream.writeByte(MessageTypes.LoginReject.getValue());
+            stream.writeString(msg.getReason());
             stream.finishWriting();
         }
     }
@@ -180,7 +176,7 @@ public class ClientConnectionImpl implements ClientConnection {
     public void sendConnectAccept(ConnectAcceptMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 4 + 8);
-            stream.writeByte(17);
+            stream.writeByte(MessageTypes.ConnectAccept.getValue());
             stream.writeInt(msg.getAPIVersion());
             stream.writeLong(msg.getGlobalChatId());
             stream.finishWriting();
@@ -191,7 +187,7 @@ public class ClientConnectionImpl implements ClientConnection {
     public void sendConnectReject(ConnectRejectMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getReason()));
-            stream.writeByte(18);
+            stream.writeByte(MessageTypes.ConnectReject.getValue());
             stream.writeString(msg.getReason());
             stream.finishWriting();
         }
@@ -201,7 +197,7 @@ public class ClientConnectionImpl implements ClientConnection {
     public void sendMessage(MessageMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + 8 + 8 + getStrLen(msg.getSenderHandle()) + getStrLen(msg.getMessage()));
-            stream.writeByte(22);
+            stream.writeByte(MessageTypes.Message.getValue());
             stream.writeLong(msg.getMessageId());
             stream.writeLong(msg.getMessageTimestamp());
             stream.writeLong(msg.getSenderId());
@@ -216,7 +212,7 @@ public class ClientConnectionImpl implements ClientConnection {
     public void sendChatroom(ChatroomMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + getStrLen(msg.getChatroomName()) + getStrLen(msg.getChatroomOwnerHandle()) + 8 + 8 + 8);
-            stream.writeByte(32);
+            stream.writeByte(MessageTypes.Chatroom.getValue());
             stream.writeLong(msg.getChatroomId());
             stream.writeLong(msg.getChatroomOwnerId());
             stream.writeString(msg.getChatroomName());
@@ -229,10 +225,10 @@ public class ClientConnectionImpl implements ClientConnection {
     }
     
     @Override
-    public void sendJoinChatroomFailure(JoinChatroomFailureMessage msg) throws IOException {
+    public void sendJoinChatroomReject(JoinChatroomRejectMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + getStrLen(msg.getReason()));
-            stream.writeByte(36);
+            stream.writeByte(MessageTypes.JoinChatroomReject.getValue());
             stream.writeLong(msg.getChatroomId());
             stream.writeString(msg.getReason());
             stream.finishWriting();
@@ -243,7 +239,7 @@ public class ClientConnectionImpl implements ClientConnection {
     public void sendJoinedChatroom(JoinedChatroomMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + getStrLen(msg.getUserHandle()));
-            stream.writeByte(37);
+            stream.writeByte(MessageTypes.JoinedChatroom.getValue());
             stream.writeLong(msg.getChatroomId());
             stream.writeLong(msg.getUserId());
             stream.writeString(msg.getUserHandle());
@@ -255,7 +251,7 @@ public class ClientConnectionImpl implements ClientConnection {
     public void sendLeftChatroom(LeftChatroomMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + 8);
-            stream.writeByte(38);
+            stream.writeByte(MessageTypes.LeftChatroom.getValue());
             stream.writeLong(msg.getChatroomId());
             stream.writeLong(msg.getUserId());
             stream.finishWriting();
@@ -263,10 +259,10 @@ public class ClientConnectionImpl implements ClientConnection {
     }
     
     @Override
-    public void sendCreateChatroomFailure(CreateChatroomFailureMessage msg) throws IOException {
+    public void sendCreateChatroomReject(CreateChatroomRejectMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getChatroomName()) + getStrLen(msg.getReason()));
-            stream.writeByte(38);
+            stream.writeByte(MessageTypes.CreateChatroomReject.getValue());
             stream.writeString(msg.getChatroomName());
             stream.writeString(msg.getReason());
             stream.finishWriting();

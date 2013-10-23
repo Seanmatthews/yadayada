@@ -1,8 +1,7 @@
-package com.chat.server.impl;
+package com.chat.server;
 
 import com.chat.*;
-import com.chat.server.ChatServer;
-import com.chat.server.ChatServerDispatcher;
+import com.chat.impl.DataStream;
 
 import java.io.IOException;
 import java.net.ServerSocket;

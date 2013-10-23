@@ -1,7 +1,6 @@
 package com.chat.msgs.v1;
 
 import com.chat.BinaryStream;
-import com.chat.MessageTypes;
 
 import java.io.IOException;
 
@@ -72,28 +71,18 @@ public class ServerConnectionImpl implements ServerConnection {
 
     @Override
     public LoginAcceptMessage recvLoginAccept() throws IOException {
-        String reason = stream.readString();  
+        long userId = stream.readLong();  
         stream.finishReading();
                 
-        return new LoginAcceptMessage(reason);
+        return new LoginAcceptMessage(userId);
     }
 
     @Override
     public LoginRejectMessage recvLoginReject() throws IOException {
-        int APIVersion = stream.readInt();  
-        String UUID = stream.readString();  
+        String reason = stream.readString();  
         stream.finishReading();
                 
-        return new LoginRejectMessage(APIVersion, UUID);
-    }
-
-    @Override
-    public ConnectMessage recvConnect() throws IOException {
-        int APIVersion = stream.readInt();  
-        String UUID = stream.readString();  
-        stream.finishReading();
-                
-        return new ConnectMessage(APIVersion, UUID);
+        return new LoginRejectMessage(reason);
     }
 
     @Override
@@ -141,12 +130,12 @@ public class ServerConnectionImpl implements ServerConnection {
     }
 
     @Override
-    public JoinChatroomFailureMessage recvJoinChatroomFailure() throws IOException {
+    public JoinChatroomRejectMessage recvJoinChatroomReject() throws IOException {
         long chatroomId = stream.readLong();  
         String reason = stream.readString();  
         stream.finishReading();
                 
-        return new JoinChatroomFailureMessage(chatroomId, reason);
+        return new JoinChatroomRejectMessage(chatroomId, reason);
     }
 
     @Override
@@ -169,19 +158,19 @@ public class ServerConnectionImpl implements ServerConnection {
     }
 
     @Override
-    public CreateChatroomFailureMessage recvCreateChatroomFailure() throws IOException {
+    public CreateChatroomRejectMessage recvCreateChatroomReject() throws IOException {
         String chatroomName = stream.readString();  
         String reason = stream.readString();  
         stream.finishReading();
                 
-        return new CreateChatroomFailureMessage(chatroomName, reason);
+        return new CreateChatroomRejectMessage(chatroomName, reason);
     }
     
     @Override
     public void sendRegister(RegisterMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getUserName()) + getStrLen(msg.getPassword()) + getStrLen(msg.getHandle()));
-            stream.writeByte(1);
+            stream.writeByte(MessageTypes.Register.getValue());
             stream.writeString(msg.getUserName());
             stream.writeString(msg.getPassword());
             stream.writeString(msg.getHandle());
@@ -193,9 +182,20 @@ public class ServerConnectionImpl implements ServerConnection {
     public void sendLogin(LoginMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getUserName()) + getStrLen(msg.getPassword()));
-            stream.writeByte(11);
+            stream.writeByte(MessageTypes.Login.getValue());
             stream.writeString(msg.getUserName());
             stream.writeString(msg.getPassword());
+            stream.finishWriting();
+        }
+    }
+    
+    @Override
+    public void sendConnect(ConnectMessage msg) throws IOException {
+        synchronized(stream) {
+            stream.startWriting(1 + 4 + getStrLen(msg.getUUID()));
+            stream.writeByte(MessageTypes.Connect.getValue());
+            stream.writeInt(msg.getAPIVersion());
+            stream.writeString(msg.getUUID());
             stream.finishWriting();
         }
     }
@@ -204,7 +204,7 @@ public class ServerConnectionImpl implements ServerConnection {
     public void sendSubmitMessage(SubmitMessageMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + getStrLen(msg.getMessage()));
-            stream.writeByte(21);
+            stream.writeByte(MessageTypes.SubmitMessage.getValue());
             stream.writeLong(msg.getUserId());
             stream.writeLong(msg.getChatroomId());
             stream.writeString(msg.getMessage());
@@ -216,7 +216,7 @@ public class ServerConnectionImpl implements ServerConnection {
     public void sendSearchChatrooms(SearchChatroomsMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + 8);
-            stream.writeByte(31);
+            stream.writeByte(MessageTypes.SearchChatrooms.getValue());
             stream.writeLong(msg.getLatitude());
             stream.writeLong(msg.getLongitude());
             stream.finishWriting();
@@ -227,7 +227,7 @@ public class ServerConnectionImpl implements ServerConnection {
     public void sendJoinChatroom(JoinChatroomMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + 8 + 8);
-            stream.writeByte(33);
+            stream.writeByte(MessageTypes.JoinChatroom.getValue());
             stream.writeLong(msg.getUserId());
             stream.writeLong(msg.getChatroomId());
             stream.writeLong(msg.getLatitude());
@@ -240,7 +240,7 @@ public class ServerConnectionImpl implements ServerConnection {
     public void sendLeaveChatroom(LeaveChatroomMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + 8);
-            stream.writeByte(34);
+            stream.writeByte(MessageTypes.LeaveChatroom.getValue());
             stream.writeLong(msg.getUserId());
             stream.writeLong(msg.getChatroomId());
             stream.finishWriting();
@@ -251,7 +251,7 @@ public class ServerConnectionImpl implements ServerConnection {
     public void sendCreateChatroom(CreateChatroomMessage msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(1 + 8 + getStrLen(msg.getChatroomName()) + 8 + 8 + 8);
-            stream.writeByte(35);
+            stream.writeByte(MessageTypes.CreateChatroom.getValue());
             stream.writeLong(msg.getOwnerId());
             stream.writeString(msg.getChatroomName());
             stream.writeLong(msg.getLatitude());

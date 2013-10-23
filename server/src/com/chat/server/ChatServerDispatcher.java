@@ -1,9 +1,8 @@
 package com.chat.server;
 
 import com.chat.*;
-import com.chat.MessageTypes;
-import com.chat.server.impl.ClientConnectionImpl;
 import com.chat.msgs.v1.*;
+import com.chat.msgs.v1.ClientConnection;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -35,7 +34,7 @@ public class ChatServerDispatcher implements Runnable {
             while(true) {
                 MessageTypes type = connection.recvMsgType();
 
-                if (type == MessageTypes.CONNECT) {
+                if (type == MessageTypes.Connect) {
                     ConnectMessage cMsg = connection.recvConnect();
                     server.connect(connection, cMsg.getAPIVersion(), cMsg.getUUID());
                     continue;
@@ -50,43 +49,43 @@ public class ChatServerDispatcher implements Runnable {
                 }
 
                 switch (type) {
-                    case SEARCH_CHATROOMS:
+                    case SearchChatrooms:
                         SearchChatroomsMessage scMsg = connection.recvSearchChatrooms();
                         server.searchChatrooms(connection);
                         break;
 
-                    case CREATE_CHATROOM:
+                    case CreateChatroom:
                         CreateChatroomMessage ccMsg = connection.recvCreateChatroom();
                         User ccUser = getAndValidateUser(ccMsg.getOwnerId());
                         server.createChatroom(connection, ccUser, ccMsg.getChatroomName());
                         break;
 
-                    case JOIN_CHATROOM:
+                    case JoinChatroom:
                         JoinChatroomMessage jcMsg = connection.recvJoinChatroom();
                         User jcUser = getAndValidateUser(jcMsg.getUserId());
                         Chatroom jcChatroom = getAndValidateChatroom(jcMsg.getChatroomId());
                         server.joinChatroom(connection, jcUser, jcChatroom);
                         break;
 
-                    case LEAVE_CHATROOM:
+                    case LeaveChatroom:
                         LeaveChatroomMessage lcMsg = connection.recvLeaveChatroom();
                         User lcUser = getAndValidateUser(lcMsg.getUserId());
                         Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
                         server.leaveChatroom(connection, lcUser, lcChatroom);
                         break;
 
-                    case REGISTER:
+                    case Register:
                         RegisterMessage rMsg = connection.recvRegister();
                         server.registerUser(connection, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle());
                         System.out.println("registered a fuckin user");
                         break;
 
-                    case LOGIN:
+                    case Login:
                         LoginMessage lMsg = connection.recvLogin();
                         server.login(connection, lMsg.getUserName(), lMsg.getPassword());
                         break;
 
-                    case SUBMIT_MESSAGE:
+                    case SubmitMessage:
                         SubmitMessageMessage smMsg = connection.recvSubmitMessage();
                         User user = getAndValidateUser(smMsg.getUserId());
                         Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());

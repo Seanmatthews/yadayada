@@ -6,6 +6,7 @@ import java.util.Map;
 public enum MessageTypes {
     Register((byte)1),
     Login((byte)11),
+    Connect((byte)16),
     SubmitMessage((byte)21),
     SearchChatrooms((byte)31),
     JoinChatroom((byte)33),
@@ -15,15 +16,14 @@ public enum MessageTypes {
     RegisterReject((byte)3),
     LoginAccept((byte)12),
     LoginReject((byte)13),
-    Connect((byte)16),
     ConnectAccept((byte)17),
     ConnectReject((byte)18),
     Message((byte)22),
     Chatroom((byte)32),
-    JoinChatroomFailure((byte)36),
+    JoinChatroomReject((byte)36),
     JoinedChatroom((byte)37),
     LeftChatroom((byte)38),
-    CreateChatroomFailure((byte)38),
+    CreateChatroomReject((byte)38),
     ;
 
     private final byte value;

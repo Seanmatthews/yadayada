@@ -1,6 +1,7 @@
 package com.chat;
 
-import com.chat.server.impl.*;
+import com.chat.server.ChatStreamServer;
+import com.chat.impl.*;
 
 import java.io.IOException;
 import java.sql.*;

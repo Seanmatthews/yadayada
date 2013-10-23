@@ -1,7 +1,6 @@
 package $package;
 
 import com.chat.BinaryStream;
-import com.chat.MessageTypes;
 
 import java.io.IOException;
 
@@ -71,7 +70,7 @@ public class ${clientOrServer}ConnectionImpl implements ${clientOrServer}Connect
     public void send${msg.name}(${msg.name}Message msg) throws IOException {
         synchronized(stream) {
             stream.startWriting(${msg.length});
-            stream.writeByte(${msg.val});
+            stream.writeByte(MessageTypes.${msg.name}.getValue());
         #for $field in $msg.fields
             stream.write${field.type.capitalize()}(msg.get#echo $field.name[0].capitalize() + $field.name[1:]#());
         #end for

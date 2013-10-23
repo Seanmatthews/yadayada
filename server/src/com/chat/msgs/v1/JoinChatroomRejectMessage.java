@@ -1,10 +1,10 @@
 package com.chat.msgs.v1;
 
-public class JoinChatroomFailureMessage {
+public class JoinChatroomRejectMessage {
     private final long chatroomId;
     private final String reason;
 
-    public JoinChatroomFailureMessage(long chatroomId, String reason) {
+    public JoinChatroomRejectMessage(long chatroomId, String reason) {
         this.chatroomId = chatroomId;
         this.reason = reason;
     }

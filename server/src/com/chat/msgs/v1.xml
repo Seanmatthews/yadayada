@@ -19,15 +19,14 @@
     </msg>
 
     <msg name="LoginAccept" val="12" origin="server">
-        <field name="reason" type="String" />
+        <field name="userId" type="long" />
     </msg>
 
     <msg name="LoginReject" val="13" origin="server">
-        <field name="APIVersion" type="int" />
-        <field name="UUID" type="String" />
+        <field name="reason" type="String" />
     </msg>
 
-    <msg name="Connect" val="16" origin="server">
+    <msg name="Connect" val="16" origin="client">
         <field name="APIVersion" type="int" />
         <field name="UUID" type="String" />
     </msg>
@@ -91,7 +90,7 @@
         <field name="radius" type="long" />
     </msg>
 
-    <msg name="JoinChatroomFailure" val="36" origin="server">
+    <msg name="JoinChatroomReject" val="36" origin="server">
         <field name="chatroomId" type="long" />
         <field name="reason" type="String" />
     </msg>
@@ -107,8 +106,9 @@
         <field name="userId" type="long" />
     </msg>
 
-    <msg name="CreateChatroomFailure" val="38" origin="server">
+    <msg name="CreateChatroomReject" val="38" origin="server">
         <field name="chatroomName" type="String" />
         <field name="reason" type="String" />
     </msg>
+
 </schema>

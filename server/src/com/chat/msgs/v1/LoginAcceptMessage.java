@@ -1,13 +1,13 @@
 package com.chat.msgs.v1;
 
 public class LoginAcceptMessage {
-    private final String reason;
+    private final long userId;
 
-    public LoginAcceptMessage(String reason) {
-        this.reason = reason;
+    public LoginAcceptMessage(long userId) {
+        this.userId = userId;
     }
 
-    public String getReason() {
-        return reason;
+    public long getUserId() {
+        return userId;
     }
 } 

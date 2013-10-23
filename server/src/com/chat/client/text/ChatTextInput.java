@@ -1,8 +1,6 @@
 package com.chat.client.text;
 
 import com.chat.client.ChatClient;
-import com.chat.server.impl.InMemoryChatroomRepository;
-import com.chat.server.impl.InMemoryUserRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;

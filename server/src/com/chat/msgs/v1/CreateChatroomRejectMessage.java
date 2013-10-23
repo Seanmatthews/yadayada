@@ -1,10 +1,10 @@
 package com.chat.msgs.v1;
 
-public class CreateChatroomFailureMessage {
+public class CreateChatroomRejectMessage {
     private final String chatroomName;
     private final String reason;
 
-    public CreateChatroomFailureMessage(String chatroomName, String reason) {
+    public CreateChatroomRejectMessage(String chatroomName, String reason) {
         this.chatroomName = chatroomName;
         this.reason = reason;
     }

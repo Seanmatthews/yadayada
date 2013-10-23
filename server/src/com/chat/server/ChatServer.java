@@ -2,6 +2,7 @@ package com.chat.server;
 
 import com.chat.Chatroom;
 import com.chat.User;
+import com.chat.msgs.v1.ClientConnection;
 
 /**
  * Created with IntelliJ IDEA.

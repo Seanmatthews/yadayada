@@ -3,10 +3,11 @@ package com.chat.client.text;
 import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientDispatcher;
-import com.chat.client.ClientMessageSender;
-import com.chat.server.impl.DataStream;
-import com.chat.server.impl.InMemoryChatroomRepository;
-import com.chat.server.impl.InMemoryUserRepository;
+import com.chat.client.ChatClientUtilities;
+import com.chat.msgs.v1.*;
+import com.chat.impl.DataStream;
+import com.chat.impl.InMemoryChatroomRepository;
+import com.chat.impl.InMemoryUserRepository;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -20,24 +21,25 @@ import java.util.concurrent.Executors;
  * Time: 8:50 AM
  * To change this template use File | Settings | File Templates.
  */public class ChatTextClient implements ChatClient {
-    private final ClientMessageSender connection;
-    private final BinaryStream dout;
+    private final ServerConnection connection;
 
     private Chatroom subscribedChatroom;
     private User user;
 
     public ChatTextClient(String host, int port, String user, String password) throws IOException, InterruptedException {
         Socket socket = new Socket(host, port);
-        dout = new DataStream(socket);
+        BinaryStream dout = new DataStream(socket);
 
         System.out.println("Connected to " + socket);
 
+        connection = new ServerConnectionImpl(dout);
+
+        long userId = ChatClientUtilities.initialConnect(connection, user, password);
+        this.user = new User(userId, user);
+
         InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
-
-        connection = new ClientMessageSender(this, dout);
-        connection.registerAndLogin(user, password);
-        connection.searchChatrooms();
+        userRepo.addUser(this.user);
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatTextInput(this));
@@ -50,7 +52,7 @@ import java.util.concurrent.Executors;
 
         // Subscribe to the first one!
         if (chatroom.getName().equalsIgnoreCase("Global")) {
-            connection.joinChatroom(user, chatroom);
+            connection.sendJoinChatroom(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0));
             subscribedChatroom = chatroom;
         }
     }
@@ -62,7 +64,7 @@ import java.util.concurrent.Executors;
 
     @Override
     public void sendMessage(String message) throws IOException {
-        connection.sendMessage(user, subscribedChatroom, message);
+        connection.sendSubmitMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message));
     }
 
     @Override
@@ -73,11 +75,6 @@ import java.util.concurrent.Executors;
     @Override
     public void onLeftChatroom(Chatroom chatroom, User user) {
         System.out.println(user + " has left " + chatroom);
-    }
-
-    @Override
-    public void onUserLoggedIn(User user) {
-        this.user = user;
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {

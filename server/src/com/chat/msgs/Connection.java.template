@@ -1,7 +1,5 @@
 package $package;
 
-import com.chat.MessageTypes;
-
 import java.io.IOException;
 
 public interface ${clientOrServer}Connection {

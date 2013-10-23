@@ -1,6 +1,7 @@
 package com.chat.client;
 
 import com.chat.*;
+import com.chat.msgs.v1.*;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
@@ -15,83 +16,56 @@ import java.util.concurrent.ExecutionException;
  */
 public class ChatClientDispatcher implements Runnable {
     private final ChatClient client;
-    private final BinaryStream connection;
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
+    private final ServerConnection connection;
 
     public ChatClientDispatcher(ChatClient client, BinaryStream stream, ChatroomRepository chatroomRepo, UserRepository userRepo) {
         this.client = client;
-        this.connection = stream;
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
+        this.connection = new ServerConnectionImpl(stream);
     }
 
     @Override
     public void run() {
         try {
             while (true) {
-                connection.startReading();
-
-                MessageTypes msgType = MessageTypes.lookup(connection.readByte());
-                if (msgType == null) {
-                    connection.finishReading();
-                    continue;
-                }
+                MessageTypes msgType = connection.recvMsgType();
 
                 switch(msgType) {
-                    case JOINED_CHATROOM:
-                        long jcChatroomId = connection.readLong();
-                        long jcUserId = connection.readLong();
-                        String jcHandle = connection.readString();
-                        connection.finishReading();
-
-                        User jcUser = getOrCreateUser(jcUserId, jcHandle);
-                        Chatroom jcChatroom = chatroomRepo.get(jcChatroomId);
+                    case JoinedChatroom:
+                        JoinedChatroomMessage jcMsg = connection.recvJoinedChatroom();
+                        User jcUser = getOrCreateUser(jcMsg.getUserId(), jcMsg.getUserHandle());
+                        Chatroom jcChatroom = chatroomRepo.get(jcMsg.getChatroomId());
                         client.onJoinedChatroom(jcChatroom, jcUser);
                         break;
 
-                    case LEFT_CHATROOM:
-                        long lcChatroomId = connection.readLong();
-                        long lcUserId = connection.readLong();
-                        connection.finishReading();
-
-                        User lcUser = userRepo.get(lcUserId, null).get().getUser();
-                        Chatroom lcChatroom = chatroomRepo.get(lcChatroomId);
+                    case LeftChatroom:
+                        LeftChatroomMessage lcMsg = connection.recvLeftChatroom();
+                        User lcUser = userRepo.get(lcMsg.getUserId(), null).get().getUser();
+                        Chatroom lcChatroom = chatroomRepo.get(lcMsg.getChatroomId());
                         client.onLeftChatroom(lcChatroom, lcUser);
                         break;
 
-                    case CHATROOM:
-                        long chatroomId = connection.readLong();
-                        long ownerId = connection.readLong();
-                        String chatroomName = connection.readString();
-                        String ownerName = connection.readString();
-                        connection.finishReading();
-
-                        User owner = getOrCreateUser(ownerId, ownerName);
-                        Chatroom chatroom = getOrCreateChatroom(chatroomId, chatroomName, owner);
-
+                    case Chatroom:
+                        ChatroomMessage cMsg = connection.recvChatroom();
+                        User owner = getOrCreateUser(cMsg.getChatroomOwnerId(), cMsg.getChatroomOwnerHandle());
+                        Chatroom chatroom = getOrCreateChatroom(cMsg.getChatroomId(), cMsg.getChatroomName(), owner);
                         client.onChatroom(chatroom);
                         break;
 
-                    case MESSAGE:
-                        long msgID = connection.readLong();
-                        long millis = connection.readLong();
-                        long userId = connection.readLong();
-                        long chatId = connection.readLong();
-                        String userName = connection.readString();
-                        String message = connection.readString();
-                        connection.finishReading();
-
-                        User sender = getOrCreateUser(userId, userName);
-                        Chatroom chat = chatroomRepo.get(chatId);
-                        Message msg = new Message(msgID, chat, sender, message, millis);
-
-                        client.onMessage(msg);
+                    case Message:
+                        MessageMessage msg = connection.recvMessage();
+                        User sender = getOrCreateUser(msg.getSenderId(), msg.getSenderHandle());
+                        Chatroom chat = chatroomRepo.get(msg.getChatroomId());
+                        Message theMsg = new Message(msg.getMessageId(), chat, sender, msg.getMessage(), msg.getMessageTimestamp());
+                        client.onMessage(theMsg);
                         break;
 
                     default:
                         System.err.println("Ignoring unhandled message: " + msgType);
-                        connection.finishReading();
+                        connection.recvUnknown();
                         break;
                 }
             }

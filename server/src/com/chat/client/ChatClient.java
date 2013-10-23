@@ -14,7 +14,6 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public interface ChatClient {
-    void onUserLoggedIn(User user);
     void onChatroom(Chatroom chatroom) throws IOException;
     void onMessage(Message message);
     void sendMessage(String msg) throws IOException;

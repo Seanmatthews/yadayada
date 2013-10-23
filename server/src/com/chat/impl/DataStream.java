@@ -1,7 +1,6 @@
-package com.chat.server.impl;
+package com.chat.impl;
 
 import com.chat.BinaryStream;
-import com.chat.MessageTypes;
 import com.chat.Utilities;
 
 import java.io.*;
