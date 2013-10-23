@@ -103,6 +103,9 @@ public class ClientMessageSender {
 
         // skip incoming message
         connection.startReading();
+        connection.readByte();
+        connection.readInt();
+        connection.readLong();
         connection.finishReading();
     }
 
