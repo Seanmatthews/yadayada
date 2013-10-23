@@ -1,10 +1,10 @@
 package com.chat.msgs.v1;
 
-public class ConnectMessage {
+public class LoginRejectMessage {
     private final int APIVersion;
     private final String UUID;
 
-    public ConnectMessage(int APIVersion, String UUID) {
+    public LoginRejectMessage(int APIVersion, String UUID) {
         this.APIVersion = APIVersion;
         this.UUID = UUID;
     }

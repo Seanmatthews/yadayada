@@ -1,26 +1,37 @@
 package com.chat.msgs.v1;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jgreco
- * Date: 10/22/13
- * Time: 5:19 PM
- * To change this template use File | Settings | File Templates.
- */
 public class CreateChatroomMessage {
-    private final long userId;
+    private final long ownerId;
     private final String chatroomName;
+    private final long latitude;
+    private final long longitude;
+    private final long radius;
 
-    public CreateChatroomMessage(long userId, String chatroomName) {
-        this.userId = userId;
+    public CreateChatroomMessage(long ownerId, String chatroomName, long latitude, long longitude, long radius) {
+        this.ownerId = ownerId;
         this.chatroomName = chatroomName;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.radius = radius;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getOwnerId() {
+        return ownerId;
     }
 
     public String getChatroomName() {
         return chatroomName;
     }
-}
+
+    public long getLatitude() {
+        return latitude;
+    }
+
+    public long getLongitude() {
+        return longitude;
+    }
+
+    public long getRadius() {
+        return radius;
+    }
+} 

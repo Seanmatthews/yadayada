@@ -1,22 +1,14 @@
 package com.chat.msgs.v1;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jgreco
- * Date: 10/22/13
- * Time: 5:33 PM
- * To change this template use File | Settings | File Templates.
- */
 public class SubmitMessageMessage {
     private final long userId;
     private final long chatroomId;
-    private final String msg;
+    private final String message;
 
-    public SubmitMessageMessage(long userId, long chatroomId, String msg) {
-        //To change body of created methods use File | Settings | File Templates.
+    public SubmitMessageMessage(long userId, long chatroomId, String message) {
         this.userId = userId;
         this.chatroomId = chatroomId;
-        this.msg = msg;
+        this.message = message;
     }
 
     public long getUserId() {
@@ -27,7 +19,7 @@ public class SubmitMessageMessage {
         return chatroomId;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
-}
+} 
