@@ -56,9 +56,11 @@ public class ClientConnectionImpl implements ClientConnection {
 
     @Override
     public SearchChatroomsMessage recvSearchChatrooms() throws IOException {
+        long latitude = 0; //stream.readLong();
+        long longitude = 0; //stream.readLong();
         stream.finishReading();
 
-        return new SearchChatroomsMessage();
+        return new SearchChatroomsMessage(latitude, longitude);
     }
 
     @Override
@@ -67,16 +69,18 @@ public class ClientConnectionImpl implements ClientConnection {
         String chatroomName = stream.readString();
         stream.finishReading();
 
-        return new CreateChatroomMessage(userId, chatroomName);
+        return new CreateChatroomMessage(userId, chatroomName, stream.readLong(), stream.readLong(), stream.readLong());
     }
 
     @Override
     public JoinChatroomMessage recvJoinChatroom() throws IOException {
         long userId = stream.readLong();
         long chatroomId = stream.readLong();
+        long lattitude = 0;// stream.readLong();
+        long longitude = 0; //stream.readLong();
         stream.finishReading();
 
-        return new JoinChatroomMessage(userId, chatroomId);
+        return new JoinChatroomMessage(userId, chatroomId, lattitude, longitude);
     }
 
     @Override

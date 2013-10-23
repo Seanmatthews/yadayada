@@ -1,16 +1,19 @@
 package com.chat.msgs.v1;
 
-import java.io.IOException;
-
-/**
- * Created with IntelliJ IDEA.
- * User: jgreco
- * Date: 10/22/13
- * Time: 5:00 PM
- * To change this template use File | Settings | File Templates.
- */
 public class SearchChatroomsMessage {
-    public SearchChatroomsMessage() throws IOException {
+    private final long latitude;
+    private final long longitude;
 
+    public SearchChatroomsMessage(long latitude, long longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
-}
+
+    public long getLatitude() {
+        return latitude;
+    }
+
+    public long getLongitude() {
+        return longitude;
+    }
+} 

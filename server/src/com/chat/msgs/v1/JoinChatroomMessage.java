@@ -1,19 +1,16 @@
 package com.chat.msgs.v1;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jgreco
- * Date: 10/22/13
- * Time: 5:31 PM
- * To change this template use File | Settings | File Templates.
- */
 public class JoinChatroomMessage {
     private final long userId;
     private final long chatroomId;
+    private final long latitude;
+    private final long longitude;
 
-    public JoinChatroomMessage(long userId, long chatroomId) {
+    public JoinChatroomMessage(long userId, long chatroomId, long latitude, long longitude) {
         this.userId = userId;
         this.chatroomId = chatroomId;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public long getUserId() {
@@ -23,4 +20,12 @@ public class JoinChatroomMessage {
     public long getChatroomId() {
         return chatroomId;
     }
-}
+
+    public long getLatitude() {
+        return latitude;
+    }
+
+    public long getLongitude() {
+        return longitude;
+    }
+} 

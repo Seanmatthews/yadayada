@@ -17,8 +17,9 @@ import java.io.IOException;
  */
 public interface ClientConnection {
     String getUUID();
-
+    void close();
     MessageTypes recvMsgType() throws IOException;
+
     ConnectMessage recvConnect() throws IOException;
     SearchChatroomsMessage recvSearchChatrooms() throws IOException;
     CreateChatroomMessage recvCreateChatroom() throws IOException;
@@ -40,5 +41,4 @@ public interface ClientConnection {
     void sendJoinChatroomReject(Chatroom chatroom, String reason) throws IOException;
     void sendJoinedChatroom(Chatroom chatroom, User user) throws IOException;
     void sendLeftChatroom(Chatroom chatroom, User user) throws IOException;
-    void close();
 }

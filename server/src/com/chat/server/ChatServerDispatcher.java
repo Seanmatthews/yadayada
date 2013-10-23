@@ -36,7 +36,7 @@ public class ChatServerDispatcher implements Runnable {
 
                 if (type == MessageTypes.CONNECT) {
                     ConnectMessage cMsg = connection.recvConnect();
-                    server.connect(connection, cMsg.getApiVersion(), cMsg.getUuid());
+                    server.connect(connection, cMsg.getAPIVersion(), cMsg.getUUID());
                     continue;
                 }
                 else {
@@ -56,7 +56,7 @@ public class ChatServerDispatcher implements Runnable {
 
                     case CREATE_CHATROOM:
                         CreateChatroomMessage ccMsg = connection.recvCreateChatroom();
-                        User ccUser = getAndValidateUser(ccMsg.getUserId());
+                        User ccUser = getAndValidateUser(ccMsg.getOwnerId());
                         server.createChatroom(connection, ccUser, ccMsg.getChatroomName());
                         break;
 
@@ -76,21 +76,21 @@ public class ChatServerDispatcher implements Runnable {
 
                     case REGISTER:
                         RegisterMessage rMsg = connection.recvRegister();
-                        server.registerUser(connection, rMsg.getLogin(), rMsg.getPassword(), rMsg.getHandle());
+                        server.registerUser(connection, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle());
                         System.out.println("registered a fuckin user");
                         break;
 
                     case LOGIN:
                         LoginMessage lMsg = connection.recvLogin();
-                        server.login(connection, lMsg.getLogin(), lMsg.getPassword());
+                        server.login(connection, lMsg.getUserName(), lMsg.getPassword());
                         break;
 
                     case SUBMIT_MESSAGE:
                         SubmitMessageMessage smMsg = connection.recvSubmitMessage();
                         User user = getAndValidateUser(smMsg.getUserId());
                         Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());
-                        System.out.println("Sending " + smMsg.getMsg());
-                        server.newMessage(connection, user, chatroom, smMsg.getMsg());
+                        System.out.println("Sending " + smMsg.getMessage());
+                        server.newMessage(connection, user, chatroom, smMsg.getMessage());
                         break;
 
                     default:

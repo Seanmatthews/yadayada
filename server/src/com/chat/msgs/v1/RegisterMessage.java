@@ -1,25 +1,18 @@
 package com.chat.msgs.v1;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jgreco
- * Date: 10/22/13
- * Time: 5:32 PM
- * To change this template use File | Settings | File Templates.
- */
 public class RegisterMessage {
-    private final String login;
+    private final String userName;
     private final String password;
     private final String handle;
 
-    public RegisterMessage(String login, String password, String handle) {
-        this.login = login;
+    public RegisterMessage(String userName, String password, String handle) {
+        this.userName = userName;
         this.password = password;
         this.handle = handle;
     }
 
-    public String getLogin() {
-        return login;
+    public String getUserName() {
+        return userName;
     }
 
     public String getPassword() {
@@ -29,4 +22,4 @@ public class RegisterMessage {
     public String getHandle() {
         return handle;
     }
-}
+} 
