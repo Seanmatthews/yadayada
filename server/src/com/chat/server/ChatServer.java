@@ -17,7 +17,6 @@ public interface ChatServer {
     void mapClientConnectionToUser(ClientConnection sender, User user);
 
     void registerUser(ClientConnection sender, String login, String password, String handle);
-    void quickRegisterUser(ClientConnection sender, String handle);
     void login(ClientConnection sender, String login, String password);
 
     void createChatroom(ClientConnection sender, User user, String name);

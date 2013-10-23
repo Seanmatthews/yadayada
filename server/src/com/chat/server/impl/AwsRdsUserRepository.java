@@ -18,6 +18,7 @@ import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
  * To change this template use File | Settings | File Templates.
  */
 public class AwsRdsUserRepository implements UserRepository {
+    // SQL connection
     private final Connection connect;
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
@@ -82,52 +83,6 @@ public class AwsRdsUserRepository implements UserRepository {
                         if (generatedKeys.next()) {
                             long id = generatedKeys.getLong("GENERATED_KEY");
                             User user = new User(id, login, password, handle);
-                            idToUserMap.put(id, user);
-
-                            future.setResult(new UserRepositoryActionResult(user));
-                        } else {
-                            // Hmm weird, we didn't generate a key
-                            future.setResult(new UserRepositoryActionResult(ConnectionError, "Unknown connection error"));
-                        }
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot insert new user"));
-                } finally {
-                    future.removeStatement(insertUserStatement);
-                }
-            }
-        });
-
-        return future;
-    }
-
-    @Override
-    public Future<UserRepositoryActionResult> quickRegisterUser(final String handle, final String UUID, UserRepositoryCompletionHandler completionHandler) {
-        final UserFuture future = new UserFuture(completionHandler);
-
-        // submit a new thread to contact the database and let us know when we've inserted
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                // okay, now we know that a user with this login doesn't exist
-                PreparedStatement insertUserStatement = null;
-
-                try {
-                    // let's insert!
-                    insertUserStatement = connect.prepareStatement("insert into userdb.User (Handle, UUID) values (?,?)", Statement.RETURN_GENERATED_KEYS);
-                    future.addStatement(insertUserStatement);
-
-                    insertUserStatement.setString(1, handle);
-                    insertUserStatement.setString(2, UUID);
-                    int rowsUpdated = insertUserStatement.executeUpdate();
-
-                    if (rowsUpdated != 0) {
-                        ResultSet generatedKeys = insertUserStatement.getGeneratedKeys();
-
-                        if (generatedKeys.next()) {
-                            long id = generatedKeys.getLong("GENERATED_KEY");
-                            User user = new User(id, handle);
                             idToUserMap.put(id, user);
 
                             future.setResult(new UserRepositoryActionResult(user));
@@ -321,7 +276,6 @@ public class AwsRdsUserRepository implements UserRepository {
 
                 statements.remove(statement);
             }
-
         }
     }
 }
