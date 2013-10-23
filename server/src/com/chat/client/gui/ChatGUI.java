@@ -48,9 +48,6 @@ public class ChatGUI implements ChatClient {
 
     private final ServerConnection connection;
 
-    private final ChatroomRepository chatroomRepo;
-    private final UserRepository userRepo;
-
     private User loggedInUser;
 
     public ChatGUI(String host, int port, String user, String password) throws IOException {
@@ -63,8 +60,8 @@ public class ChatGUI implements ChatClient {
         long userId = ChatClientUtilities.initialConnect(connection, user, password);
         loggedInUser = new User(userId, user);
 
-        chatroomRepo = new InMemoryChatroomRepository();
-        userRepo = new InMemoryUserRepository();
+        ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+        InMemoryUserRepository userRepo = new InMemoryUserRepository();
         userRepo.addUser(loggedInUser);
 
         ExecutorService pool = Executors.newCachedThreadPool();

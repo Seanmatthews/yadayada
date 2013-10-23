@@ -1,6 +1,6 @@
 package com.chat;
 
-import com.chat.server.ChatStreamServer;
+import com.chat.server.ChatStreamSocketListener;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryMessageRepository;
 import com.chat.impl.InMemoryUserRepository;
@@ -27,6 +27,6 @@ public class Main {
 
         MessageRepository repo = new InMemoryMessageRepository();
 
-        new ChatStreamServer(port, userRepo, chatroomRepo, repo);
+        new ChatStreamSocketListener(port, userRepo, chatroomRepo, repo);
     }
 }

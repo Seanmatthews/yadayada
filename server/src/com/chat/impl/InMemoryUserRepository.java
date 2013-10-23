@@ -59,7 +59,6 @@ public class InMemoryUserRepository implements UserRepository {
         return new UserFuture(new UserRepositoryActionResult(user), handler);
     }
 
-    @Override
     public void addUser(User user) {
         idToUserMap.put(user.getId(), user);
     }

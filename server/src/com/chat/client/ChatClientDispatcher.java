@@ -1,6 +1,7 @@
 package com.chat.client;
 
 import com.chat.*;
+import com.chat.impl.InMemoryUserRepository;
 import com.chat.msgs.v1.*;
 
 import java.io.IOException;
@@ -17,10 +18,10 @@ import java.util.concurrent.ExecutionException;
 public class ChatClientDispatcher implements Runnable {
     private final ChatClient client;
     private final ChatroomRepository chatroomRepo;
-    private final UserRepository userRepo;
+    private final InMemoryUserRepository userRepo;
     private final ServerConnection connection;
 
-    public ChatClientDispatcher(ChatClient client, BinaryStream stream, ChatroomRepository chatroomRepo, UserRepository userRepo) {
+    public ChatClientDispatcher(ChatClient client, BinaryStream stream, ChatroomRepository chatroomRepo, InMemoryUserRepository userRepo) {
         this.client = client;
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;

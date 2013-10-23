@@ -15,9 +15,6 @@ public interface UserRepository {
     Future<UserRepositoryActionResult> login(String login, String password, UserRepositoryCompletionHandler completionHandler);
     Future<UserRepositoryActionResult> get(long id, UserRepositoryCompletionHandler completionHandler);
 
-    // Todo: Testing only...remove
-    void addUser(User user) throws InvalidObjectException;
-
     public interface UserRepositoryCompletionHandler {
         void onCompletion(UserRepositoryActionResult user);
     }

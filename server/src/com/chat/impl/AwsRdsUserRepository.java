@@ -187,11 +187,6 @@ public class AwsRdsUserRepository implements UserRepository {
         return future;
     }
 
-    @Override
-    public void addUser(User user) throws InvalidObjectException {
-        throw new InvalidObjectException("Cannot call addUser for a AwsRdsUserRepository");
-    }
-
     private static class UserFuture implements Future<UserRepositoryActionResult> {
         private final CountDownLatch latch;
         private volatile UserRepositoryActionResult result;

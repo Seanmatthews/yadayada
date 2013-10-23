@@ -1,6 +1,6 @@
 package com.chat;
 
-import com.chat.server.ChatStreamServer;
+import com.chat.server.ChatStreamSocketListener;
 import com.chat.impl.*;
 
 import java.io.IOException;
@@ -33,6 +33,6 @@ public class MainDB {
 
         MessageRepository repo = new InMemoryMessageRepository();
 
-        new ChatStreamServer(port, userRepo, chatroomRepo, repo);
+        new ChatStreamSocketListener(port, userRepo, chatroomRepo, repo);
     }
 }
