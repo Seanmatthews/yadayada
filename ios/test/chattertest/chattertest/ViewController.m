@@ -76,6 +76,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     currentLat = currentLong = 0;
     
     [self initConnection];
+    [self connect];
 }
 
 - (void)updateLocation
@@ -179,7 +180,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     NSString* chatName;
     NSString* handle;
     long long latitude, longitude, radius;
-    
+    int apiVersion;
     
     
     while (idx < length-1) {
@@ -297,6 +298,22 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             NSLog(@"LEFT_CHATROOM [%lli, %lli]",chatId,loginUserId);
             break;
             
+        case CONNECT_ACCEPT:
+            apiVersion = CFSwapInt32BigToHost(*(int*)&buffer[idx]);
+            idx += 4;
+            chatId = CFSwapInt16BigToHost(*(long long*)&buffer[idx]);
+            idx += 8;
+            NSLog(@"CONNECT_ACCEPT [%d, %lli]",apiVersion,chatId);
+            break;
+            
+        case CONNECT_REJECT:
+            strLen = CFSwapInt16BigToHost(*(short*)&buffer[idx]);
+            idx += 2;
+            error = [[NSString alloc] initWithBytes:(buffer+idx) length:strLen encoding:STRENC];
+            idx += strLen;
+            NSLog(@"CONNECT_REJECT [%@]",error);
+            break;
+            
         default:
             NSLog(@"Unrecognized message from server");
     }
@@ -358,6 +375,15 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 
 #pragma mark - message to server functions
+
+- (void)connect
+{
+    NSString* uuid = [[NSUUID UUID] UUIDString];
+    short msgLen = [uuid lengthOfBytesUsingEncoding:STRENC] + 7;
+    [self writeMessageHeaderWithSize:msgLen ofType:CONNECT];
+    [self writeInt:MESSAGE_API];
+    [self writeString:uuid];
+}
 
 - (void)createChatroomWithName:(NSString*)name radius:(long long)chatRadius
 {
@@ -460,6 +486,12 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 {
     long long l = CFSwapInt64HostToBig(aLong);
     [os write:(BUFTYPE)&l maxLength:8];
+}
+
+- (void)writeInt:(int)aInt
+{
+    int i = CFSwapInt32HostToBig(aInt);
+    [os write:(BUFTYPE)&i maxLength:4];
 }
 
 

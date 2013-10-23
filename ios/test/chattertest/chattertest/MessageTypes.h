@@ -9,6 +9,8 @@
 #ifndef chattertest_MessageTypes_h
 #define chattertest_MessageTypes_h
 
+const int MESSAGE_API = 1;
+
 typedef enum {
     REGISTER = 1,
     REGISTER_ACCEPT = 2,
@@ -17,6 +19,9 @@ typedef enum {
     LOGIN = 11,
     LOGIN_ACCEPT = 12,
     LOGIN_REJECT = 13,
+    CONNECT = 16,
+    CONNECT_ACCEPT = 17,
+    CONNECT_REJECT = 18,
     SUBMIT_MESSAGE = 21,
     MESSAGE = 22,
     SEARCH_CHATROOMS = 31,

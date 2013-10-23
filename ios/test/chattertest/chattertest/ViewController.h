@@ -31,6 +31,10 @@
 - (void)initConnection;
 - (void)updateLocation;
 - (void)parseMessage:(uint8_t*)buffer withLength:(int)length;
+- (void)writeInt:(int)aInt;
+- (void)writeLong:(long long)aLong;
+- (void)writeShort:(short)aShort;
+- (void)writeByte:(unsigned char)aByte;
 - (void)writeString:(NSString*)string;
 - (void)sendMessage:(NSString*)message toChat:(long long)chatId;
 - (void)loginWithUsername:(NSString*)user password:(NSString*)pass;
@@ -39,6 +43,7 @@
 - (void)leaveChatroomWithId:(long long)chatId;
 - (void)joinChatroomWithId:(long long)chatId;
 - (void)searchChatrooms;
+- (void)connect;
 - (void)createChatroomWithName:(NSString*)name radius:(long long)chatRadius;
 
 
