@@ -14,10 +14,17 @@
 
 @implementation ViewController
 
+@synthesize userHandle;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+    // Getting here implies that the user has done the tutorial
+	[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    NSLog(@"handle: %@",userHandle);
 }
 
 - (void)didReceiveMemoryWarning

@@ -17,14 +17,10 @@
                    initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     UIViewController* uvc;
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasLaunchedOnce"]) {
-        // app already launched
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
         uvc = [uis instantiateViewControllerWithIdentifier:@"mainPage"];
     }
     else {
-        // This is the first launch ever
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasLaunchedOnce"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
         uvc = [uis instantiateViewControllerWithIdentifier:@"firstPage"];
     }
     self.window.rootViewController = uvc;

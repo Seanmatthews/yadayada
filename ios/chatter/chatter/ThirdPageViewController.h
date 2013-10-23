@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ThirdPageViewController : UIViewController
+@interface ThirdPageViewController : UIViewController <UITextFieldDelegate>
+{
+    
+}
+
+@property (nonatomic, retain) IBOutlet UITextField* handleTextField;
 
 @end

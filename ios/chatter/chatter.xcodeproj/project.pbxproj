@@ -62,6 +62,7 @@
 		64674BD7181761C500922109 /* SecondPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondPageViewController.m; sourceTree = "<group>"; };
 		64674BD91817621100922109 /* ThirdPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThirdPageViewController.h; sourceTree = "<group>"; };
 		64674BDA1817621100922109 /* ThirdPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirdPageViewController.m; sourceTree = "<group>"; };
+		B3ADCB6418183BD400A25383 /* UserDetails.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserDetails.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +128,7 @@
 				6458F39E18172E7400AA8E81 /* Main.storyboard */,
 				6458F3A118172E7400AA8E81 /* ViewController.h */,
 				6458F3A218172E7400AA8E81 /* ViewController.m */,
+				B3ADCB6418183BD400A25383 /* UserDetails.h */,
 				6458F3A418172E7400AA8E81 /* Images.xcassets */,
 				6458F39318172E7400AA8E81 /* Supporting Files */,
 			);
