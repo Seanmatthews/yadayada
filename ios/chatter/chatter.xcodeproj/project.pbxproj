@@ -24,6 +24,8 @@
 		64674BD5181761A500922109 /* FirstPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BD4181761A500922109 /* FirstPageViewController.m */; };
 		64674BD8181761C500922109 /* SecondPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BD7181761C500922109 /* SecondPageViewController.m */; };
 		64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BDA1817621100922109 /* ThirdPageViewController.m */; };
+		B3ADCB68181855C500A25383 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB66181855C500A25383 /* Default.png */; };
+		B3ADCB69181855C500A25383 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB67181855C500A25383 /* Default@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +65,8 @@
 		64674BD91817621100922109 /* ThirdPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThirdPageViewController.h; sourceTree = "<group>"; };
 		64674BDA1817621100922109 /* ThirdPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirdPageViewController.m; sourceTree = "<group>"; };
 		B3ADCB6418183BD400A25383 /* UserDetails.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserDetails.h; sourceTree = "<group>"; };
+		B3ADCB66181855C500A25383 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		B3ADCB67181855C500A25383 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +126,7 @@
 		6458F39218172E7400AA8E81 /* chatter */ = {
 			isa = PBXGroup;
 			children = (
+				B3ADCB65181855A700A25383 /* Media */,
 				64674BD21817617600922109 /* FirstTime */,
 				6458F39B18172E7400AA8E81 /* AppDelegate.h */,
 				6458F39C18172E7400AA8E81 /* AppDelegate.m */,
@@ -175,6 +180,15 @@
 				64674BDA1817621100922109 /* ThirdPageViewController.m */,
 			);
 			name = FirstTime;
+			sourceTree = "<group>";
+		};
+		B3ADCB65181855A700A25383 /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				B3ADCB66181855C500A25383 /* Default.png */,
+				B3ADCB67181855C500A25383 /* Default@2x.png */,
+			);
+			name = Media;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -255,7 +269,9 @@
 			files = (
 				6458F3A518172E7400AA8E81 /* Images.xcassets in Resources */,
 				6458F39718172E7400AA8E81 /* InfoPlist.strings in Resources */,
+				B3ADCB69181855C500A25383 /* Default@2x.png in Resources */,
 				6458F3A018172E7400AA8E81 /* Main.storyboard in Resources */,
+				B3ADCB68181855C500A25383 /* Default.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
