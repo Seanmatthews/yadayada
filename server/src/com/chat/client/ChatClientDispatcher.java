@@ -13,13 +13,13 @@ import java.util.concurrent.ExecutionException;
  * Time: 10:18 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ChatClientListener implements Runnable {
+public class ChatClientDispatcher implements Runnable {
     private final ChatClient client;
-    private final Connection connection;
+    private final BinaryStream connection;
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
 
-    public ChatClientListener(ChatClient client, Connection stream, ChatroomRepository chatroomRepo, UserRepository userRepo) {
+    public ChatClientDispatcher(ChatClient client, BinaryStream stream, ChatroomRepository chatroomRepo, UserRepository userRepo) {
         this.client = client;
         this.connection = stream;
         this.chatroomRepo = chatroomRepo;
@@ -30,7 +30,13 @@ public class ChatClientListener implements Runnable {
     public void run() {
         try {
             while (true) {
-                MessageTypes msgType = connection.startReading();
+                connection.startReading();
+
+                MessageTypes msgType = MessageTypes.lookup(connection.readByte());
+                if (msgType == null) {
+                    connection.finishReading();
+                    continue;
+                }
 
                 switch(msgType) {
                     case JOINED_CHATROOM:

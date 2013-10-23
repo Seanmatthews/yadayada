@@ -23,8 +23,8 @@ public class User {
     public User(long id, String handle) {
         this.id = id;
         this.handle = handle;
-        this.login = "<QUICK>";
-        this.password = "<QUICK>";
+        this.login = "QR";
+        this.password = "QR";
     }
 
     public User(long id, String login, String password, String handle) {
@@ -81,6 +81,6 @@ public class User {
 
     @Override
     public String toString() {
-        return login;
+        return login + "<" + handle + ">";
     }
 }

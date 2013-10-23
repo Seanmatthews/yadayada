@@ -2,7 +2,7 @@ package com.chat.server.impl;
 
 import com.chat.*;
 import com.chat.server.ChatServer;
-import com.chat.server.ChatServerListener;
+import com.chat.server.ChatServerDispatcher;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -40,10 +40,10 @@ public class ChatStreamServer {
 
         while (true) {
             Socket socket = serverSocket.accept();
-            System.out.println("Connection from: " + socket);
+            System.out.println("BinaryStream from: " + socket);
 
-            Connection connection = new SocketConnection(socket);
-            execService.submit(new ChatServerListener(server, connection, userRepo, chatroomRepo));
+            BinaryStream connection = new DataStream(socket);
+            execService.submit(new ChatServerDispatcher(server, connection, userRepo, chatroomRepo));
         }
     }
 }

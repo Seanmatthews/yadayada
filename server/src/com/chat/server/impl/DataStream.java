@@ -1,6 +1,6 @@
 package com.chat.server.impl;
 
-import com.chat.Connection;
+import com.chat.BinaryStream;
 import com.chat.MessageTypes;
 import com.chat.Utilities;
 
@@ -14,7 +14,7 @@ import java.net.Socket;
  * Time: 2:02 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SocketConnection implements Connection {
+public class DataStream implements BinaryStream {
     private final Socket socket;
     private final DataInputStream din;
     private final DataOutputStream dout;
@@ -25,7 +25,7 @@ public class SocketConnection implements Connection {
     private int writtenBytes;
     private int writeMsgBytes;
 
-    public SocketConnection(Socket socket) throws IOException {
+    public DataStream(Socket socket) throws IOException {
         this.socket = socket;
         this.din = new DataInputStream(socket.getInputStream());
         this.dout = new DataOutputStream(socket.getOutputStream());
@@ -50,7 +50,7 @@ public class SocketConnection implements Connection {
     }
 
     @Override
-    public MessageTypes startReading() throws IOException {
+    public void startReading() throws IOException {
         short messageBytes = readShort();
 
         if (messageBytes <= 0 || messageBytes > 1000)
@@ -58,15 +58,6 @@ public class SocketConnection implements Connection {
 
         readMsgBytes = messageBytes;
         readBytes = 0;
-
-        byte msgTypeByte = readByte();
-        MessageTypes msgType = MessageTypes.lookup(msgTypeByte);
-
-        if (msgType == null)
-            throw new IOException("Unknown message type: " + (int)msgTypeByte);
-
-        return msgType;
-
     }
 
     @Override

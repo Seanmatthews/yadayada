@@ -3,6 +3,7 @@ package com.chat.client;
 import com.chat.*;
 
 import java.io.IOException;
+import java.util.Random;
 
 import static com.chat.Utilities.getStrLen;
 
@@ -15,19 +16,42 @@ import static com.chat.Utilities.getStrLen;
  */
 public class ClientMessageSender {
     private final ChatClient client;
-    private final Connection connection;
+    private final BinaryStream connection;
 
-    public ClientMessageSender(ChatClient client, Connection connection) {
+    public ClientMessageSender(ChatClient client, BinaryStream connection) {
         this.client = client;
         this.connection = connection;
     }
 
     public void registerAndLogin(String user, String password) {
         try {
+            connect(new Random().nextInt());
             registerNewUser(user, password);
-            loginUser(user, password);
+            //loginUser(user, password);
         } catch (IOException e) {
             System.out.println("Error registering and logging in");
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    private void connect(int uuid) {
+        try {
+            String UUID = Integer.toString(uuid);
+            connection.startWriting(1 + 4 + getStrLen(UUID));
+            connection.writeByte(MessageTypes.CONNECT.getValue());
+            connection.writeInt(1);
+            connection.writeString(UUID);
+            connection.finishWriting();
+
+            connection.startReading();
+            if (MessageTypes.lookup(connection.readByte()) != MessageTypes.CONNECT_ACCEPT) {
+                System.out.println("Did not accept connection. WTF!");
+                System.exit(0);
+            }
+            connection.finishReading();
+        } catch (IOException e) {
+            System.out.println("Error connecting");
             e.printStackTrace();
             System.exit(0);
         }
@@ -49,7 +73,8 @@ public class ClientMessageSender {
         connection.writeString(password);
         connection.finishWriting();
 
-        MessageTypes msgType = connection.startReading();
+        connection.startReading();
+        MessageTypes msgType = MessageTypes.lookup(connection.readByte());
 
         switch(msgType) {
             case LOGIN_ACCEPT:
@@ -63,23 +88,33 @@ public class ClientMessageSender {
                 System.out.println("Login rejected: " + msg);
                 break;
         }
+
         connection.finishReading();
     }
 
-    private void registerNewUser(String user, String password) throws IOException {
-        System.out.println("Registering user: " + user);
-        connection.startWriting(1 + getStrLen(user) + getStrLen(password) + getStrLen(user));
+    private void registerNewUser(String userName, String password) throws IOException {
+        System.out.println("Registering user: " + userName);
+        /*connection.startWriting(1 + getStrLen(user) + getStrLen(password) + getStrLen(user));
         connection.writeByte(MessageTypes.REGISTER.getValue());
         connection.writeString(user);
         connection.writeString(password);
         connection.writeString(user);
+        connection.finishWriting();*/
+
+        // Quick Register
+        connection.startWriting(1 + getStrLen(userName));
+        connection.writeByte(MessageTypes.QUICK_REGISTER.getValue());
+        connection.writeString(userName);
         connection.finishWriting();
 
-        MessageTypes msgType = connection.startReading();
+        connection.startReading();
+        MessageTypes msgType = MessageTypes.lookup(connection.readByte());
 
         switch(msgType) {
             case REGISTER_ACCEPT:
-                connection.readLong();
+                long userId = connection.readLong();
+                User user = new User(userId, userName);
+                client.onUserLoggedIn(user);
                 System.out.println("Registration accepted. UserId: " + user);
                 break;
             case REGISTER_REJECT:
@@ -87,6 +122,7 @@ public class ClientMessageSender {
                 System.out.println("Failed to register user: " + msg);
                 break;
         }
+
         connection.finishReading();
     }
 

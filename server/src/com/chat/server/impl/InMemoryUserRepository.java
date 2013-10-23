@@ -21,7 +21,7 @@ public class InMemoryUserRepository implements UserRepository {
     private final Map<String, User> loginToUserMap = new ConcurrentHashMap<>();
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
 
-    public Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, UserRepositoryCompletionHandler handler) {
+    public Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, UserRepositoryCompletionHandler handler) {
         User user = loginToUserMap.get(login);
 
         // already registered
@@ -39,7 +39,7 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public Future<UserRepositoryActionResult> quickRegisterUser(String handle, UserRepositoryCompletionHandler handler) {
+    public Future<UserRepositoryActionResult> quickRegisterUser(String handle, String UUID, UserRepositoryCompletionHandler handler) {
         User user = new User(nextUserId++, handle);
 
         idToUserMap.put(user.getId(), user);

@@ -2,11 +2,11 @@ package com.chat.client.gui;
 
 import com.chat.*;
 import com.chat.client.ChatClient;
-import com.chat.client.ChatClientListener;
+import com.chat.client.ChatClientDispatcher;
 import com.chat.client.ClientMessageSender;
+import com.chat.server.impl.DataStream;
 import com.chat.server.impl.InMemoryChatroomRepository;
 import com.chat.server.impl.InMemoryUserRepository;
-import com.chat.server.impl.SocketConnection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,18 +54,18 @@ public class ChatGUI implements ChatClient {
 
     public ChatGUI(String host, int port, String user, String password) throws IOException {
         Socket socket = new Socket(host, port);
-        SocketConnection socketConnection = new SocketConnection(socket);
+        DataStream dataStream = new DataStream(socket);
 
         System.out.println("Connected to " + socket);
 
-        connection = new ClientMessageSender(this, socketConnection);
+        connection = new ClientMessageSender(this, dataStream);
         connection.registerAndLogin(user, password);
 
         chatroomRepo = new InMemoryChatroomRepository();
         userRepo = new InMemoryUserRepository();
 
         ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(new ChatClientListener(this, socketConnection, chatroomRepo, userRepo));
+        pool.submit(new ChatClientDispatcher(this, dataStream, chatroomRepo, userRepo));
 
         setupChatroomList();
     }

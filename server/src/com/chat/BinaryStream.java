@@ -9,10 +9,10 @@ import java.io.*;
  * Time: 2:02 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface Connection {
+public interface BinaryStream {
     void close();
 
-    MessageTypes startReading() throws IOException;
+    void startReading() throws IOException;
     void finishReading() throws IOException;
 
     byte readByte() throws IOException;
@@ -30,6 +30,4 @@ public interface Connection {
     void writeInt(int value) throws IOException;
     void writeLong(long value) throws IOException;
     void writeString(String value) throws IOException;
-
-
 }

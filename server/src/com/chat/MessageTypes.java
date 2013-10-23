@@ -20,6 +20,10 @@ public enum MessageTypes {
     LOGIN_ACCEPT((byte)12),
     LOGIN_REJECT((byte)13),
 
+    CONNECT((byte)16),
+    CONNECT_ACCEPT((byte)17),
+    CONNECT_REJECT((byte)18),
+
     SUBMIT_MESSAGE((byte)21),
     MESSAGE((byte)22),
 
