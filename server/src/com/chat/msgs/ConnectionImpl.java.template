@@ -72,7 +72,7 @@ public class ${clientOrServer}ConnectionImpl implements ${clientOrServer}Connect
             stream.startWriting(${msg.length});
             stream.writeByte(MessageTypes.${msg.name}.getValue());
         #for $field in $msg.fields
-            stream.write${field.type.capitalize()}(msg.get#echo $field.name[0].capitalize() + $field.name[1:]#());
+            stream.write${field.type.capitalize()}(msg.get${field.nameCap}());
         #end for
             stream.finishWriting();
         }

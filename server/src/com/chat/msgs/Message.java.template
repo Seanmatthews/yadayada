@@ -12,7 +12,7 @@ public class ${msg.name}Message {
     }
 #for $field in $msg.fields
 
-    public $field.type get#echo $field.name[0].capitalize() + $field.name[1:]#() {
+    public $field.type get${field.nameCap}() {
         return $field.name;
     }
 #end for

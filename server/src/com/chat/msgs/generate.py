@@ -25,6 +25,7 @@ class Msg:
 class Field:
    def __init__(self, type, name):
        self.name = name
+       self.nameCap = name[0].capitalize() + name[1:]
        self.type = type
 
 t = Template(file='Message.java.template')
@@ -47,7 +48,7 @@ for msg in root:
           if fld.type in typeLen:
               fieldLen = typeLen[fld.type];
           else:
-              fieldLen = 'getStrLen(msg.get' + fld.name[0].capitalize() + fld.name[1:] + '())' 
+              fieldLen = 'getStrLen(msg.get' + fld.nameCap + '())'
           len = len + ' + ' + fieldLen
 
       message.length = len
