@@ -5,6 +5,7 @@ README.markdown
 SetupConfig.py
 SetupTools.py
 TODO
+setup.cfg
 setup.py
 Cheetah.egg-info/PKG-INFO
 Cheetah.egg-info/SOURCES.txt

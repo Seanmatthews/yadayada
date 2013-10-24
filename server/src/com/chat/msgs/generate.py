@@ -108,3 +108,9 @@ typesT.apiVersion = versionNum
 f = file(version + '/MessageTypes.h', 'w')
 f.write(str(typesT))
 f.close() 
+
+parserT = Template(file='Parser.c')
+parserT.msgs = serverMessages
+f = file(version + '/Parser.c', 'w')
+f.write(str(parserT))
+f.close() 
