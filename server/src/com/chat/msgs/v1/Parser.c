@@ -18,7 +18,7 @@
            case RegisterReject:
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* reason = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
 
               [cb onRegisterReject:3 reason:reason ]
@@ -34,7 +34,7 @@
            case LoginReject:
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* reason = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
 
               [cb onLoginReject:13 reason:reason ]
@@ -52,7 +52,7 @@
            case ConnectReject:
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* reason = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
 
               [cb onConnectReject:18 reason:reason ]
@@ -69,11 +69,11 @@
               idex += 8;
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* senderHandle = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* message = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
 
               [cb onMessage:22 messageId:messageId messageTimestamp:messageTimestamp senderId:senderId chatroomId:chatroomId senderHandle:senderHandle message:message ]
@@ -86,11 +86,11 @@
               idex += 8;
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* chatroomName = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* chatroomOwnerHandle = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
               long latitude = CFSwapInt64BigToHost(*(long long*)&buffer[idx]);
               idex += 8;
@@ -107,7 +107,7 @@
               idex += 8;
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* reason = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
 
               [cb onJoinChatroomReject:36 chatroomId:chatroomId reason:reason ]
@@ -120,7 +120,7 @@
               idex += 8;
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* userHandle = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
 
               [cb onJoinedChatroom:37 chatroomId:chatroomId userId:userId userHandle:userHandle ]
@@ -138,11 +138,11 @@
            case CreateChatroomReject:
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* chatroomName = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* reason = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
 
               [cb onCreateChatroomReject:38 chatroomName:chatroomName reason:reason ]

@@ -29,7 +29,7 @@
            #if $field.type == 'String'
               short strLen = ntohs(*(short*)(buffer+idx));
               idx += 2;
-              [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
+              NSString* $field.name = [[NSString alloc] initWithBytes:(buffer+idx) length: strLen encoding:STRENC];          
               idx += strLen 
            #end if
        #end for
