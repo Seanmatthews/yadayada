@@ -3,6 +3,7 @@ package com.chat.client;
 import com.chat.msgs.v1.*;
 
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +14,7 @@ import java.io.IOException;
  */
 public class ChatClientUtilities {
     public static long initialConnect(ServerConnection connection, String user, String password) throws IOException {
-        connection.sendConnect(new ConnectMessage(1, "UUID"));
+        connection.sendConnect(new ConnectMessage(1, Integer.toString(new Random().nextInt())));
         connection.recvMsgType();
         connection.recvConnectAccept();
 
