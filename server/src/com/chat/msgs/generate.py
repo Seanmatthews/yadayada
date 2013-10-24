@@ -1,7 +1,8 @@
 import xml.etree.ElementTree as ET
 from Cheetah.Template import Template
 
-version = 'v1';
+versionNum = 1
+version = 'v' + str(versionNum);
 package = 'com.chat.msgs.v1'
 
 tree = ET.parse(version + '.xml')
@@ -29,9 +30,6 @@ class Field:
        self.type = type
 
 t = Template(file='Message.java.template')
-connT = Template(file='Connection.java.template')
-connImplT = Template(file='ConnectionImpl.java.template')
-typesT = Template(file='MessageTypes.java.template')
 
 clientMessages = []
 serverMessages = []
@@ -64,6 +62,9 @@ for msg in root:
       else:
           serverMessages.append(message);
 
+connT = Template(file='Connection.java.template')
+connImplT = Template(file='ConnectionImpl.java.template')
+
 connT.recvMsgs = clientMessages
 connT.sendMsgs = serverMessages
 connT.package = package
@@ -94,8 +95,16 @@ f = file(version + '/ServerConnectionImpl.java', 'w')
 f.write(str(connImplT))
 f.close()
 
+typesT = Template(file='MessageTypes.java.template')
 typesT.msgs = clientMessages + serverMessages
 typesT.package = package
 f = file(version + '/MessageTypes.java', 'w')
 f.write(str(typesT))
 f.close()
+
+typesT = Template(file='MessageTypes.h')
+typesT.msgs = clientMessages + serverMessages
+typesT.apiVersion = versionNum
+f = file(version + '/MessageTypes.h', 'w')
+f.write(str(typesT))
+f.close() 
