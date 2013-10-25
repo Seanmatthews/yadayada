@@ -309,7 +309,7 @@
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)38;
+    _type = (unsigned char)39;
     return self;
 }
 

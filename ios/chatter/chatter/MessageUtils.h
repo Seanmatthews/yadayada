@@ -12,7 +12,9 @@
 
 @interface MessageUtils : NSObject
 
++ (MessageBase*)messageWithType:(MessageTypes)type;
 + (NSData*)serializeMessage:(MessageBase*)message;
++ (MessageBase*)deserializeMessage:(BUFTYPE)data;
 + (OrderedDictionary *)classPropsFor:(Class)klass;
 
 @end

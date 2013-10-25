@@ -28,11 +28,8 @@ typedef enum {
     JoinChatroomReject = 36,
     JoinedChatroom = 37,
     LeftChatroom = 38,
-    CreateChatroomReject = 38,
+    CreateChatroomReject = 39,
 } MessageTypes;
-
-typedef const uint8_t* BUFTYPE;
-const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 @interface MessageBase : NSObject
 {

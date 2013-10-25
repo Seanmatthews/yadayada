@@ -144,3 +144,10 @@ iosMessagesMT.apiVersion = versionNum
 f = file(iosPath + 'Messages.m', 'w')
 f.write(str(iosMessagesMT))
 f.close() 
+
+iosMessageUtilsT = Template(file='MessageUtils.m.template')
+iosMessageUtilsT.msgs = iosMessagesHT.msgs
+iosMessageUtilsT.apiVersion = versionNum
+f = file(iosPath + 'MessageUtils.m', 'w')
+f.write(str(iosMessageUtilsT))
+f.close() 

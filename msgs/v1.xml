@@ -106,7 +106,7 @@
         <field name="userId" type="long" />
     </msg>
 
-    <msg name="CreateChatroomReject" val="38" origin="server">
+    <msg name="CreateChatroomReject" val="39" origin="server">
         <field name="chatroomName" type="String" />
         <field name="reason" type="String" />
     </msg>

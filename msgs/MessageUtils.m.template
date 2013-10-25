@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 rowboat entertainment. All rights reserved.
 //
 
-#import "MessageUtils.h"
-#import "objc/runtime.h"
-#import "Messages.h"
+\#import "MessageUtils.h"
+\#import "objc/runtime.h"
+\#import "Messages.h"
 
 
 @implementation MessageUtils
@@ -18,86 +18,12 @@
     MessageBase* mb;
 
     switch (type) {
-        case Register:
-        mb = [[RegisterMessage alloc] init];
+#for $msg in $msgs
+        case ${msg.name}:
+        mb = [[${msg.name}Message alloc] init];
         break;
 
-        case Login:
-        mb = [[LoginMessage alloc] init];
-        break;
-
-        case Connect:
-        mb = [[ConnectMessage alloc] init];
-        break;
-
-        case SubmitMessage:
-        mb = [[SubmitMessageMessage alloc] init];
-        break;
-
-        case SearchChatrooms:
-        mb = [[SearchChatroomsMessage alloc] init];
-        break;
-
-        case JoinChatroom:
-        mb = [[JoinChatroomMessage alloc] init];
-        break;
-
-        case LeaveChatroom:
-        mb = [[LeaveChatroomMessage alloc] init];
-        break;
-
-        case CreateChatroom:
-        mb = [[CreateChatroomMessage alloc] init];
-        break;
-
-        case RegisterAccept:
-        mb = [[RegisterAcceptMessage alloc] init];
-        break;
-
-        case RegisterReject:
-        mb = [[RegisterRejectMessage alloc] init];
-        break;
-
-        case LoginAccept:
-        mb = [[LoginAcceptMessage alloc] init];
-        break;
-
-        case LoginReject:
-        mb = [[LoginRejectMessage alloc] init];
-        break;
-
-        case ConnectAccept:
-        mb = [[ConnectAcceptMessage alloc] init];
-        break;
-
-        case ConnectReject:
-        mb = [[ConnectRejectMessage alloc] init];
-        break;
-
-        case Message:
-        mb = [[MessageMessage alloc] init];
-        break;
-
-        case Chatroom:
-        mb = [[ChatroomMessage alloc] init];
-        break;
-
-        case JoinChatroomReject:
-        mb = [[JoinChatroomRejectMessage alloc] init];
-        break;
-
-        case JoinedChatroom:
-        mb = [[JoinedChatroomMessage alloc] init];
-        break;
-
-        case LeftChatroom:
-        mb = [[LeftChatroomMessage alloc] init];
-        break;
-
-        case CreateChatroomReject:
-        mb = [[CreateChatroomRejectMessage alloc] init];
-        break;
-
+#end for
     }
     return mb;
 }
