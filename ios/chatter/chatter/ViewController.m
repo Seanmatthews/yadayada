@@ -10,6 +10,7 @@
 #import "Messages.h"
 #import "MessageUtils.h"
 
+
 @interface ViewController ()
 
 @end
@@ -29,7 +30,7 @@
     // TEST
     
     RegisterMessage* rm = [[RegisterMessage alloc] init];
-    rm.username = @"sean";
+    rm.userName = @"sean";
     rm.password = @"sean";
     rm.handle = @"sean";
     

@@ -26,6 +26,7 @@
 		64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BDA1817621100922109 /* ThirdPageViewController.m */; };
 		64A10D3D181964DA00A499B0 /* Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D3C181964DA00A499B0 /* Messages.m */; };
 		64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D441819CE9A00A499B0 /* MessageUtils.m */; };
+		64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D48181A281A00A499B0 /* OrderedDictionary.m */; };
 		B3ADCB68181855C500A25383 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB66181855C500A25383 /* Default.png */; };
 		B3ADCB69181855C500A25383 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB67181855C500A25383 /* Default@2x.png */; };
 /* End PBXBuildFile section */
@@ -70,6 +71,8 @@
 		64A10D3C181964DA00A499B0 /* Messages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Messages.m; sourceTree = "<group>"; };
 		64A10D431819CE9A00A499B0 /* MessageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageUtils.h; sourceTree = "<group>"; };
 		64A10D441819CE9A00A499B0 /* MessageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageUtils.m; sourceTree = "<group>"; };
+		64A10D47181A281A00A499B0 /* OrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderedDictionary.h; sourceTree = "<group>"; };
+		64A10D48181A281A00A499B0 /* OrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrderedDictionary.m; sourceTree = "<group>"; };
 		B3ADCB6418183BD400A25383 /* UserDetails.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserDetails.h; sourceTree = "<group>"; };
 		B3ADCB66181855C500A25383 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		B3ADCB67181855C500A25383 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
@@ -132,6 +135,7 @@
 		6458F39218172E7400AA8E81 /* chatter */ = {
 			isa = PBXGroup;
 			children = (
+				64A10D46181A280A00A499B0 /* Util */,
 				64A10CEA1818A6AA00A499B0 /* Messages */,
 				B3ADCB65181855A700A25383 /* Media */,
 				64674BD21817617600922109 /* FirstTime */,
@@ -198,6 +202,15 @@
 				64A10D441819CE9A00A499B0 /* MessageUtils.m */,
 			);
 			name = Messages;
+			sourceTree = "<group>";
+		};
+		64A10D46181A280A00A499B0 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				64A10D47181A281A00A499B0 /* OrderedDictionary.h */,
+				64A10D48181A281A00A499B0 /* OrderedDictionary.m */,
+			);
+			name = Util;
 			sourceTree = "<group>";
 		};
 		B3ADCB65181855A700A25383 /* Media */ = {
@@ -308,6 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
 				64674BD8181761C500922109 /* SecondPageViewController.m in Sources */,
 				64674BD5181761A500922109 /* FirstPageViewController.m in Sources */,
 				6458F3A318172E7400AA8E81 /* ViewController.m in Sources */,

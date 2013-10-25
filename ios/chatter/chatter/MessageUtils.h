@@ -8,9 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import "Messages.h"
+#import "OrderedDictionary.h"
 
 @interface MessageUtils : NSObject
 
-+ (NSData*)serializeMessage:(Message*)message;
++ (NSData*)serializeMessage:(MessageBase*)message;
++ (OrderedDictionary *)classPropsFor:(Class)klass;
 
 @end

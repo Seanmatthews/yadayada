@@ -31,6 +31,9 @@ typedef enum {
     CreateChatroomReject = 38,
 } MessageTypes;
 
+typedef const uint8_t* BUFTYPE;
+const NSStringEncoding STRENC = NSUTF8StringEncoding;
+
 @interface MessageBase : NSObject
 {
     @protected
