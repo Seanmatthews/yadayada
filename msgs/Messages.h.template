@@ -8,6 +8,9 @@
 
 \#import <Foundation/Foundation.h>
 
+typedef const uint8_t* BUFTYPE;
+const NSStringEncoding STRENC = NSUTF8StringEncoding;
+
 typedef enum {
 #for $msg in $msgs
     ${msg.name} = ${msg.val},
