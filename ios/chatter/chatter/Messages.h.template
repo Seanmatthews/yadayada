@@ -1,0 +1,43 @@
+//
+//  Messages.h
+//  chatter
+//
+//  Created by sean matthews on 10/24/13.
+//  Copyright (c) 2013 rowboat entertainment. All rights reserved.
+//
+
+#import \<Foundation/Foundation.h\>
+#import "MessageTemplate.h"
+
+typedef enum {
+#for $msg in $msgs
+    ${msg.name} = ${msg.val}),
+#end for
+} MessageTypes;
+
+@interface Message : NSObject
+{
+    @protected
+    short _length;
+
+    @protected
+    Byte _type;
+}
+
+@property (readonly) short length;
+@property (readonly) Byte type;
+@end
+
+#for $msg in $msgs
+
+@interface ${msg.name}Message : Message
+{
+
+}
+
+#for $field in $msg.fields
+@property $field.type $field.name;
+#end for
+
+@end
+#end for 

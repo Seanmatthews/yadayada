@@ -15,6 +15,14 @@ typeLen = {
     'long': '8'
 }
 
+typeMap = {
+    'byte': 'Byte',
+    'short': 'short',
+    'int': 'int',
+    'long': 'long long',
+    'String': 'NSString*'
+}
+
 class Msg:
    def __init__(self, name, val):
        self.name = name
@@ -114,3 +122,13 @@ parserT.msgs = serverMessages
 f = file(version + '/Parser.c', 'w')
 f.write(str(parserT))
 f.close() 
+
+iosMessagesT = Template(file='Messages.h.template')
+iosMessagesT.msgs = clientMessages + serverMessages
+for msg in iosMessagesT.msgs:
+    for field in msg.fields:
+        field.type = typeMap[field.type]
+iosMessagesT.apiVersion = versionNum
+f = file(version + '/Messages.h', 'w')
+f.write(str(iosMessagesT))
+f.close()

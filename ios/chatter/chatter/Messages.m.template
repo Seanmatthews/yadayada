@@ -1,0 +1,41 @@
+//
+//  Messages.m
+//  chatter
+//
+//  Created by sean matthews on 10/24/13.
+//  Copyright (c) 2013 rowboat entertainment. All rights reserved.
+//
+
+\#import "Message.h"
+
+@implementation Message
+
+@synthesize length;
+@sythesize type;
+
+- (id)init
+{
+    _type = 0;
+    _length = 1;
+    return self;
+}
+
+@end
+
+#for $msg in $msgs
+
+@implementation ${msg.name}Message
+
+#for $field in $msg.field
+@synthesize $field.name
+#end for
+
+- (id)init
+{
+    self = [super init];
+    _type = ${msg.name};
+    return self;
+}
+
+@end
+#end for 

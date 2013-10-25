@@ -24,6 +24,11 @@
 		64674BD5181761A500922109 /* FirstPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BD4181761A500922109 /* FirstPageViewController.m */; };
 		64674BD8181761C500922109 /* SecondPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BD7181761C500922109 /* SecondPageViewController.m */; };
 		64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BDA1817621100922109 /* ThirdPageViewController.m */; };
+		64A10CED1818A82300A499B0 /* Messages.m.template in Resources */ = {isa = PBXBuildFile; fileRef = 64A10CEC1818A82300A499B0 /* Messages.m.template */; };
+		64A10CEF1818A97100A499B0 /* MessageTypes.h.template in Resources */ = {isa = PBXBuildFile; fileRef = 64A10CEE1818A97100A499B0 /* MessageTypes.h.template */; };
+		64A10CF11818AA2400A499B0 /* Messages.h.template in Resources */ = {isa = PBXBuildFile; fileRef = 64A10CF01818AA2400A499B0 /* Messages.h.template */; };
+		64A10D3D181964DA00A499B0 /* Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D3C181964DA00A499B0 /* Messages.m */; };
+		64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D441819CE9A00A499B0 /* MessageUtils.m */; };
 		B3ADCB68181855C500A25383 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB66181855C500A25383 /* Default.png */; };
 		B3ADCB69181855C500A25383 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB67181855C500A25383 /* Default@2x.png */; };
 /* End PBXBuildFile section */
@@ -64,6 +69,13 @@
 		64674BD7181761C500922109 /* SecondPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondPageViewController.m; sourceTree = "<group>"; };
 		64674BD91817621100922109 /* ThirdPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThirdPageViewController.h; sourceTree = "<group>"; };
 		64674BDA1817621100922109 /* ThirdPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirdPageViewController.m; sourceTree = "<group>"; };
+		64A10CEC1818A82300A499B0 /* Messages.m.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Messages.m.template; sourceTree = "<group>"; };
+		64A10CEE1818A97100A499B0 /* MessageTypes.h.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MessageTypes.h.template; sourceTree = "<group>"; };
+		64A10CF01818AA2400A499B0 /* Messages.h.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Messages.h.template; sourceTree = "<group>"; };
+		64A10D3B181964DA00A499B0 /* Messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Messages.h; sourceTree = "<group>"; };
+		64A10D3C181964DA00A499B0 /* Messages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Messages.m; sourceTree = "<group>"; };
+		64A10D431819CE9A00A499B0 /* MessageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageUtils.h; sourceTree = "<group>"; };
+		64A10D441819CE9A00A499B0 /* MessageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageUtils.m; sourceTree = "<group>"; };
 		B3ADCB6418183BD400A25383 /* UserDetails.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserDetails.h; sourceTree = "<group>"; };
 		B3ADCB66181855C500A25383 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		B3ADCB67181855C500A25383 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
@@ -126,6 +138,7 @@
 		6458F39218172E7400AA8E81 /* chatter */ = {
 			isa = PBXGroup;
 			children = (
+				64A10CEA1818A6AA00A499B0 /* Messages */,
 				B3ADCB65181855A700A25383 /* Media */,
 				64674BD21817617600922109 /* FirstTime */,
 				6458F39B18172E7400AA8E81 /* AppDelegate.h */,
@@ -180,6 +193,20 @@
 				64674BDA1817621100922109 /* ThirdPageViewController.m */,
 			);
 			name = FirstTime;
+			sourceTree = "<group>";
+		};
+		64A10CEA1818A6AA00A499B0 /* Messages */ = {
+			isa = PBXGroup;
+			children = (
+				64A10CEC1818A82300A499B0 /* Messages.m.template */,
+				64A10CEE1818A97100A499B0 /* MessageTypes.h.template */,
+				64A10CF01818AA2400A499B0 /* Messages.h.template */,
+				64A10D3B181964DA00A499B0 /* Messages.h */,
+				64A10D3C181964DA00A499B0 /* Messages.m */,
+				64A10D431819CE9A00A499B0 /* MessageUtils.h */,
+				64A10D441819CE9A00A499B0 /* MessageUtils.m */,
+			);
+			name = Messages;
 			sourceTree = "<group>";
 		};
 		B3ADCB65181855A700A25383 /* Media */ = {
@@ -267,7 +294,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64A10CED1818A82300A499B0 /* Messages.m.template in Resources */,
 				6458F3A518172E7400AA8E81 /* Images.xcassets in Resources */,
+				64A10CEF1818A97100A499B0 /* MessageTypes.h.template in Resources */,
+				64A10CF11818AA2400A499B0 /* Messages.h.template in Resources */,
 				6458F39718172E7400AA8E81 /* InfoPlist.strings in Resources */,
 				B3ADCB69181855C500A25383 /* Default@2x.png in Resources */,
 				6458F3A018172E7400AA8E81 /* Main.storyboard in Resources */,
@@ -295,7 +325,9 @@
 				6458F3A318172E7400AA8E81 /* ViewController.m in Sources */,
 				64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
+				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,
 				6458F39918172E7400AA8E81 /* main.m in Sources */,
+				64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

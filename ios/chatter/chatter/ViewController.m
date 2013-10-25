@@ -7,6 +7,8 @@
 //
 
 #import "ViewController.h"
+#import "Messages.h"
+#import "MessageUtils.h"
 
 @interface ViewController ()
 
@@ -23,6 +25,17 @@
     // Getting here implies that the user has done the tutorial
 	[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    // TEST
+    
+    RegisterMessage* rm = [[RegisterMessage alloc] init];
+    rm.username = @"sean";
+    rm.password = @"sean";
+    rm.handle = @"sean";
+    
+    [MessageUtils serializeMessage:rm];
+    
+    //TEST
     
     NSLog(@"handle: %@",userHandle);
 }
