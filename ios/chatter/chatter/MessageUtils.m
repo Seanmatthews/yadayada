@@ -156,7 +156,7 @@
     return data;
 }
 
-+ (MessageBase*)deserializeMessage:(BUFTYPE)data
++ (MessageBase*)deserializeMessage:(BUFTYPE)data withLength:(int*)length
 {
     MessageBase* mb;
     
@@ -167,7 +167,45 @@
     Byte type = *(Byte*)&data[idx];
     idx++;
     
+    mb = [self messageWithType:type];
     
+    // NOTE: This will only get properties for the subclass passed to the function
+    OrderedDictionary* props = [self classPropsFor:[mb class]];
+    
+    for (NSString* key in props) {
+        NSString* typename = [props valueForKey:key];
+        NSLog(@"%@ : %@",key,typename);
+        
+        if ([typename isEqualToString:@"NSString"]) {
+            short strLen = CFSwapInt16BigToHost(*(short*)(data+idx));
+            idx += 2;
+            NSString* str = [[NSString alloc] initWithBytes:(data+idx) length:strLen encoding:STRENC];
+            idx += strLen;
+            [props setValue:str forKey:key];
+        }
+        else if ([typename isEqualToString:@"long long"]) {
+            long long l = CFSwapInt64BigToHost(*(long long*)&data[idx]);
+            idx += 8;
+            [props setValue:[NSNumber numberWithLongLong:l] forKey:key];
+        }
+        else if ([typename isEqualToString:@"short"]) {
+            short s = CFSwapInt16BigToHost(*(short*)&data[idx]);
+            idx += 2;
+            [props setValue:[NSNumber numberWithShort:s] forKey:key];
+        }
+        else if ([typename isEqualToString:@"int"]) {
+            int i = CFSwapInt32BigToHost(*(short*)&data[idx]);
+            idx += 4;
+            [props setValue:[NSNumber numberWithInt:i] forKey:key];
+        }
+        else if ([typename isEqualToString:@"Byte"]) {
+            unsigned char b = *(unsigned char*)&data[idx];
+            idx++;
+            [props setValue:[NSNumber numberWithUnsignedChar:b] forKey:key];
+        }
+    }
+    
+    *length -= msgLen;
     return mb;
 }
 
