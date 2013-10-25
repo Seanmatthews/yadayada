@@ -1,0 +1,24 @@
+<project name="chatter" default="dist" basedir="../server">
+    <description>Main build for chatter</description>
+
+    <property name="src" location="src" />
+    <property name="build" location="../build/tmp" />
+    <property name="dist" location="../build/out" />
+
+    <target name="init">
+        <mkdir dir="${build}" />
+        <mkdir dir="${dist}" />
+    </target>
+
+    <target name="compile" depends="init">
+        <javac srcdir="${src}" destdir="${build}" />
+    </target>
+
+    <target name="dist" depends="compile">
+        <jar jarfile="${dist}/chatter.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="com.chat.MainDB"/>
+            </manifest>
+        </jar>
+    </target>
+</project>
