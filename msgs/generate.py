@@ -39,6 +39,8 @@ class Field:
 
 t = Template(file='Message.java.template')
 
+
+serverPath = "../server/src/com/chat/msgs/" + version
 clientMessages = []
 serverMessages = []
 for msg in root:
@@ -61,7 +63,7 @@ for msg in root:
 
       t.msg = message
       t.package = package
-      f = file(version + '/' + message.name + 'Message.java', 'w')
+      f = file(serverPath + '/' + message.name + 'Message.java', 'w')
       f.write(str(t))
       f.close()
   
@@ -73,11 +75,12 @@ for msg in root:
 connT = Template(file='Connection.java.template')
 connImplT = Template(file='ConnectionImpl.java.template')
 
+
 connT.recvMsgs = clientMessages
 connT.sendMsgs = serverMessages
 connT.package = package
 connT.clientOrServer = 'Client'
-f = file(version + '/ClientConnection.java', 'w')
+f = file(serverPath + '/ClientConnection.java', 'w')
 f.write(str(connT))
 f.close()
 
@@ -85,50 +88,59 @@ connImplT.recvMsgs = clientMessages
 connImplT.sendMsgs = serverMessages
 connImplT.package = package
 connImplT.clientOrServer = 'Client'
-f = file(version + '/ClientConnectionImpl.java', 'w')
+f = file(serverPath + '/ClientConnectionImpl.java', 'w')
 f.write(str(connImplT))
 f.close()
 
 connT.sendMsgs = clientMessages
 connT.recvMsgs = serverMessages
 connT.clientOrServer = 'Server'
-f = file(version + '/ServerConnection.java', 'w')
+f = file(serverPath + '/ServerConnection.java', 'w')
 f.write(str(connT))
 f.close()
 
 connImplT.sendMsgs = clientMessages
 connImplT.recvMsgs = serverMessages
 connImplT.clientOrServer = 'Server'
-f = file(version + '/ServerConnectionImpl.java', 'w')
+f = file(serverPath + '/ServerConnectionImpl.java', 'w')
 f.write(str(connImplT))
 f.close()
 
 typesT = Template(file='MessageTypes.java.template')
 typesT.msgs = clientMessages + serverMessages
 typesT.package = package
-f = file(version + '/MessageTypes.java', 'w')
+f = file(serverPath + '/MessageTypes.java', 'w')
 f.write(str(typesT))
 f.close()
 
-typesT = Template(file='MessageTypes.h')
-typesT.msgs = clientMessages + serverMessages
-typesT.apiVersion = versionNum
-f = file(version + '/MessageTypes.h', 'w')
-f.write(str(typesT))
-f.close() 
+#typesT = Template(file='MessageTypes.h')
+#typesT.msgs = clientMessages + serverMessages
+#typesT.apiVersion = versionNum
+#f = file(serverPath + '/MessageTypes.h', 'w')
+#f.write(str(typesT))
+#f.close() 
 
 parserT = Template(file='Parser.c')
 parserT.msgs = serverMessages
-f = file(version + '/Parser.c', 'w')
+f = file(serverPath + '/Parser.c', 'w')
 f.write(str(parserT))
 f.close() 
 
-iosMessagesT = Template(file='Messages.h.template')
-iosMessagesT.msgs = clientMessages + serverMessages
-for msg in iosMessagesT.msgs:
+iosPath = "../ios/chatter/chatter/"
+
+iosMessagesHT = Template(file='Messages.h.template')
+iosMessagesHT.msgs = clientMessages + serverMessages
+for msg in iosMessagesHT.msgs:
     for field in msg.fields:
         field.type = typeMap[field.type]
-iosMessagesT.apiVersion = versionNum
-f = file(version + '/Messages.h', 'w')
-f.write(str(iosMessagesT))
+iosMessagesHT.apiVersion = versionNum
+f = file(iosPath + 'Messages.h', 'w')
+f.write(str(iosMessagesHT))
 f.close()
+
+iosMessagesMT = Template(file='Messages.m.template')
+iosMessagesMT.msgs = iosMessagesHT.msgs
+iosMessagesMT.apiVersion = versionNum
+f = file(iosPath + 'Messages.m', 'w')
+f.write(str(iosMessagesMT))
+f.close() 

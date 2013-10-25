@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 rowboat entertainment. All rights reserved.
 //
 
-#import \<Foundation/Foundation.h\>
-#import "MessageTemplate.h"
+\#import <Foundation/Foundation.h>
+\#import "MessageTemplate.h"
 
 typedef enum {
 #for $msg in $msgs
@@ -31,9 +31,8 @@ typedef enum {
 #for $msg in $msgs
 
 @interface ${msg.name}Message : Message
-{
 
-}
+- (id)init;
 
 #for $field in $msg.fields
 @property $field.type $field.name;
