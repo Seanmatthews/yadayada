@@ -7,32 +7,31 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "MessageTemplate.h"
 
 typedef enum {
-    Register = 1),
-    Login = 11),
-    Connect = 16),
-    SubmitMessage = 21),
-    SearchChatrooms = 31),
-    JoinChatroom = 33),
-    LeaveChatroom = 34),
-    CreateChatroom = 35),
-    RegisterAccept = 2),
-    RegisterReject = 3),
-    LoginAccept = 12),
-    LoginReject = 13),
-    ConnectAccept = 17),
-    ConnectReject = 18),
-    Message = 22),
-    Chatroom = 32),
-    JoinChatroomReject = 36),
-    JoinedChatroom = 37),
-    LeftChatroom = 38),
-    CreateChatroomReject = 38),
+    Register = 1,
+    Login = 11,
+    Connect = 16,
+    SubmitMessage = 21,
+    SearchChatrooms = 31,
+    JoinChatroom = 33,
+    LeaveChatroom = 34,
+    CreateChatroom = 35,
+    RegisterAccept = 2,
+    RegisterReject = 3,
+    LoginAccept = 12,
+    LoginReject = 13,
+    ConnectAccept = 17,
+    ConnectReject = 18,
+    Message = 22,
+    Chatroom = 32,
+    JoinChatroomReject = 36,
+    JoinedChatroom = 37,
+    LeftChatroom = 38,
+    CreateChatroomReject = 38,
 } MessageTypes;
 
-@interface Message : NSObject
+@interface MessageBase : NSObject
 {
     @protected
     short _length;
@@ -46,7 +45,7 @@ typedef enum {
 @end
 
 
-@interface RegisterMessage : Message
+@interface RegisterMessage : MessageBase
 
 - (id)init;
 
@@ -56,7 +55,7 @@ typedef enum {
 
 @end
 
-@interface LoginMessage : Message
+@interface LoginMessage : MessageBase
 
 - (id)init;
 
@@ -65,7 +64,7 @@ typedef enum {
 
 @end
 
-@interface ConnectMessage : Message
+@interface ConnectMessage : MessageBase
 
 - (id)init;
 
@@ -74,7 +73,7 @@ typedef enum {
 
 @end
 
-@interface SubmitMessageMessage : Message
+@interface SubmitMessageMessage : MessageBase
 
 - (id)init;
 
@@ -84,7 +83,7 @@ typedef enum {
 
 @end
 
-@interface SearchChatroomsMessage : Message
+@interface SearchChatroomsMessage : MessageBase
 
 - (id)init;
 
@@ -93,7 +92,7 @@ typedef enum {
 
 @end
 
-@interface JoinChatroomMessage : Message
+@interface JoinChatroomMessage : MessageBase
 
 - (id)init;
 
@@ -104,7 +103,7 @@ typedef enum {
 
 @end
 
-@interface LeaveChatroomMessage : Message
+@interface LeaveChatroomMessage : MessageBase
 
 - (id)init;
 
@@ -113,7 +112,7 @@ typedef enum {
 
 @end
 
-@interface CreateChatroomMessage : Message
+@interface CreateChatroomMessage : MessageBase
 
 - (id)init;
 
@@ -125,7 +124,7 @@ typedef enum {
 
 @end
 
-@interface RegisterAcceptMessage : Message
+@interface RegisterAcceptMessage : MessageBase
 
 - (id)init;
 
@@ -133,7 +132,7 @@ typedef enum {
 
 @end
 
-@interface RegisterRejectMessage : Message
+@interface RegisterRejectMessage : MessageBase
 
 - (id)init;
 
@@ -141,7 +140,7 @@ typedef enum {
 
 @end
 
-@interface LoginAcceptMessage : Message
+@interface LoginAcceptMessage : MessageBase
 
 - (id)init;
 
@@ -149,7 +148,7 @@ typedef enum {
 
 @end
 
-@interface LoginRejectMessage : Message
+@interface LoginRejectMessage : MessageBase
 
 - (id)init;
 
@@ -157,7 +156,7 @@ typedef enum {
 
 @end
 
-@interface ConnectAcceptMessage : Message
+@interface ConnectAcceptMessage : MessageBase
 
 - (id)init;
 
@@ -166,7 +165,7 @@ typedef enum {
 
 @end
 
-@interface ConnectRejectMessage : Message
+@interface ConnectRejectMessage : MessageBase
 
 - (id)init;
 
@@ -174,7 +173,7 @@ typedef enum {
 
 @end
 
-@interface MessageMessage : Message
+@interface MessageMessage : MessageBase
 
 - (id)init;
 
@@ -187,7 +186,7 @@ typedef enum {
 
 @end
 
-@interface ChatroomMessage : Message
+@interface ChatroomMessage : MessageBase
 
 - (id)init;
 
@@ -201,7 +200,7 @@ typedef enum {
 
 @end
 
-@interface JoinChatroomRejectMessage : Message
+@interface JoinChatroomRejectMessage : MessageBase
 
 - (id)init;
 
@@ -210,7 +209,7 @@ typedef enum {
 
 @end
 
-@interface JoinedChatroomMessage : Message
+@interface JoinedChatroomMessage : MessageBase
 
 - (id)init;
 
@@ -220,7 +219,7 @@ typedef enum {
 
 @end
 
-@interface LeftChatroomMessage : Message
+@interface LeftChatroomMessage : MessageBase
 
 - (id)init;
 
@@ -229,7 +228,7 @@ typedef enum {
 
 @end
 
-@interface CreateChatroomRejectMessage : Message
+@interface CreateChatroomRejectMessage : MessageBase
 
 - (id)init;
 

@@ -6,12 +6,12 @@
 //  Copyright (c) 2013 rowboat entertainment. All rights reserved.
 //
 
-#import "Message.h"
+#import "Messages.h"
 
-@implementation Message
+@implementation MessageBase
 
 @synthesize length;
-@sythesize type;
+@synthesize type;
 
 - (id)init
 {
@@ -25,9 +25,9 @@
 
 @implementation RegisterMessage
 
-@synthesize {userName}
-@synthesize {password}
-@synthesize {handle}
+@synthesize userName;
+@synthesize password;
+@synthesize handle;
 
 - (id)init
 {
@@ -40,8 +40,8 @@
 
 @implementation LoginMessage
 
-@synthesize {userName}
-@synthesize {password}
+@synthesize userName;
+@synthesize password;
 
 - (id)init
 {
@@ -54,8 +54,8 @@
 
 @implementation ConnectMessage
 
-@synthesize {APIVersion}
-@synthesize {UUID}
+@synthesize APIVersion;
+@synthesize UUID;
 
 - (id)init
 {
@@ -68,9 +68,9 @@
 
 @implementation SubmitMessageMessage
 
-@synthesize {userId}
-@synthesize {chatroomId}
-@synthesize {message}
+@synthesize userId;
+@synthesize chatroomId;
+@synthesize message;
 
 - (id)init
 {
@@ -83,8 +83,8 @@
 
 @implementation SearchChatroomsMessage
 
-@synthesize {latitude}
-@synthesize {longitude}
+@synthesize latitude;
+@synthesize longitude;
 
 - (id)init
 {
@@ -97,10 +97,10 @@
 
 @implementation JoinChatroomMessage
 
-@synthesize {userId}
-@synthesize {chatroomId}
-@synthesize {latitude}
-@synthesize {longitude}
+@synthesize userId;
+@synthesize chatroomId;
+@synthesize latitude;
+@synthesize longitude;
 
 - (id)init
 {
@@ -113,8 +113,8 @@
 
 @implementation LeaveChatroomMessage
 
-@synthesize {userId}
-@synthesize {chatroomId}
+@synthesize userId;
+@synthesize chatroomId;
 
 - (id)init
 {
@@ -127,11 +127,11 @@
 
 @implementation CreateChatroomMessage
 
-@synthesize {ownerId}
-@synthesize {chatroomName}
-@synthesize {latitude}
-@synthesize {longitude}
-@synthesize {radius}
+@synthesize ownerId;
+@synthesize chatroomName;
+@synthesize latitude;
+@synthesize longitude;
+@synthesize radius;
 
 - (id)init
 {
@@ -144,7 +144,7 @@
 
 @implementation RegisterAcceptMessage
 
-@synthesize {userId}
+@synthesize userId;
 
 - (id)init
 {
@@ -157,7 +157,7 @@
 
 @implementation RegisterRejectMessage
 
-@synthesize {reason}
+@synthesize reason;
 
 - (id)init
 {
@@ -170,7 +170,7 @@
 
 @implementation LoginAcceptMessage
 
-@synthesize {userId}
+@synthesize userId;
 
 - (id)init
 {
@@ -183,7 +183,7 @@
 
 @implementation LoginRejectMessage
 
-@synthesize {reason}
+@synthesize reason;
 
 - (id)init
 {
@@ -196,8 +196,8 @@
 
 @implementation ConnectAcceptMessage
 
-@synthesize {APIVersion}
-@synthesize {globalChatId}
+@synthesize APIVersion;
+@synthesize globalChatId;
 
 - (id)init
 {
@@ -210,7 +210,7 @@
 
 @implementation ConnectRejectMessage
 
-@synthesize {reason}
+@synthesize reason;
 
 - (id)init
 {
@@ -223,12 +223,12 @@
 
 @implementation MessageMessage
 
-@synthesize {messageId}
-@synthesize {messageTimestamp}
-@synthesize {senderId}
-@synthesize {chatroomId}
-@synthesize {senderHandle}
-@synthesize {message}
+@synthesize messageId;
+@synthesize messageTimestamp;
+@synthesize senderId;
+@synthesize chatroomId;
+@synthesize senderHandle;
+@synthesize message;
 
 - (id)init
 {
@@ -241,13 +241,13 @@
 
 @implementation ChatroomMessage
 
-@synthesize {chatroomId}
-@synthesize {chatroomOwnerId}
-@synthesize {chatroomName}
-@synthesize {chatroomOwnerHandle}
-@synthesize {latitude}
-@synthesize {longitude}
-@synthesize {radius}
+@synthesize chatroomId;
+@synthesize chatroomOwnerId;
+@synthesize chatroomName;
+@synthesize chatroomOwnerHandle;
+@synthesize latitude;
+@synthesize longitude;
+@synthesize radius;
 
 - (id)init
 {
@@ -260,8 +260,8 @@
 
 @implementation JoinChatroomRejectMessage
 
-@synthesize {chatroomId}
-@synthesize {reason}
+@synthesize chatroomId;
+@synthesize reason;
 
 - (id)init
 {
@@ -274,9 +274,9 @@
 
 @implementation JoinedChatroomMessage
 
-@synthesize {chatroomId}
-@synthesize {userId}
-@synthesize {userHandle}
+@synthesize chatroomId;
+@synthesize userId;
+@synthesize userHandle;
 
 - (id)init
 {
@@ -289,8 +289,8 @@
 
 @implementation LeftChatroomMessage
 
-@synthesize {chatroomId}
-@synthesize {userId}
+@synthesize chatroomId;
+@synthesize userId;
 
 - (id)init
 {
@@ -303,8 +303,8 @@
 
 @implementation CreateChatroomRejectMessage
 
-@synthesize {chatroomName}
-@synthesize {reason}
+@synthesize chatroomName;
+@synthesize reason;
 
 - (id)init
 {
