@@ -8,12 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "UserDetails.h"
+#import "MessageUtils.h"
+#import "Connection.h"
 
 @interface ViewController : UIViewController
 {
     UserDetails* ud;
+    Connection* connection;
 }
 
 @property (nonatomic, strong) NSString* userHandle;
+
+- (void)messageCallback:(MessageBase*)message;
 
 @end

@@ -26,6 +26,17 @@
     return self;
 }
 
+- (id) initWithHandle:(NSString*)handle
+{
+    self = [super init];
+    if (self) {
+        _handle = handle;
+        _UUID = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+        [[NSUserDefaults standardUserDefaults] setObject:_handle forKey:@"UserHandle"];
+    }
+    return self;
+}
+
 - (void)setHandle:(NSString *)handle
 {
     if (_handle != handle) {

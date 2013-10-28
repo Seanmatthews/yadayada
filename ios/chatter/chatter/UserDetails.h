@@ -17,6 +17,7 @@
 @property NSString* UUID;
 
 - (id)init;
+- (id) initWithHandle:(NSString*)handle;
 - (void)setHandle:(NSString *)handle;
 
 @end
