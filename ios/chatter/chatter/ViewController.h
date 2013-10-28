@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UserDetails.h"
 
 @interface ViewController : UIViewController
 {
-    
+    UserDetails* ud;
 }
 
 @property (nonatomic, strong) NSString* userHandle;

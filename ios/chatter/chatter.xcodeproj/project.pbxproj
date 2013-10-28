@@ -27,6 +27,8 @@
 		64A10D3D181964DA00A499B0 /* Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D3C181964DA00A499B0 /* Messages.m */; };
 		64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D441819CE9A00A499B0 /* MessageUtils.m */; };
 		64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D48181A281A00A499B0 /* OrderedDictionary.m */; };
+		64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D4B181DFC1400A499B0 /* UserDetails.m */; };
+		64A10D4E181DFDEF00A499B0 /* v1.xml in Resources */ = {isa = PBXBuildFile; fileRef = 64A10D4D181DFDEF00A499B0 /* v1.xml */; };
 		B3ADCB68181855C500A25383 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB66181855C500A25383 /* Default.png */; };
 		B3ADCB69181855C500A25383 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB67181855C500A25383 /* Default@2x.png */; };
 /* End PBXBuildFile section */
@@ -73,7 +75,9 @@
 		64A10D441819CE9A00A499B0 /* MessageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageUtils.m; sourceTree = "<group>"; };
 		64A10D47181A281A00A499B0 /* OrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderedDictionary.h; sourceTree = "<group>"; };
 		64A10D48181A281A00A499B0 /* OrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrderedDictionary.m; sourceTree = "<group>"; };
-		B3ADCB6418183BD400A25383 /* UserDetails.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserDetails.h; sourceTree = "<group>"; };
+		64A10D4A181DFC1400A499B0 /* UserDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserDetails.h; sourceTree = "<group>"; };
+		64A10D4B181DFC1400A499B0 /* UserDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDetails.m; sourceTree = "<group>"; };
+		64A10D4D181DFDEF00A499B0 /* v1.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = v1.xml; path = ../../../msgs/v1.xml; sourceTree = "<group>"; };
 		B3ADCB66181855C500A25383 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		B3ADCB67181855C500A25383 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -144,8 +148,9 @@
 				6458F39E18172E7400AA8E81 /* Main.storyboard */,
 				6458F3A118172E7400AA8E81 /* ViewController.h */,
 				6458F3A218172E7400AA8E81 /* ViewController.m */,
-				B3ADCB6418183BD400A25383 /* UserDetails.h */,
 				6458F3A418172E7400AA8E81 /* Images.xcassets */,
+				64A10D4A181DFC1400A499B0 /* UserDetails.h */,
+				64A10D4B181DFC1400A499B0 /* UserDetails.m */,
 				6458F39318172E7400AA8E81 /* Supporting Files */,
 			);
 			path = chatter;
@@ -154,6 +159,7 @@
 		6458F39318172E7400AA8E81 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				64A10D4D181DFDEF00A499B0 /* v1.xml */,
 				6458F39418172E7400AA8E81 /* chatter-Info.plist */,
 				6458F39518172E7400AA8E81 /* InfoPlist.strings */,
 				6458F39818172E7400AA8E81 /* main.m */,
@@ -300,6 +306,7 @@
 			files = (
 				6458F3A518172E7400AA8E81 /* Images.xcassets in Resources */,
 				6458F39718172E7400AA8E81 /* InfoPlist.strings in Resources */,
+				64A10D4E181DFDEF00A499B0 /* v1.xml in Resources */,
 				B3ADCB69181855C500A25383 /* Default@2x.png in Resources */,
 				6458F3A018172E7400AA8E81 /* Main.storyboard in Resources */,
 				B3ADCB68181855C500A25383 /* Default.png in Resources */,
@@ -324,6 +331,7 @@
 				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
 				64674BD8181761C500922109 /* SecondPageViewController.m in Sources */,
 				64674BD5181761A500922109 /* FirstPageViewController.m in Sources */,
+				64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */,
 				6458F3A318172E7400AA8E81 /* ViewController.m in Sources */,
 				64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,

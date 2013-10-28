@@ -22,10 +22,21 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    ud = [[UserDetails alloc] init];
     
-    // Getting here implies that the user has done the tutorial
-	[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
+
+    }
+    else {
+        
+        // Getting here implies that the user has done the tutorial
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    
+    
+    
+    
     
     // TEST
     

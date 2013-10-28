@@ -2,13 +2,21 @@
 //  UserDetails.h
 //  chatter
 //
-//  Created by Jim Greco on 10/23/13.
+//  Created by sean matthews on 10/27/13.
 //  Copyright (c) 2013 rowboat entertainment. All rights reserved.
 //
 
-#ifndef chatter_UserDetails_h
-#define chatter_UserDetails_h
+#import <Foundation/Foundation.h>
 
+@interface UserDetails : NSObject
+{
+    
+}
 
+@property (readwrite, nonatomic) NSString* handle;
+@property NSString* UUID;
 
-#endif
+- (id)init;
+- (void)setHandle:(NSString *)handle;
+
+@end
