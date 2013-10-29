@@ -197,11 +197,6 @@ public class ChatGUI implements ChatClient {
     }
 
     @Override
-    public void sendMessage(String msg) throws IOException {
-        // from the command line
-    }
-
-    @Override
     public void onJoinedChatroom(Chatroom chatroom, User user) {
         System.out.println(user + " has joined " + chatroom);
 

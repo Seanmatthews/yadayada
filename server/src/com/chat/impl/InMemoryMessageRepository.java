@@ -5,6 +5,8 @@ import com.chat.Message;
 import com.chat.MessageRepository;
 import com.chat.User;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -13,11 +15,11 @@ import com.chat.User;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryMessageRepository implements MessageRepository {
-    private volatile long nextMessageId = 1;
+    private final AtomicLong nextMessageId = new AtomicLong(1);
 
     @Override
     public Message create(Chatroom chatroom, User sender, String message) {
-        Message msg = new Message(nextMessageId++, chatroom, sender, message, System.currentTimeMillis());
+        Message msg = new Message(nextMessageId.getAndIncrement(), chatroom, sender, message, System.currentTimeMillis());
         // don't store these currently
         return msg;
     }
