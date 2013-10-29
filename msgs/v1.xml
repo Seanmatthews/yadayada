@@ -34,6 +34,8 @@
     <msg name="ConnectAccept" val="17" origin="server">
         <field name="APIVersion" type="int" />
         <field name="globalChatId" type="long" />
+        <field name="imageUploadUrl" type="String" />
+        <field name="imageDownloadUrl" type="String" />
     </msg>
 
     <msg name="ConnectReject" val="18" origin="server">

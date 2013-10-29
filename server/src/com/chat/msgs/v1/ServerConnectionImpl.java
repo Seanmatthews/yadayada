@@ -89,9 +89,11 @@ public class ServerConnectionImpl implements ServerConnection {
     public ConnectAcceptMessage recvConnectAccept() throws IOException {
         int APIVersion = stream.readInt();  
         long globalChatId = stream.readLong();  
+        String imageUploadUrl = stream.readString();  
+        String imageDownloadUrl = stream.readString();  
         stream.finishReading();
                 
-        return new ConnectAcceptMessage(APIVersion, globalChatId);
+        return new ConnectAcceptMessage(APIVersion, globalChatId, imageUploadUrl, imageDownloadUrl);
     }
 
     @Override

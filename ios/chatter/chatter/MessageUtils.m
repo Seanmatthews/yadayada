@@ -12,7 +12,6 @@
 
 const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
-
 @implementation MessageUtils
 
 + (MessageBase*)messageWithType:(MessageTypes)type
@@ -118,15 +117,14 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     [data appendBytes:&b length:1];
     
     for (NSString* key in props) {
-        NSLog(@"msgLen: %d",msgLen);
         NSString* typename = [props valueForKey:key];
         NSLog(@"%@ : %@",key,typename);
         //Class C = NSClassFromString([props valueForKey:key]);
         
         if ([typename isEqualToString:@"NSString"]) {
             short strLen = (short)[[message valueForKey:key] lengthOfBytesUsingEncoding:STRENC];
-            short newStrLen = CFSwapInt16HostToBig(strLen);
-            [data appendBytes:&newStrLen length:2];
+            strLen = CFSwapInt16HostToBig(strLen);
+            [data appendBytes:&strLen length:2];
             [data appendData:[[message valueForKey:key] dataUsingEncoding:STRENC]];
             msgLen += 2 + strLen;
         }
@@ -140,7 +138,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             [data appendBytes:&s length:2];
             msgLen += 2;
         }
-        else if ([typename isEqualToString:@"i"]) {
+        else if ([typename isEqualToString:@"int"]) {
             int i = CFSwapInt32HostToBig((int)[message valueForKey:key]);
             [data appendBytes:&i length:4];
             msgLen += 4;
@@ -150,15 +148,11 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             [data appendBytes:&b length:1];
             msgLen += 1;
         }
-        else {
-            NSLog(@"Unrecognized serialization type");
-        }
     }
     
     // set the correct msg length
-    NSLog(@"msgLen: %d",msgLen);
-    short newMsgLen = CFSwapInt16HostToBig(msgLen);
-    [data replaceBytesInRange:NSMakeRange(0, 2) withBytes:&newMsgLen length:2];
+    msgLen = CFSwapInt16HostToBig(msgLen);
+    [data replaceBytesInRange:NSMakeRange(0, 2) withBytes:&msgLen length:2];
 
     return data;
 }
@@ -166,11 +160,6 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 + (MessageBase*)deserializeMessage:(BUFTYPE)data withLength:(int*)length
 {
     MessageBase* mb;
-    NSLog(@"deser length: %d",*length);
-    
-    if (*length < 3) {
-        return nil;
-    }
     
     // Header info
     int idx = 0;
@@ -217,7 +206,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         }
     }
     
-    *length -= msgLen + 2;
+    *length -= msgLen;
     return mb;
 }
 

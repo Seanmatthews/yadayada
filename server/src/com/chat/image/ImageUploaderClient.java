@@ -1,11 +1,10 @@
 package com.chat.image;
 
-import com.chat.BinaryStream;
-import com.chat.impl.DataStream;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -31,12 +30,9 @@ public class ImageUploaderClient {
         System.out.println("Read file");
 
         os.writeLong(1);
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
         ImageIO.write(read, "jpeg", os);
 
-        //byte[] bytes = output.toByteArray();
-
         System.out.println("Wrote file");
-        //Thread.sleep(10000);
+        Thread.sleep(1000);
     }
 }

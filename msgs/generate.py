@@ -113,19 +113,6 @@ f = file(serverPath + '/MessageTypes.java', 'w')
 f.write(str(typesT))
 f.close()
 
-#typesT = Template(file='MessageTypes.h')
-#typesT.msgs = clientMessages + serverMessages
-#typesT.apiVersion = versionNum
-#f = file(serverPath + '/MessageTypes.h', 'w')
-#f.write(str(typesT))
-#f.close() 
-
-parserT = Template(file='Parser.c')
-parserT.msgs = serverMessages
-f = file(serverPath + '/Parser.c', 'w')
-f.write(str(parserT))
-f.close() 
-
 iosPath = "../ios/chatter/chatter/"
 
 iosMessagesHT = Template(file='Messages.h.template')

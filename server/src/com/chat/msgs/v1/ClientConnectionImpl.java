@@ -175,10 +175,12 @@ public class ClientConnectionImpl implements ClientConnection {
     @Override
     public void sendConnectAccept(ConnectAcceptMessage msg) throws IOException {
         synchronized(stream) {
-            stream.startWriting(1 + 4 + 8);
+            stream.startWriting(1 + 4 + 8 + getStrLen(msg.getImageUploadUrl()) + getStrLen(msg.getImageDownloadUrl()));
             stream.writeByte(MessageTypes.ConnectAccept.getValue());
             stream.writeInt(msg.getAPIVersion());
             stream.writeLong(msg.getGlobalChatId());
+            stream.writeString(msg.getImageUploadUrl());
+            stream.writeString(msg.getImageDownloadUrl());
             stream.finishWriting();
         }
     }
