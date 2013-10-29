@@ -8,6 +8,7 @@ import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
 import com.chat.msgs.v1.ServerConnectionImpl;
+import com.chat.util.NanoHTTPD;
 
 import java.io.FileInputStream;
 import java.io.IOException;
