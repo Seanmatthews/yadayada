@@ -13,6 +13,10 @@
     
 }
 
+- (void)registerForKeyboardNotifications;
+- (void)keyboardWasShown:(NSNotification*)aNotification;
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification;
+
 @property (nonatomic, retain) IBOutlet UITextField* handleTextField;
 
 @end

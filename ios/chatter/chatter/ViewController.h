@@ -10,8 +10,10 @@
 #import "UserDetails.h"
 #import "MessageUtils.h"
 #import "Connection.h"
+#import "UITableViewCell+UITableViewCellCategory.h"
+#import "UITableView+UITableViewCategory.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <UITextFieldDelegate>
 {
     UserDetails* ud;
     Connection* connection;
@@ -19,8 +21,14 @@
 }
 
 @property (nonatomic, strong) NSString* userHandle;
+@property (nonatomic, retain) IBOutlet UITextField* userInputTextField;
+@property (nonatomic, retain) IBOutlet UIScrollView* scrollView;
 
 - (void)messageCallback:(MessageBase*)message;
-- (void)connectionThreadMethod:(Connection*)connection;
+- (void)connectAndRegister;
+- (void)registerForKeyboardNotifications;
+- (void)keyboardWasShown:(NSNotification*)aNotification;
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification;
+
 
 @end

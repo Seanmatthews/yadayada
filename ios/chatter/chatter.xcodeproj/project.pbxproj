@@ -30,6 +30,9 @@
 		64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D4B181DFC1400A499B0 /* UserDetails.m */; };
 		64A10D4E181DFDEF00A499B0 /* v1.xml in Resources */ = {isa = PBXBuildFile; fileRef = 64A10D4D181DFDEF00A499B0 /* v1.xml */; };
 		64A10D51181E1B2300A499B0 /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D50181E1B2300A499B0 /* Connection.m */; };
+		64A10D54181F937F00A499B0 /* ChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D53181F937F00A499B0 /* ChatCell.m */; };
+		64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D56181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m */; };
+		64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */; };
 		B3ADCB68181855C500A25383 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB66181855C500A25383 /* Default.png */; };
 		B3ADCB69181855C500A25383 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB67181855C500A25383 /* Default@2x.png */; };
 /* End PBXBuildFile section */
@@ -81,6 +84,12 @@
 		64A10D4D181DFDEF00A499B0 /* v1.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = v1.xml; path = ../../../msgs/v1.xml; sourceTree = "<group>"; };
 		64A10D4F181E1B2300A499B0 /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
 		64A10D50181E1B2300A499B0 /* Connection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Connection.m; sourceTree = "<group>"; };
+		64A10D52181F937F00A499B0 /* ChatCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatCell.h; sourceTree = "<group>"; };
+		64A10D53181F937F00A499B0 /* ChatCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatCell.m; sourceTree = "<group>"; };
+		64A10D55181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITableViewCell+UITableViewCellCategory.h"; sourceTree = "<group>"; };
+		64A10D56181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableViewCell+UITableViewCellCategory.m"; sourceTree = "<group>"; };
+		64A10D58181FA45300A499B0 /* UITableView+UITableViewCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITableView+UITableViewCategory.h"; sourceTree = "<group>"; };
+		64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableView+UITableViewCategory.m"; sourceTree = "<group>"; };
 		B3ADCB66181855C500A25383 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		B3ADCB67181855C500A25383 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -156,6 +165,8 @@
 				64A10D4B181DFC1400A499B0 /* UserDetails.m */,
 				64A10D4F181E1B2300A499B0 /* Connection.h */,
 				64A10D50181E1B2300A499B0 /* Connection.m */,
+				64A10D52181F937F00A499B0 /* ChatCell.h */,
+				64A10D53181F937F00A499B0 /* ChatCell.m */,
 				6458F39318172E7400AA8E81 /* Supporting Files */,
 			);
 			path = chatter;
@@ -220,6 +231,10 @@
 			children = (
 				64A10D47181A281A00A499B0 /* OrderedDictionary.h */,
 				64A10D48181A281A00A499B0 /* OrderedDictionary.m */,
+				64A10D55181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.h */,
+				64A10D56181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m */,
+				64A10D58181FA45300A499B0 /* UITableView+UITableViewCategory.h */,
+				64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -335,13 +350,16 @@
 			files = (
 				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
 				64674BD8181761C500922109 /* SecondPageViewController.m in Sources */,
+				64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */,
 				64A10D51181E1B2300A499B0 /* Connection.m in Sources */,
 				64674BD5181761A500922109 /* FirstPageViewController.m in Sources */,
+				64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */,
 				64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */,
 				6458F3A318172E7400AA8E81 /* ViewController.m in Sources */,
 				64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
 				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,
+				64A10D54181F937F00A499B0 /* ChatCell.m in Sources */,
 				6458F39918172E7400AA8E81 /* main.m in Sources */,
 				64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */,
 			);

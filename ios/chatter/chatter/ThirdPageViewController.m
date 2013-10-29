@@ -38,6 +38,8 @@
     
     handleTextField.returnKeyType = UIReturnKeyDone;
     [handleTextField setDelegate:self];
+    
+    [self registerForKeyboardNotifications];
 }
 
 - (void)didReceiveMemoryWarning
@@ -45,6 +47,52 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
+#pragma mark - Keyboard Interaction
+
+- (void)registerForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+// Called when the UIKeyboardDidShowNotification is sent.
+- (void)keyboardWasShown:(NSNotification*)aNotification
+{
+    UIScrollView* scrollView = (UIScrollView*)[self view];
+    
+    NSDictionary* info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    CGRect bkgndRect = handleTextField.superview.frame;
+    kbSize.height += 100;
+    bkgndRect.size.height += kbSize.height;
+    [handleTextField.superview setFrame:bkgndRect];
+    [scrollView setContentOffset:CGPointMake(0.0, handleTextField.frame.origin.y-kbSize.height) animated:YES];
+}
+
+// Called when the UIKeyboardWillHideNotification is sent
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification
+{
+    UIScrollView* scrollView = (UIScrollView*)[self view];
+    
+    NSDictionary* info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    CGRect bkgndRect = handleTextField.superview.frame;
+    bkgndRect.size.height -= kbSize.height;
+    [handleTextField.superview setFrame:bkgndRect];
+    [scrollView setContentOffset:CGPointMake(0.0, 0.0) animated:YES];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
+}
+
+
+#pragma mark - Navigation
 
 - (void)leftSwipeAction
 {
@@ -59,11 +107,7 @@
     vc.userHandle = handleTextField.text;
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    [textField resignFirstResponder];
-    return YES;
-}
+
 
 
 

@@ -63,10 +63,9 @@
         internalBufferLen = 0;
         while (len > 0) {
             MessageBase* m = [MessageUtils deserializeMessage:tmp withLength:&len];
-            NSLog(@"msg type: %d",m.type);
-//            for (id sender in controllers) {
-//                ((void (^)(MessageBase*))[controllers objectForKey:sender])(m);
-//            }
+            for (NSString* sender in controllers) {
+                ((void (^)(MessageBase*))[controllers objectForKey:sender])(m);
+            }
         }
     }
 }

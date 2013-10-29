@@ -15,6 +15,11 @@
 
 @property (readwrite, nonatomic) NSString* handle;
 @property NSString* UUID;
+@property long long userId;
+
+// TODO: The type of this property will change ot accommodate
+// being joined to several chats at once.
+@property long long chatroomId;
 
 - (id)init;
 - (id) initWithHandle:(NSString*)handle;

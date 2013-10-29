@@ -18,6 +18,8 @@
 @implementation ViewController
 
 @synthesize userHandle;
+@synthesize userInputTextField;
+@synthesize scrollView;
 
 - (void)viewDidLoad
 {
@@ -34,6 +36,9 @@
         ud = [[UserDetails alloc] initWithHandle:userHandle];
     }
     
+    userInputTextField.returnKeyType = UIReturnKeySend;
+    [self registerForKeyboardNotifications];
+    
     // Get connection object and add this controller's callback
     // method for incoming connections.
     connection = [[Connection alloc] init];
@@ -43,7 +48,7 @@
 
     // We need this because the run loops of connection don't work until
     // the view is completely loaded.
-    [self performSelector:@selector(connect:) withObject:connection afterDelay:1.0];
+    [self performSelector:@selector(connectAndRegister) withObject:nil afterDelay:1.0];
     
     NSLog(@"handle: %@",userHandle);
 }
@@ -54,22 +59,77 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)connectionThreadMethod:(Connection*)aConnection
-{
-    aConnection = [[Connection alloc] init];
-    [aConnection connect];
-    [[NSRunLoop currentRunLoop] run];
-}
 
-- (void)connect:(Connection*)connect
+
+- (void)connectAndRegister
 {
     NSLog(@"Going to try to connect now");
-    // Connect and register
+
     ConnectMessage* cm = [[ConnectMessage alloc] init];
     // TODO: get api version programatically
     cm.APIVersion = 1;
     cm.UUID = ud.UUID;
     [self sendMessage:cm];
+    
+    RegisterMessage* rm = [[RegisterMessage alloc] init];
+    rm.handle = @"sean";
+    rm.userName = ud.UUID;
+    rm.password = @"pass";
+    
+    NSLog(@"register %@ %@ %@",rm.handle,rm.userName,rm.password);
+    
+    [self sendMessage:rm];
+}
+
+
+#pragma mark - Keyboard Interaction
+
+- (void)registerForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+// Called when the UIKeyboardDidShowNotification is sent.
+- (void)keyboardWasShown:(NSNotification*)aNotification
+{
+    //UIScrollView* scrollView = (UIScrollView*)[self view];
+    
+    NSDictionary* info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    CGRect bkgndRect = userInputTextField.superview.frame;
+    // TODO: figure out why this works and the normal way doesn't
+    kbSize.height += 100;
+    bkgndRect.size.height += kbSize.height;
+    [userInputTextField.superview setFrame:bkgndRect];
+    [scrollView setContentOffset:CGPointMake(0.0, userInputTextField.frame.origin.y-kbSize.height) animated:YES];
+}
+
+// Called when the UIKeyboardWillHideNotification is sent
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification
+{
+    
+    NSDictionary* info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    CGRect bkgndRect = userInputTextField.superview.frame;
+    bkgndRect.size.height -= kbSize.height;
+    [userInputTextField.superview setFrame:bkgndRect];
+    [scrollView setContentOffset:CGPointMake(0.0, 0.0) animated:YES];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    NSString* text = [textField text];
+    if ([text length] > 0) {
+        SubmitMessageMessage* sm = [[SubmitMessageMessage alloc] init];
+        sm.userId = ud.userId;
+        sm.chatroomId = ud.chatroomId;
+        sm.message = text;
+        [connection sendMessage:sm];
+    }
+    [textField resignFirstResponder];
+    return YES;
 }
 
 
@@ -86,22 +146,17 @@
             
         case RegisterAccept:
             NSLog(@"Register Accept");
+            ud.userId = ((RegisterAcceptMessage*)message).userId;
             break;
             
         case RegisterReject:
             NSLog(@"Register Reject");
-            break;
-            
-        case LoginAccept:
-            NSLog(@"Login Accept");
-            break;
-            
-        case LoginReject:
-            NSLog(@"Login Reject");
+            NSLog(@"%@",((RegisterRejectMessage*)message).reason);
             break;
             
         case ConnectAccept:
             NSLog(@"Connect Accept");
+            ud.chatroomId = ((ConnectAcceptMessage*)message).globalChatId;
             break;
             
         case ConnectReject:
@@ -126,10 +181,6 @@
             
         case LeftChatroom:
             NSLog(@"Left Chatroom");
-            break;
-            
-        case CreateChatroomReject:
-            NSLog(@"Create Chatroom Reject");
             break;
     }
 }
