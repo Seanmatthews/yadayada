@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,7 +20,7 @@ public class Chatroom {
 
     private final Set<User> users = Collections.newSetFromMap(new ConcurrentHashMap<User, Boolean>());
     private final Queue<Message> recentMessages = new ConcurrentLinkedQueue<>();
-    private volatile int messageCount = 0;
+    private final AtomicInteger messageCount = new AtomicInteger(0);
 
     private final long id;
     private final String name;
@@ -78,7 +79,7 @@ public class Chatroom {
     }
 
     public void addMessage(Message message) {
-        int count = messageCount++;
+        int count = messageCount.incrementAndGet();
 
         // don't want to get recentMessages.size() because it iterates through the entire list
         if (count > MESSAGES_TO_STORE) {

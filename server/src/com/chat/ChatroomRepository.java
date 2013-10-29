@@ -15,4 +15,5 @@ public interface ChatroomRepository {
     Iterator<Chatroom> search(ChatroomSearchCriteria search);
     Chatroom get(long chatroomId);
     void addChatroom(Chatroom chatroom);
+    Iterator<Chatroom> iterator();
 }

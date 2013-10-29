@@ -45,4 +45,9 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
     public void addChatroom(Chatroom chatroom) {
         chatroomIdMap.put(chatroom.getId(), chatroom);
     }
+
+    @Override
+    public Iterator<Chatroom> iterator() {
+        return chatroomIdMap.values().iterator();
+    }
 }
