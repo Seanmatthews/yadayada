@@ -1,5 +1,8 @@
-package com.chat;
+package com.chat.server;
 
+import com.chat.MessageRepository;
+import com.chat.User;
+import com.chat.UserRepository;
 import com.chat.impl.AwsRdsUserRepository;
 import com.chat.server.ChatStreamSocketListener;
 import com.chat.impl.InMemoryChatroomRepository;

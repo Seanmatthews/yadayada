@@ -1,4 +1,4 @@
-<project name="chatter" default="dist" basedir="../server">
+<project name="server" default="dist" basedir="../server">
     <description>Main build for chatter</description>
 
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
