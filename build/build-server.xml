@@ -7,6 +7,7 @@
     <property name="build" location="../build/tmp" />
     <property name="dist" location="../build/out" />
     <property name="apis" location="../apis" />
+    <property name="web" location="../web" />
     <property name="aws.lib" location="${apis}/aws/aws-java-sdk-1.6.2" />
     <property name="jars" location="${aws.lib}/lib/aws-java-sdk-1.6.2.jar;${aws.lib}/third-party/commons-codec-1.3/commons-codec-1.3.jar;${aws.lib}/third-party/commons-logging-1.1.1/commons-logging-1.1.1.jar;${aws.lib}/third-party/httpcomponents-client-4.2.3/httpclient-4.2.3.jar;${aws.lib}/third-party/httpcomponents-client-4.2.3/httpcore-4.2.jar;${apis}/mysql/mysql-connector-java-5.1.26/mysql-connector-java-5.1.26-bin.jar;${apis}/imgscalr/imgscalr-lib-4.2/imgscalr-lib-4.2.jar" />
 
@@ -36,8 +37,12 @@
 
         <copy file="${build}/../run.sh" todir="${dist}" />
 
-        <tar destfile="${dist}/chatter.tar">
+        <copy file="${web}/maps.html" todir="${dist}" />
+
+        <tar destfile="/tmp/chatter.tar">
              <fileset dir="${dist}" includes="*" />
         </tar>
+   
+        <copy file="${dist}/chatter.jar" todir="/tmp" />
     </target>
 </project>

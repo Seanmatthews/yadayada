@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,6 +55,8 @@ public class MapServer extends NanoHTTPD implements ChatClient {
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatClientDispatcher(this, dout, chatroomRepo, userRepo));
+
+        System.out.println("Connected!");
     }
 
     @Override
@@ -65,12 +68,25 @@ public class MapServer extends NanoHTTPD implements ChatClient {
             if (uri.contains("map.html")) {
                 return new Response(Response.Status.OK, MIME_HTML, mapHtmlFile);
             }
-            //else if(uri.contains("chatrooms.json")) {
-            //    StringBuilder bld = new StringBuilder();
-            //    bld.append("{\"");
-            //
-            //    bld.append("}");
-            //}
+            else if(uri.contains("chatrooms.json")) {
+                StringBuilder bld = new StringBuilder();
+                bld.append("[");
+
+                Iterator<Chatroom> iterator = chatroomRepo.iterator();
+                while (iterator.hasNext()) {
+                    Chatroom chatroom = iterator.next();
+                    bld.append("{");
+                    bld.append("\"name\":\"").append(chatroom.getName()).append("\"");
+                    bld.append("\"owner\":\"").append(chatroom.getOwner().getHandle()).append("\"");
+                    bld.append("}");
+
+                    if (iterator.hasNext())
+                        bld.append(",");
+                }
+
+                bld.append("]");
+                return new Response(Response.Status.OK, "application/json", bld.toString());
+            }
         }
 
         return new Response(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found");
