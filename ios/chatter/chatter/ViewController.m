@@ -75,10 +75,12 @@
     rm.handle = @"sean";
     rm.userName = ud.UUID;
     rm.password = @"pass";
-    
-    NSLog(@"register %@ %@ %@",rm.handle,rm.userName,rm.password);
-    
     [self sendMessage:rm];
+    
+    LoginMessage* lm = [[LoginMessage alloc] init];
+    lm.userName = ud.UUID;
+    lm.password = @"pass";
+    [self sendMessage:lm];
 }
 
 
@@ -161,6 +163,14 @@
             
         case ConnectReject:
             NSLog(@"Connect Reject");
+            break;
+            
+        case LoginAccept:
+            NSLog(@"Login Accept");
+            break;
+            
+        case LoginReject:
+            NSLog(@"Login Reject");
             break;
             
         case Message:

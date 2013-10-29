@@ -18,7 +18,7 @@ typedef const uint8_t* BUFTYPE;
 
 + (MessageBase*)messageWithType:(MessageTypes)type;
 + (NSData*)serializeMessage:(MessageBase*)message;
-+ (MessageBase*)deserializeMessage:(BUFTYPE)data withLength:(int*)length;
++ (MessageBase*)deserializeMessage:(BUFTYPE)data withLength:(short)length;
 + (OrderedDictionary *)classPropsFor:(Class)klass;
 
 @end
