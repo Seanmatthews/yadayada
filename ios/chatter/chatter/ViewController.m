@@ -37,28 +37,13 @@
     // Get connection object and add this controller's callback
     // method for incoming connections.
     connection = [[Connection alloc] init];
+    [connection connect];
     ViewController* __weak weakSelf = self;
-    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:self];
-    
-    // Connect and register
-    ConnectMessage* cm = [[ConnectMessage alloc] init];
-    // TODO: get api version programatically
-    cm.APIVersion = 1;
-    cm.UUID = ud.UUID;
-    
-    [self sendMessage:cm];
-    
-    
-    // TEST
-    
-    RegisterMessage* rm = [[RegisterMessage alloc] init];
-    rm.userName = @"sean";
-    rm.password = @"sean";
-    rm.handle = @"sean";
-    
-    [MessageUtils serializeMessage:rm];
-    
-    //TEST
+    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
+
+    // We need this because the run loops of connection don't work until
+    // the view is completely loaded.
+    [self performSelector:@selector(connect:) withObject:connection afterDelay:1.0];
     
     NSLog(@"handle: %@",userHandle);
 }
@@ -69,12 +54,30 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)connectionThreadMethod:(Connection*)aConnection
+{
+    aConnection = [[Connection alloc] init];
+    [aConnection connect];
+    [[NSRunLoop currentRunLoop] run];
+}
+
+- (void)connect:(Connection*)connect
+{
+    NSLog(@"Going to try to connect now");
+    // Connect and register
+    ConnectMessage* cm = [[ConnectMessage alloc] init];
+    // TODO: get api version programatically
+    cm.APIVersion = 1;
+    cm.UUID = ud.UUID;
+    [self sendMessage:cm];
+}
+
 
 #pragma mark - incoming and outgoing messages
 
 - (void)sendMessage:(MessageBase*)message
 {
-    
+    [connection sendMessage:message];
 }
 
 - (void)messageCallback:(MessageBase*)message

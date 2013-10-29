@@ -10,6 +10,7 @@
 \#import "objc/runtime.h"
 \#import "Messages.h"
 
+const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 @implementation MessageUtils
 

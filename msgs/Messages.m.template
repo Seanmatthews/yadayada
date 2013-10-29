@@ -10,9 +10,6 @@
 
 @implementation MessageBase
 
-@synthesize length;
-@synthesize type;
-
 - (id)init
 {
     _type = 0;
@@ -26,14 +23,10 @@
 
 @implementation ${msg.name}Message
 
-#for $field in $msg.fields
-@synthesize ${field.name};
-#end for
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)${msg.val};
+    _type = ${msg.val};
     return self;
 }
 

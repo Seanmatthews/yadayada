@@ -10,9 +10,6 @@
 
 @implementation MessageBase
 
-@synthesize length;
-@synthesize type;
-
 - (id)init
 {
     _type = 0;
@@ -25,14 +22,10 @@
 
 @implementation RegisterMessage
 
-@synthesize userName;
-@synthesize password;
-@synthesize handle;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)1;
+    _type = 1;
     return self;
 }
 
@@ -40,13 +33,10 @@
 
 @implementation LoginMessage
 
-@synthesize userName;
-@synthesize password;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)11;
+    _type = 11;
     return self;
 }
 
@@ -54,13 +44,10 @@
 
 @implementation ConnectMessage
 
-@synthesize APIVersion;
-@synthesize UUID;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)16;
+    _type = 16;
     return self;
 }
 
@@ -68,14 +55,10 @@
 
 @implementation SubmitMessageMessage
 
-@synthesize userId;
-@synthesize chatroomId;
-@synthesize message;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)21;
+    _type = 21;
     return self;
 }
 
@@ -83,13 +66,10 @@
 
 @implementation SearchChatroomsMessage
 
-@synthesize latitude;
-@synthesize longitude;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)31;
+    _type = 31;
     return self;
 }
 
@@ -97,15 +77,10 @@
 
 @implementation JoinChatroomMessage
 
-@synthesize userId;
-@synthesize chatroomId;
-@synthesize latitude;
-@synthesize longitude;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)33;
+    _type = 33;
     return self;
 }
 
@@ -113,13 +88,10 @@
 
 @implementation LeaveChatroomMessage
 
-@synthesize userId;
-@synthesize chatroomId;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)34;
+    _type = 34;
     return self;
 }
 
@@ -127,16 +99,10 @@
 
 @implementation CreateChatroomMessage
 
-@synthesize ownerId;
-@synthesize chatroomName;
-@synthesize latitude;
-@synthesize longitude;
-@synthesize radius;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)35;
+    _type = 35;
     return self;
 }
 
@@ -144,12 +110,10 @@
 
 @implementation RegisterAcceptMessage
 
-@synthesize userId;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)2;
+    _type = 2;
     return self;
 }
 
@@ -157,12 +121,10 @@
 
 @implementation RegisterRejectMessage
 
-@synthesize reason;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)3;
+    _type = 3;
     return self;
 }
 
@@ -170,12 +132,10 @@
 
 @implementation LoginAcceptMessage
 
-@synthesize userId;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)12;
+    _type = 12;
     return self;
 }
 
@@ -183,12 +143,10 @@
 
 @implementation LoginRejectMessage
 
-@synthesize reason;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)13;
+    _type = 13;
     return self;
 }
 
@@ -196,13 +154,10 @@
 
 @implementation ConnectAcceptMessage
 
-@synthesize APIVersion;
-@synthesize globalChatId;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)17;
+    _type = 17;
     return self;
 }
 
@@ -210,12 +165,10 @@
 
 @implementation ConnectRejectMessage
 
-@synthesize reason;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)18;
+    _type = 18;
     return self;
 }
 
@@ -223,17 +176,10 @@
 
 @implementation MessageMessage
 
-@synthesize messageId;
-@synthesize messageTimestamp;
-@synthesize senderId;
-@synthesize chatroomId;
-@synthesize senderHandle;
-@synthesize message;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)22;
+    _type = 22;
     return self;
 }
 
@@ -241,18 +187,10 @@
 
 @implementation ChatroomMessage
 
-@synthesize chatroomId;
-@synthesize chatroomOwnerId;
-@synthesize chatroomName;
-@synthesize chatroomOwnerHandle;
-@synthesize latitude;
-@synthesize longitude;
-@synthesize radius;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)32;
+    _type = 32;
     return self;
 }
 
@@ -260,13 +198,10 @@
 
 @implementation JoinChatroomRejectMessage
 
-@synthesize chatroomId;
-@synthesize reason;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)36;
+    _type = 36;
     return self;
 }
 
@@ -274,14 +209,10 @@
 
 @implementation JoinedChatroomMessage
 
-@synthesize chatroomId;
-@synthesize userId;
-@synthesize userHandle;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)37;
+    _type = 37;
     return self;
 }
 
@@ -289,13 +220,10 @@
 
 @implementation LeftChatroomMessage
 
-@synthesize chatroomId;
-@synthesize userId;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)38;
+    _type = 38;
     return self;
 }
 
@@ -303,13 +231,10 @@
 
 @implementation CreateChatroomRejectMessage
 
-@synthesize chatroomName;
-@synthesize reason;
-
 - (id)init
 {
     self = [super init];
-    _type = (unsigned char)39;
+    _type = 39;
     return self;
 }
 

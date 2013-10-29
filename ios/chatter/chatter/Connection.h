@@ -8,15 +8,21 @@
 
 #import <Foundation/Foundation.h>
 #import "MessageUtils.h"
+#import "UserDetails.h"
 
 @interface Connection : NSObject <NSStreamDelegate>
 {
     NSInputStream* is;
     NSOutputStream* os;
     NSMutableDictionary* controllers;
+    BUFDECLTYPE internalBuffer[1024];
+    int internalBufferLen;
 }
 
+@property BOOL streamReady;
+
 - (id)init;
+- (void)connect;
 - (void)sendMessage:(MessageBase*)message;
 - (void)parseMessage:(BUFTYPE)buffer withLength:(int)length;
 - (void)addCallbackBlock:(void (^)(MessageBase*))block fromSender:(id)sender;

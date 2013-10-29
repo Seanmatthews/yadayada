@@ -15,10 +15,12 @@
 {
     UserDetails* ud;
     Connection* connection;
+    NSThread* connectionThread;
 }
 
 @property (nonatomic, strong) NSString* userHandle;
 
 - (void)messageCallback:(MessageBase*)message;
+- (void)connectionThreadMethod:(Connection*)connection;
 
 @end

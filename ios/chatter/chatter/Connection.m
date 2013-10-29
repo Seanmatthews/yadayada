@@ -14,28 +14,33 @@
 {
     self = [super init];
     if (self) {
+        _streamReady = NO;
         controllers = [[NSMutableDictionary alloc] init];
-        
-        CFReadStreamRef readStream;
-        CFWriteStreamRef writeStream;
-        CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"127.0.0.1", 5000, &readStream, &writeStream);
-        is = (__bridge NSInputStream*)readStream;
-        os = (__bridge NSOutputStream*)writeStream;
-        
-        [is setDelegate:self];
-        [os setDelegate:self];
-        
-        [is scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        [os scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        
-        [is open];
-        [os open];
     }
     return self;
 }
 
+- (void)connect
+{
+    CFReadStreamRef readStream;
+    CFWriteStreamRef writeStream;
+    CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"ec2-54-200-207-138.us-west-2.compute.amazonaws.com", 5000, &readStream, &writeStream);
+    is = (__bridge NSInputStream*)readStream;
+    os = (__bridge NSOutputStream*)writeStream;
+    
+    [is setDelegate:self];
+    [os setDelegate:self];
+    
+    [is scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [os scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    
+    [is open];
+    [os open];
+}
+
 - (void)sendMessage:(MessageBase*)message
 {
+    NSLog(@"Sending message of type %d",(MessageTypes)message.type);
     NSData* d = [MessageUtils serializeMessage:message];
     [os write:[d bytes] maxLength:[d length]];
 }
@@ -44,10 +49,24 @@
 // to understand how this callback function works.
 - (void)parseMessage:(BUFTYPE)buffer withLength:(int)length
 {
-    while (length > 0) {
-        MessageBase* m = [MessageUtils deserializeMessage:buffer withLength:&length];
-        for (id sender in controllers) {
-            ((void (^)(MessageBase*))[controllers objectForKey:sender])(m);
+    NSLog(@"parse");
+    if (length < 3) {
+        memcpy(internalBuffer, buffer+internalBufferLen, length);
+        internalBufferLen = length;
+    }
+    
+    if ((internalBufferLen > 2 && length != internalBufferLen) || length > 2) {
+        int len = internalBufferLen+length;
+        BUFDECLTYPE tmp[len];
+        memcpy(tmp, internalBuffer, internalBufferLen);
+        memcpy(tmp+internalBufferLen, buffer, length);
+        internalBufferLen = 0;
+        while (len > 0) {
+            MessageBase* m = [MessageUtils deserializeMessage:tmp withLength:&len];
+            NSLog(@"msg type: %d",m.type);
+//            for (id sender in controllers) {
+//                ((void (^)(MessageBase*))[controllers objectForKey:sender])(m);
+//            }
         }
     }
 }
@@ -55,12 +74,12 @@
 
 #pragma mark - Adding/Removing Callbacks
 
-- (void)addCallbackBlock:(void (^)(MessageBase*))block fromSender:(id)sender
+- (void)addCallbackBlock:(void (^)(MessageBase*))block fromSender:(NSString*)sender
 {
     [controllers setObject:block forKey:sender];
 }
 
-- (void)removeCallbackBlockFromSender:(id)sender
+- (void)removeCallbackBlockFromSender:(NSString*)sender
 {
     [controllers removeObjectForKey:sender];
 }
@@ -75,12 +94,13 @@
     switch (eventCode) {
         case NSStreamEventOpenCompleted:
             NSLog(@"Stream opened");
+            _streamReady = YES;
             break;
             
         case NSStreamEventHasBytesAvailable:
             NSLog(@"bytes available");
             if (aStream == is) {
-                BUFTYPE buffer[1024];
+                BUFDECLTYPE buffer[1024];
                 int len;
                 
                 while ([is hasBytesAvailable]) {
@@ -88,7 +108,6 @@
                     NSLog(@"%i bytes",len);
                     if (len > 0) {
                         [self parseMessage:buffer withLength:len];
-                        //NSLog(@"LEN: %d",len);
                     }
                 }
             }

@@ -109,7 +109,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 {
     CFReadStreamRef readStream;
     CFWriteStreamRef writeStream;
-    CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"127.0.0.1", 5000, &readStream, &writeStream);
+    CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"ec2-54-200-207-138.us-west-2.compute.amazonaws.com", 5000, &readStream, &writeStream);
     is = (__bridge NSInputStream*)readStream;
     os = (__bridge NSOutputStream*)writeStream;
     

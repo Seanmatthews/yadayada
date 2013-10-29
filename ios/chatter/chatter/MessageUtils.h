@@ -10,8 +10,9 @@
 #import "Messages.h"
 #import "OrderedDictionary.h"
 
+typedef uint8_t BUFDECLTYPE;
 typedef const uint8_t* BUFTYPE;
-const NSStringEncoding STRENC = NSUTF8StringEncoding;
+
 
 @interface MessageUtils : NSObject
 
