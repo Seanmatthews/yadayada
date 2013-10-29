@@ -23,6 +23,7 @@
 @property (nonatomic, strong) NSString* userHandle;
 @property (nonatomic, retain) IBOutlet UITextField* userInputTextField;
 @property (nonatomic, retain) IBOutlet UIScrollView* scrollView;
+@property (nonatomic, retain) IBOutlet UITableView* tableView;
 
 - (void)messageCallback:(MessageBase*)message;
 - (void)connectAndRegister;

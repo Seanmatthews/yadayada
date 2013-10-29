@@ -10,7 +10,10 @@
 
 @interface ChatCell : UITableViewCell
 {
-    
+    UIImageView* userIcon;
+    UILabel* userHandle;
+    UIWebView* msgText;
 }
+
 
 @end
