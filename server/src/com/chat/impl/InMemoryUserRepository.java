@@ -5,6 +5,7 @@ import com.chat.UserRepository;
 
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
 
@@ -16,7 +17,7 @@ import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryUserRepository implements UserRepository {
-    private volatile long nextUserId = 1;
+    private AtomicLong nextUserId = new AtomicLong(1);
 
     private final Map<String, User> loginToUserMap = new ConcurrentHashMap<>();
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
@@ -30,7 +31,7 @@ public class InMemoryUserRepository implements UserRepository {
             return new UserFuture(result, handler);
         }
 
-        user = new User(nextUserId++, login, password, handle);
+        user = new User(nextUserId.getAndIncrement(), login, password, handle);
 
         loginToUserMap.put(user.getLogin(), user);
         idToUserMap.put(user.getId(), user);

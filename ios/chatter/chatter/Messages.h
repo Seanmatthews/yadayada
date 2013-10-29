@@ -162,6 +162,8 @@ typedef enum {
 
 @property int APIVersion;
 @property long long globalChatId;
+@property NSString* imageUploadUrl;
+@property NSString* imageDownloadUrl;
 
 @end
 

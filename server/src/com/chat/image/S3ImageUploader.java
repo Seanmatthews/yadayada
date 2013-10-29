@@ -35,9 +35,9 @@ public class S3ImageUploader {
     public static void main(String[] args) throws IOException {
         int port = Integer.parseInt(args[0]);
         String bucket = args[1];
-        //String username = args[2];
-        //String password = args[3];
+        String username = args[2];
+        String password = args[3];
 
-        new S3ImageUploader(port, new BasicAWSCredentials("AKIAJ5JWS5ANBQGXHQ6A", "1TFk/RA8y/wImYKxIwYxY/zdKDAZHA8VFzAbpbEA"), bucket);
+        new S3ImageUploader(port, new BasicAWSCredentials(username, password), bucket);
     }
 }

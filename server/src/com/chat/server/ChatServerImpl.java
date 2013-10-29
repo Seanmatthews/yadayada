@@ -67,7 +67,7 @@ public class ChatServerImpl implements ChatServer {
             uuidConnectionMap.put(uuid, senderConnection);
 
             senderConnection.setUUID(uuid);
-            senderConnection.sendConnectAccept(new ConnectAcceptMessage(1, 1));
+            senderConnection.sendConnectAccept(new ConnectAcceptMessage(1, 1, "", ""));
         } catch (IOException e) {
             removeConnection(senderConnection);
         }

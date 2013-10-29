@@ -2,10 +2,9 @@ package com.chat.image;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import org.imgscalr.Scalr;
 
 import javax.imageio.ImageIO;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
@@ -19,6 +18,9 @@ import java.io.*;
 public class ImageStreamListener implements Runnable {
     private final BufferedInputStream inputStream;
     private final Uploader uploader;
+
+    private int[] sizes = new int[] { 53, 53,
+                                      106, 106 };
 
     public ImageStreamListener(InputStream is, Uploader upload) throws IOException {
         inputStream = new BufferedInputStream(is);
@@ -37,17 +39,13 @@ public class ImageStreamListener implements Runnable {
             ImageIO.write(image, "jpeg", os);
             uploadFile(os, userId, "original");
 
-            System.out.println("- Uploaded original");
+            for(int i=0; i< sizes.length; i+=2) {
+                int width = sizes[i];
+                int height = sizes[i + 1];
 
-            ByteArrayOutputStream os2 = transformImage(image, 160, 160);
-            uploadFile(os2, userId, "160x160");
-
-            System.out.println("- Uploaded 160x160");
-
-            ByteArrayOutputStream os3 = transformImage(image, 80, 80);
-            uploadFile(os3, userId, "80x80");
-
-            System.out.println("- Uploaded 80x80");
+                ByteArrayOutputStream os2 = transformImage(image, width, height);
+                uploadFile(os2, userId, width + "x" + height);
+            }
         } catch (IOException e) {
             System.err.println("Error uploading");
             e.printStackTrace();
@@ -65,10 +63,7 @@ public class ImageStreamListener implements Runnable {
     }
 
     private ByteArrayOutputStream transformImage(BufferedImage image, int width, int height) throws IOException {
-        AffineTransform transform = new AffineTransform();
-        transform.setToScale(1.0 * width / image.getWidth(), 1.0 * height / image.getHeight());
-        AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BICUBIC);
-        BufferedImage output = op.filter(image, null);
+        BufferedImage output = Scalr.resize(image, Scalr.Method.BALANCED, Scalr.Mode.FIT_TO_WIDTH, width, height, Scalr.OP_ANTIALIAS);
         ByteArrayOutputStream os2 = new ByteArrayOutputStream();
         ImageIO.write(output, "jpeg", os2);
         return os2;
@@ -81,6 +76,8 @@ public class ImageStreamListener implements Runnable {
         meta.setContentType("image/jpeg");
         meta.setContentLength(imageBuffer.length);
 
-        uploader.upload(userId + "-" + suffix + ".jpeg", is, meta);
+        String file = userId + "-" + suffix + ".jpeg";
+        uploader.upload(file, is, meta);
+        System.out.println("- Uploaded " + file);
     }
 }

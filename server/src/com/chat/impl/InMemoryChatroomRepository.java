@@ -7,6 +7,7 @@ import com.chat.User;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,12 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InMemoryChatroomRepository implements ChatroomRepository {
     // We have lots of threads accessing this repository
     // We need to keep nextChatroomId and the map in sync
-    private volatile long nextChatroomId = 1;
+    private final AtomicLong nextChatroomId = new AtomicLong(1);
     private final Map<Long, Chatroom> chatroomIdMap = new ConcurrentHashMap<>();
 
     @Override
     public Chatroom createChatroom(User owner, String name) {
-        Chatroom chatroom = new Chatroom(nextChatroomId++, name, owner);
+        Chatroom chatroom = new Chatroom(nextChatroomId.getAndIncrement(), name, owner);
         chatroom.addUser(owner);
 
         chatroomIdMap.put(chatroom.getId(), chatroom);

@@ -62,7 +62,6 @@ import java.util.concurrent.Executors;
         System.out.println(message);
     }
 
-    @Override
     public void sendMessage(String message) throws IOException {
         connection.sendSubmitMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message));
     }

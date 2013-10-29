@@ -14,9 +14,9 @@ import java.io.InputStreamReader;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatTextInput implements Runnable {
-    private final ChatClient client;
+    private final ChatTextClient client;
 
-    public ChatTextInput(ChatClient client) {
+    public ChatTextInput(ChatTextClient client) {
         this.client = client;
     }
 
