@@ -2,6 +2,7 @@ package com.chat.client;
 
 import com.chat.*;
 import com.chat.impl.InMemoryUserRepository;
+import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class ChatClientDispatcher implements Runnable {
         this.client = client;
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
-        this.connection = new ServerConnectionImpl(stream);
+        this.connection = new ServerConnectionImpl(stream, "UUID", 1);
     }
 
     @Override
@@ -65,9 +66,7 @@ public class ChatClientDispatcher implements Runnable {
                         break;
 
                     default:
-                        System.err.println("Ignoring unhandled message: " + msgType);
-                        connection.recvUnknown();
-                        break;
+                        throw new ValidationError("Ignoring unhandled message: " + msgType);
                 }
             }
         } catch (IOException e) {
@@ -76,6 +75,8 @@ public class ChatClientDispatcher implements Runnable {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (ExecutionException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ValidationError validationError) {
+            System.err.println(validationError.getMessage());
         } finally {
             System.exit(0);
         }

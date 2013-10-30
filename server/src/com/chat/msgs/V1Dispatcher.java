@@ -1,8 +1,9 @@
-package com.chat.server;
+package com.chat.msgs;
 
 import com.chat.*;
 import com.chat.msgs.v1.*;
 import com.chat.msgs.v1.ClientConnection;
+import com.chat.server.ChatServer;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -15,38 +16,25 @@ import java.util.concurrent.ExecutionException;
  * Time: 9:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ChatServerDispatcher implements Runnable {
+public class V1Dispatcher {
     private final ChatServer server;
     private final UserRepository userRepo;
     private final ChatroomRepository chatroomRepo;
     private final ClientConnection connection;
 
-    public ChatServerDispatcher(ChatServer server, BinaryStream stream, UserRepository userRepo, ChatroomRepository chatroomRepo) {
+    public V1Dispatcher(ChatServer server, ClientConnection connection, UserRepository userRepo, ChatroomRepository chatroomRepo) {
         this.server = server;
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
-        this.connection = new ClientConnectionImpl(stream);
+        this.connection = connection;
+
+        server.addConnection(connection);
     }
 
-    @Override
     public void run() {
         try {
             while(true) {
                 MessageTypes type = connection.recvMsgType();
-
-                if (type == MessageTypes.Connect) {
-                    ConnectMessage cMsg = connection.recvConnect();
-                    server.connect(connection, cMsg.getAPIVersion(), cMsg.getUUID());
-                    continue;
-                }
-                else {
-                    if (connection.getUUID() == null) {
-                        System.err.println("Customer sent us " + type + " instead of connect");
-                        // we haven't called connect before
-                        server.removeConnection(connection);
-                        return;
-                    }
-                }
 
                 switch (type) {
                     case SearchChatrooms:
@@ -77,7 +65,6 @@ public class ChatServerDispatcher implements Runnable {
                     case Register:
                         RegisterMessage rMsg = connection.recvRegister();
                         server.registerUser(connection, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle());
-                        System.out.println("registered a fuckin user");
                         break;
 
                     case Login:
@@ -94,21 +81,22 @@ public class ChatServerDispatcher implements Runnable {
                         break;
 
                     default:
-                        System.err.println("Unhandled message: " + type);
-                        connection.recvUnknown();
+                        throw new ValidationError("Unhandled message: " + type);
                 }
             }
         } catch (EOFException e) {
-            System.out.println("Customer hang up");
+            System.out.println("Customer hung up");
         } catch (IOException e) {
-            System.out.println("Cannot write to stream");
+            System.err.println("Cannot write to stream: " + e.getMessage());
             e.printStackTrace();
         } catch (ValidationError e) {
-            System.err.println("Validation error " + e.getMessage());
+            System.err.println("Validation error:  " + e.getMessage());
             e.printStackTrace();
         } catch (InterruptedException e) {
+            System.err.println("Thread interruption error:  " + e.getMessage());
             e.printStackTrace();
         } catch (ExecutionException e) {
+            System.err.println("Future execution error:  " + e.getMessage());
             e.printStackTrace();
         } finally {
             server.removeConnection(connection);
@@ -122,7 +110,6 @@ public class ChatServerDispatcher implements Runnable {
             throw new ValidationError("Unknown user: " + userId);
         }
 
-        server.mapClientConnectionToUser(connection, user);
         return user;
     }
 
@@ -134,17 +121,5 @@ public class ChatServerDispatcher implements Runnable {
         }
 
         return chatroom;
-    }
-
-    private static class ValidationError extends Exception {
-        private final String message;
-
-        public ValidationError(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
     }
 }

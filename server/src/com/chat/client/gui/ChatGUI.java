@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -56,7 +57,7 @@ public class ChatGUI implements ChatClient {
 
         System.out.println("Connected to " + socket);
 
-        connection = new ServerConnectionImpl(dataStream);
+        connection = new ServerConnectionImpl(dataStream, Integer.toString(new Random().nextInt()), 1);
         long userId = ChatClientUtilities.initialConnect(connection, user, password);
         loggedInUser = new User(userId, user);
 

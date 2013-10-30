@@ -12,10 +12,8 @@ import com.chat.msgs.v1.ClientConnection;
  * To change this template use File | Settings | File Templates.
  */
 public interface ChatServer {
+    void addConnection(ClientConnection sender);
     void removeConnection(ClientConnection sender);
-
-    void connect(ClientConnection sender, int apiVersion, String uuid);
-    void mapClientConnectionToUser(ClientConnection sender, User user);
 
     void registerUser(ClientConnection sender, String login, String password, String handle);
     void login(ClientConnection sender, String login, String password);

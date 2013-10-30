@@ -45,7 +45,7 @@ public class MapServer extends NanoHTTPD implements ChatClient {
 
         System.out.println("Connected to " + socket);
 
-        connection = new ServerConnectionImpl(dout);
+        connection = new ServerConnectionImpl(dout, "UUID", 1);
 
         long userId = ChatClientUtilities.initialConnect(connection, username, password);
         user = new User(userId, username);

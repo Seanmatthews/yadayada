@@ -11,6 +11,7 @@ import com.chat.impl.InMemoryUserRepository;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,7 +33,7 @@ import java.util.concurrent.Executors;
 
         System.out.println("Connected to " + socket);
 
-        connection = new ServerConnectionImpl(dout);
+        connection = new ServerConnectionImpl(dout, Integer.toString(new Random().nextInt()), 1);
 
         long userId = ChatClientUtilities.initialConnect(connection, user, password);
         this.user = new User(userId, user);

@@ -4,9 +4,8 @@ import java.io.IOException;
 
 public interface ${clientOrServer}Connection {
     String getUUID();
-    void setUUID(String UUID);
+    int getAPIVersion();
     MessageTypes recvMsgType() throws IOException;
-    void recvUnknown() throws IOException;
     void close();
 
 #for $msg in $recvMsgs

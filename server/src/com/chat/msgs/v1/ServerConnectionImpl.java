@@ -8,10 +8,13 @@ import static com.chat.Utilities.*;
 
 public class ServerConnectionImpl implements ServerConnection {
     private final BinaryStream stream;
-    private String uuid;
+    private final String uuid;
+    private final int apiVersion;
 
-    public ServerConnectionImpl(BinaryStream stream) {
-       this.stream = stream;
+    public ServerConnectionImpl(BinaryStream stream, String UUID, int APIVersion) {
+       this.stream = stream; 
+       this.uuid = UUID;
+       this.apiVersion = APIVersion;
     }
 
     @Override
@@ -20,8 +23,8 @@ public class ServerConnectionImpl implements ServerConnection {
     }
 
     @Override
-    public void setUUID(String UUID) {
-       this.uuid = UUID;
+    public int getAPIVersion() {
+        return apiVersion;
     }
 
     @Override 
@@ -34,11 +37,6 @@ public class ServerConnectionImpl implements ServerConnection {
             throw new IOException("Unknown message type: " + (int)msgTypeByte);
 
         return msgType;        
-    }
-
-    @Override
-    public void recvUnknown() throws IOException {
-        stream.finishReading();
     }
 
     @Override

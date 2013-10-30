@@ -162,31 +162,31 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     return data;
 }
 
-+ (MessageBase*)deserializeMessage:(BUFTYPE)data withLength:(short)length
++ (MessageBase*)deserializeMessage:(BUFTYPE)data withLength:(int*)length
 {
-    NSLog(@"deser length: %d",length);
+    NSLog(@"deser length: %d",*length);
     
     // If this is the case, the bytes can't possibly make a message
-//    if (*length < 3) {
-//        return nil;
-//    }
+    if (*length < 3) {
+        return nil;
+    }
     
     MessageBase* mb;
     
     // Header info
     int idx = 0;
-    //short msgLen = CFSwapInt16BigToHost(*(short*)&data[idx]);
-    //idx += 2;
+    short msgLen = CFSwapInt16BigToHost(*(short*)&data[idx]);
+    idx += 2;
     Byte type = *(Byte*)&data[idx];
     idx++;
     mb = [self messageWithType:type];
     NSLog(@"msg type: %d",mb.type);
     
-//    if (*length-2 < msgLen) {
-//        // Numbers of bytes is not enough to fill out the message type
-//        NSLog(@"Number of bytes %d does not match message length %d",*length-2,msgLen);
-//        return nil;
-//    }
+    if (*length-2 < msgLen) {
+        // Numbers of bytes is not enough to fill out the message type
+        NSLog(@"Number of bytes %d does not match message length %d",*length-2,msgLen);
+        return nil;
+    }
     
     // NOTE: This will only get properties for the subclass passed to the function
     OrderedDictionary* props = [self classPropsFor:[mb class]];
@@ -227,7 +227,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     }
     
     // decrement length so that caller knows how many bytes were used from the buffer
-//    *length -= idx;
+    *length -= idx;
     return mb;
 }
 

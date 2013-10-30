@@ -42,7 +42,7 @@ public class ChatStreamSocketListener {
             System.out.println("BinaryStream from: " + socket);
 
             BinaryStream connection = new DataStream(socket);
-            execService.submit(new ChatServerDispatcher(server, connection, userRepo, chatroomRepo));
+            execService.submit(new ConnectionReceiver(server, connection, userRepo, chatroomRepo));
         }
     }
 }

@@ -34,6 +34,22 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
+    public void addConnection(ClientConnection senderConnection) {
+        ClientConnection connection = uuidConnectionMap.remove(senderConnection.getUUID());
+        if (connection != null) {
+            System.out.println("Removing an old connection that was not cleaned up");
+            removeConnection(connection);
+        }
+
+        try {
+            uuidConnectionMap.put(senderConnection.getUUID(), senderConnection);
+            senderConnection.sendConnectAccept(new ConnectAcceptMessage(senderConnection.getAPIVersion(), 1, "", ""));
+        } catch (IOException e) {
+            removeConnection(senderConnection);
+        }
+    }
+
+    @Override
     public void removeConnection(ClientConnection sender) {
         System.out.println("Removing connection to " + sender);
 
@@ -53,30 +69,6 @@ public class ChatServerImpl implements ChatServer {
         }
 
         sender.close();
-    }
-
-    @Override
-    public void connect(ClientConnection senderConnection, int apiVersion, String uuid) {
-        ClientConnection connection = uuidConnectionMap.remove(uuid);
-        if (connection != null) {
-            System.out.println("Removing an old connection that was not cleaned up");
-            removeConnection(connection);
-        }
-
-        try {
-            uuidConnectionMap.put(uuid, senderConnection);
-
-            senderConnection.setUUID(uuid);
-            senderConnection.sendConnectAccept(new ConnectAcceptMessage(1, 1, "", ""));
-        } catch (IOException e) {
-            removeConnection(senderConnection);
-        }
-    }
-
-    @Override
-    public void mapClientConnectionToUser(ClientConnection senderConnection, User user) {
-        userConnectionMap.put(user, senderConnection);
-        connectionUserMap.put(senderConnection, user);
     }
 
     @Override

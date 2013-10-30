@@ -1,6 +1,7 @@
 package com.chat.msgs.v1;
 
 import com.chat.BinaryStream;
+import com.chat.msgs.ValidationError;
 
 import java.io.IOException;
 
@@ -8,10 +9,13 @@ import static com.chat.Utilities.*;
 
 public class ClientConnectionImpl implements ClientConnection {
     private final BinaryStream stream;
-    private String uuid;
+    private final String uuid;
+    private final int apiVersion;
 
-    public ClientConnectionImpl(BinaryStream stream) {
-       this.stream = stream;
+    public ClientConnectionImpl(BinaryStream stream, String UUID, int APIVersion) {
+       this.stream = stream; 
+       this.uuid = UUID;
+       this.apiVersion = APIVersion;
     }
 
     @Override
@@ -20,32 +24,25 @@ public class ClientConnectionImpl implements ClientConnection {
     }
 
     @Override
-    public void setUUID(String UUID) {
-       this.uuid = UUID;
+    public int getAPIVersion() {
+        return apiVersion;
     }
 
     @Override 
-    public MessageTypes recvMsgType() throws IOException {
+    public MessageTypes recvMsgType() throws IOException, ValidationError {
         stream.startReading();
         byte msgTypeByte = stream.readByte();
         MessageTypes msgType = MessageTypes.lookup(msgTypeByte);
 
         if (msgType == null)
-            throw new IOException("Unknown message type: " + (int)msgTypeByte);
+            throw new ValidationError("Unknown message type: " + (int)msgTypeByte);
 
         return msgType;        
     }
 
     @Override
-    public void recvUnknown() throws IOException {
-        stream.finishReading();
-    }
-
-    @Override
     public void close() {
-        synchronized (stream) {
-            stream.close();
-        }
+        stream.close();
     }
 
     @Override

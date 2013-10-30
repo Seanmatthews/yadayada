@@ -14,7 +14,7 @@ import java.util.Random;
  */
 public class ChatClientUtilities {
     public static long initialConnect(ServerConnection connection, String user, String password) throws IOException {
-        connection.sendConnect(new ConnectMessage(1, Integer.toString(new Random().nextInt())));
+        connection.sendConnect(new ConnectMessage(connection.getAPIVersion(), connection.getUUID()));
         connection.recvMsgType();
         connection.recvConnectAccept();
 

@@ -4,9 +4,8 @@ import java.io.IOException;
 
 public interface ServerConnection {
     String getUUID();
-    void setUUID(String UUID);
+    int getAPIVersion();
     MessageTypes recvMsgType() throws IOException;
-    void recvUnknown() throws IOException;
     void close();
 
     RegisterAcceptMessage recvRegisterAccept() throws IOException;
