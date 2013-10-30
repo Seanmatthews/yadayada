@@ -1,6 +1,13 @@
 package com.chat.msgs.v1;
 
-public class ChatroomMessage {
+import com.chat.BinaryStream;
+import com.chat.msgs.Message;
+
+import java.io.IOException;
+
+import static com.chat.msgs.Utilities.getStrLen;
+
+public class ChatroomMessage implements Message {
     private final long chatroomId;
     private final long chatroomOwnerId;
     private final String chatroomName;
@@ -45,5 +52,27 @@ public class ChatroomMessage {
 
     public long getRadius() {
         return radius;
+    }
+
+    @Override
+    public void write(BinaryStream stream) throws IOException {
+        // backwards compatability
+        if (stream.isStream()) {
+           ChatroomMessage msg = this;
+           stream.startWriting(1 + 8 + 8 + getStrLen(msg.getChatroomName()) + getStrLen(msg.getChatroomOwnerHandle()) + 8 + 8 + 8);
+        }  
+        else {
+           stream.startWriting();
+        }
+
+        stream.writeByte(MessageTypes.Chatroom.getValue());
+        stream.writeLong(getChatroomId());
+        stream.writeLong(getChatroomOwnerId());
+        stream.writeString(getChatroomName());
+        stream.writeString(getChatroomOwnerHandle());
+        stream.writeLong(getLatitude());
+        stream.writeLong(getLongitude());
+        stream.writeLong(getRadius());
+        stream.finishWriting();
     }
 } 

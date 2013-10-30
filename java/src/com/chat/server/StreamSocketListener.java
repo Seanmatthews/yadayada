@@ -2,15 +2,11 @@ package com.chat.server;
 
 import com.chat.*;
 import com.chat.impl.DataStream;
-import com.chat.impl.SynchronousSocketChannel;
 import com.chat.msgs.MessageDispatcherFactory;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

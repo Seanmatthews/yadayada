@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
  * Time: 9:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class V1Dispatcher implements MessageDispatcher {
+public class V1Dispatcher implements MessageDispatcher, Runnable {
     public static final int VERSION_ID = 1;
 
     private final ChatServer server;

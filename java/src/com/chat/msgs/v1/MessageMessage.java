@@ -1,6 +1,13 @@
 package com.chat.msgs.v1;
 
-public class MessageMessage {
+import com.chat.BinaryStream;
+import com.chat.msgs.Message;
+
+import java.io.IOException;
+
+import static com.chat.msgs.Utilities.getStrLen;
+
+public class MessageMessage implements Message {
     private final long messageId;
     private final long messageTimestamp;
     private final long senderId;
@@ -39,5 +46,26 @@ public class MessageMessage {
 
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public void write(BinaryStream stream) throws IOException {
+        // backwards compatability
+        if (stream.isStream()) {
+           MessageMessage msg = this;
+           stream.startWriting(1 + 8 + 8 + 8 + 8 + getStrLen(msg.getSenderHandle()) + getStrLen(msg.getMessage()));
+        }  
+        else {
+           stream.startWriting();
+        }
+
+        stream.writeByte(MessageTypes.Message.getValue());
+        stream.writeLong(getMessageId());
+        stream.writeLong(getMessageTimestamp());
+        stream.writeLong(getSenderId());
+        stream.writeLong(getChatroomId());
+        stream.writeString(getSenderHandle());
+        stream.writeString(getMessage());
+        stream.finishWriting();
     }
 } 

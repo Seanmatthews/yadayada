@@ -1,6 +1,8 @@
 package com.chat.impl;
 
 import com.chat.BinaryStream;
+import com.chat.ChatMessage;
+import com.chat.msgs.Message;
 import com.chat.msgs.Utilities;
 
 import java.io.*;
@@ -46,6 +48,11 @@ public class DataStream implements BinaryStream {
             socket.close();
         } catch (IOException ignored) {
         }
+    }
+
+    @Override
+    public boolean isStream() {
+        return true;
     }
 
     @Override
@@ -115,6 +122,11 @@ public class DataStream implements BinaryStream {
     }
 
     @Override
+    public void startWriting() throws IOException {
+        throw new IOException("Invalid I/O Operation. Must specify a length when writing");
+    }
+
+    @Override
     public void startWriting(int msgLength) throws IOException {
         writeShort(msgLength);
 
@@ -130,6 +142,13 @@ public class DataStream implements BinaryStream {
 
         if (writtenBytes < writeMsgBytes) {
             throw new IOException("Wrote too few bytes. Expected=" + writeMsgBytes + " Sent=" + writeMsgBytes);
+        }
+    }
+
+    @Override
+    public void queueMessage(Message message) throws IOException {
+        synchronized (dout) {
+            message.write(this);
         }
     }
 

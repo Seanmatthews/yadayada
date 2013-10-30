@@ -1,6 +1,13 @@
 package com.chat.msgs.v1;
 
-public class LeftChatroomMessage {
+import com.chat.BinaryStream;
+import com.chat.msgs.Message;
+
+import java.io.IOException;
+
+import static com.chat.msgs.Utilities.getStrLen;
+
+public class LeftChatroomMessage implements Message {
     private final long chatroomId;
     private final long userId;
 
@@ -15,5 +22,22 @@ public class LeftChatroomMessage {
 
     public long getUserId() {
         return userId;
+    }
+
+    @Override
+    public void write(BinaryStream stream) throws IOException {
+        // backwards compatability
+        if (stream.isStream()) {
+           LeftChatroomMessage msg = this;
+           stream.startWriting(1 + 8 + 8);
+        }  
+        else {
+           stream.startWriting();
+        }
+
+        stream.writeByte(MessageTypes.LeftChatroom.getValue());
+        stream.writeLong(getChatroomId());
+        stream.writeLong(getUserId());
+        stream.finishWriting();
     }
 } 

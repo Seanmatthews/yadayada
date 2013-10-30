@@ -131,47 +131,51 @@ public class ClientConnectionImpl implements ClientConnection {
     
     @Override
     public void sendRegisterAccept(RegisterAcceptMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8);
             stream.writeByte(MessageTypes.RegisterAccept.getValue());
             stream.writeLong(msg.getUserId());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendRegisterReject(RegisterRejectMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getReason()));
             stream.writeByte(MessageTypes.RegisterReject.getValue());
             stream.writeString(msg.getReason());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendLoginAccept(LoginAcceptMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8);
             stream.writeByte(MessageTypes.LoginAccept.getValue());
             stream.writeLong(msg.getUserId());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendLoginReject(LoginRejectMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getReason()));
             stream.writeByte(MessageTypes.LoginReject.getValue());
             stream.writeString(msg.getReason());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendConnectAccept(ConnectAcceptMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 4 + 8 + getStrLen(msg.getImageUploadUrl()) + getStrLen(msg.getImageDownloadUrl()));
             stream.writeByte(MessageTypes.ConnectAccept.getValue());
             stream.writeInt(msg.getAPIVersion());
@@ -179,22 +183,24 @@ public class ClientConnectionImpl implements ClientConnection {
             stream.writeString(msg.getImageUploadUrl());
             stream.writeString(msg.getImageDownloadUrl());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendConnectReject(ConnectRejectMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getReason()));
             stream.writeByte(MessageTypes.ConnectReject.getValue());
             stream.writeString(msg.getReason());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendMessage(MessageMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + 8 + 8 + getStrLen(msg.getSenderHandle()) + getStrLen(msg.getMessage()));
             stream.writeByte(MessageTypes.Message.getValue());
             stream.writeLong(msg.getMessageId());
@@ -204,12 +210,13 @@ public class ClientConnectionImpl implements ClientConnection {
             stream.writeString(msg.getSenderHandle());
             stream.writeString(msg.getMessage());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendChatroom(ChatroomMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + getStrLen(msg.getChatroomName()) + getStrLen(msg.getChatroomOwnerHandle()) + 8 + 8 + 8);
             stream.writeByte(MessageTypes.Chatroom.getValue());
             stream.writeLong(msg.getChatroomId());
@@ -220,51 +227,56 @@ public class ClientConnectionImpl implements ClientConnection {
             stream.writeLong(msg.getLongitude());
             stream.writeLong(msg.getRadius());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendJoinChatroomReject(JoinChatroomRejectMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + getStrLen(msg.getReason()));
             stream.writeByte(MessageTypes.JoinChatroomReject.getValue());
             stream.writeLong(msg.getChatroomId());
             stream.writeString(msg.getReason());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendJoinedChatroom(JoinedChatroomMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + getStrLen(msg.getUserHandle()));
             stream.writeByte(MessageTypes.JoinedChatroom.getValue());
             stream.writeLong(msg.getChatroomId());
             stream.writeLong(msg.getUserId());
             stream.writeString(msg.getUserHandle());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendLeftChatroom(LeftChatroomMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + 8);
             stream.writeByte(MessageTypes.LeftChatroom.getValue());
             stream.writeLong(msg.getChatroomId());
             stream.writeLong(msg.getUserId());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendCreateChatroomReject(CreateChatroomRejectMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getChatroomName()) + getStrLen(msg.getReason()));
             stream.writeByte(MessageTypes.CreateChatroomReject.getValue());
             stream.writeString(msg.getChatroomName());
             stream.writeString(msg.getReason());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
 }

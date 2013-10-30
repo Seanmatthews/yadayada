@@ -1,6 +1,13 @@
 package com.chat.msgs.v1;
 
-public class CreateChatroomRejectMessage {
+import com.chat.BinaryStream;
+import com.chat.msgs.Message;
+
+import java.io.IOException;
+
+import static com.chat.msgs.Utilities.getStrLen;
+
+public class CreateChatroomRejectMessage implements Message {
     private final String chatroomName;
     private final String reason;
 
@@ -15,5 +22,22 @@ public class CreateChatroomRejectMessage {
 
     public String getReason() {
         return reason;
+    }
+
+    @Override
+    public void write(BinaryStream stream) throws IOException {
+        // backwards compatability
+        if (stream.isStream()) {
+           CreateChatroomRejectMessage msg = this;
+           stream.startWriting(1 + getStrLen(msg.getChatroomName()) + getStrLen(msg.getReason()));
+        }  
+        else {
+           stream.startWriting();
+        }
+
+        stream.writeByte(MessageTypes.CreateChatroomReject.getValue());
+        stream.writeString(getChatroomName());
+        stream.writeString(getReason());
+        stream.finishWriting();
     }
 } 

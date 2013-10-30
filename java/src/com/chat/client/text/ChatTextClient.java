@@ -61,7 +61,7 @@ public class ChatTextClient implements ChatClient {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(ChatMessage message) {
         System.out.println(message);
     }
 

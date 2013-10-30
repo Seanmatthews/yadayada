@@ -34,7 +34,7 @@ public class MapServer extends NanoHTTPD implements ChatClient {
 
     private final InMemoryChatroomRepository chatroomRepo;
     private final InMemoryUserRepository userRepo;
-    private final Map<User, Message> lastMessage = new HashMap<>();
+    private final Map<User, ChatMessage> lastMessage = new HashMap<>();
 
     public MapServer(int webPort, String host, int port, String username, String password) throws IOException, ValidationError {
         super(webPort);
@@ -109,7 +109,7 @@ public class MapServer extends NanoHTTPD implements ChatClient {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(ChatMessage message) {
         lastMessage.put(message.getSender(), message);
     }
 

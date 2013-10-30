@@ -8,5 +8,5 @@ package com.chat;
  * To change this template use File | Settings | File Templates.
  */
 public interface MessageRepository {
-    Message create(Chatroom chatroom, User sender, String message);
+    ChatMessage create(Chatroom chatroom, User sender, String message);
 }

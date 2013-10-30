@@ -65,14 +65,15 @@ public class ${clientOrServer}ConnectionImpl implements ${clientOrServer}Connect
     
     @Override
     public void send${msg.name}(${msg.name}Message msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(${msg.length});
             stream.writeByte(MessageTypes.${msg.name}.getValue());
         #for $field in $msg.fields
             stream.write${field.type.capitalize()}(msg.get${field.nameCap}());
         #end for
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
 #end for    
 }

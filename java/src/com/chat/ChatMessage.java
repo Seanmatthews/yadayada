@@ -7,14 +7,14 @@ package com.chat;
  * Time: 8:26 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Message {
+public class ChatMessage {
     private final long id;
     private final Chatroom chatroom;
     private final User sender;
     private final String message;
     private final long timestamp;
 
-    public Message(long id, Chatroom chatroom, User sender, String message, long timestamp) {
+    public ChatMessage(long id, Chatroom chatroom, User sender, String message, long timestamp) {
         this.id = id;
         this.chatroom = chatroom;
         this.sender = sender;

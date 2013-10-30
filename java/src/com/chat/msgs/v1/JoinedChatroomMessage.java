@@ -1,6 +1,13 @@
 package com.chat.msgs.v1;
 
-public class JoinedChatroomMessage {
+import com.chat.BinaryStream;
+import com.chat.msgs.Message;
+
+import java.io.IOException;
+
+import static com.chat.msgs.Utilities.getStrLen;
+
+public class JoinedChatroomMessage implements Message {
     private final long chatroomId;
     private final long userId;
     private final String userHandle;
@@ -21,5 +28,23 @@ public class JoinedChatroomMessage {
 
     public String getUserHandle() {
         return userHandle;
+    }
+
+    @Override
+    public void write(BinaryStream stream) throws IOException {
+        // backwards compatability
+        if (stream.isStream()) {
+           JoinedChatroomMessage msg = this;
+           stream.startWriting(1 + 8 + 8 + getStrLen(msg.getUserHandle()));
+        }  
+        else {
+           stream.startWriting();
+        }
+
+        stream.writeByte(MessageTypes.JoinedChatroom.getValue());
+        stream.writeLong(getChatroomId());
+        stream.writeLong(getUserId());
+        stream.writeString(getUserHandle());
+        stream.finishWriting();
     }
 } 

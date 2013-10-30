@@ -1,6 +1,13 @@
 package com.chat.msgs.v1;
 
-public class RegisterMessage {
+import com.chat.BinaryStream;
+import com.chat.msgs.Message;
+
+import java.io.IOException;
+
+import static com.chat.msgs.Utilities.getStrLen;
+
+public class RegisterMessage implements Message {
     private final String userName;
     private final String password;
     private final String handle;
@@ -21,5 +28,23 @@ public class RegisterMessage {
 
     public String getHandle() {
         return handle;
+    }
+
+    @Override
+    public void write(BinaryStream stream) throws IOException {
+        // backwards compatability
+        if (stream.isStream()) {
+           RegisterMessage msg = this;
+           stream.startWriting(1 + getStrLen(msg.getUserName()) + getStrLen(msg.getPassword()) + getStrLen(msg.getHandle()));
+        }  
+        else {
+           stream.startWriting();
+        }
+
+        stream.writeByte(MessageTypes.Register.getValue());
+        stream.writeString(getUserName());
+        stream.writeString(getPassword());
+        stream.writeString(getHandle());
+        stream.finishWriting();
     }
 } 

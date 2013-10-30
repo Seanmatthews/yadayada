@@ -75,7 +75,7 @@ public class ChatServerImpl implements ChatServer {
     public void newMessage(ClientConnection senderConnection, User sender, Chatroom chatroom, String message) {
         System.out.println("New message from " + sender + " " + message);
 
-        Message msg = messageRepo.create(chatroom, sender, message);
+        ChatMessage msg = messageRepo.create(chatroom, sender, message);
         chatroom.addMessage(msg);
 
         MessageMessage msgToSend = new MessageMessage(msg.getId(), msg.getTimestamp(), msg.getSender().getId(), msg.getChatroom().getId(), msg.getSender().getHandle(), msg.getMessage());
@@ -233,10 +233,10 @@ public class ChatServerImpl implements ChatServer {
         }
 
         // send the new entrant the last N messages
-        Iterator<Message> recentMessages = chatroom.getRecentMessages();
+        Iterator<ChatMessage> recentMessages = chatroom.getRecentMessages();
         while(recentMessages.hasNext()) {
             try {
-                Message msg = recentMessages.next();
+                ChatMessage msg = recentMessages.next();
                 MessageMessage recentMessage = new MessageMessage(msg.getId(), msg.getTimestamp(), msg.getSender().getId(), msg.getChatroom().getId(), msg.getSender().getHandle(), msg.getMessage());
                 senderConnection.sendMessage(recentMessage);
             } catch (IOException e) {

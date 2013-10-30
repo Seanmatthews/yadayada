@@ -19,7 +19,7 @@ public class Chatroom {
     private static final int MESSAGES_TO_STORE = 20;
 
     private final Set<User> users = Collections.newSetFromMap(new ConcurrentHashMap<User, Boolean>());
-    private final Queue<Message> recentMessages = new ConcurrentLinkedQueue<>();
+    private final Queue<ChatMessage> recentMessages = new ConcurrentLinkedQueue<>();
     private final AtomicInteger messageCount = new AtomicInteger(0);
 
     private final long id;
@@ -78,7 +78,7 @@ public class Chatroom {
         return name;
     }
 
-    public void addMessage(Message message) {
+    public void addMessage(ChatMessage message) {
         int count = messageCount.incrementAndGet();
 
         // don't want to get recentMessages.size() because it iterates through the entire list
@@ -89,7 +89,7 @@ public class Chatroom {
         recentMessages.add(message);
     }
 
-    public Iterator<Message> getRecentMessages() {
+    public Iterator<ChatMessage> getRecentMessages() {
         return recentMessages.iterator();
     }
 

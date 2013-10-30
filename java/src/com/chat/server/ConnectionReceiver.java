@@ -69,12 +69,4 @@ public class ConnectionReceiver implements Runnable {
 
         return new ConnectMessage(APIVersion, UUID);
     }
-
-    public void rejectConnect(String message) throws IOException {
-        stream.startWriting(1 + getStrLen(message));
-        stream.writeByte(MessageTypes.ConnectReject.getValue());
-        stream.writeString(message);
-        stream.finishWriting();
-    }
-
 }

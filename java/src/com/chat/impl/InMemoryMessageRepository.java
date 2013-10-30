@@ -1,7 +1,7 @@
 package com.chat.impl;
 
+import com.chat.ChatMessage;
 import com.chat.Chatroom;
-import com.chat.Message;
 import com.chat.MessageRepository;
 import com.chat.User;
 
@@ -18,8 +18,8 @@ public class InMemoryMessageRepository implements MessageRepository {
     private final AtomicLong nextMessageId = new AtomicLong(1);
 
     @Override
-    public Message create(Chatroom chatroom, User sender, String message) {
-        Message msg = new Message(nextMessageId.getAndIncrement(), chatroom, sender, message, System.currentTimeMillis());
+    public ChatMessage create(Chatroom chatroom, User sender, String message) {
+        ChatMessage msg = new ChatMessage(nextMessageId.getAndIncrement(), chatroom, sender, message, System.currentTimeMillis());
         // don't store these currently
         return msg;
     }

@@ -1,6 +1,13 @@
 package com.chat.msgs.v1;
 
-public class LoginRejectMessage {
+import com.chat.BinaryStream;
+import com.chat.msgs.Message;
+
+import java.io.IOException;
+
+import static com.chat.msgs.Utilities.getStrLen;
+
+public class LoginRejectMessage implements Message {
     private final String reason;
 
     public LoginRejectMessage(String reason) {
@@ -9,5 +16,21 @@ public class LoginRejectMessage {
 
     public String getReason() {
         return reason;
+    }
+
+    @Override
+    public void write(BinaryStream stream) throws IOException {
+        // backwards compatability
+        if (stream.isStream()) {
+           LoginRejectMessage msg = this;
+           stream.startWriting(1 + getStrLen(msg.getReason()));
+        }  
+        else {
+           stream.startWriting();
+        }
+
+        stream.writeByte(MessageTypes.LoginReject.getValue());
+        stream.writeString(getReason());
+        stream.finishWriting();
     }
 } 

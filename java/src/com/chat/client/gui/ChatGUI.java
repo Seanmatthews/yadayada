@@ -192,7 +192,7 @@ public class ChatGUI implements ChatClient {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(ChatMessage message) {
         JTextPane chat = chatroomTextMap.get(message.getChatroom());
         String text = chat.getText();
         chat.setText(text + message.getSender().getHandle() + ": " + message.getMessage() + "\n");

@@ -1,14 +1,10 @@
 package com.chat.server;
 
-import com.chat.ChatroomRepository;
-import com.chat.MessageRepository;
-import com.chat.UserRepository;
-import com.chat.impl.ByteBufferStream;
+import com.chat.*;
+import com.chat.impl.NonBlockingByteBufferStream;
 import com.chat.msgs.MessageDispatcher;
 import com.chat.msgs.MessageDispatcherFactory;
 import com.chat.msgs.ValidationError;
-import com.chat.msgs.v1.ConnectMessage;
-import com.chat.msgs.v1.MessageTypes;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -16,10 +12,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -29,10 +23,11 @@ import java.util.concurrent.ExecutionException;
  * Time: 9:21 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SelectorSocketListener {
+public class SelectorSocketListener implements SelectRequester {
     private final MessageDispatcherFactory factory;
     private final Selector selector;
     private final Map<SocketChannel, ClientState> channelToStateMap = new HashMap<>(128);
+    private final Queue<SelectChangeRequest> requests = new ConcurrentLinkedQueue<>();
 
     public SelectorSocketListener(int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
         factory = new MessageDispatcherFactory(new ChatServerImpl(userRepo, chatroomRepo, messageRepo), userRepo, chatroomRepo);
@@ -53,6 +48,19 @@ public class SelectorSocketListener {
 
     private void listen() throws IOException {
         while (true) {
+            SelectChangeRequest request;
+            while((request = requests.poll()) != null) {
+                switch (request.type) {
+                    case REGISTER:
+                        request.socket.register(selector, request.ops);
+                        break;
+                    case CHANGEOPS:
+                        SelectionKey key = request.socket.keyFor(selector);
+                        key.interestOps(request.ops);
+                        break;
+                }
+            }
+
             if (selector.select() > 0) {
                 Set<SelectionKey> selectionKeys = selector.selectedKeys();
                 Iterator<SelectionKey> iterator = selectionKeys.iterator();
@@ -60,8 +68,9 @@ public class SelectorSocketListener {
                     SelectionKey key = iterator.next();
 
                     if (processKey(key)) {
-                        iterator.remove();
+
                     }
+                    iterator.remove();
                 }
             }
         }
@@ -88,7 +97,7 @@ public class SelectorSocketListener {
                 if (key.isWritable()) {
                     System.out.println("Write");
                     SocketChannel clientChannel = (SocketChannel) key.channel();
-                    writeMessage(clientChannel);
+                    finished = writeMessage(clientChannel);
                 }
             }
         }
@@ -99,24 +108,25 @@ public class SelectorSocketListener {
         return finished;
     }
 
-    private void writeMessage(SocketChannel clientChannel) {
+    private boolean writeMessage(SocketChannel clientChannel) {
         ClientState state = channelToStateMap.get(clientChannel);
 
         try {
-            state.stream.write();
+            return state.stream.writeMessages();
         } catch (IOException e) {
             System.err.println("Error writing to stream " + clientChannel);
             disconnect(clientChannel);
         }
+
+        return true;
     }
 
     private void acceptClient(ServerSocketChannel channel)  {
         try {
             SocketChannel clientChannel = channel.accept();
             clientChannel.configureBlocking(false);
-            clientChannel.register(selector, SelectionKey.OP_READ);
 
-            ByteBufferStream stream = new ByteBufferStream(clientChannel, selector);
+            NonBlockingByteBufferStream stream = new NonBlockingByteBufferStream(clientChannel, this);
             ClientState state = new ClientState(stream);
             channelToStateMap.put(clientChannel, state);
         } catch (IOException e) {
@@ -231,12 +241,18 @@ public class SelectorSocketListener {
         }
     }
 
+    @Override
+    public void addChangeRequest(SelectChangeRequest request) {
+        requests.add(request);
+        selector.wakeup();
+    }
+
     private static class ClientState {
         MessageDispatcher dispatcher;
-        final ByteBufferStream stream;
+        final NonBlockingByteBufferStream stream;
         final ByteBuffer input;
 
-        ClientState(ByteBufferStream stream) {
+        ClientState(NonBlockingByteBufferStream stream) {
             this.stream = stream;
             this.input = ByteBuffer.allocate(1024);
         }

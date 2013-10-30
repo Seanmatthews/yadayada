@@ -1,6 +1,13 @@
 package $package;
 
-public class ${msg.name}Message {
+import com.chat.BinaryStream;
+import com.chat.msgs.Message;
+
+import java.io.IOException;
+
+import static com.chat.msgs.Utilities.getStrLen;
+
+public class ${msg.name}Message implements Message {
 #for $field in $msg.fields
     private final $field.type $field.name;
 #end for
@@ -16,4 +23,22 @@ public class ${msg.name}Message {
         return $field.name;
     }
 #end for
+
+    @Override
+    public void write(BinaryStream stream) throws IOException {
+        // backwards compatability
+        if (stream.isStream()) {
+           ${msg.name}Message msg = this;
+           stream.startWriting(${msg.length});
+        }  
+        else {
+           stream.startWriting();
+        }
+
+        stream.writeByte(MessageTypes.${msg.name}.getValue());
+    #for $field in $msg.fields
+        stream.write${field.type.capitalize()}(get${field.nameCap}());
+    #end for
+        stream.finishWriting();
+    }
 } 

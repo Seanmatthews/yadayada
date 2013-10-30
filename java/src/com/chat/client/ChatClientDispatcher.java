@@ -61,7 +61,7 @@ public class ChatClientDispatcher implements Runnable {
                         MessageMessage msg = connection.recvMessage();
                         User sender = getOrCreateUser(msg.getSenderId(), msg.getSenderHandle());
                         Chatroom chat = chatroomRepo.get(msg.getChatroomId());
-                        Message theMsg = new Message(msg.getMessageId(), chat, sender, msg.getMessage(), msg.getMessageTimestamp());
+                        ChatMessage theMsg = new ChatMessage(msg.getMessageId(), chat, sender, msg.getMessage(), msg.getMessageTimestamp());
                         client.onMessage(theMsg);
                         break;
 

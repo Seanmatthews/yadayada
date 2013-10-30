@@ -1,7 +1,7 @@
 package com.chat.client;
 
+import com.chat.ChatMessage;
 import com.chat.Chatroom;
-import com.chat.Message;
 import com.chat.User;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public interface ChatClient {
     void onChatroom(Chatroom chatroom) throws IOException;
-    void onMessage(Message message);
+    void onMessage(ChatMessage message);
     void onJoinedChatroom(Chatroom chat, User user);
     void onLeftChatroom(Chatroom chatroom, User user);
 }

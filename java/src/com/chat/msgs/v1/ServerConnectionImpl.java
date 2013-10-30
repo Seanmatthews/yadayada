@@ -167,64 +167,69 @@ public class ServerConnectionImpl implements ServerConnection {
     
     @Override
     public void sendRegister(RegisterMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getUserName()) + getStrLen(msg.getPassword()) + getStrLen(msg.getHandle()));
             stream.writeByte(MessageTypes.Register.getValue());
             stream.writeString(msg.getUserName());
             stream.writeString(msg.getPassword());
             stream.writeString(msg.getHandle());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendLogin(LoginMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + getStrLen(msg.getUserName()) + getStrLen(msg.getPassword()));
             stream.writeByte(MessageTypes.Login.getValue());
             stream.writeString(msg.getUserName());
             stream.writeString(msg.getPassword());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendConnect(ConnectMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 4 + getStrLen(msg.getUUID()));
             stream.writeByte(MessageTypes.Connect.getValue());
             stream.writeInt(msg.getAPIVersion());
             stream.writeString(msg.getUUID());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendSubmitMessage(SubmitMessageMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + getStrLen(msg.getMessage()));
             stream.writeByte(MessageTypes.SubmitMessage.getValue());
             stream.writeLong(msg.getUserId());
             stream.writeLong(msg.getChatroomId());
             stream.writeString(msg.getMessage());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendSearchChatrooms(SearchChatroomsMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + 8);
             stream.writeByte(MessageTypes.SearchChatrooms.getValue());
             stream.writeLong(msg.getLatitude());
             stream.writeLong(msg.getLongitude());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendJoinChatroom(JoinChatroomMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + 8 + 8 + 8);
             stream.writeByte(MessageTypes.JoinChatroom.getValue());
             stream.writeLong(msg.getUserId());
@@ -232,23 +237,25 @@ public class ServerConnectionImpl implements ServerConnection {
             stream.writeLong(msg.getLatitude());
             stream.writeLong(msg.getLongitude());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendLeaveChatroom(LeaveChatroomMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + 8);
             stream.writeByte(MessageTypes.LeaveChatroom.getValue());
             stream.writeLong(msg.getUserId());
             stream.writeLong(msg.getChatroomId());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
     
     @Override
     public void sendCreateChatroom(CreateChatroomMessage msg) throws IOException {
-        synchronized(stream) {
+        /*synchronized(stream) {
             stream.startWriting(1 + 8 + getStrLen(msg.getChatroomName()) + 8 + 8 + 8);
             stream.writeByte(MessageTypes.CreateChatroom.getValue());
             stream.writeLong(msg.getOwnerId());
@@ -257,6 +264,7 @@ public class ServerConnectionImpl implements ServerConnection {
             stream.writeLong(msg.getLongitude());
             stream.writeLong(msg.getRadius());
             stream.finishWriting();
-        }
+        }*/
+        stream.queueMessage(msg);
     }
 }
