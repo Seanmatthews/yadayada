@@ -1,11 +1,13 @@
 package $package;
 
+import com.chat.msgs.ValidationError;
+
 import java.io.IOException;
 
 public interface ${clientOrServer}Connection {
     String getUUID();
     int getAPIVersion();
-    MessageTypes recvMsgType() throws IOException;
+    MessageTypes recvMsgType() throws IOException, ValidationError;
     void close();
 
 #for $msg in $recvMsgs

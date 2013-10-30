@@ -1,4 +1,4 @@
-package com.chat;
+package com.chat.msgs;
 
 /**
  * Created with IntelliJ IDEA.

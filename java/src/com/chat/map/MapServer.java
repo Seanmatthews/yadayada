@@ -7,6 +7,7 @@ import com.chat.client.ChatClientUtilities;
 import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
+import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.ServerConnectionImpl;
 import com.chat.util.NanoHTTPD;
 
@@ -35,7 +36,7 @@ public class MapServer extends NanoHTTPD implements ChatClient {
     private final InMemoryUserRepository userRepo;
     private final Map<User, Message> lastMessage = new HashMap<>();
 
-    public MapServer(int webPort, String host, int port, String username, String password) throws IOException {
+    public MapServer(int webPort, String host, int port, String username, String password) throws IOException, ValidationError {
         super(webPort);
 
         mapHtmlFile = new FileInputStream("/tmp/maps.html");
@@ -93,7 +94,7 @@ public class MapServer extends NanoHTTPD implements ChatClient {
         return new Response(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found");
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ValidationError {
         int webPort = Integer.parseInt(args[0]);
         String host = args[1];
         int port = Integer.parseInt(args[2]);

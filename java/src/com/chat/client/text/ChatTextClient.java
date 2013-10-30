@@ -4,6 +4,7 @@ import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientDispatcher;
 import com.chat.client.ChatClientUtilities;
+import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
@@ -27,7 +28,7 @@ import java.util.concurrent.Executors;
     private Chatroom subscribedChatroom;
     private User user;
 
-    public ChatTextClient(String host, int port, String user, String password) throws IOException, InterruptedException {
+    public ChatTextClient(String host, int port, String user, String password) throws IOException, InterruptedException, ValidationError {
         Socket socket = new Socket(host, port);
         BinaryStream dout = new DataStream(socket);
 
@@ -77,7 +78,7 @@ import java.util.concurrent.Executors;
         System.out.println(user + " has left " + chatroom);
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, ValidationError {
         int port = Integer.parseInt(args[1]);
         new ChatTextClient(args[0], port, args[2], args[3]);
     }

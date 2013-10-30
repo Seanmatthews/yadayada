@@ -3,7 +3,9 @@ from Cheetah.Template import Template
 
 versionNum = 1
 version = 'v' + str(versionNum);
-package = 'com.chat.msgs.v1'
+package = 'com.chat.msgs.' + version
+serverPath = "../java/src/com/chat/msgs/" + version
+iosPath = "../ios/chatter/chatter/"
 
 tree = ET.parse(version + '.xml')
 root = tree.getroot()
@@ -39,8 +41,6 @@ class Field:
 
 t = Template(file='Message.java.template')
 
-
-serverPath = "../server/src/com/chat/msgs/" + version
 clientMessages = []
 serverMessages = []
 for msg in root:
@@ -112,8 +112,6 @@ typesT.package = package
 f = file(serverPath + '/MessageTypes.java', 'w')
 f.write(str(typesT))
 f.close()
-
-iosPath = "../ios/chatter/chatter/"
 
 iosMessagesHT = Template(file='Messages.h.template')
 iosMessagesHT.msgs = clientMessages + serverMessages

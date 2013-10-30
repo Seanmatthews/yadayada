@@ -1,5 +1,6 @@
 package com.chat.client;
 
+import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.util.Random;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatClientUtilities {
-    public static long initialConnect(ServerConnection connection, String user, String password) throws IOException {
+    public static long initialConnect(ServerConnection connection, String user, String password) throws IOException, ValidationError {
         connection.sendConnect(new ConnectMessage(connection.getAPIVersion(), connection.getUUID()));
         connection.recvMsgType();
         connection.recvConnectAccept();

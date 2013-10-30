@@ -1,10 +1,11 @@
 package com.chat.msgs.v1;
 
 import com.chat.BinaryStream;
+import com.chat.msgs.ValidationError;
 
 import java.io.IOException;
 
-import static com.chat.Utilities.*;
+import static com.chat.msgs.Utilities.*;
 
 public class ServerConnectionImpl implements ServerConnection {
     private final BinaryStream stream;
@@ -28,22 +29,20 @@ public class ServerConnectionImpl implements ServerConnection {
     }
 
     @Override 
-    public MessageTypes recvMsgType() throws IOException {
+    public MessageTypes recvMsgType() throws IOException, ValidationError {
         stream.startReading();
         byte msgTypeByte = stream.readByte();
         MessageTypes msgType = MessageTypes.lookup(msgTypeByte);
 
         if (msgType == null)
-            throw new IOException("Unknown message type: " + (int)msgTypeByte);
+            throw new ValidationError("Unknown message type: " + (int)msgTypeByte);
 
         return msgType;        
     }
 
     @Override
     public void close() {
-        synchronized (stream) {
-            stream.close();
-        }
+        stream.close();
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientDispatcher;
 import com.chat.client.ChatClientUtilities;
+import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
@@ -51,7 +52,7 @@ public class ChatGUI implements ChatClient {
 
     private User user;
 
-    public ChatGUI(String host, int port, String userName, String password) throws IOException {
+    public ChatGUI(String host, int port, String userName, String password) throws IOException, ValidationError {
         Socket socket = new Socket(host, port);
         DataStream dataStream = new DataStream(socket);
 
@@ -158,7 +159,7 @@ public class ChatGUI implements ChatClient {
         });
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, ValidationError {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         String username = args[2];

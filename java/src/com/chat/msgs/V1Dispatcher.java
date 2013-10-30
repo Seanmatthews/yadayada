@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutionException;
  * To change this template use File | Settings | File Templates.
  */
 public class V1Dispatcher implements MessageDispatcher {
+    public static final int VERSION_ID = 1;
+
     private final ChatServer server;
     private final UserRepository userRepo;
     private final ChatroomRepository chatroomRepo;

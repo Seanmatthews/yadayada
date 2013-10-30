@@ -1,11 +1,13 @@
 package com.chat.msgs.v1;
 
+import com.chat.msgs.ValidationError;
+
 import java.io.IOException;
 
 public interface ServerConnection {
     String getUUID();
     int getAPIVersion();
-    MessageTypes recvMsgType() throws IOException;
+    MessageTypes recvMsgType() throws IOException, ValidationError;
     void close();
 
     RegisterAcceptMessage recvRegisterAccept() throws IOException;

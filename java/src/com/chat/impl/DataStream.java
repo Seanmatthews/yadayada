@@ -1,7 +1,7 @@
 package com.chat.impl;
 
 import com.chat.BinaryStream;
-import com.chat.Utilities;
+import com.chat.msgs.Utilities;
 
 import java.io.*;
 import java.net.Socket;

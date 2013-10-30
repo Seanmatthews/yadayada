@@ -1,20 +1,15 @@
 package com.chat.server;
 
 import com.chat.BinaryStream;
-import com.chat.ChatroomRepository;
-import com.chat.UserRepository;
 import com.chat.msgs.MessageDispatcher;
 import com.chat.msgs.MessageDispatcherFactory;
-import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
-import com.chat.msgs.v1.ClientConnectionImpl;
 import com.chat.msgs.v1.ConnectMessage;
-import com.chat.msgs.v1.ConnectRejectMessage;
 import com.chat.msgs.v1.MessageTypes;
 
 import java.io.IOException;
 
-import static com.chat.Utilities.getStrLen;
+import static com.chat.msgs.Utilities.getStrLen;
 
 /**
  * Created with IntelliJ IDEA.

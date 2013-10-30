@@ -5,7 +5,7 @@ import com.chat.msgs.ValidationError;
 
 import java.io.IOException;
 
-import static com.chat.Utilities.*;
+import static com.chat.msgs.Utilities.*;
 
 public class ClientConnectionImpl implements ClientConnection {
     private final BinaryStream stream;
