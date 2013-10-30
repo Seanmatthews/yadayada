@@ -2,9 +2,10 @@ package com.chat.impl;
 
 import com.chat.BinaryStream;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
 /**
@@ -16,14 +17,16 @@ import java.nio.channels.SocketChannel;
  */
 public class ByteBufferStream implements BinaryStream {
     private final SocketChannel channel;
-    private ByteBuffer input;
+    private final Selector selector;
     private final ByteBuffer output;
 
+    private ByteBuffer input;
     private int writeStartPosition;
 
-    public ByteBufferStream(SocketChannel socket) throws IOException {
-        channel = socket;
-        output = ByteBuffer.allocateDirect(10 * 1024);
+    public ByteBufferStream(SocketChannel channel, Selector selector) throws IOException {
+        this.channel = channel;
+        this.output = ByteBuffer.allocateDirect(1024);
+        this.selector = selector;
     }
 
     public void onReadAvailable(ByteBuffer slice) {
@@ -36,24 +39,6 @@ public class ByteBufferStream implements BinaryStream {
             channel.close();
         } catch (IOException ignored) {
         }
-    }
-
-    private int readSync(int bytesToRead) throws IOException {
-        input.clear();
-        input.limit(bytesToRead);
-
-        int bytesRead = 0;
-        while (bytesRead < bytesToRead) {
-            int read = channel.read(input);
-
-            if (read == -1)
-                throw new EOFException("End of stream");
-
-            bytesRead += read;
-        }
-
-        input.flip();
-        return bytesRead;
     }
 
     @Override
@@ -96,44 +81,72 @@ public class ByteBufferStream implements BinaryStream {
 
     @Override
     public void startWriting(int msgLength) throws IOException {
+        checkBounds(2);
         writeStartPosition = output.position();
         output.position(writeStartPosition + 2);
+    }
+
+    private void checkBounds(int length) throws IOException {
+        if (output.remaining() < length)
+            throw new IOException("Not enough room in the write buffer");
     }
 
     @Override
     public void finishWriting() throws IOException {
         output.putShort(writeStartPosition, (short) (output.position() - writeStartPosition - 2));
+
+        write();
+    }
+
+    public void write() throws IOException {
+        if ( output.position() == 0 ) {
+            channel.register(selector, SelectionKey.OP_READ);
+            output.clear();
+            return;
+        }
+
         output.flip();
+        channel.write(output);
 
-        while(output.hasRemaining())
-            channel.write(output);
-
-        output.clear();
+        if (output.hasRemaining()) {
+            channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            output.compact();
+        }
+        else {
+            channel.register(selector, SelectionKey.OP_READ);
+            output.clear();
+        }
     }
 
     @Override
     public void writeByte(int value) throws IOException {
+        checkBounds(1);
         output.put((byte)value);
     }
 
     @Override
     public void writeShort(int value) throws IOException {
+        checkBounds(2);
         output.putShort((short)value);
     }
 
     @Override
     public void writeInt(int value) throws IOException {
+        checkBounds(4);
         output.putInt(value);
     }
 
     @Override
     public void writeLong(long value) throws IOException {
+        checkBounds(8);
         output.putLong(value);
     }
 
     @Override
     public void writeString(String value) throws IOException {
         byte[] bytes = value.getBytes("UTF-8");
+
+        checkBounds(2 + bytes.length);
         output.putShort((short)bytes.length);
         output.put(bytes);
     }

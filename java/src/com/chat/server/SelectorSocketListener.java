@@ -86,8 +86,9 @@ public class SelectorSocketListener {
 
                 // writing to a client socket
                 if (key.isWritable()) {
+                    System.out.println("Write");
                     SocketChannel clientChannel = (SocketChannel) key.channel();
-                    //readMessage(clientChannel);
+                    writeMessage(clientChannel);
                 }
             }
         }
@@ -98,13 +99,24 @@ public class SelectorSocketListener {
         return finished;
     }
 
+    private void writeMessage(SocketChannel clientChannel) {
+        ClientState state = channelToStateMap.get(clientChannel);
+
+        try {
+            state.stream.write();
+        } catch (IOException e) {
+            System.err.println("Error writing to stream " + clientChannel);
+            disconnect(clientChannel);
+        }
+    }
+
     private void acceptClient(ServerSocketChannel channel)  {
         try {
             SocketChannel clientChannel = channel.accept();
             clientChannel.configureBlocking(false);
-            clientChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            clientChannel.register(selector, SelectionKey.OP_READ);
 
-            ByteBufferStream stream = new ByteBufferStream(clientChannel);
+            ByteBufferStream stream = new ByteBufferStream(clientChannel, selector);
             ClientState state = new ClientState(stream);
             channelToStateMap.put(clientChannel, state);
         } catch (IOException e) {
@@ -112,7 +124,7 @@ public class SelectorSocketListener {
         }
     }
 
-    private boolean readMessage(SocketChannel clientChannel) {
+    private void readMessage(SocketChannel clientChannel) {
         ClientState state = channelToStateMap.get(clientChannel);
         ByteBuffer inputBuffer = state.input;
 
@@ -131,8 +143,6 @@ public class SelectorSocketListener {
         inputBuffer.flip();
         processMessages(clientChannel, state, inputBuffer);
         inputBuffer.compact();
-
-        return true;
     }
 
     private void processMessages(SocketChannel clientChannel, ClientState state, ByteBuffer inputBuffer) {
@@ -228,7 +238,7 @@ public class SelectorSocketListener {
 
         ClientState(ByteBufferStream stream) {
             this.stream = stream;
-            this.input = ByteBuffer.allocate(10 * 1024);
+            this.input = ByteBuffer.allocate(1024);
         }
     }
 }

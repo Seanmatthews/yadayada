@@ -22,7 +22,8 @@ import java.util.concurrent.Executors;
  * Date: 10/17/13
  * Time: 8:50 AM
  * To change this template use File | Settings | File Templates.
- */public class ChatTextClient implements ChatClient {
+ */
+public class ChatTextClient implements ChatClient {
     private final ServerConnection connection;
 
     private Chatroom subscribedChatroom;
