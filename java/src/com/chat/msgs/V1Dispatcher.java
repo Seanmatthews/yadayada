@@ -36,55 +36,7 @@ public class V1Dispatcher implements MessageDispatcher {
     public void run() {
         try {
             while(true) {
-                MessageTypes type = connection.recvMsgType();
-
-                switch (type) {
-                    case SearchChatrooms:
-                        SearchChatroomsMessage scMsg = connection.recvSearchChatrooms();
-                        server.searchChatrooms(connection);
-                        break;
-
-                    case CreateChatroom:
-                        CreateChatroomMessage ccMsg = connection.recvCreateChatroom();
-                        User ccUser = getAndValidateUser(ccMsg.getOwnerId());
-                        server.createChatroom(connection, ccUser, ccMsg.getChatroomName());
-                        break;
-
-                    case JoinChatroom:
-                        JoinChatroomMessage jcMsg = connection.recvJoinChatroom();
-                        User jcUser = getAndValidateUser(jcMsg.getUserId());
-                        Chatroom jcChatroom = getAndValidateChatroom(jcMsg.getChatroomId());
-                        server.joinChatroom(connection, jcUser, jcChatroom);
-                        break;
-
-                    case LeaveChatroom:
-                        LeaveChatroomMessage lcMsg = connection.recvLeaveChatroom();
-                        User lcUser = getAndValidateUser(lcMsg.getUserId());
-                        Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
-                        server.leaveChatroom(connection, lcUser, lcChatroom);
-                        break;
-
-                    case Register:
-                        RegisterMessage rMsg = connection.recvRegister();
-                        server.registerUser(connection, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle());
-                        break;
-
-                    case Login:
-                        LoginMessage lMsg = connection.recvLogin();
-                        server.login(connection, lMsg.getUserName(), lMsg.getPassword());
-                        break;
-
-                    case SubmitMessage:
-                        SubmitMessageMessage smMsg = connection.recvSubmitMessage();
-                        User user = getAndValidateUser(smMsg.getUserId());
-                        Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());
-                        System.out.println("Sending " + smMsg.getMessage());
-                        server.newMessage(connection, user, chatroom, smMsg.getMessage());
-                        break;
-
-                    default:
-                        throw new ValidationError("Unhandled message: " + type);
-                }
+                runOnce();
             }
         } catch (EOFException e) {
             System.out.println("Customer hung up");
@@ -101,7 +53,64 @@ public class V1Dispatcher implements MessageDispatcher {
             System.err.println("Future execution error:  " + e.getMessage());
             e.printStackTrace();
         } finally {
-            server.removeConnection(connection);
+            removeConnection();
+        }
+    }
+
+    @Override
+    public void removeConnection() {
+        server.removeConnection(connection);
+    }
+
+    public void runOnce() throws IOException, ValidationError, ExecutionException, InterruptedException {
+        MessageTypes type = connection.recvMsgType();
+
+        switch (type) {
+            case SearchChatrooms:
+                SearchChatroomsMessage scMsg = connection.recvSearchChatrooms();
+                server.searchChatrooms(connection);
+                break;
+
+            case CreateChatroom:
+                CreateChatroomMessage ccMsg = connection.recvCreateChatroom();
+                User ccUser = getAndValidateUser(ccMsg.getOwnerId());
+                server.createChatroom(connection, ccUser, ccMsg.getChatroomName());
+                break;
+
+            case JoinChatroom:
+                JoinChatroomMessage jcMsg = connection.recvJoinChatroom();
+                User jcUser = getAndValidateUser(jcMsg.getUserId());
+                Chatroom jcChatroom = getAndValidateChatroom(jcMsg.getChatroomId());
+                server.joinChatroom(connection, jcUser, jcChatroom);
+                break;
+
+            case LeaveChatroom:
+                LeaveChatroomMessage lcMsg = connection.recvLeaveChatroom();
+                User lcUser = getAndValidateUser(lcMsg.getUserId());
+                Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
+                server.leaveChatroom(connection, lcUser, lcChatroom);
+                break;
+
+            case Register:
+                RegisterMessage rMsg = connection.recvRegister();
+                server.registerUser(connection, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle());
+                break;
+
+            case Login:
+                LoginMessage lMsg = connection.recvLogin();
+                server.login(connection, lMsg.getUserName(), lMsg.getPassword());
+                break;
+
+            case SubmitMessage:
+                SubmitMessageMessage smMsg = connection.recvSubmitMessage();
+                User user = getAndValidateUser(smMsg.getUserId());
+                Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());
+                System.out.println("Sending " + smMsg.getMessage());
+                server.newMessage(connection, user, chatroom, smMsg.getMessage());
+                break;
+
+            default:
+                throw new ValidationError("Unhandled message: " + type);
         }
     }
 

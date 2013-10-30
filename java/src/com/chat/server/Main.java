@@ -4,7 +4,6 @@ import com.chat.MessageRepository;
 import com.chat.User;
 import com.chat.UserRepository;
 import com.chat.impl.AwsRdsUserRepository;
-import com.chat.server.ChatStreamSocketListener;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryMessageRepository;
 import com.chat.impl.InMemoryUserRepository;
@@ -74,6 +73,6 @@ public class Main {
 
         MessageRepository messageRepo = new InMemoryMessageRepository();
 
-        new ChatStreamSocketListener(port, userRepo, chatroomRepo, messageRepo);
+        new SelectorSocketListener(port, userRepo, chatroomRepo, messageRepo);
     }
 }

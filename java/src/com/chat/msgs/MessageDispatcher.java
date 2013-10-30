@@ -1,5 +1,10 @@
 package com.chat.msgs;
 
+import com.chat.msgs.v1.ClientConnection;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -9,4 +14,6 @@ package com.chat.msgs;
  */
 public interface MessageDispatcher {
     void run();
+    void runOnce() throws IOException, ValidationError, ExecutionException, InterruptedException;
+    void removeConnection();
 }
