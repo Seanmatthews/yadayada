@@ -12,6 +12,7 @@ import com.chat.msgs.v1.MessageTypes;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
@@ -91,7 +92,7 @@ public class SelectorSocketListener {
             }
         }
         catch(CancelledKeyException e) {
-
+            // nothing
         }
 
         return finished;
@@ -152,62 +153,54 @@ public class SelectorSocketListener {
             slice.position(slice.position() + 2);
             slice.limit(slice.position() + length);
 
-            if (state.dispatcher == null) {
-                setupDispatcher(clientChannel, state, slice);
-            }
-            else {
-                state.stream.onReadAvailable(slice);
-
-                try {
-                    state.dispatcher.runOnce();
-                } catch (EOFException e) {
-                    System.out.println("Customer hung up " + clientChannel);
-                    disconnect(clientChannel);
-                    return;
-                } catch (IOException e) {
-                    System.err.println("Cannot write to stream: " + e.getMessage());
-                    e.printStackTrace();
-                    disconnect(clientChannel);
-                    return;
-                } catch (ValidationError e) {
-                    System.err.println("Validation error:  " + e.getMessage());
-                    e.printStackTrace();
-                    disconnect(clientChannel);
-                    return;
-                } catch (InterruptedException e) {
-                    System.err.println("Thread interruption error:  " + e.getMessage());
-                    e.printStackTrace();
-                    disconnect(clientChannel);
-                    return;
-                } catch (ExecutionException e) {
-                    System.err.println("Future execution error:  " + e.getMessage());
-                    e.printStackTrace();
-                    disconnect(clientChannel);
-                    return;
+            try {
+                if (state.dispatcher == null) {
+                    setupDispatcher(state, slice);
                 }
+                else {
+                    state.stream.onReadAvailable(slice);
+                    state.dispatcher.runOnce();
+                }
+            } catch (EOFException e) {
+                System.out.println("Customer hung up " + clientChannel);
+                disconnect(clientChannel);
+                return;
+            } catch (IOException e) {
+                System.err.println("Cannot write to stream: " + e.getMessage());
+                e.printStackTrace();
+                disconnect(clientChannel);
+                return;
+            } catch (ValidationError e) {
+                System.err.println("Validation error:  " + e.getMessage());
+                e.printStackTrace();
+                disconnect(clientChannel);
+                return;
+            } catch (InterruptedException e) {
+                System.err.println("Thread interruption error:  " + e.getMessage());
+                e.printStackTrace();
+                disconnect(clientChannel);
+                return;
+            } catch (ExecutionException e) {
+                System.err.println("Future execution error:  " + e.getMessage());
+                e.printStackTrace();
+                disconnect(clientChannel);
+                return;
             }
 
             inputBuffer.position(inputBuffer.position() + length + 2);
         }
     }
 
-    private void setupDispatcher(SocketChannel clientChannel, ClientState state, ByteBuffer slice) {
-        // first message
-        MessageTypes msgType = recvMsgType(slice);
+    private void setupDispatcher(ClientState state, ByteBuffer slice) throws ValidationError, UnsupportedEncodingException {
+        byte type = slice.get();
+        if (type != 16)
+            throw new ValidationError("Must send Connect first");
 
-        if (msgType == null || msgType != MessageTypes.Connect) {
-            disconnect(clientChannel);
-            return;
-        }
-
-        try {
-            ConnectMessage connectMessage = recvConnect(slice);
-            state.dispatcher = factory.getDispatcher(connectMessage.getAPIVersion(), state.stream, connectMessage.getUUID());
-        } catch (IOException e) {
-            disconnect(clientChannel);
-        } catch (ValidationError validationError) {
-            disconnect(clientChannel);
-        }
+        int APIVersion = slice.getInt();
+        byte[] bytes = new byte[slice.getShort()];
+        slice.get(bytes);
+        String UUID = new String(bytes, "UTF-8");
+        state.dispatcher = factory.getDispatcher(APIVersion, state.stream, UUID);
     }
 
     private void disconnect(SocketChannel clientChannel) {
@@ -226,25 +219,6 @@ public class SelectorSocketListener {
         } catch (IOException e) {
             // do nothing
         }
-    }
-
-    public MessageTypes recvMsgType(ByteBuffer buffer) {
-        byte msgTypeByte = buffer.get();
-        MessageTypes msgType = MessageTypes.lookup(msgTypeByte);
-
-        if (msgType == null)
-            return null;
-
-        return msgType;
-    }
-
-    public ConnectMessage recvConnect(ByteBuffer buffer) throws IOException {
-        int APIVersion = buffer.getInt();
-        short length = buffer.getShort();
-        byte[] bytes = new byte[length];
-        buffer.get(bytes);
-        String UUID = new String(bytes, "UTF-8");
-        return new ConnectMessage(APIVersion, UUID);
     }
 
     private static class ClientState {

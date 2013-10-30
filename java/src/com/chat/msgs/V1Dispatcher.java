@@ -33,6 +33,7 @@ public class V1Dispatcher implements MessageDispatcher {
         server.addConnection(connection);
     }
 
+    @Override
     public void run() {
         try {
             while(true) {
@@ -62,6 +63,7 @@ public class V1Dispatcher implements MessageDispatcher {
         server.removeConnection(connection);
     }
 
+    @Override
     public void runOnce() throws IOException, ValidationError, ExecutionException, InterruptedException {
         MessageTypes type = connection.recvMsgType();
 
