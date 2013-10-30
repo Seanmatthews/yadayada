@@ -12,16 +12,15 @@ import java.nio.channels.SocketChannel;
 public class SelectChangeRequest {
     public static enum ChangeRequestType {
         REGISTER,
-        CHANGEOPS
+        ENABLE_WRITE,
+        DISABLE_WRITE
     }
 
     public SocketChannel socket;
     public ChangeRequestType type;
-    public int ops;
 
-    public SelectChangeRequest(SocketChannel socket, ChangeRequestType type, int ops) {
+    public SelectChangeRequest(SocketChannel socket, ChangeRequestType type) {
         this.socket = socket;
         this.type = type;
-        this.ops = ops;
     }
 }

@@ -52,11 +52,15 @@ public class SelectorSocketListener implements SelectRequester {
             while((request = requests.poll()) != null) {
                 switch (request.type) {
                     case REGISTER:
-                        request.socket.register(selector, request.ops);
+                        request.socket.register(selector, SelectionKey.OP_READ);
                         break;
-                    case CHANGEOPS:
+                    case ENABLE_WRITE:
                         SelectionKey key = request.socket.keyFor(selector);
-                        key.interestOps(request.ops);
+                        key.interestOps(SelectionKey.OP_WRITE);
+                        break;
+                    case DISABLE_WRITE:
+                        SelectionKey key2 = request.socket.keyFor(selector);
+                        key2.interestOps(SelectionKey.OP_READ);
                         break;
                 }
             }
@@ -66,9 +70,10 @@ public class SelectorSocketListener implements SelectRequester {
                 Iterator<SelectionKey> iterator = selectionKeys.iterator();
                 while(iterator.hasNext()) {
                     SelectionKey key = iterator.next();
-
-                    if (processKey(key)) {
-
+                    try {
+                        processKey(key);
+                    }
+                    catch(CancelledKeyException ignored) {
                     }
                     iterator.remove();
                 }
@@ -76,36 +81,28 @@ public class SelectorSocketListener implements SelectRequester {
         }
     }
 
-    private boolean processKey(SelectionKey key) {
-        boolean finished = true;
+    private void processKey(SelectionKey key) throws CancelledKeyException {
+        if (key.isValid()) {
+            // accepting a client socket
+            if (key.isAcceptable()) {
+                ServerSocketChannel channel = (ServerSocketChannel) key.channel();
+                acceptClient(channel);
+            }
 
-        try {
-            if (key.isValid()) {
-                // accepting a client socket
-                if (key.isAcceptable()) {
-                    ServerSocketChannel channel = (ServerSocketChannel) key.channel();
-                    acceptClient(channel);
-                }
+            // reading a client socket
+            if (key.isReadable()) {
+                //System.out.println("Read available");
+                SocketChannel clientChannel = (SocketChannel) key.channel();
+                readMessage(clientChannel);
+            }
 
-                // reading a client socket
-                if (key.isReadable()) {
-                    SocketChannel clientChannel = (SocketChannel) key.channel();
-                    readMessage(clientChannel);
-                }
-
-                // writing to a client socket
-                if (key.isWritable()) {
-                    System.out.println("Write");
-                    SocketChannel clientChannel = (SocketChannel) key.channel();
-                    finished = writeMessage(clientChannel);
-                }
+            // writing to a client socket
+            if (key.isWritable()) {
+                //System.out.println("Write available");
+                SocketChannel clientChannel = (SocketChannel) key.channel();
+                writeMessage(clientChannel);
             }
         }
-        catch(CancelledKeyException e) {
-            // nothing
-        }
-
-        return finished;
     }
 
     private boolean writeMessage(SocketChannel clientChannel) {

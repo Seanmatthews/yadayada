@@ -7,11 +7,11 @@ import com.chat.msgs.Message;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static com.chat.SelectChangeRequest.ChangeRequestType.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,7 +35,7 @@ public class NonBlockingByteBufferStream implements BinaryStream {
         this.queue = new ConcurrentLinkedQueue<>();
         this.selector = selector;
 
-        this.selector.addChangeRequest(new SelectChangeRequest(channel, SelectChangeRequest.ChangeRequestType.REGISTER, SelectionKey.OP_READ));
+        this.selector.addChangeRequest(new SelectChangeRequest(channel, REGISTER));
     }
 
     public void onReadAvailable(ByteBuffer slice) {
@@ -130,7 +130,7 @@ public class NonBlockingByteBufferStream implements BinaryStream {
     @Override
     public void queueMessage(Message message) throws IOException {
         if (queue.offer(message)) {
-            selector.addChangeRequest(new SelectChangeRequest(channel, SelectChangeRequest.ChangeRequestType.CHANGEOPS, SelectionKey.OP_WRITE));
+            selector.addChangeRequest(new SelectChangeRequest(channel, ENABLE_WRITE));
         }
         else {
             throw new IOException("Too many messages in the queue to send. Terminating.");
@@ -162,12 +162,11 @@ public class NonBlockingByteBufferStream implements BinaryStream {
 
         if (output.position() > 0 || messagesInQueue) {
             // still stuff to write in the buffer
-            selector.addChangeRequest(new SelectChangeRequest(channel, SelectChangeRequest.ChangeRequestType.CHANGEOPS, SelectionKey.OP_WRITE));
             return false;
         }
         else {
             // all done
-            selector.addChangeRequest(new SelectChangeRequest(channel, SelectChangeRequest.ChangeRequestType.CHANGEOPS, SelectionKey.OP_READ));
+            selector.addChangeRequest(new SelectChangeRequest(channel, DISABLE_WRITE));
             return true;
         }
     }
