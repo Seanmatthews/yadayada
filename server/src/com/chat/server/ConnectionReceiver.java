@@ -3,13 +3,18 @@ package com.chat.server;
 import com.chat.BinaryStream;
 import com.chat.ChatroomRepository;
 import com.chat.UserRepository;
+import com.chat.msgs.MessageDispatcher;
+import com.chat.msgs.MessageDispatcherFactory;
 import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.ClientConnectionImpl;
 import com.chat.msgs.v1.ConnectMessage;
+import com.chat.msgs.v1.ConnectRejectMessage;
 import com.chat.msgs.v1.MessageTypes;
 
 import java.io.IOException;
+
+import static com.chat.Utilities.getStrLen;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,14 +25,10 @@ import java.io.IOException;
  */
 public class ConnectionReceiver implements Runnable {
     private final BinaryStream stream;
-    private final ChatServer server;
-    private final UserRepository userRepo;
-    private final ChatroomRepository chatroomRepo;
+    private final MessageDispatcherFactory factory;
 
-    public ConnectionReceiver(ChatServer server, BinaryStream stream, UserRepository userRepo, ChatroomRepository chatroomRepo) {
-        this.server = server;
-        this.userRepo = userRepo;
-        this.chatroomRepo = chatroomRepo;
+    public ConnectionReceiver(MessageDispatcherFactory factory, BinaryStream stream) {
+        this.factory = factory;
         this.stream = stream;
     }
 
@@ -37,27 +38,20 @@ public class ConnectionReceiver implements Runnable {
             MessageTypes type = recvMsgType();
 
             if (type == MessageTypes.Connect) {
-                ConnectMessage cMsg = recvConnect();
-                int apiVersion = cMsg.getAPIVersion();
-                String uuid = cMsg.getUUID();
-
-                if (apiVersion == 1) {
-                    new V1Dispatcher(server, new ClientConnectionImpl(stream, uuid, apiVersion), userRepo, chatroomRepo).run();
-                }
-                else {
-                    throw new ValidationError("Unsupported API Version: " + apiVersion);
-                }
+                ConnectMessage msg = recvConnect();
+                MessageDispatcher dispatcher = factory.getDispatcher(msg.getAPIVersion(), stream, msg.getUUID());
+                dispatcher.run();
             }
             else {
-                throw new ValidationError("Connect message is the first message required from the client");
+                throw new ValidationError(stream + " Connect message is the first message required from the client");
             }
         } catch (IOException e) {
-            System.err.println("Error communicating with the client: " + e.getMessage());
+            System.err.println(stream + " Error communicating with the client: " + e.getMessage());
             e.printStackTrace();
-        } catch (ValidationError validationError) {
-            System.err.println(validationError.getMessage());
+        } catch (ValidationError e) {
+            System.err.println(stream + " " + e.getMessage());
         } finally {
-            System.out.println("Closing connection");
+            System.out.println(stream + " Closing connection");
             stream.close();
         }
     }
@@ -80,4 +74,12 @@ public class ConnectionReceiver implements Runnable {
 
         return new ConnectMessage(APIVersion, UUID);
     }
+
+    public void rejectConnect(String message) throws IOException {
+        stream.startWriting(1 + getStrLen(message));
+        stream.writeByte(MessageTypes.ConnectReject.getValue());
+        stream.writeString(message);
+        stream.finishWriting();
+    }
+
 }

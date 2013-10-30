@@ -2,6 +2,7 @@ package com.chat.server;
 
 import com.chat.*;
 import com.chat.impl.DataStream;
+import com.chat.msgs.MessageDispatcherFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,18 +19,10 @@ import java.util.concurrent.Executors;
  */
 public class ChatStreamSocketListener {
     private final ExecutorService execService = Executors.newCachedThreadPool();
-
-    private final UserRepository userRepo;
-    private final ChatroomRepository chatroomRepo;
-
-    private final ChatServer server;
+    private final MessageDispatcherFactory factory;
 
     public ChatStreamSocketListener(int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
-        // not really an Impl - what's that pattern?
-        this.server = new ChatServerImpl(userRepo, chatroomRepo, messageRepo);
-        this.userRepo = userRepo;
-        this.chatroomRepo = chatroomRepo;
-
+        factory = new MessageDispatcherFactory(new ChatServerImpl(userRepo, chatroomRepo, messageRepo), userRepo, chatroomRepo);
         listen(port);
     }
 
@@ -40,9 +33,7 @@ public class ChatStreamSocketListener {
         while (true) {
             Socket socket = serverSocket.accept();
             System.out.println("BinaryStream from: " + socket);
-
-            BinaryStream connection = new DataStream(socket);
-            execService.submit(new ConnectionReceiver(server, connection, userRepo, chatroomRepo));
+            execService.submit(new ConnectionReceiver(factory, new DataStream(socket)));
         }
     }
 }

@@ -49,21 +49,21 @@ public class ChatGUI implements ChatClient {
 
     private final ServerConnection connection;
 
-    private User loggedInUser;
+    private User user;
 
-    public ChatGUI(String host, int port, String user, String password) throws IOException {
+    public ChatGUI(String host, int port, String userName, String password) throws IOException {
         Socket socket = new Socket(host, port);
         DataStream dataStream = new DataStream(socket);
 
         System.out.println("Connected to " + socket);
 
         connection = new ServerConnectionImpl(dataStream, Integer.toString(new Random().nextInt()), 1);
-        long userId = ChatClientUtilities.initialConnect(connection, user, password);
-        loggedInUser = new User(userId, user);
+        long userId = ChatClientUtilities.initialConnect(connection, userName, password);
+        user = new User(userId, userName);
 
         ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
-        userRepo.addUser(loggedInUser);
+        userRepo.addUser(user);
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatClientDispatcher(this, dataStream, chatroomRepo, userRepo));
@@ -79,7 +79,7 @@ public class ChatGUI implements ChatClient {
             public void actionPerformed(ActionEvent e) {
                 try {
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.sendLeaveChatroom(new LeaveChatroomMessage(loggedInUser.getId(), chatroom.getId()));
+                    connection.sendLeaveChatroom(new LeaveChatroomMessage(user.getId(), chatroom.getId()));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -103,11 +103,11 @@ public class ChatGUI implements ChatClient {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (loggedInUser == null)
+                    if (user == null)
                         return;
 
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.sendJoinChatroom(new JoinChatroomMessage(loggedInUser.getId(), chatroom.getId(), 0, 0));
+                    connection.sendJoinChatroom(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -122,7 +122,7 @@ public class ChatGUI implements ChatClient {
 
                 if (text != null && text.length() > 0) {
                     try {
-                        connection.sendCreateChatroom(new CreateChatroomMessage(loggedInUser.getId(), text, 0, 0, 0));
+                        connection.sendCreateChatroom(new CreateChatroomMessage(user.getId(), text, 0, 0, 0));
                     } catch (IOException e1) {
                         e1.printStackTrace();
                         System.exit(0);
@@ -147,7 +147,7 @@ public class ChatGUI implements ChatClient {
                     String textToSend = chatTextField.getText();
 
                     try {
-                        connection.sendSubmitMessage(new SubmitMessageMessage(loggedInUser.getId(), chatroom.getId(), textToSend));
+                        connection.sendSubmitMessage(new SubmitMessageMessage(user.getId(), chatroom.getId(), textToSend));
                         chatTextField.setText("");
                     } catch (IOException e1) {
                         e1.printStackTrace();
@@ -237,7 +237,7 @@ public class ChatGUI implements ChatClient {
             ((DefaultListModel<User>)userJList.getModel()).removeElement(user);
         }
 
-        if (user.equals(this.loggedInUser)) {
+        if (user.equals(this.user)) {
             JPanel panel = chatroomPanelMap.get(chatroom);
             if (panel != null) {
                 tabbedPane1.remove(panel);
