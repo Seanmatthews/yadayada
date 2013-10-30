@@ -1,12 +1,13 @@
 package com.chat.server;
 
 import com.chat.*;
-import com.chat.impl.DataStream;
+import com.chat.impl.SynchronousSocketChannel;
 import com.chat.msgs.MessageDispatcherFactory;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,13 +28,17 @@ public class ChatStreamSocketListener {
     }
 
     private void listen(int port) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(port);
+        //ServerSocket serverSocket = new ServerSocket(port);
+
+        ServerSocketChannel channel = ServerSocketChannel.open();
+        ServerSocketChannel bindable = channel.bind(new InetSocketAddress(port));
+
         System.out.println("Listening on: " + port);
 
         while (true) {
-            Socket socket = serverSocket.accept();
-            System.out.println("BinaryStream from: " + socket);
-            execService.submit(new ConnectionReceiver(factory, new DataStream(socket)));
+            SocketChannel clientChannel = bindable.accept();
+            System.out.println("BinaryStream from: " + clientChannel);
+            execService.submit(new ConnectionReceiver(factory, new SynchronousSocketChannel(clientChannel)));
         }
     }
 }

@@ -20,7 +20,6 @@ public interface BinaryStream {
     int readInt() throws IOException;
     long readLong() throws IOException;
     String readString() throws IOException;
-    byte[] read(int length) throws IOException;
 
     void startWriting(int msgLength) throws IOException;
     void finishWriting() throws IOException;
