@@ -125,7 +125,7 @@ public class ChatServerImpl implements ChatServer {
                             senderConnection.sendRegisterAccept(new RegisterAcceptMessage(result.getUser().getId()));
                             break;
                         case ConnectionError:
-                            senderConnection.sendRegisterReject(new RegisterRejectMessage("BinaryStream error"));
+                            senderConnection.sendRegisterReject(new RegisterRejectMessage("Connection error"));
                             break;
                         case UserAlreadyExists:
                         case InvalidUserNameOrPassword:
@@ -156,7 +156,7 @@ public class ChatServerImpl implements ChatServer {
                             connectionUserMap.put(senderConnection, user);
                             break;
                         case ConnectionError:
-                            senderConnection.sendLoginReject(new LoginRejectMessage("BinaryStream error"));
+                            senderConnection.sendLoginReject(new LoginRejectMessage("Connection error"));
                             break;
                         case InvalidUserNameOrPassword:
                         default:

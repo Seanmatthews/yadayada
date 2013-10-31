@@ -13,8 +13,6 @@ import java.io.*;
  */
 public interface BinaryStream {
     void close();
-    boolean isStream();
-
     void queueMessage(Message message) throws IOException;
 
     byte   readByte() throws IOException;
@@ -31,6 +29,8 @@ public interface BinaryStream {
     void writeLong(long value) throws IOException;
     void writeString(String value) throws IOException;
 
+    @Deprecated
+    boolean isStream();
     @Deprecated
     void startReading() throws IOException;
     @Deprecated

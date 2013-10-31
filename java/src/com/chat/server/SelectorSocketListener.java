@@ -8,6 +8,7 @@ import com.chat.msgs.ValidationError;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.PushbackInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -56,7 +57,7 @@ public class SelectorSocketListener implements SelectRequester {
                         break;
                     case ENABLE_WRITE:
                         SelectionKey key = request.socket.keyFor(selector);
-                        key.interestOps(SelectionKey.OP_WRITE);
+                        key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                         break;
                     case DISABLE_WRITE:
                         SelectionKey key2 = request.socket.keyFor(selector);
@@ -89,18 +90,18 @@ public class SelectorSocketListener implements SelectRequester {
                 acceptClient(channel);
             }
 
-            // reading a client socket
-            if (key.isReadable()) {
-                //System.out.println("Read available");
-                SocketChannel clientChannel = (SocketChannel) key.channel();
-                readMessage(clientChannel);
-            }
-
             // writing to a client socket
             if (key.isWritable()) {
                 //System.out.println("Write available");
                 SocketChannel clientChannel = (SocketChannel) key.channel();
                 writeMessage(clientChannel);
+            }
+
+            // reading a client socket
+            if (key.isReadable()) {
+                //System.out.println("Read available");
+                SocketChannel clientChannel = (SocketChannel) key.channel();
+                readMessage(clientChannel);
             }
         }
     }
@@ -124,8 +125,7 @@ public class SelectorSocketListener implements SelectRequester {
             clientChannel.configureBlocking(false);
 
             NonBlockingByteBufferStream stream = new NonBlockingByteBufferStream(clientChannel, this);
-            ClientState state = new ClientState(stream);
-            channelToStateMap.put(clientChannel, state);
+            channelToStateMap.put(clientChannel, new ClientState(stream));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -251,7 +251,7 @@ public class SelectorSocketListener implements SelectRequester {
 
         ClientState(NonBlockingByteBufferStream stream) {
             this.stream = stream;
-            this.input = ByteBuffer.allocate(1024);
+            this.input = ByteBuffer.allocateDirect(1024);
         }
     }
 }
