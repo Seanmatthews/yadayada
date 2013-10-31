@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "Messages.h"
 
+const int MESSAGE_NUM_THRESH = 50;
 
 
 @interface ViewController ()
@@ -27,12 +28,6 @@
 {
     [super viewDidLoad];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
         ud = [[UserDetails alloc] init];
     }
@@ -43,6 +38,8 @@
         
         ud = [[UserDetails alloc] initWithHandle:userHandle];
     }
+    
+    chatQueue = [[NSMutableArray alloc] init];
     
     userInputTextField.returnKeyType = UIReturnKeySend;
     [self registerForKeyboardNotifications];
@@ -77,6 +74,15 @@
 - (void)swipedCell:(id)sender
 {
     NSLog(@"swiped cell");
+}
+
+- (void)receivedMessage:(MessageMessage*) message
+{
+    [chatQueue addObject:message];
+    
+    if ([chatQueue count] > MESSAGE_NUM_THRESH) {
+        [chatQueue removeObjectAtIndex:0];
+    }
 }
 
 
@@ -123,8 +129,12 @@
         sm.userId = ud.userId;
         sm.chatroomId = ud.chatroomId;
         sm.message = text;
+        
+        NSLog(@"%lli, %lli, %@",sm.userId,sm.chatroomId,sm.message);
+        
         [connection sendMessage:sm];
     }
+    [textField setText:@""];
     [textField resignFirstResponder];
     return YES;
 }
@@ -142,16 +152,50 @@
     cm.UUID = ud.UUID;
     [self sendMessage:cm];
     
+//    RegisterMessage* rm = [[RegisterMessage alloc] init];
+//    rm.handle = @"sean";
+//    rm.userName = ud.UUID;
+//    rm.password = @"pass";
+//    [self sendMessage:rm];
+//    
+//    LoginMessage* lm = [[LoginMessage alloc] init];
+//    lm.userName = ud.UUID;
+//    lm.password = @"pass";
+//    [self sendMessage:lm];
+//    
+//    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
+//    jcm.userId = ud.userId;
+//    jcm.chatroomId = ud.chatroomId;
+//    jcm.latitude = 0;
+//    jcm.longitude = 0;
+//    [self sendMessage:jcm];
+}
+
+- (void)registerMessage
+{
     RegisterMessage* rm = [[RegisterMessage alloc] init];
     rm.handle = @"sean";
     rm.userName = ud.UUID;
     rm.password = @"pass";
     [self sendMessage:rm];
-    
+}
+
+- (void)loginMessage
+{
     LoginMessage* lm = [[LoginMessage alloc] init];
     lm.userName = ud.UUID;
     lm.password = @"pass";
     [self sendMessage:lm];
+}
+
+- (void)joinGlobalChatroom
+{
+    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
+    jcm.userId = ud.userId;
+    jcm.chatroomId = ud.chatroomId;
+    jcm.latitude = 0;
+    jcm.longitude = 0;
+    [self sendMessage:jcm];
 }
 
 - (void)sendMessage:(MessageBase*)message
@@ -161,11 +205,13 @@
 
 - (void)messageCallback:(MessageBase*)message
 {
+    NSIndexPath* ipath;
     switch (message.type) {
             
         case RegisterAccept:
             NSLog(@"Register Accept");
             ud.userId = ((RegisterAcceptMessage*)message).userId;
+            [self loginMessage];
             break;
             
         case RegisterReject:
@@ -176,6 +222,7 @@
         case ConnectAccept:
             NSLog(@"Connect Accept");
             ud.chatroomId = ((ConnectAcceptMessage*)message).globalChatId;
+            [self registerMessage];
             break;
             
         case ConnectReject:
@@ -184,6 +231,7 @@
             
         case LoginAccept:
             NSLog(@"Login Accept");
+            [self joinGlobalChatroom];
             break;
             
         case LoginReject:
@@ -192,6 +240,10 @@
             
         case Message:
             NSLog(@"Message");
+            [self receivedMessage:(MessageMessage*)message];
+            [mTableView reloadData];
+            ipath = [NSIndexPath indexPathForRow:[chatQueue count]-1 inSection:0];
+            [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             break;
             
         case Chatroom:
@@ -222,16 +274,16 @@
 
 #pragma mark - UITableViewDataSource methods
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
+//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+//{
+//    return 1;
+//}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    // There will only ever be one section for a table.
+    // TODO: alter this behavior for multiple chatrooms
+    return [chatQueue count];
 }
 
 // This function is for recovering cells, or initializing a new one.
@@ -241,12 +293,14 @@
     static NSString *CellIdentifier = @"Cell";
     const int WEBVIEW_TAG = 1;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    
     UIWebView* webview;
     
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.userInteractionEnabled = YES;
+        
         
         // Add voting gestures to the cell
         UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
@@ -263,13 +317,19 @@
         webview.tag = WEBVIEW_TAG;
         // does this fill the content view?
         webview.frame = cell.contentView.bounds;
+        webview.scrollView.scrollEnabled = NO;
         [cell.contentView addSubview:webview];
     }
     else {
         webview = (UIWebView*)[cell.contentView viewWithTag:WEBVIEW_TAG];
     }
     
-    NSDictionary *aDict = [mTableView cellForRowAtIndexPath:indexPath.row];
+    MessageMessage* msg = [chatQueue objectAtIndex:indexPath.row];
+    if (msg != nil) {
+        // TODO: image view
+        NSString* html = msg.message;
+        [webview loadHTMLString:html baseURL:nil];
+    }
     
     return cell;
 }

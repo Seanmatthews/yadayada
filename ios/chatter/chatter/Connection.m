@@ -119,7 +119,7 @@
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
-    //NSLog(@"stream event %i",eventCode);
+    NSLog(@"stream event %i",eventCode);
     
     switch (eventCode) {
         case NSStreamEventOpenCompleted:
@@ -148,12 +148,14 @@
             break;
             
         case NSStreamEventEndEncountered:
+            NSLog(@"Event End Encountered");
             break;
             
         case NSStreamEventHasSpaceAvailable:
             break;
             
         case NSStreamEventNone:
+            NSLog(@"Event None");
             break;
             
         default:

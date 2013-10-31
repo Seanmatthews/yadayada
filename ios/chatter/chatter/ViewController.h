@@ -12,12 +12,16 @@
 #import "Connection.h"
 #import "UITableViewCell+UITableViewCellCategory.h"
 #import "UITableView+UITableViewCategory.h"
+#import "Messages.h"
 
 @interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
 {
     UserDetails* ud;
     Connection* connection;
     NSThread* connectionThread;
+    
+    // TODO: this will be an array of arrays of dicts for multiple chat rooms
+    NSMutableArray* chatQueue;
 }
 
 @property (nonatomic, strong) NSString* userHandle;
@@ -33,6 +37,7 @@
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
 - (void)tappedCell:(id)sender;
 - (void)swipedCell:(id)sender;
+- (void)receivedMessage:(MessageMessage*) message;
 
 
 @end
