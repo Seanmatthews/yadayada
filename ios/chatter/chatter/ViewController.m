@@ -20,10 +20,18 @@
 @synthesize userHandle;
 @synthesize userInputTextField;
 @synthesize scrollView;
+@synthesize mTableView;
+
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // Uncomment the following line to preserve selection between presentations.
+    // self.clearsSelectionOnViewWillAppear = NO;
+    
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
         ud = [[UserDetails alloc] init];
@@ -48,7 +56,7 @@
 
     // We need this because the run loops of connection don't work until
     // the view is completely loaded.
-    [self performSelector:@selector(connectAndRegister) withObject:nil afterDelay:1.0];
+    [self performSelector:@selector(connectRegisterLogin) withObject:nil afterDelay:1.0];
     
     NSLog(@"handle: %@",userHandle);
 }
@@ -59,28 +67,16 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - Other UI behaviors
 
-
-- (void)connectAndRegister
+- (void)tappedCell:(id)sender
 {
-    NSLog(@"Going to try to connect now");
+    NSLog(@"double tapped cell");
+}
 
-    ConnectMessage* cm = [[ConnectMessage alloc] init];
-    // TODO: get api version programatically
-    cm.APIVersion = 1;
-    cm.UUID = ud.UUID;
-    [self sendMessage:cm];
-    
-    RegisterMessage* rm = [[RegisterMessage alloc] init];
-    rm.handle = @"sean";
-    rm.userName = ud.UUID;
-    rm.password = @"pass";
-    [self sendMessage:rm];
-    
-    LoginMessage* lm = [[LoginMessage alloc] init];
-    lm.userName = ud.UUID;
-    lm.password = @"pass";
-    [self sendMessage:lm];
+- (void)swipedCell:(id)sender
+{
+    NSLog(@"swiped cell");
 }
 
 
@@ -89,7 +85,6 @@
 - (void)registerForKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
 }
 
@@ -136,6 +131,28 @@
 
 
 #pragma mark - incoming and outgoing messages
+
+- (void)connectRegisterLogin
+{
+    NSLog(@"Going to try to connect now");
+    
+    ConnectMessage* cm = [[ConnectMessage alloc] init];
+    // TODO: get api version programatically
+    cm.APIVersion = 1;
+    cm.UUID = ud.UUID;
+    [self sendMessage:cm];
+    
+    RegisterMessage* rm = [[RegisterMessage alloc] init];
+    rm.handle = @"sean";
+    rm.userName = ud.UUID;
+    rm.password = @"pass";
+    [self sendMessage:rm];
+    
+    LoginMessage* lm = [[LoginMessage alloc] init];
+    lm.userName = ud.UUID;
+    lm.password = @"pass";
+    [self sendMessage:lm];
+}
 
 - (void)sendMessage:(MessageBase*)message
 {
@@ -194,5 +211,118 @@
             break;
     }
 }
+
+#pragma mark - UITableViewDelegate methods
+
+//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    return 0.0;
+//}
+
+
+#pragma mark - UITableViewDataSource methods
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+#warning Incomplete method implementation.
+    // Return the number of rows in the section.
+    return 0;
+}
+
+// This function is for recovering cells, or initializing a new one.
+// It is not for filling in cell data.
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"Cell";
+    const int WEBVIEW_TAG = 1;
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UIWebView* webview;
+    
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.userInteractionEnabled = YES;
+        
+        // Add voting gestures to the cell
+        UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
+        tapped.numberOfTapsRequired = 2;
+        [cell addGestureRecognizer:tapped];
+        UISwipeGestureRecognizer* swiped = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCell:)];
+        swiped.direction = UISwipeGestureRecognizerDirectionLeft | UISwipeGestureRecognizerDirectionRight;
+        [cell addGestureRecognizer:swiped];
+        
+        // TODO: where to get icon size from? ConnectAccept message?
+        cell.imageView.frame = CGRectMake(0, 0, 53, 53);
+        
+        webview = [[UIWebView alloc] init];
+        webview.tag = WEBVIEW_TAG;
+        // does this fill the content view?
+        webview.frame = cell.contentView.bounds;
+        [cell.contentView addSubview:webview];
+    }
+    else {
+        webview = (UIWebView*)[cell.contentView viewWithTag:WEBVIEW_TAG];
+    }
+    
+    NSDictionary *aDict = [mTableView cellForRowAtIndexPath:indexPath.row];
+    
+    return cell;
+}
+
+/*
+ // Override to support conditional editing of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the specified item to be editable.
+ return YES;
+ }
+ */
+
+/*
+ // Override to support editing the table view.
+ - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ if (editingStyle == UITableViewCellEditingStyleDelete) {
+ // Delete the row from the data source
+ [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+ }
+ else if (editingStyle == UITableViewCellEditingStyleInsert) {
+ // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+ }
+ }
+ */
+
+/*
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+ {
+ }
+ */
+
+/*
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
+
+/*
+ #pragma mark - Navigation
+ 
+ // In a story board-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+ {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ 
+ */
 
 @end

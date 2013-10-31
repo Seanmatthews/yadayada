@@ -13,7 +13,7 @@
 #import "UITableViewCell+UITableViewCellCategory.h"
 #import "UITableView+UITableViewCategory.h"
 
-@interface ViewController : UIViewController <UITextFieldDelegate>
+@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
 {
     UserDetails* ud;
     Connection* connection;
@@ -23,13 +23,16 @@
 @property (nonatomic, strong) NSString* userHandle;
 @property (nonatomic, retain) IBOutlet UITextField* userInputTextField;
 @property (nonatomic, retain) IBOutlet UIScrollView* scrollView;
-@property (nonatomic, retain) IBOutlet UITableView* tableView;
+@property (nonatomic, retain) IBOutlet UITableView* mTableView;
+
 
 - (void)messageCallback:(MessageBase*)message;
-- (void)connectAndRegister;
+- (void)connectRegisterLogin;
 - (void)registerForKeyboardNotifications;
 - (void)keyboardWasShown:(NSNotification*)aNotification;
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
+- (void)tappedCell:(id)sender;
+- (void)swipedCell:(id)sender;
 
 
 @end

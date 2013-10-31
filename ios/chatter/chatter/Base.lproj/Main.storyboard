@@ -34,6 +34,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="mTableView" destination="2El-qa-WPF" id="eM0-aL-bdz"/>
                         <outlet property="scrollView" destination="kh9-bI-dsS" id="Tak-L4-4EM"/>
                         <outlet property="userInputTextField" destination="wsW-qI-KgY" id="1i6-vE-MLs"/>
                     </connections>

@@ -16,6 +16,7 @@
 @property (readwrite, nonatomic) NSString* handle;
 @property NSString* UUID;
 @property long long userId;
+@property NSString* userIconName;
 
 // TODO: The type of this property will change ot accommodate
 // being joined to several chats at once.
