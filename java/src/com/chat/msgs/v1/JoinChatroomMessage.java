@@ -13,6 +13,13 @@ public class JoinChatroomMessage implements Message {
     private final long latitude;
     private final long longitude;
 
+    public JoinChatroomMessage(BinaryStream stream) throws IOException {
+        this.userId = stream.readLong();
+        this.chatroomId = stream.readLong();
+        this.latitude = stream.readLong();
+        this.longitude = stream.readLong();
+    }
+
     public JoinChatroomMessage(long userId, long chatroomId, long latitude, long longitude) {
         this.userId = userId;
         this.chatroomId = chatroomId;

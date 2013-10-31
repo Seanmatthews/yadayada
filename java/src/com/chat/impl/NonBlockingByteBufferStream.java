@@ -27,6 +27,8 @@ public class NonBlockingByteBufferStream implements BinaryStream {
 
     private ByteBuffer input;
     private int writeStartPosition;
+    private int APIVersion;
+    private String UUID;
 
     public NonBlockingByteBufferStream(ClientSocket socket) throws IOException {
         this.socket = socket;
@@ -58,9 +60,9 @@ public class NonBlockingByteBufferStream implements BinaryStream {
         rawInput.flip();
 
         while ((input = parse()) != null) {
-            int position = rawInput.position() + input.remaining() + 2;
+            int nextMessage = rawInput.position() + input.remaining() + 2;
             listener.onParsed(input);
-            rawInput.position( position );
+            rawInput.position( nextMessage );
         }
 
         if (rawInput.hasRemaining()) {
@@ -250,12 +252,30 @@ public class NonBlockingByteBufferStream implements BinaryStream {
         byte[] bytes = value.getBytes("UTF-8");
 
         checkWriteBounds(2 + bytes.length);
-        output.putShort((short)bytes.length);
+        output.putShort((short) bytes.length);
         output.put(bytes);
     }
 
     @Override
     public String toString() {
         return socket.toString();
+    }
+
+    public void setAPIVersion(int APIVersion) {
+        this.APIVersion = APIVersion;
+    }
+
+    @Override
+    public int getAPIVersion() {
+        return APIVersion;
+    }
+
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
+    }
+
+    @Override
+    public String getUUID() {
+        return UUID;
     }
 }

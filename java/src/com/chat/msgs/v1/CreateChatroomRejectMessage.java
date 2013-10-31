@@ -11,6 +11,11 @@ public class CreateChatroomRejectMessage implements Message {
     private final String chatroomName;
     private final String reason;
 
+    public CreateChatroomRejectMessage(BinaryStream stream) throws IOException {
+        this.chatroomName = stream.readString();
+        this.reason = stream.readString();
+    }
+
     public CreateChatroomRejectMessage(String chatroomName, String reason) {
         this.chatroomName = chatroomName;
         this.reason = reason;

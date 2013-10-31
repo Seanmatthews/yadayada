@@ -7,7 +7,6 @@ import com.chat.User;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,17 +15,16 @@ import java.util.concurrent.atomic.AtomicLong;
  * Time: 8:47 AM
  * To change this template use File | Settings | File Templates.
  */
-public class InMemoryChatroomRepository implements ChatroomRepository {
+public class SingleThreadChatroomRepository implements ChatroomRepository {
     // We have lots of threads accessing this repository
     // We need to keep nextChatroomId and the map in sync
-    private final AtomicLong nextChatroomId = new AtomicLong(1);
-    private final Map<Long, Chatroom> chatroomIdMap = new ConcurrentHashMap<>();
-
-    private final Map<Chatroom, Set<User>> chatroomUserMap = new ConcurrentHashMap<>();
+    private long nextChatroomId = 1;
+    private final Map<Long, Chatroom> chatroomIdMap = new HashMap<>();
+    private final Map<Chatroom, Set<User>> chatroomUserMap = new HashMap<>();
 
     @Override
     public Chatroom createChatroom(User owner, String name) {
-        Chatroom chatroom = new Chatroom(nextChatroomId.getAndIncrement(), name, owner, this);
+        Chatroom chatroom = new Chatroom(nextChatroomId++, name, owner, this);
         addChatroom(chatroom);
         return chatroom;
     }
@@ -44,7 +42,7 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
     @Override
     public void addChatroom(Chatroom chatroom) {
         chatroomIdMap.put(chatroom.getId(), chatroom);
-        chatroomUserMap.put(chatroom, Collections.newSetFromMap(new ConcurrentHashMap<User, Boolean>()));
+        chatroomUserMap.put(chatroom, new HashSet<User>());
     }
 
     @Override
@@ -68,7 +66,7 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
     }
 
     @Override
-    public boolean containsUser(Chatroom chatroom, User sender) {
-        return chatroomUserMap.get(chatroom).contains(sender);
+    public boolean containsUser(Chatroom chatroom, User user) {
+        return chatroomUserMap.get(chatroom).contains(user);
     }
 }

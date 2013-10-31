@@ -13,6 +13,13 @@ public class ConnectAcceptMessage implements Message {
     private final String imageUploadUrl;
     private final String imageDownloadUrl;
 
+    public ConnectAcceptMessage(BinaryStream stream) throws IOException {
+        this.APIVersion = stream.readInt();
+        this.globalChatId = stream.readLong();
+        this.imageUploadUrl = stream.readString();
+        this.imageDownloadUrl = stream.readString();
+    }
+
     public ConnectAcceptMessage(int APIVersion, long globalChatId, String imageUploadUrl, String imageDownloadUrl) {
         this.APIVersion = APIVersion;
         this.globalChatId = globalChatId;

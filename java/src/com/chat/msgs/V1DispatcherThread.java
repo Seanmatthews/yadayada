@@ -1,8 +1,8 @@
 package com.chat.msgs;
 
+import com.chat.BinaryStream;
 import com.chat.ChatroomRepository;
 import com.chat.UserRepository;
-import com.chat.msgs.v1.ClientConnection;
 import com.chat.server.ChatServer;
 
 import java.io.EOFException;
@@ -17,16 +17,15 @@ import java.util.concurrent.ExecutionException;
  * To change this template use File | Settings | File Templates.
  */
 public class V1DispatcherThread extends V1Dispatcher implements Runnable {
-    private final ClientConnection connection;
+    private final BinaryStream connection;
 
-    public V1DispatcherThread(ChatServer server, UserRepository userRepo, ChatroomRepository chatroomRepo, ClientConnection connection) {
+    public V1DispatcherThread(ChatServer server, UserRepository userRepo, ChatroomRepository chatroomRepo, BinaryStream connection) {
         super(server, userRepo, chatroomRepo) ;
 
         this.connection = connection;
 
         server.addConnection(connection);
     }
-
 
     @Override
     public void run() {

@@ -1,7 +1,6 @@
 package com.chat.msgs;
 
-import com.chat.msgs.v1.ClientConnection;
-import com.chat.server.ChatServer;
+import com.chat.BinaryStream;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -15,5 +14,5 @@ import java.util.concurrent.ExecutionException;
  */
 public interface MessageDispatcher {
     void run();
-    void runOnce(ClientConnection connection) throws IOException, ValidationError, ExecutionException, InterruptedException;
+    void runOnce(BinaryStream connection) throws IOException, ValidationError, ExecutionException, InterruptedException;
 }

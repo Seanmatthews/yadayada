@@ -1,8 +1,8 @@
 package com.chat.server;
 
+import com.chat.BinaryStream;
 import com.chat.Chatroom;
 import com.chat.User;
-import com.chat.msgs.v1.ClientConnection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,16 +12,16 @@ import com.chat.msgs.v1.ClientConnection;
  * To change this template use File | Settings | File Templates.
  */
 public interface ChatServer {
-    void addConnection(ClientConnection sender);
-    void removeConnection(ClientConnection sender);
+    void addConnection(BinaryStream sender);
+    void removeConnection(BinaryStream sender);
 
-    void registerUser(ClientConnection sender, String login, String password, String handle);
-    void login(ClientConnection sender, String login, String password);
+    void registerUser(BinaryStream sender, String login, String password, String handle);
+    void login(BinaryStream sender, String login, String password);
 
-    void createChatroom(ClientConnection sender, User user, String name);
-    void newMessage(ClientConnection sender, User senderUser, Chatroom chatroom, String message);
+    void createChatroom(BinaryStream sender, User user, String name);
+    void newMessage(BinaryStream sender, User senderUser, Chatroom chatroom, String message);
 
-    void searchChatrooms(ClientConnection sender);
-    void joinChatroom(ClientConnection sender, User user, Chatroom chatroom);
-    void leaveChatroom(ClientConnection sender, User user, Chatroom chatroom);
+    void searchChatrooms(BinaryStream sender);
+    void joinChatroom(BinaryStream sender, User user, Chatroom chatroom);
+    void leaveChatroom(BinaryStream sender, User user, Chatroom chatroom);
 }

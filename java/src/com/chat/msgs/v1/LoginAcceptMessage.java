@@ -10,6 +10,10 @@ import static com.chat.msgs.Utilities.getStrLen;
 public class LoginAcceptMessage implements Message {
     private final long userId;
 
+    public LoginAcceptMessage(BinaryStream stream) throws IOException {
+        this.userId = stream.readLong();
+    }
+
     public LoginAcceptMessage(long userId) {
         this.userId = userId;
     }

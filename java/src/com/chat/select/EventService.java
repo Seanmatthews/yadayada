@@ -1,6 +1,7 @@
 package com.chat.select;
 
 import java.io.IOException;
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -16,11 +17,9 @@ public interface EventService {
     ServerSocket createServerSocket(SocketListener listener, int port) throws IOException;
     void run();
 
-    SelectionKey register(ServerSocket socket, ServerSocketChannel channel) throws IOException;
-    SelectionKey register(ClientSocket socket, SocketChannel clientChannel) throws IOException;
-
-    void enableAccept(SelectionKey key, boolean val);
-    void enableWrite(SelectionKey key, boolean val);
-    void enableRead(SelectionKey key, boolean val);
-    void free(SelectionKey key);
+    void register(SelectableChannel channel, Object socket) throws IOException;
+    void enableAccept(SelectableChannel channel, boolean val);
+    void enableWrite(SelectableChannel channel, boolean val);
+    void enableRead(SelectableChannel channel, boolean val);
+    void free(SelectableChannel channel);
 }

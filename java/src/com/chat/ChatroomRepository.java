@@ -16,4 +16,9 @@ public interface ChatroomRepository {
     Chatroom get(long chatroomId);
     void addChatroom(Chatroom chatroom);
     Iterator<Chatroom> iterator();
+
+    Iterator<User> getUsers(Chatroom chatroom);
+    void addUser(Chatroom chatroom, User user);
+    void removeUser(Chatroom chatroom, User user);
+    boolean containsUser(Chatroom chatroom, User sender);
 }

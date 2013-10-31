@@ -32,6 +32,9 @@ public class DataStream implements BinaryStream {
         this.dout = new DataOutputStream(socket.getOutputStream());
     }
 
+    private int APIVersion;
+    private String UUID;
+
     @Override
     public void close() {
         try {
@@ -190,5 +193,23 @@ public class DataStream implements BinaryStream {
     @Override
     public String toString() {
         return socket.toString();
+    }
+
+    public void setAPIVersion(int APIVersion) {
+        this.APIVersion = APIVersion;
+    }
+
+    @Override
+    public int getAPIVersion() {
+        return APIVersion;
+    }
+
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
+    }
+
+    @Override
+    public String getUUID() {
+        return UUID;
     }
 }

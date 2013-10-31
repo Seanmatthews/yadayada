@@ -11,6 +11,11 @@ public class LeaveChatroomMessage implements Message {
     private final long userId;
     private final long chatroomId;
 
+    public LeaveChatroomMessage(BinaryStream stream) throws IOException {
+        this.userId = stream.readLong();
+        this.chatroomId = stream.readLong();
+    }
+
     public LeaveChatroomMessage(long userId, long chatroomId) {
         this.userId = userId;
         this.chatroomId = chatroomId;

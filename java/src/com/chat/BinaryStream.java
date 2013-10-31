@@ -12,6 +12,8 @@ import java.io.*;
  * To change this template use File | Settings | File Templates.
  */
 public interface BinaryStream {
+    String getUUID();
+    int getAPIVersion();
     void close();
     void queueMessage(Message message) throws IOException;
 

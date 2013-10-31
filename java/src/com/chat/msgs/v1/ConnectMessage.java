@@ -11,6 +11,11 @@ public class ConnectMessage implements Message {
     private final int APIVersion;
     private final String UUID;
 
+    public ConnectMessage(BinaryStream stream) throws IOException {
+        this.APIVersion = stream.readInt();
+        this.UUID = stream.readString();
+    }
+
     public ConnectMessage(int APIVersion, String UUID) {
         this.APIVersion = APIVersion;
         this.UUID = UUID;

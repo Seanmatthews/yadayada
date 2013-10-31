@@ -11,6 +11,11 @@ public class LoginMessage implements Message {
     private final String userName;
     private final String password;
 
+    public LoginMessage(BinaryStream stream) throws IOException {
+        this.userName = stream.readString();
+        this.password = stream.readString();
+    }
+
     public LoginMessage(String userName, String password) {
         this.userName = userName;
         this.password = password;

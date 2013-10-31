@@ -11,6 +11,11 @@ public class JoinChatroomRejectMessage implements Message {
     private final long chatroomId;
     private final String reason;
 
+    public JoinChatroomRejectMessage(BinaryStream stream) throws IOException {
+        this.chatroomId = stream.readLong();
+        this.reason = stream.readString();
+    }
+
     public JoinChatroomRejectMessage(long chatroomId, String reason) {
         this.chatroomId = chatroomId;
         this.reason = reason;

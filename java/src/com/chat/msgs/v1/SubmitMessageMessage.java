@@ -12,6 +12,12 @@ public class SubmitMessageMessage implements Message {
     private final long chatroomId;
     private final String message;
 
+    public SubmitMessageMessage(BinaryStream stream) throws IOException {
+        this.userId = stream.readLong();
+        this.chatroomId = stream.readLong();
+        this.message = stream.readString();
+    }
+
     public SubmitMessageMessage(long userId, long chatroomId, String message) {
         this.userId = userId;
         this.chatroomId = chatroomId;

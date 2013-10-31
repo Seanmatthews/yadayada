@@ -17,7 +17,6 @@ import java.nio.channels.SocketChannel;
  * To change this template use File | Settings | File Templates.
  */
 public class ClientSocketImpl implements ClientSocket {
-    private final SelectionKey key;
     private final SocketListener listener;
     private final SocketChannel channel;
     private final EventService eventService;
@@ -26,18 +25,18 @@ public class ClientSocketImpl implements ClientSocket {
         this.eventService = eventService;
         this.channel = clientChannel;
         this.listener = listener;
-        this.key = eventService.register(this, clientChannel);
-        eventService.enableRead(key, true);
+        eventService.register(clientChannel, this);
+        eventService.enableRead(channel, true);
     }
 
     @Override
     public void enableRead(boolean val) {
-        eventService.enableRead(key, val);
+        eventService.enableRead(channel, val);
     }
 
     @Override
     public void enableWrite(boolean val) {
-        eventService.enableWrite(key, val);
+        eventService.enableWrite(channel, val);
     }
 
     @Override
@@ -62,7 +61,11 @@ public class ClientSocketImpl implements ClientSocket {
 
     @Override
     public void close() throws IOException {
+        eventService.free(channel);
         channel.close();
-        eventService.free(key);
+    }
+
+    public String toString() {
+        return channel.toString();
     }
 }

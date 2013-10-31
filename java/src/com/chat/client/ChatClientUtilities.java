@@ -1,5 +1,6 @@
 package com.chat.client;
 
+import com.chat.BinaryStream;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 
@@ -14,30 +15,37 @@ import java.util.Random;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatClientUtilities {
-    public static long initialConnect(ServerConnection connection, String user, String password) throws IOException, ValidationError {
-        connection.sendConnect(new ConnectMessage(connection.getAPIVersion(), connection.getUUID()));
-        connection.recvMsgType();
-        connection.recvConnectAccept();
+    public static long initialConnect(BinaryStream connection, String user, String password) throws IOException, ValidationError {
+        connection.queueMessage(new ConnectMessage(connection.getAPIVersion(), connection.getUUID()));
 
-        connection.sendRegister(new RegisterMessage(user, password, user));
+        connection.startReading();
+        MessageTypes types = MessageTypes.lookup(connection.readByte());
+        new ConnectAcceptMessage(connection);
+        connection.finishReading();
 
-        MessageTypes types = connection.recvMsgType();
+        connection.queueMessage(new RegisterMessage(user, password, user));
+
+        connection.startReading();
+        types = MessageTypes.lookup(connection.readByte());
         if (types == MessageTypes.RegisterAccept)
-            connection.recvRegisterAccept();
+            new RegisterAcceptMessage(connection);
         else
-            connection.recvRegisterAccept();
+            new RegisterRejectMessage(connection);
+        connection.finishReading();
 
-        connection.sendLogin(new LoginMessage(user, password));
+        connection.queueMessage(new LoginMessage(user, password));
 
         long userId = 0;
 
-        types = connection.recvMsgType();
+        connection.startReading();
+        types = MessageTypes.lookup(connection.readByte());
         if (types == MessageTypes.LoginAccept)
-            userId = connection.recvRegisterAccept().getUserId();
+            userId = new LoginAcceptMessage(connection).getUserId();
         else
-            connection.recvRegisterAccept();
+            new LoginRejectMessage(connection);
+        connection.finishReading();
 
-        connection.sendSearchChatrooms(new SearchChatroomsMessage(0, 0));
+        connection.queueMessage(new SearchChatroomsMessage(0, 0));
 
         return userId;
     }

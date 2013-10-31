@@ -20,45 +20,46 @@ public class ChatClientDispatcher implements Runnable {
     private final ChatClient client;
     private final ChatroomRepository chatroomRepo;
     private final InMemoryUserRepository userRepo;
-    private final ServerConnection connection;
+    private final BinaryStream connection;
 
     public ChatClientDispatcher(ChatClient client, BinaryStream stream, ChatroomRepository chatroomRepo, InMemoryUserRepository userRepo) {
         this.client = client;
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
-        this.connection = new ServerConnectionImpl(stream, "UUID", 1);
+        this.connection = stream;
     }
 
     @Override
     public void run() {
         try {
             while (true) {
-                MessageTypes msgType = connection.recvMsgType();
+                connection.startReading();
+                MessageTypes msgType = MessageTypes.lookup(connection.readByte());
 
                 switch(msgType) {
                     case JoinedChatroom:
-                        JoinedChatroomMessage jcMsg = connection.recvJoinedChatroom();
+                        JoinedChatroomMessage jcMsg = new JoinedChatroomMessage(connection);
                         User jcUser = getOrCreateUser(jcMsg.getUserId(), jcMsg.getUserHandle());
                         Chatroom jcChatroom = chatroomRepo.get(jcMsg.getChatroomId());
                         client.onJoinedChatroom(jcChatroom, jcUser);
                         break;
 
                     case LeftChatroom:
-                        LeftChatroomMessage lcMsg = connection.recvLeftChatroom();
+                        LeftChatroomMessage lcMsg = new LeftChatroomMessage(connection);
                         User lcUser = userRepo.get(lcMsg.getUserId(), null).get().getUser();
                         Chatroom lcChatroom = chatroomRepo.get(lcMsg.getChatroomId());
                         client.onLeftChatroom(lcChatroom, lcUser);
                         break;
 
                     case Chatroom:
-                        ChatroomMessage cMsg = connection.recvChatroom();
+                        ChatroomMessage cMsg = new ChatroomMessage(connection);
                         User owner = getOrCreateUser(cMsg.getChatroomOwnerId(), cMsg.getChatroomOwnerHandle());
                         Chatroom chatroom = getOrCreateChatroom(cMsg.getChatroomId(), cMsg.getChatroomName(), owner);
                         client.onChatroom(chatroom);
                         break;
 
                     case Message:
-                        MessageMessage msg = connection.recvMessage();
+                        MessageMessage msg = new MessageMessage(connection);
                         User sender = getOrCreateUser(msg.getSenderId(), msg.getSenderHandle());
                         Chatroom chat = chatroomRepo.get(msg.getChatroomId());
                         ChatMessage theMsg = new ChatMessage(msg.getMessageId(), chat, sender, msg.getMessage(), msg.getMessageTimestamp());
@@ -68,6 +69,8 @@ public class ChatClientDispatcher implements Runnable {
                     default:
                         throw new ValidationError("Ignoring unhandled message: " + msgType);
                 }
+
+                connection.finishReading();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,7 +90,7 @@ public class ChatClientDispatcher implements Runnable {
         synchronized (chatroomRepo) {
             chatroom = chatroomRepo.get(chatroomId);
             if (chatroom == null) {
-                chatroom = new Chatroom(chatroomId, chatroomName, owner);
+                chatroom = new Chatroom(chatroomId, chatroomName, owner, chatroomRepo);
                 chatroomRepo.addChatroom(chatroom);
             }
         }
@@ -99,7 +102,7 @@ public class ChatClientDispatcher implements Runnable {
         synchronized (userRepo) {
             owner = userRepo.get(userId, null).get().getUser();
             if (owner == null) {
-                owner = new User(userId, userName, "", userName);
+                owner = new User(userId, userName, "", userName, userRepo);
                 userRepo.addUser(owner);
             }
         }

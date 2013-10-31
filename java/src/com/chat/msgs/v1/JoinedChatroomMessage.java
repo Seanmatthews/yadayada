@@ -12,6 +12,12 @@ public class JoinedChatroomMessage implements Message {
     private final long userId;
     private final String userHandle;
 
+    public JoinedChatroomMessage(BinaryStream stream) throws IOException {
+        this.chatroomId = stream.readLong();
+        this.userId = stream.readLong();
+        this.userHandle = stream.readString();
+    }
+
     public JoinedChatroomMessage(long chatroomId, long userId, String userHandle) {
         this.chatroomId = chatroomId;
         this.userId = userId;

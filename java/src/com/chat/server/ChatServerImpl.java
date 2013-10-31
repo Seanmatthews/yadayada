@@ -23,9 +23,9 @@ public class ChatServerImpl implements ChatServer {
     private final UserRepository userRepo;
     private final MessageRepository messageRepo;
 
-    private final Map<String, ClientConnection> uuidConnectionMap = new ConcurrentHashMap<>();
-    private final Map<User, ClientConnection> userConnectionMap = new ConcurrentHashMap<>();
-    private final Map<ClientConnection, User> connectionUserMap = new ConcurrentHashMap<>();
+    private final Map<String, BinaryStream> uuidConnectionMap = new ConcurrentHashMap<>();
+    private final Map<User, BinaryStream> userConnectionMap = new ConcurrentHashMap<>();
+    private final Map<BinaryStream, User> connectionUserMap = new ConcurrentHashMap<>();
 
     public ChatServerImpl(UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) {
         this.chatroomRepo = chatroomRepo;
@@ -34,8 +34,8 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void addConnection(ClientConnection senderConnection) {
-        ClientConnection connection = uuidConnectionMap.remove(senderConnection.getUUID());
+    public void addConnection(BinaryStream senderConnection) {
+        BinaryStream connection = uuidConnectionMap.remove(senderConnection.getUUID());
         if (connection != null) {
             System.out.println("Removing an old connection that was not cleaned up");
             removeConnection(connection);
@@ -43,14 +43,14 @@ public class ChatServerImpl implements ChatServer {
 
         try {
             uuidConnectionMap.put(senderConnection.getUUID(), senderConnection);
-            senderConnection.sendConnectAccept(new ConnectAcceptMessage(senderConnection.getAPIVersion(), 1, "", ""));
+            senderConnection.queueMessage(new ConnectAcceptMessage(senderConnection.getAPIVersion(), 1, "", ""));
         } catch (IOException e) {
             removeConnection(senderConnection);
         }
     }
 
     @Override
-    public void removeConnection(ClientConnection sender) {
+    public void removeConnection(BinaryStream sender) {
         System.out.println("Removing connection to " + sender);
 
         User user = connectionUserMap.remove(sender);
@@ -72,22 +72,22 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void newMessage(ClientConnection senderConnection, User sender, Chatroom chatroom, String message) {
+    public void newMessage(BinaryStream senderConnection, User sender, Chatroom chatroom, String message) {
         System.out.println("New message from " + sender + " " + message);
 
         ChatMessage msg = messageRepo.create(chatroom, sender, message);
-        chatroom.addMessage(msg);
+        //chatroom.addMessage(msg);
 
         MessageMessage msgToSend = new MessageMessage(msg.getId(), msg.getTimestamp(), msg.getSender().getId(), msg.getChatroom().getId(), msg.getSender().getHandle(), msg.getMessage());
 
         Iterator<User> chatUsers = chatroom.getUsers();
         while (chatUsers.hasNext()) {
             User user = chatUsers.next();
-            ClientConnection connection = userConnectionMap.get(user);
+            BinaryStream connection = userConnectionMap.get(user);
 
             if (connection != null) {
                 try {
-                     connection.sendMessage(msgToSend);
+                     connection.queueMessage(msgToSend);
                 } catch (IOException e) {
                     removeConnection(connection);
                 }
@@ -96,7 +96,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void createChatroom(ClientConnection senderConnection, User sender, String name) {
+    public void createChatroom(BinaryStream senderConnection, User sender, String name) {
         System.out.println("Creating chatroom " + name + " by " + sender);
 
         Chatroom chatroom = chatroomRepo.createChatroom(sender, name);
@@ -108,12 +108,12 @@ public class ChatServerImpl implements ChatServer {
         }
     }
 
-    private void sendChatroom(ClientConnection senderConnection, Chatroom chatroom) throws IOException {
-        senderConnection.sendChatroom(new ChatroomMessage(chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(), 0, 0, 0));
+    private void sendChatroom(BinaryStream senderConnection, Chatroom chatroom) throws IOException {
+        senderConnection.queueMessage(new ChatroomMessage(chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(), 0, 0, 0));
     }
 
     @Override
-    public void registerUser(final ClientConnection senderConnection, final String login, String password, String handle) {
+    public void registerUser(final BinaryStream senderConnection, final String login, String password, String handle) {
         System.out.println("Registering user " + login);
 
         userRepo.registerUser(login, password, handle, senderConnection.getUUID(), new UserRepositoryCompletionHandler() {
@@ -122,15 +122,15 @@ public class ChatServerImpl implements ChatServer {
                 try {
                     switch (result.getCode()) {
                         case OK:
-                            senderConnection.sendRegisterAccept(new RegisterAcceptMessage(result.getUser().getId()));
+                            senderConnection.queueMessage(new RegisterAcceptMessage(result.getUser().getId()));
                             break;
                         case ConnectionError:
-                            senderConnection.sendRegisterReject(new RegisterRejectMessage("Connection error"));
+                            senderConnection.queueMessage(new RegisterRejectMessage("Connection error"));
                             break;
                         case UserAlreadyExists:
                         case InvalidUserNameOrPassword:
                         default:
-                            senderConnection.sendRegisterReject(new RegisterRejectMessage(result.getMessage()));
+                            senderConnection.queueMessage(new RegisterRejectMessage(result.getMessage()));
                             break;
                     }
                 } catch (IOException e) {
@@ -141,7 +141,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void login(final ClientConnection senderConnection, final String login, String password) {
+    public void login(final BinaryStream senderConnection, final String login, String password) {
         System.out.println("Logging in user " + login);
 
         userRepo.login(login, password, new UserRepositoryCompletionHandler() {
@@ -151,16 +151,16 @@ public class ChatServerImpl implements ChatServer {
                     switch (result.getCode()) {
                         case OK:
                             User user = result.getUser();
-                            senderConnection.sendLoginAccept(new LoginAcceptMessage(user.getId()));
+                            senderConnection.queueMessage(new LoginAcceptMessage(user.getId()));
                             userConnectionMap.put(user, senderConnection);
                             connectionUserMap.put(senderConnection, user);
                             break;
                         case ConnectionError:
-                            senderConnection.sendLoginReject(new LoginRejectMessage("Connection error"));
+                            senderConnection.queueMessage(new LoginRejectMessage("Connection error"));
                             break;
                         case InvalidUserNameOrPassword:
                         default:
-                            senderConnection.sendLoginReject(new LoginRejectMessage(result.getMessage()));
+                            senderConnection.queueMessage(new LoginRejectMessage(result.getMessage()));
                             break;
                     }
                 } catch (IOException e) {
@@ -171,7 +171,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void searchChatrooms(ClientConnection senderConnection) {
+    public void searchChatrooms(BinaryStream senderConnection) {
         System.out.println("Searching chatrooms " + senderConnection);
 
         Iterator<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria());
@@ -186,12 +186,12 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void joinChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom) {
+    public void joinChatroom(BinaryStream senderConnection, User sender, Chatroom chatroom) {
         System.out.println("Adding " + sender + " to " + chatroom);
 
         if (chatroom.containsUser(sender)) {
             try {
-                senderConnection.sendJoinChatroomReject(new JoinChatroomRejectMessage(chatroom.getId(), sender + " is already in " + chatroom));
+                senderConnection.queueMessage(new JoinChatroomRejectMessage(chatroom.getId(), sender + " is already in " + chatroom));
             } catch (IOException e) {
                 removeConnection(senderConnection);
             }
@@ -200,21 +200,21 @@ public class ChatServerImpl implements ChatServer {
 
         JoinedChatroomMessage meJoining = new JoinedChatroomMessage(chatroom.getId(), sender.getId(), sender.getHandle());
 
-        Iterator<User> users = chatroom.getUsers();
+        Iterator<User> users = chatroomRepo.getUsers(chatroom);// chatroom.getUsers();
         while(users.hasNext()) {
             // notify me about other user joining chat
             User chatMember = users.next();
             try {
-                senderConnection.sendJoinedChatroom(new JoinedChatroomMessage(chatroom.getId(), chatMember.getId(), chatMember.getHandle()));
+                senderConnection.queueMessage(new JoinedChatroomMessage(chatroom.getId(), chatMember.getId(), chatMember.getHandle()));
             } catch (IOException e) {
                 removeConnection(senderConnection);
             }
 
             // notify other user about me joining chat
-            ClientConnection chatMemberSender = userConnectionMap.get(chatMember);
+            BinaryStream chatMemberSender = userConnectionMap.get(chatMember);
             if (chatMemberSender != null) {
                 try {
-                    chatMemberSender.sendJoinedChatroom(meJoining);
+                    chatMemberSender.queueMessage(meJoining);
                 } catch (IOException e) {
                     removeConnection(chatMemberSender);
                 }
@@ -227,26 +227,26 @@ public class ChatServerImpl implements ChatServer {
 
         try {
             // Give me confirmation that I've joined the chat
-            senderConnection.sendJoinedChatroom(meJoining);
+            senderConnection.queueMessage(meJoining);
         } catch (IOException e) {
             removeConnection(senderConnection);
         }
 
         // send the new entrant the last N messages
-        Iterator<ChatMessage> recentMessages = chatroom.getRecentMessages();
+        /*Iterator<ChatMessage> recentMessages = chatroom.getRecentMessages();
         while(recentMessages.hasNext()) {
             try {
                 ChatMessage msg = recentMessages.next();
                 MessageMessage recentMessage = new MessageMessage(msg.getId(), msg.getTimestamp(), msg.getSender().getId(), msg.getChatroom().getId(), msg.getSender().getHandle(), msg.getMessage());
-                senderConnection.sendMessage(recentMessage);
+                senderConnection.queueMessage(recentMessage);
             } catch (IOException e) {
                 removeConnection(senderConnection);
             }
-        }
+        }*/
     }
 
     @Override
-    public void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom) {
+    public void leaveChatroom(BinaryStream senderConnection, User sender, Chatroom chatroom) {
         System.out.println("Removing " + sender + " from " + chatroom);
 
         LeftChatroomMessage meLeaving = new LeftChatroomMessage(chatroom.getId(), sender.getId());
@@ -257,10 +257,10 @@ public class ChatServerImpl implements ChatServer {
             User chatMember = users.next();
 
             // notify other user about me joining chat
-            ClientConnection chatMemberSender = userConnectionMap.get(chatMember);
+            BinaryStream chatMemberSender = userConnectionMap.get(chatMember);
             if (chatMemberSender != null) {
                 try {
-                    chatMemberSender.sendLeftChatroom(meLeaving);
+                    chatMemberSender.queueMessage(meLeaving);
                 } catch (IOException e) {
                     removeConnection(chatMemberSender);
                 }

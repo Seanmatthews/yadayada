@@ -15,6 +15,15 @@ public class MessageMessage implements Message {
     private final String senderHandle;
     private final String message;
 
+    public MessageMessage(BinaryStream stream) throws IOException {
+        this.messageId = stream.readLong();
+        this.messageTimestamp = stream.readLong();
+        this.senderId = stream.readLong();
+        this.chatroomId = stream.readLong();
+        this.senderHandle = stream.readString();
+        this.message = stream.readString();
+    }
+
     public MessageMessage(long messageId, long messageTimestamp, long senderId, long chatroomId, String senderHandle, String message) {
         this.messageId = messageId;
         this.messageTimestamp = messageTimestamp;

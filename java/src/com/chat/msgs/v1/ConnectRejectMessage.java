@@ -10,6 +10,10 @@ import static com.chat.msgs.Utilities.getStrLen;
 public class ConnectRejectMessage implements Message {
     private final String reason;
 
+    public ConnectRejectMessage(BinaryStream stream) throws IOException {
+        this.reason = stream.readString();
+    }
+
     public ConnectRejectMessage(String reason) {
         this.reason = reason;
     }

@@ -1,11 +1,12 @@
 package com.chat.impl;
 
+import com.chat.Chatroom;
 import com.chat.User;
 import com.chat.UserRepository;
 
 import java.io.InvalidObjectException;
 import java.sql.*;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
@@ -25,6 +26,7 @@ public class AwsRdsUserRepository implements UserRepository {
 
     // cache
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
+    private final Map<User, Set<Chatroom>> userChatroomMap = new HashMap<>();
 
     public AwsRdsUserRepository(Connection connection) throws ClassNotFoundException, SQLException {
         this.connect = connection;
@@ -82,7 +84,7 @@ public class AwsRdsUserRepository implements UserRepository {
 
                         if (generatedKeys.next()) {
                             long id = generatedKeys.getLong("GENERATED_KEY");
-                            User user = new User(id, login, password, handle);
+                            User user = new User(id, login, password, handle, AwsRdsUserRepository.this);
                             idToUserMap.put(id, user);
 
                             future.setResult(new UserRepositoryActionResult(user));
@@ -123,7 +125,8 @@ public class AwsRdsUserRepository implements UserRepository {
                     if (results.next()) {
                         long id = results.getLong("UserId");
                         String handle = results.getString("Handle");
-                        User user = new User(id, login, password, handle);
+                        User user = new User(id, login, password, handle, AwsRdsUserRepository.this);
+                        addUser(user);
 
                         future.setResult(new UserRepositoryActionResult(user));
                     }
@@ -140,6 +143,11 @@ public class AwsRdsUserRepository implements UserRepository {
         });
 
        return future;
+    }
+
+    private void addUser(User user) {
+        idToUserMap.put(user.getId(), user);
+        userChatroomMap.put(user, new HashSet<Chatroom>());
     }
 
     @Override
@@ -167,8 +175,8 @@ public class AwsRdsUserRepository implements UserRepository {
                     if (results.next()) {
                         String login = results.getString("Login");
                         String handle = results.getString("Handle");
-                        User user2 = new User(id, login, "<BLANK>", handle);
-                        idToUserMap.put(id, user2);
+                        User user2 = new User(id, login, "<BLANK>", handle, AwsRdsUserRepository.this);
+                        addUser(user2);
 
                         future.setResult(new UserRepositoryActionResult(user2));
                     }
@@ -185,6 +193,21 @@ public class AwsRdsUserRepository implements UserRepository {
         });
 
         return future;
+    }
+
+    @Override
+    public void addToChatroom(User user, Chatroom chatroom) {
+        userChatroomMap.get(user).add(chatroom);
+    }
+
+    @Override
+    public void removeFromChatroom(User user, Chatroom chatroom) {
+        userChatroomMap.get(user).remove(chatroom);
+    }
+
+    @Override
+    public Iterator<Chatroom> getChatrooms(User user) {
+        return userChatroomMap.get(user).iterator();
     }
 
     private static class UserFuture implements Future<UserRepositoryActionResult> {

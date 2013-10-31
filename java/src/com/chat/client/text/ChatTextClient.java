@@ -4,6 +4,7 @@ import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientDispatcher;
 import com.chat.client.ChatClientUtilities;
+import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 import com.chat.impl.DataStream;
@@ -24,29 +25,31 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatTextClient implements ChatClient {
-    private final ServerConnection connection;
+    private final BinaryStream connection;
 
     private Chatroom subscribedChatroom;
     private User user;
 
     public ChatTextClient(String host, int port, String user, String password) throws IOException, InterruptedException, ValidationError {
         Socket socket = new Socket(host, port);
-        BinaryStream dout = new DataStream(socket);
+        DataStream stream = new DataStream(socket);
+        stream.setUUID(Integer.toString(new Random().nextInt()));
+        stream.setAPIVersion(V1Dispatcher.VERSION_ID);
+        connection = stream;
 
         System.out.println("Connected to " + socket);
 
-        connection = new ServerConnectionImpl(dout, Integer.toString(new Random().nextInt()), 1);
-
-        long userId = ChatClientUtilities.initialConnect(connection, user, password);
-        this.user = new User(userId, user);
-
         InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
+
+        long userId = ChatClientUtilities.initialConnect(connection, user, password);
+        this.user = new User(userId, user, userRepo);
+
         userRepo.addUser(this.user);
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatTextInput(this));
-        pool.submit(new ChatClientDispatcher(this, dout, chatroomRepo, userRepo));
+        pool.submit(new ChatClientDispatcher(this, connection, chatroomRepo, userRepo));
     }
 
     @Override
@@ -55,7 +58,7 @@ public class ChatTextClient implements ChatClient {
 
         // Subscribe to the first one!
         if (chatroom.getName().equalsIgnoreCase("Global")) {
-            connection.sendJoinChatroom(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0));
+            connection.queueMessage(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0));
             subscribedChatroom = chatroom;
         }
     }
@@ -66,7 +69,7 @@ public class ChatTextClient implements ChatClient {
     }
 
     public void sendMessage(String message) throws IOException {
-        connection.sendSubmitMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message));
+        connection.queueMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message));
     }
 
     @Override

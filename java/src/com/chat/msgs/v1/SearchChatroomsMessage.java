@@ -11,6 +11,11 @@ public class SearchChatroomsMessage implements Message {
     private final long latitude;
     private final long longitude;
 
+    public SearchChatroomsMessage(BinaryStream stream) throws IOException {
+        this.latitude = stream.readLong();
+        this.longitude = stream.readLong();
+    }
+
     public SearchChatroomsMessage(long latitude, long longitude) {
         this.latitude = latitude;
         this.longitude = longitude;

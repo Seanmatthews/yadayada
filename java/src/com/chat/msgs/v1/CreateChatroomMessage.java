@@ -14,6 +14,14 @@ public class CreateChatroomMessage implements Message {
     private final long longitude;
     private final long radius;
 
+    public CreateChatroomMessage(BinaryStream stream) throws IOException {
+        this.ownerId = stream.readLong();
+        this.chatroomName = stream.readString();
+        this.latitude = stream.readLong();
+        this.longitude = stream.readLong();
+        this.radius = stream.readLong();
+    }
+
     public CreateChatroomMessage(long ownerId, String chatroomName, long latitude, long longitude, long radius) {
         this.ownerId = ownerId;
         this.chatroomName = chatroomName;

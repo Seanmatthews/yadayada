@@ -1,9 +1,6 @@
 package com.chat.msgs;
 
-import com.chat.Chatroom;
-import com.chat.ChatroomRepository;
-import com.chat.User;
-import com.chat.UserRepository;
+import com.chat.*;
 import com.chat.msgs.v1.*;
 import com.chat.server.ChatServer;
 
@@ -37,51 +34,56 @@ public class V1Dispatcher implements MessageDispatcher {
     }
 
     @Override
-    public void runOnce(ClientConnection connection) throws IOException, ValidationError, ExecutionException, InterruptedException {
-        MessageTypes type = connection.recvMsgType();
+    public void runOnce(BinaryStream stream) throws IOException, ValidationError, ExecutionException, InterruptedException {
+        byte typeByte = stream.readByte();
+        MessageTypes type = MessageTypes.lookup(typeByte);
+
+        if (type == null) {
+            throw new ValidationError("Unknown message type: " + (int)typeByte);
+        }
 
         switch (type) {
             case SearchChatrooms:
-                SearchChatroomsMessage scMsg = connection.recvSearchChatrooms();
-                server.searchChatrooms(connection);
+                SearchChatroomsMessage scMsg = new SearchChatroomsMessage(stream);
+                server.searchChatrooms(stream);
                 break;
 
             case CreateChatroom:
-                CreateChatroomMessage ccMsg = connection.recvCreateChatroom();
+                CreateChatroomMessage ccMsg = new CreateChatroomMessage(stream);
                 User ccUser = getAndValidateUser(ccMsg.getOwnerId());
-                server.createChatroom(connection, ccUser, ccMsg.getChatroomName());
+                server.createChatroom(stream, ccUser, ccMsg.getChatroomName());
                 break;
 
             case JoinChatroom:
-                JoinChatroomMessage jcMsg = connection.recvJoinChatroom();
+                JoinChatroomMessage jcMsg = new JoinChatroomMessage(stream);
                 User jcUser = getAndValidateUser(jcMsg.getUserId());
                 Chatroom jcChatroom = getAndValidateChatroom(jcMsg.getChatroomId());
-                server.joinChatroom(connection, jcUser, jcChatroom);
+                server.joinChatroom(stream, jcUser, jcChatroom);
                 break;
 
             case LeaveChatroom:
-                LeaveChatroomMessage lcMsg = connection.recvLeaveChatroom();
+                LeaveChatroomMessage lcMsg = new LeaveChatroomMessage(stream);
                 User lcUser = getAndValidateUser(lcMsg.getUserId());
                 Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
-                server.leaveChatroom(connection, lcUser, lcChatroom);
+                server.leaveChatroom(stream, lcUser, lcChatroom);
                 break;
 
             case Register:
-                RegisterMessage rMsg = connection.recvRegister();
-                server.registerUser(connection, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle());
+                RegisterMessage rMsg = new RegisterMessage(stream);
+                server.registerUser(stream, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle());
                 break;
 
             case Login:
-                LoginMessage lMsg = connection.recvLogin();
-                server.login(connection, lMsg.getUserName(), lMsg.getPassword());
+                LoginMessage lMsg = new LoginMessage(stream);
+                server.login(stream, lMsg.getUserName(), lMsg.getPassword());
                 break;
 
             case SubmitMessage:
-                SubmitMessageMessage smMsg = connection.recvSubmitMessage();
+                SubmitMessageMessage smMsg = new SubmitMessageMessage(stream);
                 User user = getAndValidateUser(smMsg.getUserId());
                 Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());
                 System.out.println("Sending " + smMsg.getMessage());
-                server.newMessage(connection, user, chatroom, smMsg.getMessage());
+                server.newMessage(stream, user, chatroom, smMsg.getMessage());
                 break;
 
             default:

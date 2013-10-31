@@ -7,8 +7,8 @@ import com.chat.client.ChatClientUtilities;
 import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
+import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
-import com.chat.msgs.v1.ServerConnectionImpl;
 import com.chat.util.NanoHTTPD;
 
 import java.io.FileInputStream;
@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class MapServer extends NanoHTTPD implements ChatClient {
-    private final ServerConnectionImpl connection;
+    private final BinaryStream connection;
     private final User user;
     private final FileInputStream mapHtmlFile;
 
@@ -42,21 +42,22 @@ public class MapServer extends NanoHTTPD implements ChatClient {
         mapHtmlFile = new FileInputStream("/tmp/maps.html");
 
         Socket socket = new Socket(host, port);
-        BinaryStream dout = new DataStream(socket);
+        DataStream stream = new DataStream(socket);
+        stream.setUUID("MAPS");
+        stream.setAPIVersion(V1Dispatcher.VERSION_ID);
+        connection = stream;
 
         System.out.println("Connected to " + socket);
 
-        connection = new ServerConnectionImpl(dout, "UUID", 1);
-
-        long userId = ChatClientUtilities.initialConnect(connection, username, password);
-        user = new User(userId, username);
-
         chatroomRepo = new InMemoryChatroomRepository();
         userRepo = new InMemoryUserRepository();
+
+        long userId = ChatClientUtilities.initialConnect(connection, username, password);
+        user = new User(userId, username, userRepo);
         userRepo.addUser(user);
 
         ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(new ChatClientDispatcher(this, dout, chatroomRepo, userRepo));
+        pool.submit(new ChatClientDispatcher(this, connection, chatroomRepo, userRepo));
 
         System.out.println("Connected!");
     }

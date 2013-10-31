@@ -10,6 +10,10 @@ import static com.chat.msgs.Utilities.getStrLen;
 public class LoginRejectMessage implements Message {
     private final String reason;
 
+    public LoginRejectMessage(BinaryStream stream) throws IOException {
+        this.reason = stream.readString();
+    }
+
     public LoginRejectMessage(String reason) {
         this.reason = reason;
     }

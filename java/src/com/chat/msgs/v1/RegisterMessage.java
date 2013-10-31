@@ -12,6 +12,12 @@ public class RegisterMessage implements Message {
     private final String password;
     private final String handle;
 
+    public RegisterMessage(BinaryStream stream) throws IOException {
+        this.userName = stream.readString();
+        this.password = stream.readString();
+        this.handle = stream.readString();
+    }
+
     public RegisterMessage(String userName, String password, String handle) {
         this.userName = userName;
         this.password = password;

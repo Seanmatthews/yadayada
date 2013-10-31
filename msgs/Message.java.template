@@ -12,6 +12,12 @@ public class ${msg.name}Message implements Message {
     private final $field.type $field.name;
 #end for
 
+    public ${msg.name}Message(BinaryStream stream) throws IOException {
+    #for $field in $msg.fields
+        this.$field.name = stream.read${field.type.capitalize()}();
+    #end for
+    }
+
     public ${msg.name}Message(#echo ', '.join($msg.fieldTypeNames)#) {
     #for $field in $msg.fields
         this.$field.name = $field.name;

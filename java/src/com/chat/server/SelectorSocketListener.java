@@ -8,8 +8,6 @@ import com.chat.impl.NonBlockingByteBufferStream;
 import com.chat.msgs.MessageDispatcher;
 import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
-import com.chat.msgs.v1.ClientConnection;
-import com.chat.msgs.v1.ClientConnectionImpl;
 import com.chat.msgs.v1.ConnectAcceptMessage;
 import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
@@ -17,7 +15,6 @@ import com.chat.select.SocketListener;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Selector;
 import java.util.HashMap;
@@ -60,7 +57,7 @@ public class SelectorSocketListener implements SocketListener {
                         setupDispatcher(state, buffer);
                     }
                     else {
-                        state.dispatcher.runOnce(state.connection);
+                        state.dispatcher.runOnce(state.stream);
                     }
                 }
             });
@@ -97,8 +94,10 @@ public class SelectorSocketListener implements SocketListener {
         String UUID = new String(bytes, "UTF-8");
 
         state.dispatcher = dispatchers[APIVersion];
-        state.connection = new ClientConnectionImpl(state.stream, UUID, APIVersion);
-        state.connection.sendConnectAccept(new ConnectAcceptMessage(APIVersion, 1, "", ""));
+        state.stream.setAPIVersion(APIVersion);
+        state.stream.setUUID(UUID);
+
+        server.addConnection(state.stream);
     }
 
     private void disconnect(ClientSocket socket) {
@@ -109,7 +108,7 @@ public class SelectorSocketListener implements SocketListener {
                 ClientState state = socketToStateMap.remove(socket);
 
                 if (state != null && state.dispatcher != null) {
-                    server.removeConnection(state.connection);
+                    server.removeConnection(state.stream);
                 }
 
                 socket.close();
@@ -149,7 +148,6 @@ public class SelectorSocketListener implements SocketListener {
 
     private static class ClientState {
         final NonBlockingByteBufferStream stream;
-        ClientConnection connection;
         MessageDispatcher dispatcher;
 
         ClientState(NonBlockingByteBufferStream stream) {

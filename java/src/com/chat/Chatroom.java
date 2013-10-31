@@ -16,20 +16,22 @@ import java.util.concurrent.atomic.AtomicInteger;
  * To change this template use File | Settings | File Templates.
  */
 public class Chatroom {
-    private static final int MESSAGES_TO_STORE = 20;
-
-    private final Set<User> users = Collections.newSetFromMap(new ConcurrentHashMap<User, Boolean>());
-    private final Queue<ChatMessage> recentMessages = new ConcurrentLinkedQueue<>();
-    private final AtomicInteger messageCount = new AtomicInteger(0);
+    //private static final int MESSAGES_TO_STORE = 20;
+    //private final Queue<ChatMessage> recentMessages = new ConcurrentLinkedQueue<>();
+    //private final AtomicInteger messageCount = new AtomicInteger(0);
 
     private final long id;
     private final String name;
     private final User owner;
 
-    public Chatroom(long id, String name, User owner) {
+    // back-reference for easy access
+    private final ChatroomRepository repo;
+
+    public Chatroom(long id, String name, User owner, ChatroomRepository inMemoryChatroomRepository) {
         this.id = id;
         this.name = name;
         this.owner = owner;
+        this.repo = inMemoryChatroomRepository;
     }
 
     public long getId() {
@@ -42,18 +44,6 @@ public class Chatroom {
 
     public User getOwner() {
         return owner;
-    }
-
-    public void addUser(User user) {
-        users.add(user);
-    }
-
-    public void removeUser(User user) {
-        users.remove(user);
-    }
-
-    public Iterator<User> getUsers() {
-        return users.iterator();
     }
 
     @Override
@@ -78,7 +68,7 @@ public class Chatroom {
         return name;
     }
 
-    public void addMessage(ChatMessage message) {
+    /*public void addMessage(ChatMessage message) {
         int count = messageCount.incrementAndGet();
 
         // don't want to get recentMessages.size() because it iterates through the entire list
@@ -91,9 +81,21 @@ public class Chatroom {
 
     public Iterator<ChatMessage> getRecentMessages() {
         return recentMessages.iterator();
+    }   */
+
+    public Iterator<User> getUsers() {
+        return repo.getUsers(this);
     }
 
-    public boolean containsUser(User sender) {
-        return users.contains(sender);
+    public void addUser(User user) {
+        repo.addUser(this, user);
+    }
+
+    public void removeUser(User user) {
+        repo.removeUser(this, user);
+    }
+
+    public boolean containsUser(User user) {
+        return repo.containsUser(this, user);
     }
 }

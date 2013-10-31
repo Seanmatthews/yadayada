@@ -31,40 +31,50 @@ public class EventServiceImpl implements EventService {
         serverChannel.bind(new InetSocketAddress(port));
         serverChannel.configureBlocking(false);
 
-        return new ServerSocketImpl(this, serverChannel, listener, port);
+        return new ServerSocketImpl(this, serverChannel, listener);
     }
 
     @Override
-    public SelectionKey register(ServerSocket socket, ServerSocketChannel serverChannel) throws IOException {
-        return serverChannel.register(selector, SelectionKey.OP_ACCEPT, socket);
+    public void register(SelectableChannel channel, Object socket) throws IOException {
+        channel.register(selector, 0, socket);
     }
 
     @Override
-    public SelectionKey register(ClientSocket socket, SocketChannel clientChannel) throws IOException {
-        return clientChannel.register(selector, SelectionKey.OP_READ, socket);
+    public void free(SelectableChannel channel) {
+        SelectionKey key = channel.keyFor(selector);
+
+        if (key != null)
+            key.cancel();
     }
 
     @Override
-    public void enableAccept(SelectionKey key, boolean val) {
-        changeOp(key, val, SelectionKey.OP_ACCEPT);
-        selector.wakeup();
+    public void enableAccept(SelectableChannel channel, boolean val) {
+        SelectionKey key = channel.keyFor(selector);
+
+        if (key != null) {
+            changeOp(key, val, SelectionKey.OP_ACCEPT);
+            selector.wakeup();
+        }
     }
 
     @Override
-    public void enableWrite(SelectionKey key, boolean val) {
-        changeOp(key, val, SelectionKey.OP_WRITE);
-        selector.wakeup();
+    public void enableWrite(SelectableChannel channel, boolean val) {
+        SelectionKey key = channel.keyFor(selector);
+
+        if (key != null) {
+            changeOp(key, val, SelectionKey.OP_WRITE);
+            selector.wakeup();
+        }
     }
 
     @Override
-    public void enableRead(SelectionKey key, boolean val) {
-        changeOp(key, val, SelectionKey.OP_READ);
-        selector.wakeup();
-    }
+    public void enableRead(SelectableChannel channel, boolean val) {
+        SelectionKey key = channel.keyFor(selector);
 
-    @Override
-    public void free(SelectionKey key) {
-        key.cancel();
+        if (key != null) {
+            changeOp(key, val, SelectionKey.OP_READ);
+            selector.wakeup();
+        }
     }
 
     private void changeOp(SelectionKey key, boolean val, int newOp) {

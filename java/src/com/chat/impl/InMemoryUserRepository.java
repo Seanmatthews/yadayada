@@ -1,9 +1,10 @@
 package com.chat.impl;
 
+import com.chat.Chatroom;
 import com.chat.User;
 import com.chat.UserRepository;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,8 +20,9 @@ import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
 public class InMemoryUserRepository implements UserRepository {
     private AtomicLong nextUserId = new AtomicLong(1);
 
-    private final Map<String, User> loginToUserMap = new ConcurrentHashMap<>();
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
+    private final Map<String, User> loginToUserMap = new ConcurrentHashMap<>();
+    private final Map<User, Set<Chatroom>> userChatroomMap = new ConcurrentHashMap<>();
 
     public Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, UserRepositoryCompletionHandler handler) {
         User user = loginToUserMap.get(login);
@@ -31,10 +33,9 @@ public class InMemoryUserRepository implements UserRepository {
             return new UserFuture(result, handler);
         }
 
-        user = new User(nextUserId.getAndIncrement(), login, password, handle);
+        user = new User(nextUserId.getAndIncrement(), login, password, handle, this);
 
-        loginToUserMap.put(user.getLogin(), user);
-        idToUserMap.put(user.getId(), user);
+        addUser(user);
 
         return new UserFuture(new UserRepositoryActionResult(user), handler);
     }
@@ -61,7 +62,24 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     public void addUser(User user) {
+        loginToUserMap.put(user.getLogin(), user);
         idToUserMap.put(user.getId(), user);
+        userChatroomMap.put(user, Collections.newSetFromMap(new ConcurrentHashMap<Chatroom, Boolean>()));
+    }
+
+    @Override
+    public void addToChatroom(User user, Chatroom chatroom) {
+        userChatroomMap.get(user).add(chatroom);
+    }
+
+    @Override
+    public void removeFromChatroom(User user, Chatroom chatroom) {
+        userChatroomMap.get(user).remove(chatroom);
+    }
+
+    @Override
+    public Iterator<Chatroom> getChatrooms(User user) {
+        return userChatroomMap.get(user).iterator();
     }
 
     private static class UserFuture implements Future<UserRepositoryActionResult> {

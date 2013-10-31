@@ -72,40 +72,6 @@ for msg in root:
       else:
           serverMessages.append(message);
 
-connT = Template(file='Connection.java.template')
-connImplT = Template(file='ConnectionImpl.java.template')
-
-
-connT.recvMsgs = clientMessages
-connT.sendMsgs = serverMessages
-connT.package = package
-connT.clientOrServer = 'Client'
-f = file(serverPath + '/ClientConnection.java', 'w')
-f.write(str(connT))
-f.close()
-
-connImplT.recvMsgs = clientMessages
-connImplT.sendMsgs = serverMessages
-connImplT.package = package
-connImplT.clientOrServer = 'Client'
-f = file(serverPath + '/ClientConnectionImpl.java', 'w')
-f.write(str(connImplT))
-f.close()
-
-connT.sendMsgs = clientMessages
-connT.recvMsgs = serverMessages
-connT.clientOrServer = 'Server'
-f = file(serverPath + '/ServerConnection.java', 'w')
-f.write(str(connT))
-f.close()
-
-connImplT.sendMsgs = clientMessages
-connImplT.recvMsgs = serverMessages
-connImplT.clientOrServer = 'Server'
-f = file(serverPath + '/ServerConnectionImpl.java', 'w')
-f.write(str(connImplT))
-f.close()
-
 typesT = Template(file='MessageTypes.java.template')
 typesT.msgs = clientMessages + serverMessages
 typesT.package = package
