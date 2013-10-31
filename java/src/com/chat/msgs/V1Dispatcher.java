@@ -1,11 +1,12 @@
 package com.chat.msgs;
 
-import com.chat.*;
+import com.chat.Chatroom;
+import com.chat.ChatroomRepository;
+import com.chat.User;
+import com.chat.UserRepository;
 import com.chat.msgs.v1.*;
-import com.chat.msgs.v1.ClientConnection;
 import com.chat.server.ChatServer;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
@@ -16,55 +17,27 @@ import java.util.concurrent.ExecutionException;
  * Time: 9:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class V1Dispatcher implements MessageDispatcher, Runnable {
+public class V1Dispatcher implements MessageDispatcher {
     public static final int VERSION_ID = 1;
 
-    private final ChatServer server;
+    protected final ChatServer server;
+
     private final UserRepository userRepo;
     private final ChatroomRepository chatroomRepo;
-    private final ClientConnection connection;
 
-    public V1Dispatcher(ChatServer server, ClientConnection connection, UserRepository userRepo, ChatroomRepository chatroomRepo) {
+    public V1Dispatcher(ChatServer server, UserRepository userRepo, ChatroomRepository chatroomRepo) {
         this.server = server;
         this.userRepo = userRepo;
         this.chatroomRepo = chatroomRepo;
-        this.connection = connection;
-
-        server.addConnection(connection);
     }
 
     @Override
     public void run() {
-        try {
-            while(true) {
-                runOnce();
-            }
-        } catch (EOFException e) {
-            System.out.println("Customer hung up");
-        } catch (IOException e) {
-            System.err.println("Cannot write to stream: " + e.getMessage());
-            e.printStackTrace();
-        } catch (ValidationError e) {
-            System.err.println("Validation error:  " + e.getMessage());
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            System.err.println("Thread interruption error:  " + e.getMessage());
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            System.err.println("Future execution error:  " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            removeConnection();
-        }
+        // nothing
     }
 
     @Override
-    public void removeConnection() {
-        server.removeConnection(connection);
-    }
-
-    @Override
-    public void runOnce() throws IOException, ValidationError, ExecutionException, InterruptedException {
+    public void runOnce(ClientConnection connection) throws IOException, ValidationError, ExecutionException, InterruptedException {
         MessageTypes type = connection.recvMsgType();
 
         switch (type) {

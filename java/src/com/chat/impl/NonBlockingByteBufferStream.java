@@ -2,12 +2,15 @@ package com.chat.impl;
 
 import com.chat.BinaryStream;
 import com.chat.msgs.Message;
+import com.chat.msgs.ValidationError;
 import com.chat.select.ClientSocket;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,7 +20,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * To change this template use File | Settings | File Templates.
  */
 public class NonBlockingByteBufferStream implements BinaryStream {
-    private final ClientSocket channel;
+    private final ClientSocket socket;
+    private final ByteBuffer rawInput;
     private final ByteBuffer output;
     private final Queue<Message> queue;
 
@@ -25,19 +29,16 @@ public class NonBlockingByteBufferStream implements BinaryStream {
     private int writeStartPosition;
 
     public NonBlockingByteBufferStream(ClientSocket socket) throws IOException {
-        this.channel = socket;
+        this.socket = socket;
         this.output = ByteBuffer.allocateDirect(1024);
+        this.rawInput = ByteBuffer.allocateDirect(1024);
         this.queue = new ConcurrentLinkedQueue<>();
-    }
-
-    public void onReadAvailable(ByteBuffer slice) {
-        input = slice;
     }
 
     @Override
     public void close() {
         try {
-            channel.close();
+            socket.close();
         } catch (IOException ignored) {
         }
     }
@@ -45,6 +46,49 @@ public class NonBlockingByteBufferStream implements BinaryStream {
     @Override
     public boolean isStream() {
         return false;
+    }
+
+    public void read(ByteBufferParserListener listener) throws IOException, InterruptedException, ExecutionException, ValidationError {
+        int read = socket.read(rawInput);
+
+        if (read == -1) {
+            throw new EOFException("End of Stream");
+        }
+
+        rawInput.flip();
+
+        while ((input = parse()) != null) {
+            int position = rawInput.position() + input.remaining() + 2;
+            listener.onParsed(input);
+            rawInput.position( position );
+        }
+
+        if (rawInput.hasRemaining()) {
+            rawInput.compact();
+        }
+        else {
+            rawInput.clear();
+        }
+    }
+
+    public ByteBuffer parse() {
+        // do we have enough bytes for message size?
+        if (rawInput.remaining() < 2)
+            return null;
+
+        // get message size
+        short length = rawInput.getShort(rawInput.position());
+
+        // do we have enough bytes remaining in the message?
+        if (rawInput.remaining() < 2 + length)
+            return null;
+
+        // Slice for the message - skip message size
+        ByteBuffer slice = rawInput.slice();
+        slice.position(slice.position() + 2);
+        slice.limit(slice.position() + length);
+
+        return slice;
     }
 
     @Override
@@ -122,7 +166,7 @@ public class NonBlockingByteBufferStream implements BinaryStream {
     @Override
     public void queueMessage(Message message) throws IOException {
         if (queue.offer(message)) {
-            channel.enableWrite(true);
+            socket.enableWrite(true);
         }
         else {
             throw new IOException("Too many messages in the queue to send. Terminating.");
@@ -158,14 +202,14 @@ public class NonBlockingByteBufferStream implements BinaryStream {
         }
         else {
             // all done
-            channel.enableWrite(false);
+            socket.enableWrite(false);
             return true;
         }
     }
 
     public void writeFromBuffer() throws IOException {
         output.flip();
-        channel.write(output);
+        socket.write(output);
 
         if (output.hasRemaining()) {
             // still stuff to write in the buffer
@@ -180,13 +224,13 @@ public class NonBlockingByteBufferStream implements BinaryStream {
     @Override
     public void writeByte(int value) throws IOException {
         checkWriteBounds(1);
-        output.put((byte)value);
+        output.put((byte) value);
     }
 
     @Override
     public void writeShort(int value) throws IOException {
         checkWriteBounds(2);
-        output.putShort((short)value);
+        output.putShort((short) value);
     }
 
     @Override
@@ -212,6 +256,6 @@ public class NonBlockingByteBufferStream implements BinaryStream {
 
     @Override
     public String toString() {
-        return channel.toString();
+        return socket.toString();
     }
 }

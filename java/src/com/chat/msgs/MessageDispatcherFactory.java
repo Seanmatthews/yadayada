@@ -29,7 +29,8 @@ public class MessageDispatcherFactory {
 
     public MessageDispatcher getDispatcher(int apiVersion, BinaryStream stream, String UUID) throws ValidationError {
         if (apiVersion == V1Dispatcher.VERSION_ID) {
-            return new V1Dispatcher(server, new ClientConnectionImpl(stream, UUID, apiVersion), userRepo, chatroomRepo);
+            ClientConnectionImpl clientConnection = new ClientConnectionImpl(stream, UUID, apiVersion);
+            return new V1DispatcherThread(server, userRepo, chatroomRepo, clientConnection);
         }
 
         throw new ValidationError("Invalid API Version: " + apiVersion);

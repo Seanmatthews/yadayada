@@ -1,10 +1,16 @@
 package com.chat.server;
 
-import com.chat.*;
+import com.chat.ChatroomRepository;
+import com.chat.MessageRepository;
+import com.chat.UserRepository;
+import com.chat.impl.ByteBufferParserListener;
 import com.chat.impl.NonBlockingByteBufferStream;
 import com.chat.msgs.MessageDispatcher;
-import com.chat.msgs.MessageDispatcherFactory;
+import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
+import com.chat.msgs.v1.ClientConnection;
+import com.chat.msgs.v1.ClientConnectionImpl;
+import com.chat.msgs.v1.ConnectAcceptMessage;
 import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
 import com.chat.select.SocketListener;
@@ -13,8 +19,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
-import java.util.*;
+import java.nio.channels.Selector;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -28,11 +35,13 @@ public class SelectorSocketListener implements SocketListener {
     private final Selector selector;
     private final EventService eventService;
 
-    private final MessageDispatcherFactory factory;
+    private final MessageDispatcher[] dispatchers = new MessageDispatcher[10];
     private final Map<ClientSocket, ClientState> socketToStateMap = new HashMap<>(128);
+    private final ChatServerImpl server;
 
     public SelectorSocketListener(Selector selector, EventService eventService, int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
-        this.factory = new MessageDispatcherFactory(new ChatServerImpl(userRepo, chatroomRepo, messageRepo), userRepo, chatroomRepo);
+        this.server = new ChatServerImpl(userRepo, chatroomRepo, messageRepo);
+        this.dispatchers[V1Dispatcher.VERSION_ID] = new V1Dispatcher(server, userRepo, chatroomRepo);
         this.selector = selector;
         this.eventService = eventService;
 
@@ -42,63 +51,42 @@ public class SelectorSocketListener implements SocketListener {
         eventService.run();
     }
 
-    private void processMessages(ClientSocket socket, ClientState state, ByteBuffer inputBuffer) {
-        while(true) {
-            // do we have enough bytes for message size?
-            if (inputBuffer.remaining() < 2)
-                return;
-
-            // get message size
-            short length = inputBuffer.getShort(inputBuffer.position());
-
-            // do we have enough bytes remaining in the message?
-            if (inputBuffer.remaining() < 2 + length)
-                return;
-
-            // Slice for the message - skip message size
-            ByteBuffer slice = inputBuffer.slice();
-            slice.position(slice.position() + 2);
-            slice.limit(slice.position() + length);
-
-            try {
-                if (state.dispatcher == null) {
-                    setupDispatcher(state, slice);
+    private void processMessages(ClientSocket socket, final ClientState state) {
+        try {
+            state.stream.read(new ByteBufferParserListener() {
+                @Override
+                public void onParsed(ByteBuffer buffer) throws InterruptedException, ExecutionException, ValidationError, IOException {
+                    if (state.dispatcher == null) {
+                        setupDispatcher(state, buffer);
+                    }
+                    else {
+                        state.dispatcher.runOnce(state.connection);
+                    }
                 }
-                else {
-                    state.stream.onReadAvailable(slice);
-                    state.dispatcher.runOnce();
-                }
-            } catch (EOFException e) {
-                System.out.println("Customer hung up " + socket);
-                disconnect(socket);
-                return;
-            } catch (IOException e) {
-                System.err.println("Cannot write to stream: " + e.getMessage());
-                e.printStackTrace();
-                disconnect(socket);
-                return;
-            } catch (ValidationError e) {
-                System.err.println("Validation error:  " + e.getMessage());
-                e.printStackTrace();
-                disconnect(socket);
-                return;
-            } catch (InterruptedException e) {
-                System.err.println("Thread interruption error:  " + e.getMessage());
-                e.printStackTrace();
-                disconnect(socket);
-                return;
-            } catch (ExecutionException e) {
-                System.err.println("Future execution error:  " + e.getMessage());
-                e.printStackTrace();
-                disconnect(socket);
-                return;
-            }
-
-            inputBuffer.position(inputBuffer.position() + length + 2);
+            });
+        } catch (EOFException e) {
+            System.out.println("Customer hung up " + socket);
+            disconnect(socket);
+        } catch (IOException e) {
+            System.err.println("Cannot write to stream: " + e.getMessage());
+            e.printStackTrace();
+            disconnect(socket);
+        } catch (ValidationError e) {
+            System.err.println("Validation error:  " + e.getMessage());
+            e.printStackTrace();
+            disconnect(socket);
+        } catch (InterruptedException e) {
+            System.err.println("Thread interruption error:  " + e.getMessage());
+            e.printStackTrace();
+            disconnect(socket);
+        } catch (ExecutionException e) {
+            System.err.println("Future execution error:  " + e.getMessage());
+            e.printStackTrace();
+            disconnect(socket);
         }
     }
 
-    private void setupDispatcher(ClientState state, ByteBuffer slice) throws ValidationError, UnsupportedEncodingException {
+    private void setupDispatcher(ClientState state, ByteBuffer slice) throws ValidationError, IOException {
         byte type = slice.get();
         if (type != 16)
             throw new ValidationError("Must send Connect first");
@@ -107,7 +95,10 @@ public class SelectorSocketListener implements SocketListener {
         byte[] bytes = new byte[slice.getShort()];
         slice.get(bytes);
         String UUID = new String(bytes, "UTF-8");
-        state.dispatcher = factory.getDispatcher(APIVersion, state.stream, UUID);
+
+        state.dispatcher = dispatchers[APIVersion];
+        state.connection = new ClientConnectionImpl(state.stream, UUID, APIVersion);
+        state.connection.sendConnectAccept(new ConnectAcceptMessage(APIVersion, 1, "", ""));
     }
 
     private void disconnect(ClientSocket socket) {
@@ -118,7 +109,7 @@ public class SelectorSocketListener implements SocketListener {
                 ClientState state = socketToStateMap.remove(socket);
 
                 if (state != null && state.dispatcher != null) {
-                    state.dispatcher.removeConnection();
+                    server.removeConnection(state.connection);
                 }
 
                 socket.close();
@@ -141,23 +132,7 @@ public class SelectorSocketListener implements SocketListener {
     @Override
     public void onReadAvailable(ClientSocket clientSocket) {
         ClientState state = socketToStateMap.get(clientSocket);
-        ByteBuffer inputBuffer = state.input;
-
-        try {
-            int read = clientSocket.read(inputBuffer);
-
-            if (read == -1) {
-                // end of stream
-                disconnect(clientSocket);
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading from the stream " + clientSocket);
-            disconnect(clientSocket);
-        }
-
-        inputBuffer.flip();
-        processMessages(clientSocket, state, inputBuffer);
-        inputBuffer.compact();
+        processMessages(clientSocket, state);
     }
 
     @Override
@@ -173,13 +148,12 @@ public class SelectorSocketListener implements SocketListener {
     }
 
     private static class ClientState {
-        MessageDispatcher dispatcher;
         final NonBlockingByteBufferStream stream;
-        final ByteBuffer input;
+        ClientConnection connection;
+        MessageDispatcher dispatcher;
 
         ClientState(NonBlockingByteBufferStream stream) {
             this.stream = stream;
-            this.input = ByteBuffer.allocateDirect(1024);
         }
     }
 }

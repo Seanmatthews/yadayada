@@ -34,19 +34,9 @@ public class ServerSocketImpl implements ServerSocket {
         eventService.enableAccept(key, true);
     }
 
-    @Override
-    public ServerSocket open() throws IOException {
-        if (serverChannel.isOpen())
-            throw new IOException(serverChannel + " is already open");
-
-        return eventService.createServerSocket(listener, port);
-    }
-
     public void close() throws IOException {
-        if (serverChannel.isOpen()) {
-            serverChannel.close();
-            eventService.free(key);
-        }
+        serverChannel.close();
+        eventService.free(key);
     }
 
     @Override
