@@ -7,9 +7,11 @@ import com.chat.impl.AwsRdsUserRepository;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryMessageRepository;
 import com.chat.impl.InMemoryUserRepository;
+import com.chat.select.impl.EventServiceImpl;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
+import java.nio.channels.Selector;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -32,6 +34,7 @@ public class Main {
         myOptions.addOption("sqlurl", true, "URL of SQL Server");
         myOptions.addOption("sqluser", true, "SQL Username");
         myOptions.addOption("sqlpassword", true, "SQL Username");
+        myOptions.addOption("io", true, "blocking or nonblocking");
         CommandLine options;
 
         try {
@@ -73,6 +76,14 @@ public class Main {
 
         MessageRepository messageRepo = new InMemoryMessageRepository();
 
-        new SelectorSocketListener(port, userRepo, chatroomRepo, messageRepo);
+        String io = options.getOptionValue("io", "nonblocking");
+        if (io.equals("blocking")) {
+            new StreamSocketListener(port, userRepo, chatroomRepo, messageRepo);
+        }
+        else {
+            Selector selector = Selector.open();
+            new SelectorSocketListener(selector, new EventServiceImpl(selector), port, userRepo, chatroomRepo, messageRepo);
+        }
+
     }
 }

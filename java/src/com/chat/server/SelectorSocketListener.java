@@ -5,16 +5,16 @@ import com.chat.impl.NonBlockingByteBufferStream;
 import com.chat.msgs.MessageDispatcher;
 import com.chat.msgs.MessageDispatcherFactory;
 import com.chat.msgs.ValidationError;
+import com.chat.select.ClientSocket;
+import com.chat.select.EventService;
+import com.chat.select.SocketListener;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.PushbackInputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -24,135 +24,25 @@ import java.util.concurrent.ExecutionException;
  * Time: 9:21 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SelectorSocketListener implements SelectRequester {
-    private final MessageDispatcherFactory factory;
+public class SelectorSocketListener implements SocketListener {
     private final Selector selector;
-    private final Map<SocketChannel, ClientState> channelToStateMap = new HashMap<>(128);
-    private final Queue<SelectChangeRequest> requests = new ConcurrentLinkedQueue<>();
+    private final EventService eventService;
 
-    public SelectorSocketListener(int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
-        factory = new MessageDispatcherFactory(new ChatServerImpl(userRepo, chatroomRepo, messageRepo), userRepo, chatroomRepo);
-        selector = Selector.open();
+    private final MessageDispatcherFactory factory;
+    private final Map<ClientSocket, ClientState> socketToStateMap = new HashMap<>(128);
 
-        initServerSocket(port);
-        listen();
-    }
+    public SelectorSocketListener(Selector selector, EventService eventService, int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
+        this.factory = new MessageDispatcherFactory(new ChatServerImpl(userRepo, chatroomRepo, messageRepo), userRepo, chatroomRepo);
+        this.selector = selector;
+        this.eventService = eventService;
 
-    private void initServerSocket(int port) throws IOException {
-        ServerSocketChannel serverChannel = ServerSocketChannel.open();
-        serverChannel.bind(new InetSocketAddress(port));
-        serverChannel.configureBlocking(false);
-        serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-
+        eventService.createServerSocket(this, port);
         System.out.println("Listening on " + port);
+
+        eventService.run();
     }
 
-    private void listen() throws IOException {
-        while (true) {
-            SelectChangeRequest request;
-            while((request = requests.poll()) != null) {
-                switch (request.type) {
-                    case REGISTER:
-                        request.socket.register(selector, SelectionKey.OP_READ);
-                        break;
-                    case ENABLE_WRITE:
-                        SelectionKey key = request.socket.keyFor(selector);
-                        key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-                        break;
-                    case DISABLE_WRITE:
-                        SelectionKey key2 = request.socket.keyFor(selector);
-                        key2.interestOps(SelectionKey.OP_READ);
-                        break;
-                }
-            }
-
-            if (selector.select() > 0) {
-                Set<SelectionKey> selectionKeys = selector.selectedKeys();
-                Iterator<SelectionKey> iterator = selectionKeys.iterator();
-                while(iterator.hasNext()) {
-                    SelectionKey key = iterator.next();
-                    try {
-                        processKey(key);
-                    }
-                    catch(CancelledKeyException ignored) {
-                    }
-                    iterator.remove();
-                }
-            }
-        }
-    }
-
-    private void processKey(SelectionKey key) throws CancelledKeyException {
-        if (key.isValid()) {
-            // accepting a client socket
-            if (key.isAcceptable()) {
-                ServerSocketChannel channel = (ServerSocketChannel) key.channel();
-                acceptClient(channel);
-            }
-
-            // writing to a client socket
-            if (key.isWritable()) {
-                //System.out.println("Write available");
-                SocketChannel clientChannel = (SocketChannel) key.channel();
-                writeMessage(clientChannel);
-            }
-
-            // reading a client socket
-            if (key.isReadable()) {
-                //System.out.println("Read available");
-                SocketChannel clientChannel = (SocketChannel) key.channel();
-                readMessage(clientChannel);
-            }
-        }
-    }
-
-    private boolean writeMessage(SocketChannel clientChannel) {
-        ClientState state = channelToStateMap.get(clientChannel);
-
-        try {
-            return state.stream.writeMessages();
-        } catch (IOException e) {
-            System.err.println("Error writing to stream " + clientChannel);
-            disconnect(clientChannel);
-        }
-
-        return true;
-    }
-
-    private void acceptClient(ServerSocketChannel channel)  {
-        try {
-            SocketChannel clientChannel = channel.accept();
-            clientChannel.configureBlocking(false);
-
-            NonBlockingByteBufferStream stream = new NonBlockingByteBufferStream(clientChannel, this);
-            channelToStateMap.put(clientChannel, new ClientState(stream));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void readMessage(SocketChannel clientChannel) {
-        ClientState state = channelToStateMap.get(clientChannel);
-        ByteBuffer inputBuffer = state.input;
-
-        try {
-            int read = clientChannel.read(inputBuffer);
-
-            if (read == -1) {
-                // end of stream
-                disconnect(clientChannel);
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading from the stream " + clientChannel);
-            disconnect(clientChannel);
-        }
-
-        inputBuffer.flip();
-        processMessages(clientChannel, state, inputBuffer);
-        inputBuffer.compact();
-    }
-
-    private void processMessages(SocketChannel clientChannel, ClientState state, ByteBuffer inputBuffer) {
+    private void processMessages(ClientSocket socket, ClientState state, ByteBuffer inputBuffer) {
         while(true) {
             // do we have enough bytes for message size?
             if (inputBuffer.remaining() < 2)
@@ -179,28 +69,28 @@ public class SelectorSocketListener implements SelectRequester {
                     state.dispatcher.runOnce();
                 }
             } catch (EOFException e) {
-                System.out.println("Customer hung up " + clientChannel);
-                disconnect(clientChannel);
+                System.out.println("Customer hung up " + socket);
+                disconnect(socket);
                 return;
             } catch (IOException e) {
                 System.err.println("Cannot write to stream: " + e.getMessage());
                 e.printStackTrace();
-                disconnect(clientChannel);
+                disconnect(socket);
                 return;
             } catch (ValidationError e) {
                 System.err.println("Validation error:  " + e.getMessage());
                 e.printStackTrace();
-                disconnect(clientChannel);
+                disconnect(socket);
                 return;
             } catch (InterruptedException e) {
                 System.err.println("Thread interruption error:  " + e.getMessage());
                 e.printStackTrace();
-                disconnect(clientChannel);
+                disconnect(socket);
                 return;
             } catch (ExecutionException e) {
                 System.err.println("Future execution error:  " + e.getMessage());
                 e.printStackTrace();
-                disconnect(clientChannel);
+                disconnect(socket);
                 return;
             }
 
@@ -220,18 +110,18 @@ public class SelectorSocketListener implements SelectRequester {
         state.dispatcher = factory.getDispatcher(APIVersion, state.stream, UUID);
     }
 
-    private void disconnect(SocketChannel clientChannel) {
+    private void disconnect(ClientSocket socket) {
         try {
-            if (clientChannel != null) {
-                System.out.println("Disconnecting client " + clientChannel);
+            if (socket != null) {
+                System.out.println("Disconnecting client " + socket);
 
-                ClientState state = channelToStateMap.remove(clientChannel);
+                ClientState state = socketToStateMap.remove(socket);
 
                 if (state != null && state.dispatcher != null) {
                     state.dispatcher.removeConnection();
                 }
 
-                clientChannel.close();
+                socket.close();
             }
         } catch (IOException e) {
             // do nothing
@@ -239,9 +129,47 @@ public class SelectorSocketListener implements SelectRequester {
     }
 
     @Override
-    public void addChangeRequest(SelectChangeRequest request) {
-        requests.add(request);
-        selector.wakeup();
+    public void onConnect(ClientSocket clientSocket) {
+        try {
+            NonBlockingByteBufferStream stream = new NonBlockingByteBufferStream(clientSocket);
+            socketToStateMap.put(clientSocket, new ClientState(stream));
+        } catch (IOException e) {
+            disconnect(clientSocket);
+        }
+    }
+
+    @Override
+    public void onReadAvailable(ClientSocket clientSocket) {
+        ClientState state = socketToStateMap.get(clientSocket);
+        ByteBuffer inputBuffer = state.input;
+
+        try {
+            int read = clientSocket.read(inputBuffer);
+
+            if (read == -1) {
+                // end of stream
+                disconnect(clientSocket);
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from the stream " + clientSocket);
+            disconnect(clientSocket);
+        }
+
+        inputBuffer.flip();
+        processMessages(clientSocket, state, inputBuffer);
+        inputBuffer.compact();
+    }
+
+    @Override
+    public void onWriteAvailable(ClientSocket clientSocket) {
+        ClientState state = socketToStateMap.get(clientSocket);
+
+        try {
+            state.stream.writeMessages();
+        } catch (IOException e) {
+            System.err.println("Error writing to stream " + clientSocket);
+            disconnect(clientSocket);
+        }
     }
 
     private static class ClientState {

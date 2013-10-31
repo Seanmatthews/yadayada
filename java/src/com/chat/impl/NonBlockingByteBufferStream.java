@@ -1,17 +1,13 @@
 package com.chat.impl;
 
 import com.chat.BinaryStream;
-import com.chat.SelectChangeRequest;
-import com.chat.SelectRequester;
 import com.chat.msgs.Message;
+import com.chat.select.ClientSocket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import static com.chat.SelectChangeRequest.ChangeRequestType.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,21 +17,17 @@ import static com.chat.SelectChangeRequest.ChangeRequestType.*;
  * To change this template use File | Settings | File Templates.
  */
 public class NonBlockingByteBufferStream implements BinaryStream {
-    private final SocketChannel channel;
+    private final ClientSocket channel;
     private final ByteBuffer output;
     private final Queue<Message> queue;
-    private final SelectRequester selector;
 
     private ByteBuffer input;
     private int writeStartPosition;
 
-    public NonBlockingByteBufferStream(SocketChannel channel, SelectRequester selector) throws IOException {
-        this.channel = channel;
+    public NonBlockingByteBufferStream(ClientSocket socket) throws IOException {
+        this.channel = socket;
         this.output = ByteBuffer.allocateDirect(1024);
         this.queue = new ConcurrentLinkedQueue<>();
-        this.selector = selector;
-
-        this.selector.addChangeRequest(new SelectChangeRequest(channel, REGISTER));
     }
 
     public void onReadAvailable(ByteBuffer slice) {
@@ -130,7 +122,7 @@ public class NonBlockingByteBufferStream implements BinaryStream {
     @Override
     public void queueMessage(Message message) throws IOException {
         if (queue.offer(message)) {
-            selector.addChangeRequest(new SelectChangeRequest(channel, ENABLE_WRITE));
+            channel.enableWrite(true);
         }
         else {
             throw new IOException("Too many messages in the queue to send. Terminating.");
@@ -166,7 +158,7 @@ public class NonBlockingByteBufferStream implements BinaryStream {
         }
         else {
             // all done
-            selector.addChangeRequest(new SelectChangeRequest(channel, DISABLE_WRITE));
+            channel.enableWrite(false);
             return true;
         }
     }

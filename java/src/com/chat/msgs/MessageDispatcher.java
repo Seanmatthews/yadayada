@@ -1,7 +1,5 @@
 package com.chat.msgs;
 
-import com.chat.msgs.v1.ClientConnection;
-
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
