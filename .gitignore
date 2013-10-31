@@ -1,6 +1,6 @@
 **/*.pyc
-server/out
-server/.idea
+java/out
+java/.idea
 build/out
 build/tmp
 ios/**/build
