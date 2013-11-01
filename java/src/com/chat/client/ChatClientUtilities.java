@@ -5,7 +5,6 @@ import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,14 +15,14 @@ import java.util.Random;
  */
 public class ChatClientUtilities {
     public static long initialConnect(BinaryStream connection, String user, String password) throws IOException, ValidationError {
-        connection.queueMessage(new ConnectMessage(connection.getAPIVersion(), connection.getUUID()));
+        connection.sendMessage(new ConnectMessage(connection.getAPIVersion(), connection.getUUID()), true);
 
         connection.startReading();
         MessageTypes types = MessageTypes.lookup(connection.readByte());
         new ConnectAcceptMessage(connection);
         connection.finishReading();
 
-        connection.queueMessage(new RegisterMessage(user, password, user));
+        connection.sendMessage(new RegisterMessage(user, password, user), true);
 
         connection.startReading();
         types = MessageTypes.lookup(connection.readByte());
@@ -33,7 +32,7 @@ public class ChatClientUtilities {
             new RegisterRejectMessage(connection);
         connection.finishReading();
 
-        connection.queueMessage(new LoginMessage(user, password));
+        connection.sendMessage(new LoginMessage(user, password), true);
 
         long userId = 0;
 
@@ -45,7 +44,7 @@ public class ChatClientUtilities {
             new LoginRejectMessage(connection);
         connection.finishReading();
 
-        connection.queueMessage(new SearchChatroomsMessage(0, 0));
+        connection.sendMessage(new SearchChatroomsMessage(0, 0), true);
 
         return userId;
     }

@@ -58,7 +58,7 @@ public class ChatTextClient implements ChatClient {
 
         // Subscribe to the first one!
         if (chatroom.getName().equalsIgnoreCase("Global")) {
-            connection.queueMessage(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0));
+            connection.sendMessage(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0), true);
             subscribedChatroom = chatroom;
         }
     }
@@ -69,7 +69,7 @@ public class ChatTextClient implements ChatClient {
     }
 
     public void sendMessage(String message) throws IOException {
-        connection.queueMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message));
+        connection.sendMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message), true);
     }
 
     @Override

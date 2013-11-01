@@ -83,7 +83,7 @@ public class ChatGUI implements ChatClient {
             public void actionPerformed(ActionEvent e) {
                 try {
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.queueMessage(new LeaveChatroomMessage(user.getId(), chatroom.getId()));
+                    connection.sendMessage(new LeaveChatroomMessage(user.getId(), chatroom.getId()), true);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -95,7 +95,7 @@ public class ChatGUI implements ChatClient {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    connection.queueMessage(new SearchChatroomsMessage(0, 0));
+                    connection.sendMessage(new SearchChatroomsMessage(0, 0), true);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -111,7 +111,7 @@ public class ChatGUI implements ChatClient {
                         return;
 
                     Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.queueMessage(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0));
+                    connection.sendMessage(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0), true);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     System.exit(0);
@@ -126,7 +126,7 @@ public class ChatGUI implements ChatClient {
 
                 if (text != null && text.length() > 0) {
                     try {
-                        connection.queueMessage(new CreateChatroomMessage(user.getId(), text, 0, 0, 0));
+                        connection.sendMessage(new CreateChatroomMessage(user.getId(), text, 0, 0, 0), true);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                         System.exit(0);
@@ -151,7 +151,7 @@ public class ChatGUI implements ChatClient {
                     String textToSend = chatTextField.getText();
 
                     try {
-                        connection.queueMessage(new SubmitMessageMessage(user.getId(), chatroom.getId(), textToSend));
+                        connection.sendMessage(new SubmitMessageMessage(user.getId(), chatroom.getId(), textToSend), true);
                         chatTextField.setText("");
                     } catch (IOException e1) {
                         e1.printStackTrace();

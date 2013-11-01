@@ -1,7 +1,6 @@
 package com.chat.impl;
 
 import com.chat.BinaryStream;
-import com.chat.ChatMessage;
 import com.chat.msgs.Message;
 import com.chat.msgs.Utilities;
 
@@ -149,7 +148,7 @@ public class DataStream implements BinaryStream {
     }
 
     @Override
-    public void queueMessage(Message message) throws IOException {
+    public void sendMessage(Message message, boolean immediate) throws IOException {
         synchronized (dout) {
             message.write(this);
         }

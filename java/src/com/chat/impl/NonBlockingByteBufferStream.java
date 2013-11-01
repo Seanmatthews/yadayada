@@ -166,16 +166,28 @@ public class NonBlockingByteBufferStream implements BinaryStream {
     }
 
     @Override
-    public void queueMessage(Message message) throws IOException {
-        if (queue.offer(message)) {
-            socket.enableWrite(true);
+    public void sendMessage(Message message, boolean immediate) throws IOException {
+        if (immediate && output.position() == 0) {
+            // write to buffer
+            message.write(this);
+            // now flush the buffer
+            writeFromBuffer();
+
+            if (output.position() > 0) {
+                socket.enableWrite(true);
+            }
         }
         else {
-            throw new IOException("Too many messages in the queue to send. Terminating.");
+            if (queue.offer(message)) {
+                socket.enableWrite(true);
+            }
+            else {
+                throw new IOException("Too many messages in the queue to send. Terminating.");
+            }
         }
     }
 
-    public boolean writeMessages() throws IOException {
+    public void writeMessages() throws IOException {
         boolean messagesInQueue = true;
 
         if (output.position() > 0) {
@@ -200,13 +212,11 @@ public class NonBlockingByteBufferStream implements BinaryStream {
 
         if (output.position() > 0 || messagesInQueue) {
             // still stuff to write in the buffer
-            return false;
+            return;
         }
-        else {
-            // all done
-            socket.enableWrite(false);
-            return true;
-        }
+
+        // all done
+        socket.enableWrite(false);
     }
 
     public void writeFromBuffer() throws IOException {

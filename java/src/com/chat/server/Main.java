@@ -3,10 +3,7 @@ package com.chat.server;
 import com.chat.MessageRepository;
 import com.chat.User;
 import com.chat.UserRepository;
-import com.chat.impl.AwsRdsUserRepository;
-import com.chat.impl.InMemoryChatroomRepository;
-import com.chat.impl.InMemoryMessageRepository;
-import com.chat.impl.InMemoryUserRepository;
+import com.chat.impl.*;
 import com.chat.select.impl.EventServiceImpl;
 import org.apache.commons.cli.*;
 
@@ -71,16 +68,18 @@ public class Main {
             System.out.println("Loaded in-memory user repository");
         }
 
-        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-        chatroomRepo.createChatroom(admin, "Global");
-
         MessageRepository messageRepo = new InMemoryMessageRepository();
 
         String io = options.getOptionValue("io", "nonblocking");
         if (io.equals("blocking")) {
+            InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+            chatroomRepo.createChatroom(admin, "Global");
             new StreamSocketListener(port, userRepo, chatroomRepo, messageRepo);
         }
         else {
+            SingleThreadChatroomRepository chatroomRepo = new SingleThreadChatroomRepository();
+            chatroomRepo.createChatroom(admin, "Global");
+
             Selector selector = Selector.open();
             new SelectorSocketListener(selector, new EventServiceImpl(selector), port, userRepo, chatroomRepo, messageRepo);
         }

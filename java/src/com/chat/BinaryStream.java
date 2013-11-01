@@ -15,7 +15,7 @@ public interface BinaryStream {
     String getUUID();
     int getAPIVersion();
     void close();
-    void queueMessage(Message message) throws IOException;
+    void sendMessage(Message message, boolean immediate) throws IOException;
 
     byte   readByte() throws IOException;
     short  readShort() throws IOException;
