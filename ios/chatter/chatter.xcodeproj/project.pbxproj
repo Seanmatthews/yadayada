@@ -32,6 +32,7 @@
 		64A10D51181E1B2300A499B0 /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D50181E1B2300A499B0 /* Connection.m */; };
 		64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D56181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m */; };
 		64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */; };
+		64A10DA41824BBDA00A499B0 /* Location.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10DA31824BBDA00A499B0 /* Location.m */; };
 		B3ADCB68181855C500A25383 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB66181855C500A25383 /* Default.png */; };
 		B3ADCB69181855C500A25383 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB67181855C500A25383 /* Default@2x.png */; };
 /* End PBXBuildFile section */
@@ -87,6 +88,8 @@
 		64A10D56181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableViewCell+UITableViewCellCategory.m"; sourceTree = "<group>"; };
 		64A10D58181FA45300A499B0 /* UITableView+UITableViewCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITableView+UITableViewCategory.h"; sourceTree = "<group>"; };
 		64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableView+UITableViewCategory.m"; sourceTree = "<group>"; };
+		64A10DA21824BBDA00A499B0 /* Location.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Location.h; sourceTree = "<group>"; };
+		64A10DA31824BBDA00A499B0 /* Location.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Location.m; sourceTree = "<group>"; };
 		B3ADCB66181855C500A25383 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		B3ADCB67181855C500A25383 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -162,6 +165,8 @@
 				64A10D4B181DFC1400A499B0 /* UserDetails.m */,
 				64A10D4F181E1B2300A499B0 /* Connection.h */,
 				64A10D50181E1B2300A499B0 /* Connection.m */,
+				64A10DA21824BBDA00A499B0 /* Location.h */,
+				64A10DA31824BBDA00A499B0 /* Location.m */,
 				6458F39318172E7400AA8E81 /* Supporting Files */,
 			);
 			path = chatter;
@@ -351,6 +356,7 @@
 				64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */,
 				64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */,
 				6458F3A318172E7400AA8E81 /* ViewController.m in Sources */,
+				64A10DA41824BBDA00A499B0 /* Location.m in Sources */,
 				64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
 				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,

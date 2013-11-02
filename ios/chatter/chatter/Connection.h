@@ -21,6 +21,7 @@
 
 @property BOOL streamReady;
 
++ (id)sharedInstance;
 - (id)init;
 - (void)connect;
 - (void)sendMessage:(MessageBase*)message;

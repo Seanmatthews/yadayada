@@ -22,6 +22,7 @@
 // being joined to several chats at once.
 @property long long chatroomId;
 
++ (id)sharedInstance;
 - (id)init;
 - (id) initWithHandle:(NSString*)handle;
 - (void)setHandle:(NSString *)handle;

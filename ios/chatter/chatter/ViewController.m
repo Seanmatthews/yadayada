@@ -28,15 +28,17 @@ const int MESSAGE_NUM_THRESH = 50;
 {
     [super viewDidLoad];
     
+    ud = [UserDetails sharedInstance];
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
-        ud = [[UserDetails alloc] init];
+        ud.handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"userHandle"];
     }
     else {
         // Getting here implies that the user has done the tutorial
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
-        ud = [[UserDetails alloc] initWithHandle:userHandle];
+        [[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
+        ud.handle = userHandle;
     }
     
     chatQueue = [[NSMutableArray alloc] init];
@@ -46,7 +48,8 @@ const int MESSAGE_NUM_THRESH = 50;
     
     // Get connection object and add this controller's callback
     // method for incoming connections.
-    connection = [[Connection alloc] init];
+//    connection = [[Connection alloc] init];
+    connection= [Connection sharedInstance];
     [connection connect];
     ViewController* __weak weakSelf = self;
     [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
