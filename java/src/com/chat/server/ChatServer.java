@@ -23,5 +23,5 @@ public interface ChatServer {
 
     void searchChatrooms(BinaryStream sender);
     void joinChatroom(BinaryStream sender, User user, Chatroom chatroom);
-    void leaveChatroom(BinaryStream sender, User user, Chatroom chatroom);
+    void leaveChatroom(BinaryStream senderConnection, User sender, Chatroom chatroom, boolean removing);
 }

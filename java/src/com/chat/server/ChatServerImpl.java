@@ -52,7 +52,7 @@ public class ChatServerImpl implements ChatServer {
 
             Iterator<Chatroom> chatrooms = user.getChatrooms();
             while(chatrooms.hasNext()) {
-                leaveChatroom(sender, user, chatrooms.next());
+                leaveChatroom(sender, user, chatrooms.next(), true);
             }
         }
 
@@ -280,7 +280,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void leaveChatroom(BinaryStream senderConnection, User sender, Chatroom chatroom) {
+    public void leaveChatroom(BinaryStream senderConnection, User sender, Chatroom chatroom, boolean removing) {
         System.out.println("Removing " + sender + " from " + chatroom);
 
         LeftChatroomMessage meLeaving = new LeftChatroomMessage(chatroom.getId(), sender.getId());
@@ -296,7 +296,8 @@ public class ChatServerImpl implements ChatServer {
                 try {
                     chatMemberSender.sendMessage(meLeaving, true);
                 } catch (IOException e) {
-                    removeConnection(chatMemberSender);
+                    if (!removing)
+                        removeConnection(chatMemberSender);
                 }
             }
         }

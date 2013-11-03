@@ -64,8 +64,7 @@ public class SelectorSocketListener implements SocketListener {
             System.out.println("Customer hung up " + socket);
             disconnect(socket);
         } catch (IOException e) {
-            System.err.println("Cannot write to stream: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Cannot write to stream: " + e.getMessage());
             disconnect(socket);
         } catch (ValidationError e) {
             System.err.println("Validation error:  " + e.getMessage());

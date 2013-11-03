@@ -79,7 +79,8 @@ public class Main {
         }
         else {
             MessageRepository messageRepo = new STMessageRepository();
-            ChatroomRepository chatroomRepo = new STChatroomRepository();
+            //ChatroomRepository chatroomRepo = new STChatroomRepository();
+            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
             chatroomRepo.createChatroom(admin, "Global");
 
             Selector selector = Selector.open();

@@ -65,7 +65,7 @@ public class V1Dispatcher implements MessageDispatcher {
                 LeaveChatroomMessage lcMsg = new LeaveChatroomMessage(stream);
                 User lcUser = getAndValidateUser(lcMsg.getUserId());
                 Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
-                server.leaveChatroom(stream, lcUser, lcChatroom);
+                server.leaveChatroom(stream, lcUser, lcChatroom, false);
                 break;
 
             case Register:
