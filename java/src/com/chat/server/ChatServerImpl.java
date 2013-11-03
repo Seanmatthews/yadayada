@@ -105,6 +105,23 @@ public class ChatServerImpl implements ChatServer {
     public void registerUser(final BinaryStream senderConnection, final String login, String password, String handle) {
         System.out.println("Registering user " + login);
 
+        try {
+            if (login == null || login.length() == 0) {
+                senderConnection.sendMessage(new RegisterRejectMessage("Invalid login"), true);
+                return;
+            }
+            if (password == null || password.length() == 0) {
+                senderConnection.sendMessage(new RegisterRejectMessage("Invalid password"), true);
+                return;
+            }
+            if (handle == null || handle.length() ==0) {
+                senderConnection.sendMessage(new RegisterRejectMessage("Invalid handle"), true);
+                return;
+            }
+        } catch (IOException e) {
+            removeConnection(senderConnection);
+        }
+
         userRepo.registerUser(login, password, handle, senderConnection.getUUID(), new UserRepositoryCompletionHandler() {
             @Override
             public void onCompletion(UserRepositoryActionResult result) {
@@ -132,6 +149,19 @@ public class ChatServerImpl implements ChatServer {
     @Override
     public void login(final BinaryStream senderConnection, final String login, String password) {
         System.out.println("Logging in user " + login);
+
+        try {
+            if (login == null || login.length() == 0) {
+                senderConnection.sendMessage(new LoginRejectMessage("Invalid login"), true);
+                return;
+            }
+            if (password == null || password.length() == 0) {
+                senderConnection.sendMessage(new LoginRejectMessage("Invalid password"), true);
+                return;
+            }
+        } catch (IOException e) {
+            removeConnection(senderConnection);
+        }
 
         userRepo.login(login, password, new UserRepositoryCompletionHandler() {
             @Override
