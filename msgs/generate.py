@@ -43,6 +43,7 @@ t = Template(file='Message.java.template')
 
 clientMessages = []
 serverMessages = []
+allMessages = []
 for msg in root:
    if msg.tag == 'msg':
       message = Msg(msg.attrib['name'], msg.attrib['val'])
@@ -71,9 +72,10 @@ for msg in root:
           clientMessages.append(message);
       else:
           serverMessages.append(message);
-
+      allMessages.append(message)
+ 
 typesT = Template(file='MessageTypes.java.template')
-typesT.msgs = clientMessages + serverMessages
+typesT.msgs = allMessages
 typesT.package = package
 f = file(serverPath + '/MessageTypes.java', 'w')
 f.write(str(typesT))

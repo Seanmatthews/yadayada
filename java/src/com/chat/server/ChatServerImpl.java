@@ -61,6 +61,21 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void newMessage(BinaryStream senderConnection, User sender, Chatroom chatroom, String message) {
+        try {
+            if (message.length() == 0 || message.length() > ChatMessage.MAX_LENGTH) {
+                senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(), "Invalid message length: " + message.length()), true);
+                return;
+            }
+
+            if (!chatroomRepo.containsUser(chatroom, sender)) {
+                senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(), "Not in chatroom: " + chatroom.getName()), true);
+                return;
+            }
+        }
+        catch(IOException e) {
+            removeConnection(senderConnection);
+        }
+
         System.out.println("New message from " + sender + " " + message);
 
         ChatMessage msg = messageRepo.create(chatroom, sender, message);
@@ -106,15 +121,15 @@ public class ChatServerImpl implements ChatServer {
         System.out.println("Registering user " + login);
 
         try {
-            if (login == null || login.length() == 0) {
+            if (login.length() == 0) {
                 senderConnection.sendMessage(new RegisterRejectMessage("Invalid login"), true);
                 return;
             }
-            if (password == null || password.length() == 0) {
+            if (password.length() == 0) {
                 senderConnection.sendMessage(new RegisterRejectMessage("Invalid password"), true);
                 return;
             }
-            if (handle == null || handle.length() ==0) {
+            if (handle.length() ==0) {
                 senderConnection.sendMessage(new RegisterRejectMessage("Invalid handle"), true);
                 return;
             }

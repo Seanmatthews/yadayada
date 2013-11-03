@@ -1,5 +1,6 @@
 package com.chat.server;
 
+import com.chat.ChatroomRepository;
 import com.chat.MessageRepository;
 import com.chat.User;
 import com.chat.UserRepository;
@@ -68,16 +69,17 @@ public class Main {
             System.out.println("Loaded in-memory user repository");
         }
 
-        MessageRepository messageRepo = new InMemoryMessageRepository();
-
         String io = options.getOptionValue("io", "nonblocking");
         if (io.equals("blocking")) {
-            InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+            MessageRepository messageRepo = new InMemoryMessageRepository();
+            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
             chatroomRepo.createChatroom(admin, "Global");
+
             new StreamSocketListener(port, userRepo, chatroomRepo, messageRepo);
         }
         else {
-            SingleThreadChatroomRepository chatroomRepo = new SingleThreadChatroomRepository();
+            MessageRepository messageRepo = new STMessageRepository();
+            ChatroomRepository chatroomRepo = new STChatroomRepository();
             chatroomRepo.createChatroom(admin, "Global");
 
             Selector selector = Selector.open();

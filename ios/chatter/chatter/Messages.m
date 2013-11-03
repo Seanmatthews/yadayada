@@ -185,6 +185,17 @@
 
 @end
 
+@implementation SubmitMessageRejectMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 23;
+    return self;
+}
+
+@end
+
 @implementation ChatroomMessage
 
 - (id)init

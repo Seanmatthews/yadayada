@@ -79,6 +79,10 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[MessageMessage alloc] init];
         break;
 
+        case SubmitMessageReject:
+        mb = [[SubmitMessageRejectMessage alloc] init];
+        break;
+
         case Chatroom:
         mb = [[ChatroomMessage alloc] init];
         break;
@@ -117,9 +121,10 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     [data appendBytes:&b length:1];
     
     for (NSString* key in props) {
-//        NSLog(@"msgLen: %d",msgLen);
+        NSLog(@"msgLen: %d",msgLen);
         NSString* typename = [props valueForKey:key];
-//        NSLog(@"%@ : %@",key,typename);
+        NSLog(@"%@ : %@",key,typename);
+        //Class C = NSClassFromString([props valueForKey:key]);
         
         if ([typename isEqualToString:@"NSString"]) {
             short strLen = (short)[[message valueForKey:key] lengthOfBytesUsingEncoding:STRENC];
@@ -129,23 +134,22 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             msgLen += 2 + strLen;
         }
         else if ([typename isEqualToString:@"q"]) {
-            long long l = CFSwapInt64HostToBig([[message valueForKey:key] longLongValue]);
-            NSLog(@"val %lld",[[message valueForKey:key] longLongValue]);
+            long long l = CFSwapInt64HostToBig((long long)[message valueForKey:key]);
             [data appendBytes:&l length:8];
             msgLen += 8;
         }
         else if ([typename isEqualToString:@"s"]) {
-            short s = CFSwapInt16HostToBig([[message valueForKey:key] shortValue]);
+            short s = CFSwapInt16HostToBig((short)[message valueForKey:key]);
             [data appendBytes:&s length:2];
             msgLen += 2;
         }
         else if ([typename isEqualToString:@"i"]) {
-            int i = CFSwapInt32HostToBig([[message valueForKey:key] integerValue]);
+            int i = CFSwapInt32HostToBig((int)[message valueForKey:key]);
             [data appendBytes:&i length:4];
             msgLen += 4;
         }
         else if ([typename isEqualToString:@"Byte"]) {
-            Byte b = (Byte)[[message valueForKey:key] unsignedCharValue];
+            Byte b = (Byte)[message valueForKey:key];
             [data appendBytes:&b length:1];
             msgLen += 1;
         }
@@ -155,19 +159,19 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     }
     
     // set the correct msg length
-//    NSLog(@"msgLen: %d",msgLen);
+    NSLog(@"msgLen: %d",msgLen);
     short newMsgLen = CFSwapInt16HostToBig(msgLen);
     [data replaceBytesInRange:NSMakeRange(0, 2) withBytes:&newMsgLen length:2];
 
     return data;
 }
 
-+ (MessageBase*)deserializeMessage:(BUFTYPE)data withLength:(short)length
++ (MessageBase*)deserializeMessage:(BUFTYPE)data withLength:(int*)length
 {
-//    NSLog(@"deser length: %d",length);
+    NSLog(@"deser length: %d",*length);
     
     // If this is the case, the bytes can't possibly make a message
-    if (length < 3) {
+    if (*length < 3) {
         return nil;
     }
     
@@ -175,18 +179,18 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     
     // Header info
     int idx = 0;
-//    short msgLen = CFSwapInt16BigToHost(*(short*)&data[idx]);
-//    idx += 2;
+    short msgLen = CFSwapInt16BigToHost(*(short*)&data[idx]);
+    idx += 2;
     Byte type = *(Byte*)&data[idx];
     idx++;
     mb = [self messageWithType:type];
-//    NSLog(@"msg type: %d",mb.type);
+    NSLog(@"msg type: %d",mb.type);
     
-//    if (length-2 < msgLen) {
-//        // Numbers of bytes is not enough to fill out the message type
-//        NSLog(@"Number of bytes %d does not match message length %d",length-2,msgLen);
-//        return nil;
-//    }
+    if (*length-2 < msgLen) {
+        // Numbers of bytes is not enough to fill out the message type
+        NSLog(@"Number of bytes %d does not match message length %d",*length-2,msgLen);
+        return nil;
+    }
     
     // NOTE: This will only get properties for the subclass passed to the function
     OrderedDictionary* props = [self classPropsFor:[mb class]];
@@ -194,12 +198,12 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     for (NSString* key in props) {
         
         NSString* typename = [props valueForKey:key];
-//        NSLog(@"%@ : %@",key,typename);
+        NSLog(@"%@ : %@",key,typename);
         
         if ([typename isEqualToString:@"NSString"]) {
             short strLen = CFSwapInt16BigToHost(*(short*)(data+idx));
             idx += 2;
-//            NSLog(@"str len: %d",strLen);
+            NSLog(@"str len: %d",strLen);
             NSString* str = [[NSString alloc] initWithBytes:(data+idx) length:strLen encoding:STRENC];
             idx += strLen;
             [mb setValue:str forKey:key];
@@ -226,6 +230,8 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         }
     }
     
+    // decrement length so that caller knows how many bytes were used from the buffer
+    *length -= idx;
     return mb;
 }
 

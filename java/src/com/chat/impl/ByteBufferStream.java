@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
  * Time: 2:02 PM
  * To change this template use File | Settings | File Templates.
  */
-public class NonBlockingByteBufferStream implements BinaryStream {
+public class ByteBufferStream implements BinaryStream {
     private final ClientSocket socket;
     private final ByteBuffer rawInput;
     private final ByteBuffer output;
@@ -30,7 +30,7 @@ public class NonBlockingByteBufferStream implements BinaryStream {
     private int APIVersion;
     private String UUID;
 
-    public NonBlockingByteBufferStream(ClientSocket socket) throws IOException {
+    public ByteBufferStream(ClientSocket socket) throws IOException {
         this.socket = socket;
         this.output = ByteBuffer.allocateDirect(1024);
         this.rawInput = ByteBuffer.allocateDirect(1024);

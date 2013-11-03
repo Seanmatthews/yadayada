@@ -24,6 +24,7 @@ typedef enum {
     ConnectAccept = 17,
     ConnectReject = 18,
     Message = 22,
+    SubmitMessageReject = 23,
     Chatroom = 32,
     JoinChatroomReject = 36,
     JoinedChatroom = 37,
@@ -185,6 +186,16 @@ typedef enum {
 @property long long chatroomId;
 @property NSString* senderHandle;
 @property NSString* message;
+
+@end
+
+@interface SubmitMessageRejectMessage : MessageBase
+
+- (id)init;
+
+@property long long userId;
+@property long long chatroomId;
+@property NSString* reason;
 
 @end
 

@@ -57,6 +57,12 @@
         <field name="message" type="String" />
     </msg>
 
+    <msg name="SubmitMessageReject" val="23" origin="server">
+        <field name="userId" type="long" />
+        <field name="chatroomId" type="long" />
+        <field name="reason" type="String" />
+    </msg>
+
     <msg name="SearchChatrooms" val="31" origin="client">
         <field name="latitude" type="long" />
         <field name="longitude" type="long" />

@@ -8,6 +8,8 @@ package com.chat;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatMessage {
+    public static final int MAX_LENGTH = 1000;
+
     private final long id;
     private final Chatroom chatroom;
     private final User sender;

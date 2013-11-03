@@ -4,11 +4,10 @@ import com.chat.ChatroomRepository;
 import com.chat.MessageRepository;
 import com.chat.UserRepository;
 import com.chat.impl.ByteBufferParserListener;
-import com.chat.impl.NonBlockingByteBufferStream;
+import com.chat.impl.ByteBufferStream;
 import com.chat.msgs.MessageDispatcher;
 import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
-import com.chat.msgs.v1.ConnectAcceptMessage;
 import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
 import com.chat.select.SocketListener;
@@ -121,7 +120,7 @@ public class SelectorSocketListener implements SocketListener {
     @Override
     public void onConnect(ClientSocket clientSocket) {
         try {
-            NonBlockingByteBufferStream stream = new NonBlockingByteBufferStream(clientSocket);
+            ByteBufferStream stream = new ByteBufferStream(clientSocket);
             socketToStateMap.put(clientSocket, new ClientState(stream));
         } catch (IOException e) {
             disconnect(clientSocket);
@@ -147,10 +146,10 @@ public class SelectorSocketListener implements SocketListener {
     }
 
     private static class ClientState {
-        final NonBlockingByteBufferStream stream;
+        final ByteBufferStream stream;
         MessageDispatcher dispatcher;
 
-        ClientState(NonBlockingByteBufferStream stream) {
+        ClientState(ByteBufferStream stream) {
             this.stream = stream;
         }
     }

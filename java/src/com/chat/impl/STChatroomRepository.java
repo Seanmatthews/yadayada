@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Time: 8:47 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SingleThreadChatroomRepository implements ChatroomRepository {
+public class STChatroomRepository implements ChatroomRepository {
     // We have lots of threads accessing this repository
     // We need to keep nextChatroomId and the map in sync
     private long nextChatroomId = 1;
