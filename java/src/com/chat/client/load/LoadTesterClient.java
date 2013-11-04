@@ -37,6 +37,7 @@ public class LoadTesterClient implements ChatClient, Runnable {
 
     private Chatroom subscribedChatroom;
     private User user;
+    public volatile boolean alive;
 
     public LoadTesterClient(String host, int port, String user, String password, CountDownLatch latch) throws IOException, InterruptedException, ValidationError {
         this.host = host;
@@ -48,8 +49,6 @@ public class LoadTesterClient implements ChatClient, Runnable {
 
     @Override
     public void run() {
-        boolean down = false;
-
         try {
             Socket socket = new Socket(host, port);
             DataStream stream = new DataStream(socket);
@@ -70,18 +69,16 @@ public class LoadTesterClient implements ChatClient, Runnable {
             connection.sendMessage(new JoinChatroomMessage(user.getId(), global.getId(), 0, 0), true);
             subscribedChatroom = global;
 
+            alive = true;
             latch.countDown();
-            down = true;
 
             new ChatClientDispatcher(this, connection, chatroomRepo, userRepo).run();
         }
         catch(Exception e) {
+            alive = false;
             System.err.println("Crapping out! " + e.getMessage());
             e.printStackTrace();
-        } finally {
-            if (!down) {
-                latch.countDown();
-            }
+            latch.countDown();
         }
     }
 
