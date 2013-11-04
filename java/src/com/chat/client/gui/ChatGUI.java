@@ -69,6 +69,8 @@ public class ChatGUI implements ChatClient {
         user = new User(userId, userName, userRepo);
         userRepo.addUser(user);
 
+        connection.sendMessage(new SearchChatroomsMessage(0, 0), true);
+
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatClientDispatcher(this, connection, chatroomRepo, userRepo));
 
@@ -229,6 +231,11 @@ public class ChatGUI implements ChatClient {
         if (!userJList.getSelectedValuesList().contains(user)) {
             ((DefaultListModel<User>)userJList.getModel()).addElement(user);
         }
+    }
+
+    @Override
+    public void onJoinedChatroomReject(String reason) {
+        System.err.println("Error entering chatroom: " + reason);
     }
 
     @Override

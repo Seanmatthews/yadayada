@@ -123,4 +123,9 @@ public class MapServer extends NanoHTTPD implements ChatClient {
     public void onLeftChatroom(Chatroom chatroom, User user) {
         chatroom.removeUser(user);
     }
+
+    @Override
+    public void onJoinedChatroomReject(String reason) {
+        System.err.println("Error entering chatroom: " + reason);
+    }
 }

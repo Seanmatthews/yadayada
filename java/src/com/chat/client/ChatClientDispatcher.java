@@ -44,6 +44,15 @@ public class ChatClientDispatcher implements Runnable {
                         client.onJoinedChatroom(jcChatroom, jcUser);
                         break;
 
+                    case LoginAccept:
+                        System.out.println("WTF");
+                        break;
+
+                    case JoinChatroomReject:
+                        JoinChatroomRejectMessage jcrMsg = new JoinChatroomRejectMessage(connection);
+                        client.onJoinedChatroomReject(jcrMsg.getReason());
+                        break;
+
                     case LeftChatroom:
                         LeftChatroomMessage lcMsg = new LeftChatroomMessage(connection);
                         User lcUser = userRepo.get(lcMsg.getUserId(), null).get().getUser();

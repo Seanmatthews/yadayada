@@ -22,6 +22,7 @@ public class LoadTester {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         int numClients = Integer.parseInt(args[2]);
+        int startClient = Integer.parseInt(args[3]);
 
         System.out.println("Starting setup of clients");
 
@@ -35,7 +36,7 @@ public class LoadTester {
                 System.out.println("- Starting client " + i);
             }
 
-            clients[i] = new LoadTesterClient(host, port, "Load" + i, "Pass" + i, countDownLatch);
+            clients[i] = new LoadTesterClient(host, port, "Load" + i + startClient, "Pass" + i, countDownLatch);
             exec.execute(clients[i]);
         }
 

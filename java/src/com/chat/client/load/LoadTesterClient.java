@@ -48,6 +48,8 @@ public class LoadTesterClient implements ChatClient, Runnable {
 
     @Override
     public void run() {
+        boolean down = false;
+
         try {
             Socket socket = new Socket(host, port);
             DataStream stream = new DataStream(socket);
@@ -55,7 +57,7 @@ public class LoadTesterClient implements ChatClient, Runnable {
             stream.setAPIVersion(V1Dispatcher.VERSION_ID);
             connection = stream;
 
-            System.out.println("Connected to " + socket);
+            //System.out.println("Connected to " + socket);
 
             InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
             InMemoryUserRepository userRepo = new InMemoryUserRepository();
@@ -68,14 +70,18 @@ public class LoadTesterClient implements ChatClient, Runnable {
             connection.sendMessage(new JoinChatroomMessage(user.getId(), global.getId(), 0, 0), true);
             subscribedChatroom = global;
 
-            System.out.println("Counting down!");
             latch.countDown();
+            down = true;
 
             new ChatClientDispatcher(this, connection, chatroomRepo, userRepo).run();
         }
         catch(Exception e) {
-            System.out.println("Crapping out! " + e.getMessage());
+            System.err.println("Crapping out! " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            if (!down) {
+                latch.countDown();
+            }
         }
     }
 
@@ -86,7 +92,7 @@ public class LoadTesterClient implements ChatClient, Runnable {
 
     @Override
     public void onMessage(ChatMessage message) {
-        System.out.println(message);
+        //System.out.println(message);
     }
 
     public void sendMessage(String message) throws IOException {
@@ -101,5 +107,10 @@ public class LoadTesterClient implements ChatClient, Runnable {
     @Override
     public void onLeftChatroom(Chatroom chatroom, User user) {
 
+    }
+
+    @Override
+    public void onJoinedChatroomReject(String reason) {
+        System.err.println("Error entering chatroom: " + reason);
     }
 }

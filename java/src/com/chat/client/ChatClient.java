@@ -18,4 +18,5 @@ public interface ChatClient {
     void onMessage(ChatMessage message);
     void onJoinedChatroom(Chatroom chat, User user);
     void onLeftChatroom(Chatroom chatroom, User user);
+    void onJoinedChatroomReject(String reason);
 }

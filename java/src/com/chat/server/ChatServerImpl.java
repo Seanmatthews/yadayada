@@ -48,11 +48,16 @@ public class ChatServerImpl implements ChatServer {
         User user = connectionUserMap.remove(sender);
 
         if (user != null) {
-            userConnectionMap.remove(user);
+            BinaryStream conn = userConnectionMap.remove(user);
 
             Iterator<Chatroom> chatrooms = user.getChatrooms();
             while(chatrooms.hasNext()) {
-                leaveChatroom(sender, user, chatrooms.next(), true);
+                Chatroom next = chatrooms.next();
+                leaveChatroom(sender, user, next, true);
+
+                if (conn != null && conn != user) {
+                    leaveChatroom(conn, user, next, true);
+                }
             }
         }
 

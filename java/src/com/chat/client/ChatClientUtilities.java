@@ -44,8 +44,6 @@ public class ChatClientUtilities {
             new LoginRejectMessage(connection);
         connection.finishReading();
 
-        connection.sendMessage(new SearchChatroomsMessage(0, 0), true);
-
         return userId;
     }
 }

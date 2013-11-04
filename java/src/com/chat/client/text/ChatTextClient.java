@@ -82,6 +82,11 @@ public class ChatTextClient implements ChatClient {
         System.out.println(user + " has left " + chatroom);
     }
 
+    @Override
+    public void onJoinedChatroomReject(String reason) {
+        System.err.println("Error entering chatroom: " + reason);
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException, ValidationError {
         int port = Integer.parseInt(args[1]);
         new ChatTextClient(args[0], port, args[2], args[3]);

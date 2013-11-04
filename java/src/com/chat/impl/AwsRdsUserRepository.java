@@ -22,7 +22,7 @@ public class AwsRdsUserRepository implements UserRepository {
     // SQL connection
     private final Connection connect;
 
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = Executors.newFixedThreadPool(50);
 
     // cache
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
