@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "Messages.h"
+#import "UIImage+ImageEffects.h"
 
 const int MESSAGE_NUM_THRESH = 50;
 
@@ -18,7 +19,7 @@ const int MESSAGE_NUM_THRESH = 50;
 
 @implementation ViewController
 
-@synthesize userHandle;
+//@synthesize userHandle;
 @synthesize userInputTextField;
 @synthesize scrollView;
 @synthesize mTableView;
@@ -29,18 +30,19 @@ const int MESSAGE_NUM_THRESH = 50;
     [super viewDidLoad];
     
     ud = [UserDetails sharedInstance];
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
-        ud.handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"userHandle"];
-    }
-    else {
-        // Getting here implies that the user has done the tutorial
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
-        [[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
-        ud.handle = userHandle;
-    }
+//    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
+//        ud.handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"userHandle"];
+//    }
+//    else {
+//        // Getting here implies that the user has done the tutorial
+//        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
+//        [[NSUserDefaults standardUserDefaults] synchronize];
+//        
+//        [[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
+//        ud.handle = userHandle;
+//    }
     
+//    menuContainer = [[MenuViewController alloc] init];
     chatQueue = [[NSMutableArray alloc] init];
     
     userInputTextField.returnKeyType = UIReturnKeySend;
@@ -48,7 +50,6 @@ const int MESSAGE_NUM_THRESH = 50;
     
     // Get connection object and add this controller's callback
     // method for incoming connections.
-//    connection = [[Connection alloc] init];
     connection= [Connection sharedInstance];
     [connection connect];
     ViewController* __weak weakSelf = self;
@@ -58,7 +59,7 @@ const int MESSAGE_NUM_THRESH = 50;
     // the view is completely loaded.
     [self performSelector:@selector(connectRegisterLogin) withObject:nil afterDelay:1.0];
     
-    NSLog(@"handle: %@",userHandle);
+//    NSLog(@"handle: %@",userHandle);
 }
 
 - (void)didReceiveMemoryWarning
@@ -88,6 +89,13 @@ const int MESSAGE_NUM_THRESH = 50;
     }
 }
 
+//- (IBAction)pressedMenuButton:(id)sender
+//{
+//    //menuContainer.view.backgroundColor = [UIColor colorWithPatternImage:[self blurredSnapshot]];
+//    //menuContainer.bgImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default.png"]];
+////    UIImageView* newview = [[UIImageView alloc] initWithImage:[self blurredSnapshot]];
+//    [self presentViewController:menuContainer animated:NO completion:nil];
+//}
 
 #pragma mark - Keyboard Interaction
 
@@ -154,24 +162,6 @@ const int MESSAGE_NUM_THRESH = 50;
     cm.APIVersion = 1;
     cm.UUID = ud.UUID;
     [self sendMessage:cm];
-    
-//    RegisterMessage* rm = [[RegisterMessage alloc] init];
-//    rm.handle = @"sean";
-//    rm.userName = ud.UUID;
-//    rm.password = @"pass";
-//    [self sendMessage:rm];
-//    
-//    LoginMessage* lm = [[LoginMessage alloc] init];
-//    lm.userName = ud.UUID;
-//    lm.password = @"pass";
-//    [self sendMessage:lm];
-//    
-//    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
-//    jcm.userId = ud.userId;
-//    jcm.chatroomId = ud.chatroomId;
-//    jcm.latitude = 0;
-//    jcm.longitude = 0;
-//    [self sendMessage:jcm];
 }
 
 - (void)registerMessage
@@ -387,5 +377,39 @@ const int MESSAGE_NUM_THRESH = 50;
  }
  
  */
+
+
+#pragma mark - Blurred Snapshot
+
+- (UIImage*)blurredSnapshot
+{
+    // Create the image context
+    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, YES, self.view.window.screen.scale);
+    
+    // There he is! The new API method
+    [self.view drawViewHierarchyInRect:self.view.frame afterScreenUpdates:NO];
+    
+    // Get the snapshot
+    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
+    //[UIImage imageNamed:@"Default@2x.png"];
+    
+    // Now apply the blur effect using Apple's UIImageEffect category
+    UIImage *blurredSnapshotImage = [snapshotImage applyLightEffect];
+    
+    // Or apply any other effects available in "UIImage+ImageEffects.h"
+    //UIImage *blurredSnapshotImage = [snapshotImage applyDarkEffect];
+    //UIImage *blurredSnapshotImage = [snapshotImage applyExtraLightEffect];
+    
+    // Be nice and clean your mess up
+    UIGraphicsEndImageContext();
+    
+    return blurredSnapshotImage;
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
+    vc.image =[self blurredSnapshot];
+}
 
 @end

@@ -7,7 +7,7 @@
 //
 
 #import "ThirdPageViewController.h"
-#import "ViewController.h"
+#import "MenuViewController.h"
 
 
 @interface ThirdPageViewController ()
@@ -103,7 +103,7 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    ViewController* vc = (ViewController *)segue.destinationViewController;
+    MenuViewController* vc = (MenuViewController *)segue.destinationViewController;
     vc.userHandle = handleTextField.text;
 }
 

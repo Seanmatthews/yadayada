@@ -13,18 +13,20 @@
 #import "UITableViewCell+UITableViewCellCategory.h"
 #import "UITableView+UITableViewCategory.h"
 #import "Messages.h"
+#import "MenuViewController.h"
 
 @interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
 {
     UserDetails* ud;
     Connection* connection;
     NSThread* connectionThread;
+//    MenuViewController* menuContainer;
     
     // TODO: this will be an array of arrays of dicts for multiple chat rooms
     NSMutableArray* chatQueue;
 }
 
-@property (nonatomic, strong) NSString* userHandle;
+//@property (nonatomic, strong) NSString* userHandle;
 @property (nonatomic, retain) IBOutlet UITextField* userInputTextField;
 @property (nonatomic, retain) IBOutlet UIScrollView* scrollView;
 @property (nonatomic, retain) IBOutlet UITableView* mTableView;
@@ -38,6 +40,9 @@
 - (void)tappedCell:(id)sender;
 - (void)swipedCell:(id)sender;
 - (void)receivedMessage:(MessageMessage*) message;
+//- (IBAction)pressedMenuButton:(id)sender;
+- (UIImage*)blurredSnapshot;
+
 
 
 @end
