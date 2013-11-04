@@ -5,6 +5,10 @@ import com.chat.msgs.ValidationError;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,23 +25,34 @@ public class LoadTester {
 
         System.out.println("Starting setup of clients");
 
-        ChatTextClient[] clients = new ChatTextClient[numClients];
+        ExecutorService exec = Executors.newCachedThreadPool();
+
+        CountDownLatch countDownLatch = new CountDownLatch(numClients);
+
+        LoadTesterClient[] clients = new LoadTesterClient[numClients];
         for (int i=0; i<numClients; i++) {
             if (i % 10 == 0) {
                 System.out.println("- Starting client " + i);
             }
 
-            clients[i] = new ChatTextClient(host, port, "Load" + i, "Pass" + i);
+            clients[i] = new LoadTesterClient(host, port, "Load" + i, "Pass" + i, countDownLatch);
+            exec.execute(clients[i]);
         }
 
-        Thread.sleep(5000);
-
-        System.out.println("Finished setup up clients");
+        while(true) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
+            long count = countDownLatch.getCount();
+            System.out.println("Latch - " + count);
+            if (count == 0)
+                break;
+        }
 
         Random random = new Random();
         while(true) {
-            clients[random.nextInt(numClients)].sendMessage("Hey there");
-            Thread.sleep(100);
+            int i = random.nextInt(numClients);
+            System.out.println("Client " + i);
+            clients[i].sendMessage("Hey there");
+            Thread.sleep(10);
         }
     }
 }
