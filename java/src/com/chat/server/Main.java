@@ -8,6 +8,9 @@ import com.chat.impl.*;
 import com.chat.select.impl.EventServiceImpl;
 import org.apache.commons.cli.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.channels.Selector;
 import java.sql.Connection;
@@ -35,10 +38,12 @@ public class Main {
         myOptions.addOption("io", true, "blocking or nonblocking");
         CommandLine options;
 
+        Logger logger = LogManager.getLogger();
+
         try {
             options = parser.parse(myOptions, args);
         } catch (ParseException e) {
-            System.err.println(e.getMessage());
+            logger.error("Error parsing options", e);
             return;
         }
 
@@ -57,34 +62,36 @@ public class Main {
             // Setup the connection with the DB
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(connectionString, username, password);
-            userRepo = new AwsRdsUserRepository(connection);
+            userRepo = new AwsRdsUserRepository(connection, logger);
             admin = userRepo.login("admin", "admin", null).get().getUser();
 
-            System.out.println("Loaded database user repository");
+            logger.info("Loaded database user repository {} {} Username={} Password={}", driver, connectionString, username, password);
         }
         else {
-            userRepo = new InMemoryUserRepository();
+            userRepo = new InMemoryUserRepository(logger);
             admin = userRepo.registerUser("admin", "admin", "admin", "ADMIN_UUID", null).get().getUser();
 
-            System.out.println("Loaded in-memory user repository");
+            logger.info("Loaded in-memory user repository");
         }
+
+        //new LogFactoryImpl();
 
         String io = options.getOptionValue("io", "nonblocking");
         if (io.equals("blocking")) {
-            MessageRepository messageRepo = new InMemoryMessageRepository();
-            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+            MessageRepository messageRepo = new InMemoryMessageRepository(logger);
+            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
             chatroomRepo.createChatroom(admin, "Global");
 
             new StreamSocketListener(port, userRepo, chatroomRepo, messageRepo);
         }
         else {
-            MessageRepository messageRepo = new STMessageRepository();
+            MessageRepository messageRepo = new STMessageRepository(logger);
             //ChatroomRepository chatroomRepo = new STChatroomRepository();
-            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
             chatroomRepo.createChatroom(admin, "Global");
 
             Selector selector = Selector.open();
-            new SelectorSocketListener(selector, new EventServiceImpl(selector), port, userRepo, chatroomRepo, messageRepo);
+            new SelectorSocketListener(new EventServiceImpl(selector), port, userRepo, chatroomRepo, messageRepo);
         }
 
     }

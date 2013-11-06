@@ -10,6 +10,8 @@ import com.chat.msgs.v1.*;
 import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -39,8 +41,10 @@ public class ChatTextClient implements ChatClient {
 
         System.out.println("Connected to " + socket);
 
-        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-        InMemoryUserRepository userRepo = new InMemoryUserRepository();
+        Logger logger = LogManager.getLogger();
+
+        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
+        InMemoryUserRepository userRepo = new InMemoryUserRepository(logger);
 
         long userId = ChatClientUtilities.initialConnect(connection, user, password);
         this.user = new User(userId, user, userRepo);

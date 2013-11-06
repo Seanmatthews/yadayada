@@ -3,6 +3,8 @@ package com.chat.server;
 import com.chat.*;
 import com.chat.impl.DataStream;
 import com.chat.msgs.MessageDispatcherFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,6 +20,8 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class StreamSocketListener {
+    private final Logger log = LogManager.getLogger("MAIN");
+
     private final ExecutorService execService = Executors.newCachedThreadPool();
     private final MessageDispatcherFactory factory;
 
@@ -29,11 +33,11 @@ public class StreamSocketListener {
     private void listen(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
 
-        System.out.println("Listening on: " + port);
+        log.info("Listening on {}", port);
 
         while (true) {
             Socket clientSocket = serverSocket.accept();
-            System.out.println("BinaryStream from: " + clientSocket);
+            log.debug("BinaryStream from {}", clientSocket);
             execService.submit(new ConnectionReceiver(factory, new DataStream(clientSocket)));
         }
     }

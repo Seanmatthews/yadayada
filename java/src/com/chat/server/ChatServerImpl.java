@@ -2,6 +2,8 @@ package com.chat.server;
 
 import com.chat.*;
 import com.chat.msgs.v1.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -19,6 +21,8 @@ import static com.chat.UserRepository.UserRepositoryCompletionHandler;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatServerImpl implements ChatServer {
+    private final Logger log = LogManager.getLogger("SERVER");
+
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
     private final MessageRepository messageRepo;
@@ -43,11 +47,11 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void removeConnection(BinaryStream sender) {
-        System.out.println("Removing connection to " + sender);
-
         User user = connectionUserMap.remove(sender);
 
         if (user != null) {
+            log.debug("Removing connection user {} {}", sender, user);
+
             BinaryStream conn = userConnectionMap.remove(user);
 
             Iterator<Chatroom> chatrooms = user.getChatrooms();
@@ -59,6 +63,9 @@ public class ChatServerImpl implements ChatServer {
                     leaveChatroom(conn, user, next, true);
                 }
             }
+        }
+        else {
+            log.debug("Removing connection {}", sender);
         }
 
         sender.close();
@@ -81,7 +88,7 @@ public class ChatServerImpl implements ChatServer {
             removeConnection(senderConnection);
         }
 
-        System.out.println("New message from " + sender + " " + message);
+        log.debug("New message {} {}", sender, message);
 
         ChatMessage msg = messageRepo.create(chatroom, sender, message);
         //chatroom.addMessage(msg);
@@ -106,7 +113,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void createChatroom(BinaryStream senderConnection, User sender, String name) {
-        System.out.println("Creating chatroom " + name + " by " + sender);
+        log.debug("Creating chatroom {} by {}", name, sender);
 
         Chatroom chatroom = chatroomRepo.createChatroom(sender, name);
 
@@ -123,7 +130,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void registerUser(final BinaryStream senderConnection, final String login, String password, String handle) {
-        System.out.println("Registering user " + login);
+        log.debug("Registering user {}", login);
 
         try {
             if (login.length() == 0) {
@@ -168,7 +175,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void login(final BinaryStream senderConnection, final String login, String password) {
-        System.out.println("Logging in user " + login);
+        log.debug("Logging in user {}", login);
 
         try {
             if (login == null || login.length() == 0) {
@@ -211,7 +218,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void searchChatrooms(BinaryStream senderConnection) {
-        System.out.println("Searching chatrooms " + senderConnection);
+        log.debug("Searching chatrooms {}", senderConnection);
 
         Iterator<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria());
 
@@ -226,7 +233,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void joinChatroom(BinaryStream senderConnection, User sender, Chatroom chatroom) {
-        System.out.println("Adding " + sender + " to " + chatroom);
+        log.debug("Adding {} to {}", sender, chatroom);
 
         if (chatroom.containsUser(sender)) {
             try {
@@ -286,7 +293,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void leaveChatroom(BinaryStream senderConnection, User sender, Chatroom chatroom, boolean removing) {
-        System.out.println("Removing " + sender + " from " + chatroom);
+        log.debug("Removing {} to {}", sender, chatroom);
 
         LeftChatroomMessage meLeaving = new LeftChatroomMessage(chatroom.getId(), sender.getId());
 

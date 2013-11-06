@@ -4,6 +4,7 @@ import com.chat.Chatroom;
 import com.chat.ChatroomRepository;
 import com.chat.ChatroomSearchCriteria;
 import com.chat.User;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,12 +18,18 @@ import java.util.concurrent.atomic.AtomicLong;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryChatroomRepository implements ChatroomRepository {
+    private final Logger logger;
+
     // We have lots of threads accessing this repository
     // We need to keep nextChatroomId and the map in sync
     private final AtomicLong nextChatroomId = new AtomicLong(1);
     private final Map<Long, Chatroom> chatroomIdMap = new ConcurrentHashMap<>();
 
     private final Map<Chatroom, Set<User>> chatroomUserMap = new ConcurrentHashMap<>();
+
+    public InMemoryChatroomRepository(Logger logger) {
+        this.logger = logger;
+    }
 
     @Override
     public Chatroom createChatroom(User owner, String name) {

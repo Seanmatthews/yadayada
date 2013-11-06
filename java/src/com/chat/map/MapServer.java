@@ -10,6 +10,8 @@ import com.chat.impl.InMemoryUserRepository;
 import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.util.NanoHTTPD;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -49,8 +51,9 @@ public class MapServer extends NanoHTTPD implements ChatClient {
 
         System.out.println("Connected to " + socket);
 
-        chatroomRepo = new InMemoryChatroomRepository();
-        userRepo = new InMemoryUserRepository();
+        Logger logger = LogManager.getLogger();
+        chatroomRepo = new InMemoryChatroomRepository(logger);
+        userRepo = new InMemoryUserRepository(logger);
 
         long userId = ChatClientUtilities.initialConnect(connection, username, password);
         user = new User(userId, username, userRepo);

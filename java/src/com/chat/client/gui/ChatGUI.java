@@ -10,6 +10,8 @@ import com.chat.msgs.v1.*;
 import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,10 +62,11 @@ public class ChatGUI implements ChatClient {
         stream.setAPIVersion(V1Dispatcher.VERSION_ID);
         connection = stream;
 
-        System.out.println("Connected to " + socket);
+        Logger logger = LogManager.getLogger();
+        logger.info("Connected to {}", socket);
 
-        ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-        InMemoryUserRepository userRepo = new InMemoryUserRepository();
+        ChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
+        InMemoryUserRepository userRepo = new InMemoryUserRepository(logger);
 
         long userId = ChatClientUtilities.initialConnect(connection, userName, password);
         user = new User(userId, userName, userRepo);

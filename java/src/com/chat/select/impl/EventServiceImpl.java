@@ -4,6 +4,8 @@ import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
 import com.chat.select.ServerSocket;
 import com.chat.select.SocketListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,6 +21,8 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class EventServiceImpl implements EventService {
+    private final Logger log = LogManager.getLogger();
+
     private final Selector selector;
 
     public EventServiceImpl(Selector selector) {
@@ -143,7 +147,7 @@ public class EventServiceImpl implements EventService {
             serverSocket.accept();
         }
         catch(IOException e) {
-            System.err.println("Error accepting socket");
+            log.error("Error accepting socket");
         }
     }
 

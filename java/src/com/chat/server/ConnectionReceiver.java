@@ -6,6 +6,8 @@ import com.chat.msgs.MessageDispatcherFactory;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.ConnectMessage;
 import com.chat.msgs.v1.MessageTypes;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -19,6 +21,8 @@ import static com.chat.msgs.Utilities.getStrLen;
  * To change this template use File | Settings | File Templates.
  */
 public class ConnectionReceiver implements Runnable {
+    private final Logger log = LogManager.getLogger();
+
     private final BinaryStream stream;
     private final MessageDispatcherFactory factory;
 
@@ -41,12 +45,12 @@ public class ConnectionReceiver implements Runnable {
                 throw new ValidationError(stream + " Connect message is the first message required from the client");
             }
         } catch (IOException e) {
-            System.err.println(stream + " Error communicating with the client: " + e.getMessage());
+            log.error(stream + " Error communicating with the client: " + e.getMessage());
             e.printStackTrace();
         } catch (ValidationError e) {
-            System.err.println(stream + " " + e.getMessage());
+            log.info(stream + " " + e.getMessage());
         } finally {
-            System.out.println(stream + " Closing connection");
+            log.debug(stream + " closing connection");
             stream.close();
         }
     }

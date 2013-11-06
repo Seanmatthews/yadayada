@@ -5,6 +5,7 @@ import com.chat.select.EventService;
 import com.chat.select.SocketListener;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -66,6 +67,12 @@ public class ClientSocketImpl implements ClientSocket {
     }
 
     public String toString() {
-        return channel.toString();
+        SocketAddress remoteSocketAddress = channel.socket().getRemoteSocketAddress();
+
+        if (remoteSocketAddress == null) {
+            return "Not Connected";
+        }
+
+        return remoteSocketAddress.toString();
     }
 }

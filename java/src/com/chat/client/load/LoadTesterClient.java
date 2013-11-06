@@ -14,6 +14,8 @@ import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.JoinChatroomMessage;
 import com.chat.msgs.v1.SubmitMessageMessage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -58,8 +60,9 @@ public class LoadTesterClient implements ChatClient, Runnable {
 
             //System.out.println("Connected to " + socket);
 
-            InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-            InMemoryUserRepository userRepo = new InMemoryUserRepository();
+            Logger logger = LogManager.getLogger();
+            InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
+            InMemoryUserRepository userRepo = new InMemoryUserRepository(logger);
 
             long userId = ChatClientUtilities.initialConnect(connection, username, password);
             user = new User(userId, username, userRepo);

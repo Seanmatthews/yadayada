@@ -3,6 +3,8 @@ package com.chat.msgs;
 import com.chat.*;
 import com.chat.msgs.v1.*;
 import com.chat.server.ChatServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -16,6 +18,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class V1Dispatcher implements MessageDispatcher {
     public static final int VERSION_ID = 1;
+
+    private final Logger log = LogManager.getLogger();
 
     protected final ChatServer server;
 
@@ -82,7 +86,7 @@ public class V1Dispatcher implements MessageDispatcher {
                 SubmitMessageMessage smMsg = new SubmitMessageMessage(stream);
                 User user = getAndValidateUser(smMsg.getUserId());
                 Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());
-                System.out.println("Sending " + smMsg.getMessage());
+                log.debug("Sending {}", smMsg.getMessage());
                 server.newMessage(stream, user, chatroom, smMsg.getMessage());
                 break;
 

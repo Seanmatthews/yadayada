@@ -4,6 +4,8 @@ import com.chat.BinaryStream;
 import com.chat.ChatroomRepository;
 import com.chat.UserRepository;
 import com.chat.server.ChatServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -17,6 +19,8 @@ import java.util.concurrent.ExecutionException;
  * To change this template use File | Settings | File Templates.
  */
 public class V1DispatcherThread extends V1Dispatcher implements Runnable {
+    private final Logger log = LogManager.getLogger();
+
     private final BinaryStream connection;
 
     public V1DispatcherThread(ChatServer server, UserRepository userRepo, ChatroomRepository chatroomRepo, BinaryStream connection) {
@@ -34,19 +38,15 @@ public class V1DispatcherThread extends V1Dispatcher implements Runnable {
                 runOnce(connection);
             }
         } catch (EOFException e) {
-            System.out.println("Customer hung up");
+            log.debug("Customer hung up");
         } catch (IOException e) {
-            System.err.println("Cannot write to stream: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Cannot write to stream " + connection, e);
         } catch (ValidationError e) {
-            System.err.println("Validation error:  " + e.getMessage());
-            e.printStackTrace();
+            log.info("Validation error " + connection, e);
         } catch (InterruptedException e) {
-            System.err.println("Thread interruption error:  " + e.getMessage());
-            e.printStackTrace();
+            log.debug("Thread interruption");
         } catch (ExecutionException e) {
-            System.err.println("Future execution error:  " + e.getMessage());
-            e.printStackTrace();
+            log.error("Future execution exception", e);
         } finally {
             server.removeConnection(connection);
         }

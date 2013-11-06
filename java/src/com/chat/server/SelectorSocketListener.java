@@ -11,11 +11,12 @@ import com.chat.msgs.ValidationError;
 import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
 import com.chat.select.SocketListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Selector;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -28,21 +29,18 @@ import java.util.concurrent.ExecutionException;
  * To change this template use File | Settings | File Templates.
  */
 public class SelectorSocketListener implements SocketListener {
-    private final Selector selector;
-    private final EventService eventService;
+    private final Logger log = LogManager.getLogger();
 
     private final MessageDispatcher[] dispatchers = new MessageDispatcher[10];
     private final Map<ClientSocket, ClientState> socketToStateMap = new HashMap<>(128);
-    private final ChatServerImpl server;
+    private final ChatServer server;
 
-    public SelectorSocketListener(Selector selector, EventService eventService, int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
+    public SelectorSocketListener(EventService eventService, int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
         this.server = new ChatServerImpl(userRepo, chatroomRepo, messageRepo);
         this.dispatchers[V1Dispatcher.VERSION_ID] = new V1Dispatcher(server, userRepo, chatroomRepo);
-        this.selector = selector;
-        this.eventService = eventService;
 
         eventService.createServerSocket(this, port);
-        System.out.println("Listening on " + port);
+        log.info("Listening on {}", port);
 
         eventService.run();
     }
@@ -61,22 +59,19 @@ public class SelectorSocketListener implements SocketListener {
                 }
             });
         } catch (EOFException e) {
-            System.out.println("Customer hung up " + socket);
+            log.debug("Customer hung up");
             disconnect(socket);
         } catch (IOException e) {
-            System.out.println("Cannot write to stream: " + e.getMessage());
+            log.error("Cannot write to stream " + socket, e);
             disconnect(socket);
         } catch (ValidationError e) {
-            System.err.println("Validation error:  " + e.getMessage());
-            e.printStackTrace();
+            log.info("Validation error " + socket, e);
             disconnect(socket);
         } catch (InterruptedException e) {
-            System.err.println("Thread interruption error:  " + e.getMessage());
-            e.printStackTrace();
+            log.debug("Thread interruption");
             disconnect(socket);
         } catch (ExecutionException e) {
-            System.err.println("Future execution error:  " + e.getMessage());
-            e.printStackTrace();
+            log.error("Future execution exception", e);
             disconnect(socket);
         }
     }
@@ -101,7 +96,7 @@ public class SelectorSocketListener implements SocketListener {
     private void disconnect(ClientSocket socket) {
         try {
             if (socket != null) {
-                System.out.println("Disconnecting client " + socket);
+                log.debug("Disconnecting client {}", socket);
 
                 ClientState state = socketToStateMap.remove(socket);
 
@@ -139,7 +134,7 @@ public class SelectorSocketListener implements SocketListener {
         try {
             state.stream.writeMessages();
         } catch (IOException e) {
-            System.err.println("Error writing to stream " + clientSocket);
+            log.error("Error writing to stream " + clientSocket, e);
             disconnect(clientSocket);
         }
     }
