@@ -1,6 +1,7 @@
 package com.chat.msgs;
 
-import com.chat.BinaryStream;
+import com.chat.ClientConnection;
+import com.chat.util.buffer.ReadBuffer;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -13,6 +14,5 @@ import java.util.concurrent.ExecutionException;
  * To change this template use File | Settings | File Templates.
  */
 public interface MessageDispatcher {
-    void run();
-    void runOnce(BinaryStream connection) throws IOException, ValidationError, ExecutionException, InterruptedException;
+    void onMessage(ClientConnection connection, ReadBuffer buffer) throws IOException, ValidationError, ExecutionException, InterruptedException, RuntimeException;
 }

@@ -2,16 +2,16 @@ package com.chat.client.text;
 
 import com.chat.*;
 import com.chat.client.ChatClient;
+import com.chat.client.ChatClientConnection;
 import com.chat.client.ChatClientDispatcher;
 import com.chat.client.ChatClientUtilities;
 import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
-import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.chat.select.EventService;
+import com.chat.select.impl.EventServiceImpl;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -27,32 +27,35 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatTextClient implements ChatClient {
-    private final BinaryStream connection;
+    private final ChatClientConnection connection;
+    private final InMemoryUserRepository userRepo;
+    private final String userName;
 
     private Chatroom subscribedChatroom;
     private User user;
 
     public ChatTextClient(String host, int port, String user, String password) throws IOException, InterruptedException, ValidationError {
-        Socket socket = new Socket(host, port);
-        DataStream stream = new DataStream(socket);
-        stream.setUUID(Integer.toString(new Random().nextInt()));
-        stream.setAPIVersion(V1Dispatcher.VERSION_ID);
-        connection = stream;
+        EventService eventService = new EventServiceImpl();
 
-        System.out.println("Connected to " + socket);
+        ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+        userRepo = new InMemoryUserRepository();
+        this.userName = user;
+        ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
 
-        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-        InMemoryUserRepository userRepo = new InMemoryUserRepository();
-
-        long userId = ChatClientUtilities.initialConnect(connection, user, password);
-        this.user = new User(userId, user, userRepo);
-        userRepo.addUser(this.user);
-
-        connection.sendMessage(new SearchChatroomsMessage(0, 0), true);
+        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher, user, password);
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatTextInput(this));
-        pool.submit(new ChatClientDispatcher(this, connection, chatroomRepo, userRepo));
+
+        eventService.run();
+    }
+
+    @Override
+    public void onLoginAccept(long userId) {
+        user = new User(userId, userName, userRepo);
+        userRepo.addUser(user);
+
+        connection.sendMessage(new SearchChatroomsMessage(0, 0));
     }
 
     @Override
@@ -61,7 +64,7 @@ public class ChatTextClient implements ChatClient {
 
         // Subscribe to the first one!
         if (chatroom.getName().equalsIgnoreCase("Global")) {
-            connection.sendMessage(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0), true);
+            connection.sendMessage(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0));
             subscribedChatroom = chatroom;
         }
     }
@@ -72,7 +75,7 @@ public class ChatTextClient implements ChatClient {
     }
 
     public void sendMessage(String message) throws IOException {
-        connection.sendMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message), true);
+        connection.sendMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message));
     }
 
     @Override

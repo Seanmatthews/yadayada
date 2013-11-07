@@ -1,5 +1,8 @@
 package com.chat.select;
 
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -11,11 +14,17 @@ import java.nio.ByteBuffer;
  * To change this template use File | Settings | File Templates.
  */
 public interface ClientSocket {
-    void enableRead(boolean val);
-    void enableWrite(boolean val);
+    void onConnect();
     void onWriteAvailable();
     void onReadAvailable();
-    int read(ByteBuffer buffer) throws IOException;
-    void write(ByteBuffer output) throws IOException;
-    void close() throws IOException;
+
+    void enableConnect(boolean val);
+    void enableRead(boolean val);
+    void enableWrite(boolean val);
+
+    int read(ReadBuffer buffer) throws IOException;
+    void write(ReadWriteBuffer output) throws IOException;
+
+    void connect(String host, int port) throws IOException;
+    void close();
 }

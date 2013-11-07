@@ -1,27 +1,27 @@
 package com.chat.msgs.v1;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class RegisterMessage implements Message {
     private final String userName;
     private final String password;
     private final String handle;
+    private final String UUID;
 
-    public RegisterMessage(BinaryStream stream) throws IOException {
+    public RegisterMessage(ReadBuffer stream) {
         this.userName = stream.readString();
         this.password = stream.readString();
         this.handle = stream.readString();
+        this.UUID = stream.readString();
     }
 
-    public RegisterMessage(String userName, String password, String handle) {
+    public RegisterMessage(String userName, String password, String handle, String UUID) {
         this.userName = userName;
         this.password = password;
         this.handle = handle;
+        this.UUID = UUID;
     }
 
     public String getUserName() {
@@ -36,21 +36,22 @@ public class RegisterMessage implements Message {
         return handle;
     }
 
-    @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           RegisterMessage msg = this;
-           stream.startWriting(1 + getStrLen(msg.getUserName()) + getStrLen(msg.getPassword()) + getStrLen(msg.getHandle()));
-        }  
-        else {
-           stream.startWriting();
-        }
+    public String getUUID() {
+        return UUID;
+    }
 
+    @Override
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.Register.getValue());
         stream.writeString(getUserName());
         stream.writeString(getPassword());
         stream.writeString(getHandle());
-        stream.finishWriting();
+        stream.writeString(getUUID());
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

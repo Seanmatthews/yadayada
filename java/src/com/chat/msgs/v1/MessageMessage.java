@@ -1,11 +1,8 @@
 package com.chat.msgs.v1;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class MessageMessage implements Message {
     private final long messageId;
@@ -15,7 +12,7 @@ public class MessageMessage implements Message {
     private final String senderHandle;
     private final String message;
 
-    public MessageMessage(BinaryStream stream) throws IOException {
+    public MessageMessage(ReadBuffer stream) {
         this.messageId = stream.readLong();
         this.messageTimestamp = stream.readLong();
         this.senderId = stream.readLong();
@@ -58,16 +55,10 @@ public class MessageMessage implements Message {
     }
 
     @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           MessageMessage msg = this;
-           stream.startWriting(1 + 8 + 8 + 8 + 8 + getStrLen(msg.getSenderHandle()) + getStrLen(msg.getMessage()));
-        }  
-        else {
-           stream.startWriting();
-        }
-
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.Message.getValue());
         stream.writeLong(getMessageId());
         stream.writeLong(getMessageTimestamp());
@@ -75,6 +66,8 @@ public class MessageMessage implements Message {
         stream.writeLong(getChatroomId());
         stream.writeString(getSenderHandle());
         stream.writeString(getMessage());
-        stream.finishWriting();
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

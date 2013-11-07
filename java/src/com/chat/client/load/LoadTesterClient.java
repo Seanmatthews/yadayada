@@ -1,25 +1,22 @@
 package com.chat.client.load;
 
-import com.chat.BinaryStream;
 import com.chat.ChatMessage;
 import com.chat.Chatroom;
+import com.chat.ChatroomRepository;
 import com.chat.User;
 import com.chat.client.ChatClient;
+import com.chat.client.ChatClientConnection;
 import com.chat.client.ChatClientDispatcher;
-import com.chat.client.ChatClientUtilities;
-import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
-import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.JoinChatroomMessage;
+import com.chat.msgs.v1.SearchChatroomsMessage;
 import com.chat.msgs.v1.SubmitMessageMessage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.chat.select.EventService;
+import com.chat.select.impl.EventServiceImpl;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +33,7 @@ public class LoadTesterClient implements ChatClient, Runnable {
     private final String username;
     private final String password;
     private final CountDownLatch latch;
-    private BinaryStream connection;
+    private ChatClientConnection connection;
 
     private Chatroom subscribedChatroom;
     private User user;
@@ -54,30 +51,25 @@ public class LoadTesterClient implements ChatClient, Runnable {
     @Override
     public void run() {
         try {
-            Socket socket = new Socket(host, port);
-            DataStream stream = new DataStream(socket);
-            stream.setUUID(Integer.toString(new Random().nextInt()));
-            stream.setAPIVersion(V1Dispatcher.VERSION_ID);
-            connection = stream;
+            EventService eventService = new EventServiceImpl();
 
-            //System.out.println("Connected to " + socket);
-
-            Logger logger = LogManager.getLogger();
-            InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
             InMemoryUserRepository userRepo = new InMemoryUserRepository();
+            ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
 
-            long userId = ChatClientUtilities.initialConnect(connection, username, password);
-            user = new User(userId, username, userRepo);
-            userRepo.addUser(user);
+            //connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher);
 
+            //long userId = ChatClientUtilities.initialConnect(connection, userName, password);
+            //user = new User(userId, userName, userRepo);
+            //userRepo.addUser(user);
+
+            connection.sendMessage(new SearchChatroomsMessage(0, 0));
             Chatroom global = new Chatroom(1, "Global", user, chatroomRepo);
-            connection.sendMessage(new JoinChatroomMessage(user.getId(), global.getId(), 0, 0), true);
+            connection.sendMessage(new JoinChatroomMessage(user.getId(), global.getId(), 0, 0));
             subscribedChatroom = global;
 
             alive = true;
             latch.countDown();
-
-            new ChatClientDispatcher(this, connection, chatroomRepo, userRepo).run();
         }
         catch(Exception e) {
             alive = false;
@@ -98,7 +90,7 @@ public class LoadTesterClient implements ChatClient, Runnable {
     }
 
     public void sendMessage(String message) throws IOException {
-        connection.sendMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message), true);
+        connection.sendMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message));
     }
 
     @Override
@@ -114,5 +106,10 @@ public class LoadTesterClient implements ChatClient, Runnable {
     @Override
     public void onJoinedChatroomReject(String reason) {
         System.err.println("Error entering chatroom: " + reason);
+    }
+
+    @Override
+    public void onLoginAccept(long userId) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

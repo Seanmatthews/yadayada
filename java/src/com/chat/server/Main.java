@@ -74,25 +74,11 @@ public class Main {
             logger.info("Loaded in-memory user repository");
         }
 
-        //new LogFactoryImpl();
+        MessageRepository messageRepo = new STMessageRepository();
+        //ChatroomRepository chatroomRepo = new STChatroomRepository();
+        ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+        chatroomRepo.createChatroom(admin, "Global");
 
-        String io = options.getOptionValue("io", "nonblocking");
-        if (io.equals("blocking")) {
-            MessageRepository messageRepo = new InMemoryMessageRepository();
-            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-            chatroomRepo.createChatroom(admin, "Global");
-
-            new StreamSocketListener(port, userRepo, chatroomRepo, messageRepo);
-        }
-        else {
-            MessageRepository messageRepo = new STMessageRepository();
-            //ChatroomRepository chatroomRepo = new STChatroomRepository();
-            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-            chatroomRepo.createChatroom(admin, "Global");
-
-            Selector selector = Selector.open();
-            new SelectorSocketListener(new EventServiceImpl(selector), port, userRepo, chatroomRepo, messageRepo);
-        }
-
+        new ServerListener(new EventServiceImpl(), port, userRepo, chatroomRepo, messageRepo);
     }
 }

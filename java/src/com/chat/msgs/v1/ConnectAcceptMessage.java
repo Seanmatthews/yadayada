@@ -1,11 +1,8 @@
 package com.chat.msgs.v1;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class ConnectAcceptMessage implements Message {
     private final int APIVersion;
@@ -13,7 +10,7 @@ public class ConnectAcceptMessage implements Message {
     private final String imageUploadUrl;
     private final String imageDownloadUrl;
 
-    public ConnectAcceptMessage(BinaryStream stream) throws IOException {
+    public ConnectAcceptMessage(ReadBuffer stream) {
         this.APIVersion = stream.readInt();
         this.globalChatId = stream.readLong();
         this.imageUploadUrl = stream.readString();
@@ -44,21 +41,17 @@ public class ConnectAcceptMessage implements Message {
     }
 
     @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           ConnectAcceptMessage msg = this;
-           stream.startWriting(1 + 4 + 8 + getStrLen(msg.getImageUploadUrl()) + getStrLen(msg.getImageDownloadUrl()));
-        }  
-        else {
-           stream.startWriting();
-        }
-
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.ConnectAccept.getValue());
         stream.writeInt(getAPIVersion());
         stream.writeLong(getGlobalChatId());
         stream.writeString(getImageUploadUrl());
         stream.writeString(getImageDownloadUrl());
-        stream.finishWriting();
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

@@ -3,6 +3,7 @@ package com.chat.msgs;
 import com.chat.*;
 import com.chat.msgs.v1.*;
 import com.chat.server.ChatServer;
+import com.chat.util.buffer.ReadBuffer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,14 +33,8 @@ public class V1Dispatcher implements MessageDispatcher {
         this.chatroomRepo = chatroomRepo;
     }
 
-    @Override
-    public void run() {
-        // nothing
-    }
-
-    @Override
-    public void runOnce(BinaryStream stream) throws IOException, ValidationError, ExecutionException, InterruptedException {
-        byte typeByte = stream.readByte();
+    public void onMessage(ClientConnection stream, ReadBuffer buffer) throws IOException, ValidationError, ExecutionException, InterruptedException, RuntimeException {
+        byte typeByte = buffer.readByte();
         MessageTypes type = MessageTypes.lookup(typeByte);
 
         if (type == null) {
@@ -47,43 +42,48 @@ public class V1Dispatcher implements MessageDispatcher {
         }
 
         switch (type) {
+            case Connect:
+                ConnectMessage cMsg = new ConnectMessage(buffer);
+                server.connect(stream, cMsg.getAPIVersion(), cMsg.getUUID());
+                break;
+
             case SearchChatrooms:
-                SearchChatroomsMessage scMsg = new SearchChatroomsMessage(stream);
+                SearchChatroomsMessage scMsg = new SearchChatroomsMessage(buffer);
                 server.searchChatrooms(stream);
                 break;
 
             case CreateChatroom:
-                CreateChatroomMessage ccMsg = new CreateChatroomMessage(stream);
+                CreateChatroomMessage ccMsg = new CreateChatroomMessage(buffer);
                 User ccUser = getAndValidateUser(ccMsg.getOwnerId());
                 server.createChatroom(stream, ccUser, ccMsg.getChatroomName());
                 break;
 
             case JoinChatroom:
-                JoinChatroomMessage jcMsg = new JoinChatroomMessage(stream);
+                JoinChatroomMessage jcMsg = new JoinChatroomMessage(buffer);
                 User jcUser = getAndValidateUser(jcMsg.getUserId());
                 Chatroom jcChatroom = getAndValidateChatroom(jcMsg.getChatroomId());
                 server.joinChatroom(stream, jcUser, jcChatroom);
                 break;
 
             case LeaveChatroom:
-                LeaveChatroomMessage lcMsg = new LeaveChatroomMessage(stream);
+                LeaveChatroomMessage lcMsg = new LeaveChatroomMessage(buffer);
                 User lcUser = getAndValidateUser(lcMsg.getUserId());
                 Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
                 server.leaveChatroom(stream, lcUser, lcChatroom, false);
                 break;
 
             case Register:
-                RegisterMessage rMsg = new RegisterMessage(stream);
-                server.registerUser(stream, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle());
+                RegisterMessage rMsg = new RegisterMessage(buffer);
+                server.registerUser(stream, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle(), rMsg.getUUID());
                 break;
 
             case Login:
-                LoginMessage lMsg = new LoginMessage(stream);
+                LoginMessage lMsg = new LoginMessage(buffer);
                 server.login(stream, lMsg.getUserName(), lMsg.getPassword());
                 break;
 
             case SubmitMessage:
-                SubmitMessageMessage smMsg = new SubmitMessageMessage(stream);
+                SubmitMessageMessage smMsg = new SubmitMessageMessage(buffer);
                 User user = getAndValidateUser(smMsg.getUserId());
                 Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());
                 log.debug("Sending {}", smMsg.getMessage());

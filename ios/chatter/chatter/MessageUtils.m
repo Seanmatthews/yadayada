@@ -159,6 +159,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     }
     
     // set the correct msg length
+    NSLog(@"msgLen: %d",msgLen);
     short newMsgLen = CFSwapInt16HostToBig(msgLen);
     [data replaceBytesInRange:NSMakeRange(0, 2) withBytes:&newMsgLen length:2];
 

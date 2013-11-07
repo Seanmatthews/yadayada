@@ -1,16 +1,13 @@
 package com.chat.msgs.v1;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class RegisterRejectMessage implements Message {
     private final String reason;
 
-    public RegisterRejectMessage(BinaryStream stream) throws IOException {
+    public RegisterRejectMessage(ReadBuffer stream) {
         this.reason = stream.readString();
     }
 
@@ -23,18 +20,14 @@ public class RegisterRejectMessage implements Message {
     }
 
     @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           RegisterRejectMessage msg = this;
-           stream.startWriting(1 + getStrLen(msg.getReason()));
-        }  
-        else {
-           stream.startWriting();
-        }
-
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.RegisterReject.getValue());
         stream.writeString(getReason());
-        stream.finishWriting();
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

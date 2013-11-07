@@ -1,17 +1,14 @@
 package com.chat.msgs.v1;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class LeftChatroomMessage implements Message {
     private final long chatroomId;
     private final long userId;
 
-    public LeftChatroomMessage(BinaryStream stream) throws IOException {
+    public LeftChatroomMessage(ReadBuffer stream) {
         this.chatroomId = stream.readLong();
         this.userId = stream.readLong();
     }
@@ -30,19 +27,15 @@ public class LeftChatroomMessage implements Message {
     }
 
     @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           LeftChatroomMessage msg = this;
-           stream.startWriting(1 + 8 + 8);
-        }  
-        else {
-           stream.startWriting();
-        }
-
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.LeftChatroom.getValue());
         stream.writeLong(getChatroomId());
         stream.writeLong(getUserId());
-        stream.finishWriting();
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

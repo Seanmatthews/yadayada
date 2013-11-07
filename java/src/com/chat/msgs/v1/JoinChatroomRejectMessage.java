@@ -1,17 +1,14 @@
 package com.chat.msgs.v1;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class JoinChatroomRejectMessage implements Message {
     private final long chatroomId;
     private final String reason;
 
-    public JoinChatroomRejectMessage(BinaryStream stream) throws IOException {
+    public JoinChatroomRejectMessage(ReadBuffer stream) {
         this.chatroomId = stream.readLong();
         this.reason = stream.readString();
     }
@@ -30,19 +27,15 @@ public class JoinChatroomRejectMessage implements Message {
     }
 
     @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           JoinChatroomRejectMessage msg = this;
-           stream.startWriting(1 + 8 + getStrLen(msg.getReason()));
-        }  
-        else {
-           stream.startWriting();
-        }
-
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.JoinChatroomReject.getValue());
         stream.writeLong(getChatroomId());
         stream.writeString(getReason());
-        stream.finishWriting();
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

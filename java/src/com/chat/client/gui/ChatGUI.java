@@ -2,14 +2,18 @@ package com.chat.client.gui;
 
 import com.chat.*;
 import com.chat.client.ChatClient;
+import com.chat.client.ChatClientConnection;
 import com.chat.client.ChatClientDispatcher;
 import com.chat.client.ChatClientUtilities;
 import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
-import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
+import com.chat.select.EventService;
+import com.chat.select.impl.EventServiceImpl;
+import com.chat.util.TwoByteLengthMessageCracker;
+import com.chat.util.tcp.TCPCrackerClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +24,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -35,6 +38,9 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatGUI implements ChatClient {
+    private final String userName;
+    private final InMemoryUserRepository userRepo;
+
     private JButton createButton;
     private JPanel panel1;
     private JButton joinChatroomButton;
@@ -51,33 +57,25 @@ public class ChatGUI implements ChatClient {
     private final Map<Chatroom, JList<User>> chatroomListMap = new HashMap<>();
     private final Map<Chatroom, JPanel> chatroomPanelMap = new HashMap<>();
 
-    private final BinaryStream connection;
+    private final ChatClientConnection connection;
 
     private User user;
 
     public ChatGUI(String host, int port, String userName, String password) throws IOException, ValidationError {
-        Socket socket = new Socket(host, port);
-        DataStream stream = new DataStream(socket);
-        stream.setUUID(Integer.toString(new Random().nextInt()));
-        stream.setAPIVersion(V1Dispatcher.VERSION_ID);
-        connection = stream;
-
-        Logger logger = LogManager.getLogger();
-        logger.info("Connected to {}", socket);
+        EventService eventService = new EventServiceImpl();
 
         ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
+        ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
 
-        long userId = ChatClientUtilities.initialConnect(connection, userName, password);
-        user = new User(userId, userName, userRepo);
-        userRepo.addUser(user);
+        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher, userName, password);
 
-        connection.sendMessage(new SearchChatroomsMessage(0, 0), true);
-
-        ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(new ChatClientDispatcher(this, connection, chatroomRepo, userRepo));
+        this.userName = userName;
+        this.userRepo = userRepo;
 
         setupActions();
+
+        eventService.run();
     }
 
     private void setupActions() {
@@ -86,57 +84,37 @@ public class ChatGUI implements ChatClient {
         leaveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.sendMessage(new LeaveChatroomMessage(user.getId(), chatroom.getId()), true);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                    System.exit(0);
-                }
+            Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
+            connection.sendMessage(new LeaveChatroomMessage(user.getId(), chatroom.getId()));
             }
         });
 
         searchChatroomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    connection.sendMessage(new SearchChatroomsMessage(0, 0), true);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                    System.exit(0);
-                }
+            connection.sendMessage(new SearchChatroomsMessage(0, 0));
             }
         });
 
         joinChatroomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    if (user == null)
-                        return;
+            if (user == null)
+                return;
 
-                    Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
-                    connection.sendMessage(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0), true);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                    System.exit(0);
-                }
+            Chatroom chatroom = (Chatroom) chatroomList.getSelectedValue();
+            connection.sendMessage(new JoinChatroomMessage(user.getId(), chatroom.getId(), 0, 0));
             }
         });
 
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String text = createChatTextField.getText();
+            String text = createChatTextField.getText();
 
-                if (text != null && text.length() > 0) {
-                    try {
-                        connection.sendMessage(new CreateChatroomMessage(user.getId(), text, 0, 0, 0), true);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                        System.exit(0);
-                    }
-                }
+            if (text != null && text.length() > 0) {
+                connection.sendMessage(new CreateChatroomMessage(user.getId(), text, 0, 0, 0));
+            }
             }
         } );
 
@@ -155,16 +133,17 @@ public class ChatGUI implements ChatClient {
                     Chatroom chatroom = componentChatroomMap.get(tabbedPane1.getSelectedComponent());
                     String textToSend = chatTextField.getText();
 
-                    try {
-                        connection.sendMessage(new SubmitMessageMessage(user.getId(), chatroom.getId(), textToSend), true);
-                        chatTextField.setText("");
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                        System.exit(0);
-                    }
+                    connection.sendMessage(new SubmitMessageMessage(user.getId(), chatroom.getId(), textToSend));
+                    chatTextField.setText("");
                 }
             }
         });
+    }
+
+    @Override
+    public void onLoginAccept(long userId) {
+        user = new User(userId, userName, userRepo);
+        userRepo.addUser(user);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException, ValidationError {
