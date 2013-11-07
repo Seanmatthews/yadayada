@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,6 +41,7 @@ public class LoadTesterClient implements ChatClient, Runnable {
     private Chatroom subscribedChatroom;
     private User user;
     public volatile boolean alive;
+    public AtomicInteger messagesRecv = new AtomicInteger(0);
 
     public LoadTesterClient(String host, int port, String user, String password, CountDownLatch latch) throws IOException, InterruptedException, ValidationError {
         this.host = host;
@@ -61,8 +63,8 @@ public class LoadTesterClient implements ChatClient, Runnable {
             //System.out.println("Connected to " + socket);
 
             Logger logger = LogManager.getLogger();
-            InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
-            InMemoryUserRepository userRepo = new InMemoryUserRepository(logger);
+            InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+            InMemoryUserRepository userRepo = new InMemoryUserRepository();
 
             long userId = ChatClientUtilities.initialConnect(connection, username, password);
             user = new User(userId, username, userRepo);
@@ -92,7 +94,7 @@ public class LoadTesterClient implements ChatClient, Runnable {
 
     @Override
     public void onMessage(ChatMessage message) {
-        //System.out.println(message);
+        messagesRecv.incrementAndGet();
     }
 
     public void sendMessage(String message) throws IOException {

@@ -17,11 +17,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class InMemoryMessageRepository implements MessageRepository {
     private final AtomicLong nextMessageId = new AtomicLong(1);
-    private final Logger logger;
-
-    public InMemoryMessageRepository(Logger logger) {
-        this.logger = logger;
-    }
 
     @Override
     public ChatMessage create(Chatroom chatroom, User sender, String message) {

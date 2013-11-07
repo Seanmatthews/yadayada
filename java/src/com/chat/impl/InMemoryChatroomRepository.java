@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryChatroomRepository implements ChatroomRepository {
-    private final Logger logger;
 
     // We have lots of threads accessing this repository
     // We need to keep nextChatroomId and the map in sync
@@ -26,10 +25,6 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
     private final Map<Long, Chatroom> chatroomIdMap = new ConcurrentHashMap<>();
 
     private final Map<Chatroom, Set<User>> chatroomUserMap = new ConcurrentHashMap<>();
-
-    public InMemoryChatroomRepository(Logger logger) {
-        this.logger = logger;
-    }
 
     @Override
     public Chatroom createChatroom(User owner, String name) {

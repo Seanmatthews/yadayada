@@ -16,12 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * To change this template use File | Settings | File Templates.
  */
 public class STMessageRepository implements MessageRepository {
-    private final Logger logger;
     private long nextMessageId = 1;
-
-    public STMessageRepository(Logger logger) {
-        this.logger = logger;
-    }
 
     @Override
     public ChatMessage create(Chatroom chatroom, User sender, String message) {

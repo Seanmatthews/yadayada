@@ -62,13 +62,13 @@ public class Main {
             // Setup the connection with the DB
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(connectionString, username, password);
-            userRepo = new AwsRdsUserRepository(connection, logger);
+            userRepo = new AwsRdsUserRepository(connection);
             admin = userRepo.login("admin", "admin", null).get().getUser();
 
             logger.info("Loaded database user repository {} {} Username={} Password={}", driver, connectionString, username, password);
         }
         else {
-            userRepo = new InMemoryUserRepository(logger);
+            userRepo = new InMemoryUserRepository();
             admin = userRepo.registerUser("admin", "admin", "admin", "ADMIN_UUID", null).get().getUser();
 
             logger.info("Loaded in-memory user repository");
@@ -78,16 +78,16 @@ public class Main {
 
         String io = options.getOptionValue("io", "nonblocking");
         if (io.equals("blocking")) {
-            MessageRepository messageRepo = new InMemoryMessageRepository(logger);
-            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
+            MessageRepository messageRepo = new InMemoryMessageRepository();
+            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
             chatroomRepo.createChatroom(admin, "Global");
 
             new StreamSocketListener(port, userRepo, chatroomRepo, messageRepo);
         }
         else {
-            MessageRepository messageRepo = new STMessageRepository(logger);
+            MessageRepository messageRepo = new STMessageRepository();
             //ChatroomRepository chatroomRepo = new STChatroomRepository();
-            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
+            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
             chatroomRepo.createChatroom(admin, "Global");
 
             Selector selector = Selector.open();

@@ -21,7 +21,7 @@ import static com.chat.UserRepository.UserRepositoryCompletionHandler;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatServerImpl implements ChatServer {
-    private final Logger log = LogManager.getLogger("SERVER");
+    private final Logger log = LogManager.getLogger();
 
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;

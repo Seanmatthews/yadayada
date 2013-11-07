@@ -3,6 +3,7 @@ package com.chat.impl;
 import com.chat.Chatroom;
 import com.chat.User;
 import com.chat.UserRepository;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.InvalidObjectException;
@@ -20,8 +21,6 @@ import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
  * To change this template use File | Settings | File Templates.
  */
 public class AwsRdsUserRepository implements UserRepository {
-    private final Logger logger;
-
     // SQL connection
     private final Connection connect;
 
@@ -31,9 +30,8 @@ public class AwsRdsUserRepository implements UserRepository {
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
     private final Map<User, Set<Chatroom>> userChatroomMap = new HashMap<>();
 
-    public AwsRdsUserRepository(Connection connection, Logger logger) throws ClassNotFoundException, SQLException {
+    public AwsRdsUserRepository(Connection connection) throws ClassNotFoundException, SQLException {
         this.connect = connection;
-        this.logger = logger;
     }
 
     @Override

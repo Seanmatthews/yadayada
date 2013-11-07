@@ -65,8 +65,8 @@ public class ChatGUI implements ChatClient {
         Logger logger = LogManager.getLogger();
         logger.info("Connected to {}", socket);
 
-        ChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
-        InMemoryUserRepository userRepo = new InMemoryUserRepository(logger);
+        ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+        InMemoryUserRepository userRepo = new InMemoryUserRepository();
 
         long userId = ChatClientUtilities.initialConnect(connection, userName, password);
         user = new User(userId, userName, userRepo);

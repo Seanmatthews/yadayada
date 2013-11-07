@@ -69,13 +69,36 @@ public class LoadTester {
 
         System.out.println("Configured " + alive + " alive and " + dead + " dead");
 
+        int sentMessages = 0;
+
+        long lastTimestamp = System.currentTimeMillis();
+
         Random random = new Random();
         while(true) {
             int i = random.nextInt(aliveClients.size());
             LoadTesterClient client = aliveClients.get(i);
 
-            if (client.alive)
+            if (client.alive) {
                 client.sendMessage("Hey there");
+                sentMessages++;
+
+                if (sentMessages % 100 == 0) {
+                    long newTimestamp = System.currentTimeMillis();
+
+                    double timeDiffSec = (newTimestamp - lastTimestamp) / 1000.0;
+                    System.out.println("Sent " + sentMessages + " messages @ " + 100/timeDiffSec + " msgs/s");
+
+                    int messages = 0;
+                    for (int j=0; j<aliveClients.size(); j++) {
+                        LoadTesterClient c = aliveClients.get(j);
+                        if (client.alive) {
+                            messages += client.messagesRecv.get();
+                        }
+                    }
+
+                    System.out.println("Recv " + messages + " messages @ " + messages/timeDiffSec + " msgs/s");
+                }
+            }
 
             Thread.sleep(10);
         }

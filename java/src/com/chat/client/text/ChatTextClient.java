@@ -41,15 +41,14 @@ public class ChatTextClient implements ChatClient {
 
         System.out.println("Connected to " + socket);
 
-        Logger logger = LogManager.getLogger();
-
-        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository(logger);
-        InMemoryUserRepository userRepo = new InMemoryUserRepository(logger);
+        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+        InMemoryUserRepository userRepo = new InMemoryUserRepository();
 
         long userId = ChatClientUtilities.initialConnect(connection, user, password);
         this.user = new User(userId, user, userRepo);
-
         userRepo.addUser(this.user);
+
+        connection.sendMessage(new SearchChatroomsMessage(0, 0), true);
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatTextInput(this));

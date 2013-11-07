@@ -19,17 +19,11 @@ import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryUserRepository implements UserRepository {
-    private final Logger logger;
-
     private AtomicLong nextUserId = new AtomicLong(1);
 
     private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
     private final Map<String, User> loginToUserMap = new ConcurrentHashMap<>();
     private final Map<User, Set<Chatroom>> userChatroomMap = new ConcurrentHashMap<>();
-
-    public InMemoryUserRepository(Logger logger) {
-        this.logger = logger;
-    }
 
     public Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, UserRepositoryCompletionHandler handler) {
         User user = loginToUserMap.get(login);
