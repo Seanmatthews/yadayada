@@ -54,7 +54,6 @@
 - (void)registerForKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
 }
 
@@ -103,7 +102,7 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    MenuViewController* vc = (MenuViewController *)segue.destinationViewController;
+    MenuViewController* vc = ((UINavigationController *)segue.destinationViewController).viewControllers[0];
     vc.userHandle = handleTextField.text;
 }
 

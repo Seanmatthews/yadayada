@@ -28,7 +28,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	
+    
     ud = [UserDetails sharedInstance];
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
         ud.handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"userHandle"];
@@ -38,7 +38,7 @@
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
-        [[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
+        //[[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
         ud.handle = userHandle;
     }
     
@@ -61,10 +61,15 @@
     if ([segueName isEqualToString: @"menuContainerSegue"]) {
         UINavigationController* childViewController = (UINavigationController*)[segue destinationViewController];
         UITableViewController* menu = [childViewController.viewControllers objectAtIndex:0];
-        UITableView* menuview = (UITableView*)menu.view;
-        UITableViewCell* cell = [menuview cellForRowAtIndexPath:0];
         [menu performSegueWithIdentifier:@"chatroomSegue" sender:self];
     }
 }
+
+- (IBAction)unwindToMenu:(UIStoryboardSegue*)unwindSegue
+{
+    
+}
+
+
 
 @end
