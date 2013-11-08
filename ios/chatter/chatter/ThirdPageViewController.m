@@ -96,7 +96,7 @@
 - (void)leftSwipeAction
 {
     if ([handleTextField.text length] > 0) {
-        [self performSegueWithIdentifier: @"firsttime3segue" sender: self];
+        [self performSegueWithIdentifier: @"firstTimeSegue" sender: self];
     }
 }
 

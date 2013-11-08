@@ -20,7 +20,7 @@
                                 <rect key="frame" x="20" y="518" width="280" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" keyboardType="alphabet" returnKeyType="go"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet" returnKeyType="go"/>
                                 <connections>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="yw5-Oe-4Rk"/>
                                 </connections>
@@ -180,7 +180,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <connections>
-                                    <segue destination="xjH-xq-8XB" kind="embed" id="LIq-Wh-KyQ"/>
+                                    <segue destination="xjH-xq-8XB" kind="embed" identifier="menuContainerSegue" id="LIq-Wh-KyQ"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -461,7 +461,7 @@
                                 <rect key="frame" x="45" y="347" width="228" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -469,6 +469,7 @@
                     </view>
                     <connections>
                         <outlet property="handleTextField" destination="Lde-vM-0fr" id="z6V-AF-UQO"/>
+                        <segue destination="mTE-8Y-ifs" kind="modal" identifier="firstTimeSegue" id="ZX8-nR-mGd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eV2-RC-NL8" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -487,7 +488,7 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="76q-x3-677"/>
         <segue reference="dDv-Bn-jI2"/>
+        <segue reference="RtA-0b-Q7V"/>
     </inferredMetricsTieBreakers>
 </document>

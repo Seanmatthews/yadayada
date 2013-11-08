@@ -50,16 +50,9 @@ const int MESSAGE_NUM_THRESH = 50;
     
     // Get connection object and add this controller's callback
     // method for incoming connections.
-    connection= [Connection sharedInstance];
-    [connection connect];
+    connection = [Connection sharedInstance];
     ViewController* __weak weakSelf = self;
     [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
-
-    // We need this because the run loops of connection don't work until
-    // the view is completely loaded.
-    [self performSelector:@selector(connectRegisterLogin) withObject:nil afterDelay:1.0];
-    
-//    NSLog(@"handle: %@",userHandle);
 }
 
 - (void)didReceiveMemoryWarning
@@ -88,14 +81,6 @@ const int MESSAGE_NUM_THRESH = 50;
         [chatQueue removeObjectAtIndex:0];
     }
 }
-
-//- (IBAction)pressedMenuButton:(id)sender
-//{
-//    //menuContainer.view.backgroundColor = [UIColor colorWithPatternImage:[self blurredSnapshot]];
-//    //menuContainer.bgImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default.png"]];
-////    UIImageView* newview = [[UIImageView alloc] initWithImage:[self blurredSnapshot]];
-//    [self presentViewController:menuContainer animated:NO completion:nil];
-//}
 
 #pragma mark - Keyboard Interaction
 
@@ -153,83 +138,11 @@ const int MESSAGE_NUM_THRESH = 50;
 
 #pragma mark - incoming and outgoing messages
 
-- (void)connectRegisterLogin
-{
-    NSLog(@"Going to try to connect now");
-    
-    ConnectMessage* cm = [[ConnectMessage alloc] init];
-    // TODO: get api version programatically
-    cm.APIVersion = 1;
-    cm.UUID = ud.UUID;
-    [self sendMessage:cm];
-}
-
-- (void)registerMessage
-{
-    RegisterMessage* rm = [[RegisterMessage alloc] init];
-    rm.handle = @"sean";
-    rm.userName = ud.UUID;
-    rm.password = @"pass";
-    [self sendMessage:rm];
-}
-
-- (void)loginMessage
-{
-    LoginMessage* lm = [[LoginMessage alloc] init];
-    lm.userName = ud.UUID;
-    lm.password = @"pass";
-    [self sendMessage:lm];
-}
-
-- (void)joinGlobalChatroom
-{
-    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
-    jcm.userId = ud.userId;
-    jcm.chatroomId = ud.chatroomId;
-    jcm.latitude = 0;
-    jcm.longitude = 0;
-    [self sendMessage:jcm];
-}
-
-- (void)sendMessage:(MessageBase*)message
-{
-    [connection sendMessage:message];
-}
 
 - (void)messageCallback:(MessageBase*)message
 {
     NSIndexPath* ipath;
     switch (message.type) {
-            
-        case RegisterAccept:
-            NSLog(@"Register Accept");
-            ud.userId = ((RegisterAcceptMessage*)message).userId;
-            [self loginMessage];
-            break;
-            
-        case RegisterReject:
-            NSLog(@"Register Reject");
-            NSLog(@"%@",((RegisterRejectMessage*)message).reason);
-            break;
-            
-        case ConnectAccept:
-            NSLog(@"Connect Accept");
-            ud.chatroomId = ((ConnectAcceptMessage*)message).globalChatId;
-            [self registerMessage];
-            break;
-            
-        case ConnectReject:
-            NSLog(@"Connect Reject");
-            break;
-            
-        case LoginAccept:
-            NSLog(@"Login Accept");
-            [self joinGlobalChatroom];
-            break;
-            
-        case LoginReject:
-            NSLog(@"Login Reject");
-            break;
             
         case Message:
             NSLog(@"Message");
@@ -237,14 +150,6 @@ const int MESSAGE_NUM_THRESH = 50;
             [mTableView reloadData];
             ipath = [NSIndexPath indexPathForRow:[chatQueue count]-1 inSection:0];
             [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-            break;
-            
-        case Chatroom:
-            NSLog(@"Chatroom");
-            break;
-            
-        case JoinChatroomReject:
-            NSLog(@"Join Chatroom Reject");
             break;
             
         case JoinedChatroom:

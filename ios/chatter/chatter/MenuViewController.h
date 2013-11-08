@@ -8,10 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "UserDetails.h"
+#import "Messages.h"
+#import "Connection.h"
 
 @interface MenuViewController : UIViewController 
 {
     UserDetails* ud;
+    Connection* connection;
 }
 
 @property (nonatomic, strong) NSString* userHandle;
@@ -19,6 +22,12 @@
 @property (nonatomic,retain) IBOutlet UIImageView* bgImageView;
 @property (nonatomic, retain) IBOutlet UITableView* menuTableView;
 
+- (void)connectMessage;
+- (void)registerMessage;
+- (void)loginMessage;
+- (void)joinGlobalChatroom;
+- (void)messageCallback:(MessageBase*)message;
 - (IBAction)unwindToMenu:(UIStoryboardSegue*)unwindSegue;
+
 
 @end

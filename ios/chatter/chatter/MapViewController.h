@@ -10,11 +10,15 @@
 #import <MapKit/MapKit.h>
 #import "Location.h"
 
+
 @interface MapViewController : UIViewController <MKMapViewDelegate>
 {
     Location* location;
 }
 
 @property (nonatomic,retain) IBOutlet MKMapView* mapView;
+
+
+
 
 @end

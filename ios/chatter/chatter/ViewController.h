@@ -20,7 +20,6 @@
     UserDetails* ud;
     Connection* connection;
     NSThread* connectionThread;
-//    MenuViewController* menuContainer;
     
     // TODO: this will be an array of arrays of dicts for multiple chat rooms
     NSMutableArray* chatQueue;
@@ -33,14 +32,12 @@
 
 
 - (void)messageCallback:(MessageBase*)message;
-- (void)connectRegisterLogin;
 - (void)registerForKeyboardNotifications;
 - (void)keyboardWasShown:(NSNotification*)aNotification;
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
 - (void)tappedCell:(id)sender;
 - (void)swipedCell:(id)sender;
 - (void)receivedMessage:(MessageMessage*) message;
-//- (IBAction)pressedMenuButton:(id)sender;
 - (UIImage*)blurredSnapshot;
 
 

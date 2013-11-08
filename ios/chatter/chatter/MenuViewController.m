@@ -38,11 +38,22 @@
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
-        //[[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
+        [[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
         ud.handle = userHandle;
     }
     
+    // Get connection object and add this controller's callback
+    // method for incoming connections.
+    connection = [Connection sharedInstance];
+    [connection connect];
+    MenuViewController* __weak weakSelf = self;
+    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
+    
+    // We need this because the run loops of connection don't work until
+    // the view is completely loaded.
+    [self performSelector:@selector(connectMessage) withObject:nil afterDelay:1.0];
 }
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -59,9 +70,8 @@
 {
     NSString * segueName = segue.identifier;
     if ([segueName isEqualToString: @"menuContainerSegue"]) {
-        UINavigationController* childViewController = (UINavigationController*)[segue destinationViewController];
-        UITableViewController* menu = [childViewController.viewControllers objectAtIndex:0];
-        [menu performSegueWithIdentifier:@"chatroomSegue" sender:self];
+        UITableViewController* menu = (UITableViewController*)[segue destinationViewController];
+        [menu performSegueWithIdentifier:@"chatSegue" sender:self];
     }
 }
 
@@ -69,6 +79,97 @@
 {
     
 }
+
+
+#pragma mark - incoming and outgoing messages
+
+- (void)connectMessage
+{
+    NSLog(@"Going to try to connect now");
+    
+    ConnectMessage* cm = [[ConnectMessage alloc] init];
+    // TODO: get api version programatically
+    cm.APIVersion = 1;
+    cm.UUID = ud.UUID;
+    [connection sendMessage:cm];
+}
+
+- (void)registerMessage
+{
+    RegisterMessage* rm = [[RegisterMessage alloc] init];
+    rm.handle = @"sean";
+    rm.userName = ud.UUID;
+    rm.password = @"pass";
+    [connection sendMessage:rm];
+}
+
+- (void)loginMessage
+{
+    LoginMessage* lm = [[LoginMessage alloc] init];
+    lm.userName = ud.UUID;
+    lm.password = @"pass";
+    [connection sendMessage:lm];
+}
+
+- (void)joinGlobalChatroom
+{
+    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
+    jcm.userId = ud.userId;
+    jcm.chatroomId = ud.chatroomId;
+    jcm.latitude = 0;
+    jcm.longitude = 0;
+    [connection sendMessage:jcm];
+}
+
+- (void)messageCallback:(MessageBase*)message
+{
+    switch (message.type) {
+            
+        case RegisterAccept:
+            NSLog(@"Register Accept");
+            ud.userId = ((RegisterAcceptMessage*)message).userId;
+            [self loginMessage];
+            break;
+            
+        case RegisterReject:
+            NSLog(@"Register Reject");
+            NSLog(@"%@",((RegisterRejectMessage*)message).reason);
+            break;
+            
+        case ConnectAccept:
+            NSLog(@"Connect Accept");
+            ud.chatroomId = ((ConnectAcceptMessage*)message).globalChatId;
+            [self registerMessage];
+            break;
+            
+        case ConnectReject:
+            NSLog(@"Connect Reject");
+            break;
+            
+        case LoginAccept:
+            NSLog(@"Login Accept");
+            [self joinGlobalChatroom];
+            break;
+            
+        case LoginReject:
+            NSLog(@"Login Reject");
+            break;
+            
+        case Chatroom:
+            NSLog(@"Chatroom");
+            break;
+            
+        case JoinChatroomReject:
+            NSLog(@"Join Chatroom Reject");
+            break;
+            
+        case JoinedChatroom:
+            NSLog(@"Joined Chatroom");
+            break;
+    }
+}
+
+
 
 
 
