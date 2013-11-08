@@ -116,8 +116,6 @@ public class TCPCrackerClient {
             return;
         }
 
-        log.debug("  Read {}", read);
-
         if (read != 0) {
             readBuffer.flip();
 

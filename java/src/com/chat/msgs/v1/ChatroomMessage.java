@@ -64,6 +64,7 @@ public class ChatroomMessage implements Message {
     @Override
     public void write(ReadWriteBuffer stream) {
         int position = stream.position();
+        // skip 2 bytes for length of message
         stream.advance(2);
    
         stream.writeByte(MessageTypes.Chatroom.getValue());
@@ -77,5 +78,19 @@ public class ChatroomMessage implements Message {
 
         // write out length of message
         stream.writeShort(position, stream.position() - position - 2);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Msg=Chatroom");
+        builder.append(",ChatroomId=").append(getChatroomId());
+        builder.append(",ChatroomOwnerId=").append(getChatroomOwnerId());
+        builder.append(",ChatroomName=").append(getChatroomName());
+        builder.append(",ChatroomOwnerHandle=").append(getChatroomOwnerHandle());
+        builder.append(",Latitude=").append(getLatitude());
+        builder.append(",Longitude=").append(getLongitude());
+        builder.append(",Radius=").append(getRadius());
+        return builder.toString();        
     }
 } 

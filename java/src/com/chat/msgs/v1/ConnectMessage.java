@@ -29,6 +29,7 @@ public class ConnectMessage implements Message {
     @Override
     public void write(ReadWriteBuffer stream) {
         int position = stream.position();
+        // skip 2 bytes for length of message
         stream.advance(2);
    
         stream.writeByte(MessageTypes.Connect.getValue());
@@ -37,5 +38,14 @@ public class ConnectMessage implements Message {
 
         // write out length of message
         stream.writeShort(position, stream.position() - position - 2);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Msg=Connect");
+        builder.append(",APIVersion=").append(getAPIVersion());
+        builder.append(",UUID=").append(getUUID());
+        return builder.toString();        
     }
 } 

@@ -43,6 +43,7 @@ public class ConnectAcceptMessage implements Message {
     @Override
     public void write(ReadWriteBuffer stream) {
         int position = stream.position();
+        // skip 2 bytes for length of message
         stream.advance(2);
    
         stream.writeByte(MessageTypes.ConnectAccept.getValue());
@@ -53,5 +54,16 @@ public class ConnectAcceptMessage implements Message {
 
         // write out length of message
         stream.writeShort(position, stream.position() - position - 2);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Msg=ConnectAccept");
+        builder.append(",APIVersion=").append(getAPIVersion());
+        builder.append(",GlobalChatId=").append(getGlobalChatId());
+        builder.append(",ImageUploadUrl=").append(getImageUploadUrl());
+        builder.append(",ImageDownloadUrl=").append(getImageDownloadUrl());
+        return builder.toString();        
     }
 } 

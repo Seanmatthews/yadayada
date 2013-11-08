@@ -44,22 +44,26 @@ public class V1Dispatcher implements MessageDispatcher {
         switch (type) {
             case Connect:
                 ConnectMessage cMsg = new ConnectMessage(buffer);
+                logMsg(cMsg);
                 server.connect(stream, cMsg.getAPIVersion(), cMsg.getUUID());
                 break;
 
             case SearchChatrooms:
                 SearchChatroomsMessage scMsg = new SearchChatroomsMessage(buffer);
+                logMsg(scMsg);
                 server.searchChatrooms(stream);
                 break;
 
             case CreateChatroom:
                 CreateChatroomMessage ccMsg = new CreateChatroomMessage(buffer);
+                logMsg(ccMsg);
                 User ccUser = getAndValidateUser(ccMsg.getOwnerId());
                 server.createChatroom(stream, ccUser, ccMsg.getChatroomName());
                 break;
 
             case JoinChatroom:
                 JoinChatroomMessage jcMsg = new JoinChatroomMessage(buffer);
+                logMsg(jcMsg);
                 User jcUser = getAndValidateUser(jcMsg.getUserId());
                 Chatroom jcChatroom = getAndValidateChatroom(jcMsg.getChatroomId());
                 server.joinChatroom(stream, jcUser, jcChatroom);
@@ -67,6 +71,7 @@ public class V1Dispatcher implements MessageDispatcher {
 
             case LeaveChatroom:
                 LeaveChatroomMessage lcMsg = new LeaveChatroomMessage(buffer);
+                logMsg(lcMsg);
                 User lcUser = getAndValidateUser(lcMsg.getUserId());
                 Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
                 server.leaveChatroom(stream, lcUser, lcChatroom, false);
@@ -74,16 +79,19 @@ public class V1Dispatcher implements MessageDispatcher {
 
             case Register:
                 RegisterMessage rMsg = new RegisterMessage(buffer);
+                logMsg(rMsg);
                 server.registerUser(stream, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle(), rMsg.getUUID());
                 break;
 
             case Login:
                 LoginMessage lMsg = new LoginMessage(buffer);
+                logMsg(lMsg);
                 server.login(stream, lMsg.getUserName(), lMsg.getPassword());
                 break;
 
             case SubmitMessage:
                 SubmitMessageMessage smMsg = new SubmitMessageMessage(buffer);
+                logMsg(smMsg);
                 User user = getAndValidateUser(smMsg.getUserId());
                 Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());
                 log.debug("Sending {}", smMsg.getMessage());
@@ -92,6 +100,12 @@ public class V1Dispatcher implements MessageDispatcher {
 
             default:
                 throw new ValidationError("Unhandled message: " + type);
+        }
+    }
+
+    private void logMsg(Message msg) {
+        if (log.isDebugEnabled()) {
+            log.debug(msg.toString());
         }
     }
 
