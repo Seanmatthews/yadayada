@@ -43,6 +43,7 @@ public class RegisterMessage implements Message {
     @Override
     public void write(ReadWriteBuffer stream) {
         int position = stream.position();
+        // skip 2 bytes for length of message
         stream.advance(2);
    
         stream.writeByte(MessageTypes.Register.getValue());
@@ -53,5 +54,16 @@ public class RegisterMessage implements Message {
 
         // write out length of message
         stream.writeShort(position, stream.position() - position - 2);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Msg=Register");
+        builder.append(",UserName=").append(getUserName());
+        builder.append(",Password=").append(getPassword());
+        builder.append(",Handle=").append(getHandle());
+        builder.append(",UUID=").append(getUUID());
+        return builder.toString();        
     }
 } 

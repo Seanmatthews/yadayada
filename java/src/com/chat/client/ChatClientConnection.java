@@ -5,7 +5,6 @@ import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.v1.ConnectMessage;
 import com.chat.msgs.v1.LoginMessage;
 import com.chat.msgs.v1.RegisterMessage;
-import com.chat.msgs.v1.SearchChatroomsMessage;
 import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
 import com.chat.select.SocketListener;
@@ -71,8 +70,7 @@ public class ChatClientConnection implements TCPCrackerClientListener, SocketLis
     }
 
     @Override
-    public boolean onWriteAvailable(TCPCrackerClient client, ReadWriteBuffer writeBuffer) {
-        return false;
+    public void onWriteAvailable(TCPCrackerClient client, ReadWriteBuffer writeBuffer) {
     }
 
     public void sendMessage(Message message) {

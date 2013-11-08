@@ -105,14 +105,14 @@ public class EventServiceImpl implements EventService {
     }
 
     private void changeOp(SelectionKey key, boolean val, int newOp) {
-        boolean isEnabled = (key.interestOps() & newOp) == 0;
+        boolean isNotEnabled = (key.interestOps() & newOp) == 0;
         if (val) {
-            if (isEnabled) {
+            if (isNotEnabled) {
                 key.interestOps(key.interestOps() | newOp);
             }
         }
         else {
-            if (!isEnabled) {
+            if (!isNotEnabled) {
                 key.interestOps(key.interestOps() & ~newOp);
             }
         }

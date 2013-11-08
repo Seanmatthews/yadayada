@@ -4,18 +4,12 @@ import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientConnection;
 import com.chat.client.ChatClientDispatcher;
-import com.chat.client.ChatClientUtilities;
-import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
 import com.chat.select.EventService;
 import com.chat.select.impl.EventServiceImpl;
-import com.chat.util.TwoByteLengthMessageCracker;
-import com.chat.util.tcp.TCPCrackerClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,9 +20,6 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,11 +1,14 @@
 package com.chat.client;
 
-import com.chat.*;
+import com.chat.ChatMessage;
+import com.chat.Chatroom;
+import com.chat.ChatroomRepository;
+import com.chat.User;
 import com.chat.impl.InMemoryUserRepository;
+import com.chat.msgs.Message;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 import com.chat.util.buffer.ReadBuffer;
-import com.chat.util.tcp.TCPCrackerClientListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,37 +43,40 @@ public class ChatClientDispatcher {
             switch(msgType) {
                 case ConnectAccept:
                     ConnectAcceptMessage caMsg = new ConnectAcceptMessage(buffer);
-                    log.info("ConnectAccept APIVersion={} GlobalChatId={}", caMsg.getAPIVersion(), caMsg.getGlobalChatId());
+                    logMsg(caMsg);
                     break;
 
                 case ConnectReject:
                     ConnectRejectMessage crMsg = new ConnectRejectMessage(buffer);
-                    log.info("ConnectReject {}" + crMsg.getReason());
+                    logMsg(crMsg);
                     System.exit(0);
                     break;
 
                 case RegisterAccept:
                     RegisterAcceptMessage raMsg = new RegisterAcceptMessage(buffer);
-                    log.info("RegisterAccept UserId={}", raMsg.getUserId());
+                    logMsg(raMsg);
                     break;
 
                 case RegisterReject:
                     RegisterRejectMessage rrMsg = new RegisterRejectMessage(buffer);
-                    log.info("RegisterReject {}" + rrMsg.getReason());
+                    logMsg(rrMsg);
                     break;
 
                 case LoginAccept:
                     LoginAcceptMessage laMsg = new LoginAcceptMessage(buffer);
+                    logMsg(laMsg);
                     client.onLoginAccept(laMsg.getUserId());
                     break;
 
                 case LoginReject:
                     LoginRejectMessage lrMsg = new LoginRejectMessage(buffer);
-                    log.info("LoginReject {}" + lrMsg.getReason());
+                    logMsg(lrMsg);
+                    System.exit(0);
                     break;
 
                 case JoinedChatroom:
                     JoinedChatroomMessage jcMsg = new JoinedChatroomMessage(buffer);
+                    logMsg(jcMsg);
                     User jcUser = getOrCreateUser(jcMsg.getUserId(), jcMsg.getUserHandle());
                     Chatroom jcChatroom = chatroomRepo.get(jcMsg.getChatroomId());
                     client.onJoinedChatroom(jcChatroom, jcUser);
@@ -78,11 +84,13 @@ public class ChatClientDispatcher {
 
                 case JoinChatroomReject:
                     JoinChatroomRejectMessage jcrMsg = new JoinChatroomRejectMessage(buffer);
+                    logMsg(jcrMsg);
                     client.onJoinedChatroomReject(jcrMsg.getReason());
                     break;
 
                 case LeftChatroom:
                     LeftChatroomMessage lcMsg = new LeftChatroomMessage(buffer);
+                    logMsg(lcMsg);
                     User lcUser = userRepo.get(lcMsg.getUserId(), null).get().getUser();
                     Chatroom lcChatroom = chatroomRepo.get(lcMsg.getChatroomId());
                     client.onLeftChatroom(lcChatroom, lcUser);
@@ -90,6 +98,7 @@ public class ChatClientDispatcher {
 
                 case Chatroom:
                     ChatroomMessage cMsg = new ChatroomMessage(buffer);
+                    logMsg(cMsg);
                     User owner = getOrCreateUser(cMsg.getChatroomOwnerId(), cMsg.getChatroomOwnerHandle());
                     Chatroom chatroom = getOrCreateChatroom(cMsg.getChatroomId(), cMsg.getChatroomName(), owner);
                     client.onChatroom(chatroom);
@@ -97,6 +106,7 @@ public class ChatClientDispatcher {
 
                 case Message:
                     MessageMessage msg = new MessageMessage(buffer);
+                    logMsg(msg);
                     User sender = getOrCreateUser(msg.getSenderId(), msg.getSenderHandle());
                     Chatroom chat = chatroomRepo.get(msg.getChatroomId());
                     ChatMessage theMsg = new ChatMessage(msg.getMessageId(), chat, sender, msg.getMessage(), msg.getMessageTimestamp());
@@ -143,5 +153,11 @@ public class ChatClientDispatcher {
             }
         }
         return owner;
+    }
+
+    private void logMsg(Message msg) {
+        if (log.isDebugEnabled()) {
+            log.debug(msg.toString());
+        }
     }
 }

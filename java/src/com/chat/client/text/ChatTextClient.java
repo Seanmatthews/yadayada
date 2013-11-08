@@ -4,8 +4,6 @@ import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientConnection;
 import com.chat.client.ChatClientDispatcher;
-import com.chat.client.ChatClientUtilities;
-import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
 import com.chat.impl.InMemoryChatroomRepository;
@@ -14,8 +12,6 @@ import com.chat.select.EventService;
 import com.chat.select.impl.EventServiceImpl;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

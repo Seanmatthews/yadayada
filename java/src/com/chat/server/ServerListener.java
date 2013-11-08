@@ -63,13 +63,11 @@ public class ServerListener implements TCPCrackerClientListener {
     }
 
     @Override
-    public boolean onWriteAvailable(TCPCrackerClient client, ReadWriteBuffer writeBuffer) {
+    public void onWriteAvailable(TCPCrackerClient client, ReadWriteBuffer writeBuffer) {
         ServerClientConnection connection = tcpConnectionMap.get(client);
 
         if (connection != null) {
-            return connection.onWriteAvailable(writeBuffer);
+            connection.onWriteAvailable(writeBuffer);
         }
-
-        return false;
     }
 }
