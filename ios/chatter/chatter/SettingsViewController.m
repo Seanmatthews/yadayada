@@ -9,6 +9,7 @@
 #import "SettingsViewController.h"
 #import "UIImage+ImageEffects.h"
 #import "MenuViewController.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface SettingsViewController ()
 
@@ -28,7 +29,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+	
+    // Give the map view rounded corners
+    _tableView.layer.cornerRadius = 5;
+    _tableView.layer.masksToBounds = YES;
 }
 
 - (void)didReceiveMemoryWarning

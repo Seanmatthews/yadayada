@@ -9,6 +9,7 @@
 #import "ChatListViewController.h"
 #import "UIImage+ImageEffects.h"
 #import "MenuViewController.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface ChatListViewController ()
 
@@ -29,6 +30,10 @@
 {
     [super viewDidLoad];
 	location = [Location sharedInstance];
+    
+    // Give the map view rounded corners
+    _tableView.layer.cornerRadius = 5;
+    _tableView.layer.masksToBounds = YES;
 }
 
 - (void)didReceiveMemoryWarning

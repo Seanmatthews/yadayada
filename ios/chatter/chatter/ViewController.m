@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "Messages.h"
 #import "UIImage+ImageEffects.h"
+#import <QuartzCore/QuartzCore.h>
 
 const int MESSAGE_NUM_THRESH = 50;
 
@@ -30,20 +31,11 @@ const int MESSAGE_NUM_THRESH = 50;
     [super viewDidLoad];
     
     ud = [UserDetails sharedInstance];
-//    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
-//        ud.handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"userHandle"];
-//    }
-//    else {
-//        // Getting here implies that the user has done the tutorial
-//        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
-//        [[NSUserDefaults standardUserDefaults] synchronize];
-//        
-//        [[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
-//        ud.handle = userHandle;
-//    }
-    
-//    menuContainer = [[MenuViewController alloc] init];
     chatQueue = [[NSMutableArray alloc] init];
+    
+    // Give the table view rounded corners
+    mTableView.layer.cornerRadius = 5;
+    mTableView.layer.masksToBounds = YES;
     
     userInputTextField.returnKeyType = UIReturnKeySend;
     [self registerForKeyboardNotifications];

@@ -9,6 +9,7 @@
 #import "MapViewController.h"
 #import "UIImage+ImageEffects.h"
 #import "MenuViewController.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface MapViewController ()
 
@@ -29,6 +30,10 @@
 {
     [super viewDidLoad];
     location = [Location sharedInstance];
+    
+    // Give the map view rounded corners
+    _mapView.layer.cornerRadius = 5;
+    _mapView.layer.masksToBounds = YES;
 }
 
 - (void)didReceiveMemoryWarning
