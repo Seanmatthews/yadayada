@@ -68,7 +68,7 @@ for msg in root:
       f.write(str(t))
       f.close()
   
-      if msg.attrib['origin'] == 'client':
+      if 'client' in msg.attrib['origin']:
           clientMessages.append(message);
       else:
           serverMessages.append(message);
@@ -82,7 +82,7 @@ f.write(str(typesT))
 f.close()
 
 iosMessagesHT = Template(file='Messages.h.template')
-iosMessagesHT.msgs = clientMessages + serverMessages
+iosMessagesHT.msgs = allMessages
 for msg in iosMessagesHT.msgs:
     for field in msg.fields:
         field.type = typeMap[field.type]

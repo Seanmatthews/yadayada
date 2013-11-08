@@ -23,20 +23,60 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[RegisterMessage alloc] init];
         break;
 
+        case RegisterAccept:
+        mb = [[RegisterAcceptMessage alloc] init];
+        break;
+
+        case RegisterReject:
+        mb = [[RegisterRejectMessage alloc] init];
+        break;
+
         case Login:
         mb = [[LoginMessage alloc] init];
+        break;
+
+        case LoginAccept:
+        mb = [[LoginAcceptMessage alloc] init];
+        break;
+
+        case LoginReject:
+        mb = [[LoginRejectMessage alloc] init];
         break;
 
         case Connect:
         mb = [[ConnectMessage alloc] init];
         break;
 
+        case ConnectAccept:
+        mb = [[ConnectAcceptMessage alloc] init];
+        break;
+
+        case ConnectReject:
+        mb = [[ConnectRejectMessage alloc] init];
+        break;
+
+        case Heartbeat:
+        mb = [[HeartbeatMessage alloc] init];
+        break;
+
         case SubmitMessage:
         mb = [[SubmitMessageMessage alloc] init];
         break;
 
+        case Message:
+        mb = [[MessageMessage alloc] init];
+        break;
+
+        case SubmitMessageReject:
+        mb = [[SubmitMessageRejectMessage alloc] init];
+        break;
+
         case SearchChatrooms:
         mb = [[SearchChatroomsMessage alloc] init];
+        break;
+
+        case Chatroom:
+        mb = [[ChatroomMessage alloc] init];
         break;
 
         case JoinChatroom:
@@ -49,42 +89,6 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
         case CreateChatroom:
         mb = [[CreateChatroomMessage alloc] init];
-        break;
-
-        case RegisterAccept:
-        mb = [[RegisterAcceptMessage alloc] init];
-        break;
-
-        case RegisterReject:
-        mb = [[RegisterRejectMessage alloc] init];
-        break;
-
-        case LoginAccept:
-        mb = [[LoginAcceptMessage alloc] init];
-        break;
-
-        case LoginReject:
-        mb = [[LoginRejectMessage alloc] init];
-        break;
-
-        case ConnectAccept:
-        mb = [[ConnectAcceptMessage alloc] init];
-        break;
-
-        case ConnectReject:
-        mb = [[ConnectRejectMessage alloc] init];
-        break;
-
-        case Message:
-        mb = [[MessageMessage alloc] init];
-        break;
-
-        case SubmitMessageReject:
-        mb = [[SubmitMessageRejectMessage alloc] init];
-        break;
-
-        case Chatroom:
-        mb = [[ChatroomMessage alloc] init];
         break;
 
         case JoinChatroomReject:

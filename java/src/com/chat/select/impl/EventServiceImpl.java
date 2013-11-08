@@ -19,7 +19,6 @@ import java.util.Set;
  */
 public class EventServiceImpl implements EventService {
     private final Logger log = LogManager.getLogger();
-
     private final Selector selector;
 
     public EventServiceImpl() throws IOException {
@@ -31,29 +30,19 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ServerSocket createServerSocket(SocketListener listener, int port) throws IOException {
-        ServerSocketChannel serverChannel = ServerSocketChannel.open();
-        serverChannel.bind(new InetSocketAddress(port));
-        serverChannel.configureBlocking(false);
-
-        return new ServerSocketImpl(this, serverChannel, listener);
+    public ServerSocketChannel createServerSocket() throws IOException {
+        return ServerSocketChannel.open();
     }
 
     @Override
-    public ClientSocket createClientSocket(SocketListener listener) throws IOException {
-        SocketChannel clientChannel = SocketChannel.open();
-        clientChannel.configureBlocking(false);
-
-        ClientSocket socket = new ClientSocketImpl(this, clientChannel, listener);
-        socket.enableConnect(true);
-
-        return socket;
+    public SocketChannel createClientSocket() throws IOException {
+        return SocketChannel.open();
     }
 
-
     @Override
-    public void register(SelectableChannel channel, Object socket) throws IOException {
-        channel.register(selector, 0, socket);
+    public void register(SelectableChannel channel, EventHandler handler) throws IOException {
+        channel.configureBlocking(false);
+        channel.register(selector, 0, handler);
     }
 
     @Override
@@ -121,27 +110,29 @@ public class EventServiceImpl implements EventService {
     @Override
     public void run() {
         while (true) {
-            int select = 0;
-            try {
-                select = selector.select();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            runOnce();
+        }
+    }
 
-            if (select > 0) {
-                Set<SelectionKey> selectionKeys = selector.selectedKeys();
-                Iterator<SelectionKey> iterator = selectionKeys.iterator();
-                while(iterator.hasNext()) {
-                    SelectionKey key = iterator.next();
-                    try {
-                        processKey(key);
-                    } catch(CancelledKeyException ignored) {
+    public void runOnce() {
+        int select = 0;
+        try {
+            select = selector.select();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-                    } finally {
-                        iterator.remove();
-                    }
-
+        if (select > 0) {
+            Set<SelectionKey> selectionKeys = selector.selectedKeys();
+            Iterator<SelectionKey> iterator = selectionKeys.iterator();
+            while(iterator.hasNext()) {
+                SelectionKey key = iterator.next();
+                try {
+                    processKey(key);
+                } catch(CancelledKeyException ignored) {
                 }
+
+                iterator.remove();
             }
         }
     }
@@ -169,45 +160,22 @@ public class EventServiceImpl implements EventService {
     }
 
     private void handleAccept(SelectionKey key) {
-        ServerSocket serverSocket = (ServerSocket) key.attachment();
-
-        try {
-            SocketChannel clientChannel = ((ServerSocketChannel)key.channel()).accept();
-            clientChannel.configureBlocking(false);
-
-            SocketListener listener = ((ServerSocket) key.attachment()).getListener();
-            ClientSocketImpl clientSocket = new ClientSocketImpl(this, clientChannel, listener);
-            clientSocket.enableRead(true);
-            serverSocket.onAccept(clientSocket);
-        }
-        catch(IOException e) {
-            log.error("Error accepting socket");
-        }
+        EventHandler handler = (EventHandler) key.attachment();
+        handler.onAccept();
     }
 
     private void handleConnect(SelectionKey key) {
-        ClientSocket clientSocket = (ClientSocket) key.attachment();
-
-        SocketChannel channel = (SocketChannel) key.channel();
-        try {
-            if (channel.finishConnect()) {
-                clientSocket.enableConnect(false);
-                clientSocket.enableRead(true);
-                clientSocket.onConnect();
-            }
-        } catch (IOException e) {
-            clientSocket.close();
-        }
+        EventHandler handler = (EventHandler) key.attachment();
+        handler.onConnect();
     }
 
     private void handleWrite(SelectionKey key) {
-        ClientSocket clientSocket = (ClientSocket) key.attachment();
-        clientSocket.enableWrite(false);
-        clientSocket.onWriteAvailable();
+        EventHandler handler = (EventHandler) key.attachment();
+        handler.onWrite();
     }
 
     private void handleRead(SelectionKey key) {
-        ClientSocket clientSocket = (ClientSocket) key.attachment();
-        clientSocket.onReadAvailable();
+        EventHandler handler = (EventHandler) key.attachment();
+        handler.onRead();
     }
 }

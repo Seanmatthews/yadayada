@@ -13,6 +13,7 @@ public enum MessageTypes {
     Connect((byte)16),
     ConnectAccept((byte)17),
     ConnectReject((byte)18),
+    Heartbeat((byte)19),
     SubmitMessage((byte)21),
     Message((byte)22),
     SubmitMessageReject((byte)23),
