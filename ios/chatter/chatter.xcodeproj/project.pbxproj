@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		641C1474182C40CA001D8959 /* MenuSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C1473182C40CA001D8959 /* MenuSegue.m */; };
+		641C1477182C7B9F001D8959 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C1476182C7B9F001D8959 /* MapViewController.m */; };
+		641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147A182C7D31001D8959 /* SettingsViewController.m */; };
+		641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147D182C7D6C001D8959 /* ChatListViewController.m */; };
+		641C1480182C7FF8001D8959 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C147F182C7FF8001D8959 /* MapKit.framework */; };
+		641C1482182C7FFF001D8959 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C1481182C7FFF001D8959 /* CoreLocation.framework */; };
 		6458F38D18172E7400AA8E81 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F38C18172E7400AA8E81 /* Foundation.framework */; };
 		6458F38F18172E7400AA8E81 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F38E18172E7400AA8E81 /* CoreGraphics.framework */; };
 		6458F39118172E7400AA8E81 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F39018172E7400AA8E81 /* UIKit.framework */; };
@@ -53,6 +58,14 @@
 /* Begin PBXFileReference section */
 		641C1472182C40CA001D8959 /* MenuSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuSegue.h; sourceTree = "<group>"; };
 		641C1473182C40CA001D8959 /* MenuSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuSegue.m; sourceTree = "<group>"; };
+		641C1475182C7B9F001D8959 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
+		641C1476182C7B9F001D8959 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
+		641C1479182C7D31001D8959 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		641C147A182C7D31001D8959 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		641C147C182C7D6C001D8959 /* ChatListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatListViewController.h; sourceTree = "<group>"; };
+		641C147D182C7D6C001D8959 /* ChatListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatListViewController.m; sourceTree = "<group>"; };
+		641C147F182C7FF8001D8959 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		641C1481182C7FFF001D8959 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		6458F38918172E7400AA8E81 /* chatter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chatter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6458F38C18172E7400AA8E81 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6458F38E18172E7400AA8E81 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -108,6 +121,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				641C1482182C7FFF001D8959 /* CoreLocation.framework in Frameworks */,
+				641C1480182C7FF8001D8959 /* MapKit.framework in Frameworks */,
 				6458F38F18172E7400AA8E81 /* CoreGraphics.framework in Frameworks */,
 				6458F39118172E7400AA8E81 /* UIKit.framework in Frameworks */,
 				6458F38D18172E7400AA8E81 /* Foundation.framework in Frameworks */,
@@ -127,6 +142,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		641C1478182C7BA8001D8959 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				6458F3A118172E7400AA8E81 /* ViewController.h */,
+				6458F3A218172E7400AA8E81 /* ViewController.m */,
+				B343A50D18282CF600B36450 /* MenuViewController.h */,
+				B343A50E18282CF600B36450 /* MenuViewController.m */,
+				641C1475182C7B9F001D8959 /* MapViewController.h */,
+				641C1476182C7B9F001D8959 /* MapViewController.m */,
+				641C1479182C7D31001D8959 /* SettingsViewController.h */,
+				641C147A182C7D31001D8959 /* SettingsViewController.m */,
+				641C147C182C7D6C001D8959 /* ChatListViewController.h */,
+				641C147D182C7D6C001D8959 /* ChatListViewController.m */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
 		6458F38018172E7400AA8E81 = {
 			isa = PBXGroup;
 			children = (
@@ -149,6 +181,8 @@
 		6458F38B18172E7400AA8E81 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				641C1481182C7FFF001D8959 /* CoreLocation.framework */,
+				641C147F182C7FF8001D8959 /* MapKit.framework */,
 				6458F38C18172E7400AA8E81 /* Foundation.framework */,
 				6458F38E18172E7400AA8E81 /* CoreGraphics.framework */,
 				6458F39018172E7400AA8E81 /* UIKit.framework */,
@@ -160,6 +194,7 @@
 		6458F39218172E7400AA8E81 /* chatter */ = {
 			isa = PBXGroup;
 			children = (
+				641C1478182C7BA8001D8959 /* ViewControllers */,
 				64A10D46181A280A00A499B0 /* Util */,
 				64A10CEA1818A6AA00A499B0 /* Messages */,
 				B3ADCB65181855A700A25383 /* Media */,
@@ -167,8 +202,6 @@
 				6458F39B18172E7400AA8E81 /* AppDelegate.h */,
 				6458F39C18172E7400AA8E81 /* AppDelegate.m */,
 				6458F39E18172E7400AA8E81 /* Main.storyboard */,
-				6458F3A118172E7400AA8E81 /* ViewController.h */,
-				6458F3A218172E7400AA8E81 /* ViewController.m */,
 				6458F3A418172E7400AA8E81 /* Images.xcassets */,
 				64A10D4A181DFC1400A499B0 /* UserDetails.h */,
 				64A10D4B181DFC1400A499B0 /* UserDetails.m */,
@@ -177,8 +210,6 @@
 				64A10DA21824BBDA00A499B0 /* Location.h */,
 				64A10DA31824BBDA00A499B0 /* Location.m */,
 				6458F39318172E7400AA8E81 /* Supporting Files */,
-				B343A50D18282CF600B36450 /* MenuViewController.h */,
-				B343A50E18282CF600B36450 /* MenuViewController.m */,
 			);
 			path = chatter;
 			sourceTree = "<group>";
@@ -366,6 +397,7 @@
 				B343A50C1828134F00B36450 /* UIImage+ImageEffects.m in Sources */,
 				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
 				64674BD8181761C500922109 /* SecondPageViewController.m in Sources */,
+				641C1477182C7B9F001D8959 /* MapViewController.m in Sources */,
 				B343A50F18282CF600B36450 /* MenuViewController.m in Sources */,
 				641C1474182C40CA001D8959 /* MenuSegue.m in Sources */,
 				64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */,
@@ -373,8 +405,10 @@
 				64674BD5181761A500922109 /* FirstPageViewController.m in Sources */,
 				64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */,
 				64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */,
+				641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */,
 				6458F3A318172E7400AA8E81 /* ViewController.m in Sources */,
 				64A10DA41824BBDA00A499B0 /* Location.m in Sources */,
+				641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */,
 				64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
 				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,

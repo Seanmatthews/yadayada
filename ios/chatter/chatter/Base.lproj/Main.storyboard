@@ -67,10 +67,10 @@
             </objects>
             <point key="canvasLocation" x="806" y="407"/>
         </scene>
-        <!--View Controller-->
+        <!--Settings View Controller-->
         <scene sceneID="pkd-zD-3k1">
             <objects>
-                <viewController id="Jyv-o4-cVp" sceneMemberID="viewController">
+                <viewController id="Jyv-o4-cVp" customClass="SettingsViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="4IG-VZ-WvF"/>
                         <viewControllerLayoutGuide type="bottom" id="yMW-mA-eF4"/>
@@ -104,16 +104,19 @@
                         </subviews>
                         <color key="backgroundColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
+                    <connections>
+                        <outlet property="tableView" destination="Q3w-PZ-i0y" id="Cyl-xG-eyB"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rBe-JM-zsJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="bAX-j0-2oJ" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="806" y="1083"/>
         </scene>
-        <!--View Controller-->
+        <!--Chat List View Controller-->
         <scene sceneID="iTr-1c-hFc">
             <objects>
-                <viewController id="dcJ-iO-ylN" sceneMemberID="viewController">
+                <viewController id="dcJ-iO-ylN" customClass="ChatListViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="gdu-UI-Fig"/>
                         <viewControllerLayoutGuide type="bottom" id="mHQ-81-lCy"/>
@@ -147,6 +150,9 @@
                         </subviews>
                         <color key="backgroundColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
+                    <connections>
+                        <outlet property="tableView" destination="ov8-Ka-lVd" id="OUT-Jz-7Ac"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jow-q3-5wI" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="tCQ-vX-SQA" userLabel="Exit" sceneMemberID="exit"/>
@@ -302,10 +308,10 @@
             </objects>
             <point key="canvasLocation" x="401" y="744"/>
         </scene>
-        <!--View Controller-->
+        <!--Map View Controller-->
         <scene sceneID="kfx-qu-ZFO">
             <objects>
-                <viewController id="WWi-aR-deD" sceneMemberID="viewController">
+                <viewController id="WWi-aR-deD" customClass="MapViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8Hf-Yg-kJS"/>
                         <viewControllerLayoutGuide type="bottom" id="spB-h6-OF1"/>
@@ -348,6 +354,9 @@
                         </subviews>
                         <color key="backgroundColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
+                    <connections>
+                        <outlet property="mapView" destination="XYq-9b-29s" id="pzg-34-m4M"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E6d-qd-fwg" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="P4n-Xr-HbX" userLabel="Exit" sceneMemberID="exit"/>
