@@ -8,6 +8,7 @@ import com.chat.msgs.v1.RegisterMessage;
 import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
 import com.chat.select.SocketListener;
+import com.chat.select.impl.ClientSocketImpl;
 import com.chat.util.TwoByteLengthMessageCracker;
 import com.chat.util.buffer.ReadBuffer;
 import com.chat.util.buffer.ReadWriteBuffer;
@@ -15,6 +16,7 @@ import com.chat.util.tcp.TCPCrackerClient;
 import com.chat.util.tcp.TCPCrackerClientListener;
 
 import java.io.IOException;
+import java.nio.channels.SocketChannel;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,8 +39,12 @@ public class ChatClientConnection implements TCPCrackerClientListener, SocketLis
                                 ChatClientDispatcher dispatcher,
                                 String username,
                                 String password) throws IOException {
+        SocketChannel channel = eventService.createClientSocket();
+        ClientSocket socket = new ClientSocketImpl(eventService, channel, this);
+        socket.enableConnect(true);
+
         this.name = name;
-        this.socket = new TCPCrackerClient(name, new TwoByteLengthMessageCracker(), this, eventService.createClientSocket(this));
+        this.socket = new TCPCrackerClient(name, new TwoByteLengthMessageCracker(), this, socket);
         this.socket.connect(host, port);
         this.dispatcher = dispatcher;
         this.username = username;
@@ -69,13 +75,14 @@ public class ChatClientConnection implements TCPCrackerClientListener, SocketLis
         dispatcher.onMessage(slice);
     }
 
-    @Override
-    public void onWriteAvailable(TCPCrackerClient client, ReadWriteBuffer writeBuffer) {
-    }
-
     public void sendMessage(Message message) {
         message.write(socket.getWriteBuffer());
         socket.write();
+    }
+
+    @Override
+    public void onAccept(ClientSocket clientSocket) {
+        // nothing
     }
 
     @Override

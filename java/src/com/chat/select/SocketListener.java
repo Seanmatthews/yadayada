@@ -8,6 +8,7 @@ package com.chat.select;
  * To change this template use File | Settings | File Templates.
  */
 public interface SocketListener {
+    void onAccept(ClientSocket clientSocket);
     void onConnect(ClientSocket clientSocket);
     void onReadAvailable(ClientSocket clientSocket);
     void onWriteAvailable(ClientSocket clientSocket);

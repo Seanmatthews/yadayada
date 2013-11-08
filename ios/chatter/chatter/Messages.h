@@ -10,22 +10,23 @@
 
 typedef enum {
     Register = 1,
+    RegisterAccept = 2,
+    RegisterReject = 3,
     Login = 11,
+    LoginAccept = 12,
+    LoginReject = 13,
     Connect = 16,
+    ConnectAccept = 17,
+    ConnectReject = 18,
+    Heartbeat = 19,
     SubmitMessage = 21,
+    Message = 22,
+    SubmitMessageReject = 23,
     SearchChatrooms = 31,
+    Chatroom = 32,
     JoinChatroom = 33,
     LeaveChatroom = 34,
     CreateChatroom = 35,
-    RegisterAccept = 2,
-    RegisterReject = 3,
-    LoginAccept = 12,
-    LoginReject = 13,
-    ConnectAccept = 17,
-    ConnectReject = 18,
-    Message = 22,
-    SubmitMessageReject = 23,
-    Chatroom = 32,
     JoinChatroomReject = 36,
     JoinedChatroom = 37,
     LeftChatroom = 38,
@@ -57,6 +58,22 @@ typedef enum {
 
 @end
 
+@interface RegisterAcceptMessage : MessageBase
+
+- (id)init;
+
+@property long long userId;
+
+@end
+
+@interface RegisterRejectMessage : MessageBase
+
+- (id)init;
+
+@property NSString* reason;
+
+@end
+
 @interface LoginMessage : MessageBase
 
 - (id)init;
@@ -66,12 +83,54 @@ typedef enum {
 
 @end
 
+@interface LoginAcceptMessage : MessageBase
+
+- (id)init;
+
+@property long long userId;
+
+@end
+
+@interface LoginRejectMessage : MessageBase
+
+- (id)init;
+
+@property NSString* reason;
+
+@end
+
 @interface ConnectMessage : MessageBase
 
 - (id)init;
 
 @property int APIVersion;
 @property NSString* UUID;
+
+@end
+
+@interface ConnectAcceptMessage : MessageBase
+
+- (id)init;
+
+@property int APIVersion;
+@property long long globalChatId;
+@property NSString* imageUploadUrl;
+@property NSString* imageDownloadUrl;
+
+@end
+
+@interface ConnectRejectMessage : MessageBase
+
+- (id)init;
+
+@property NSString* reason;
+
+@end
+
+@interface HeartbeatMessage : MessageBase
+
+- (id)init;
+
 
 @end
 
@@ -85,12 +144,49 @@ typedef enum {
 
 @end
 
+@interface MessageMessage : MessageBase
+
+- (id)init;
+
+@property long long messageId;
+@property long long messageTimestamp;
+@property long long senderId;
+@property long long chatroomId;
+@property NSString* senderHandle;
+@property NSString* message;
+
+@end
+
+@interface SubmitMessageRejectMessage : MessageBase
+
+- (id)init;
+
+@property long long userId;
+@property long long chatroomId;
+@property NSString* reason;
+
+@end
+
 @interface SearchChatroomsMessage : MessageBase
 
 - (id)init;
 
 @property long long latitude;
 @property long long longitude;
+
+@end
+
+@interface ChatroomMessage : MessageBase
+
+- (id)init;
+
+@property long long chatroomId;
+@property long long chatroomOwnerId;
+@property NSString* chatroomName;
+@property NSString* chatroomOwnerHandle;
+@property long long latitude;
+@property long long longitude;
+@property long long radius;
 
 @end
 
@@ -120,94 +216,6 @@ typedef enum {
 
 @property long long ownerId;
 @property NSString* chatroomName;
-@property long long latitude;
-@property long long longitude;
-@property long long radius;
-
-@end
-
-@interface RegisterAcceptMessage : MessageBase
-
-- (id)init;
-
-@property long long userId;
-
-@end
-
-@interface RegisterRejectMessage : MessageBase
-
-- (id)init;
-
-@property NSString* reason;
-
-@end
-
-@interface LoginAcceptMessage : MessageBase
-
-- (id)init;
-
-@property long long userId;
-
-@end
-
-@interface LoginRejectMessage : MessageBase
-
-- (id)init;
-
-@property NSString* reason;
-
-@end
-
-@interface ConnectAcceptMessage : MessageBase
-
-- (id)init;
-
-@property int APIVersion;
-@property long long globalChatId;
-@property NSString* imageUploadUrl;
-@property NSString* imageDownloadUrl;
-
-@end
-
-@interface ConnectRejectMessage : MessageBase
-
-- (id)init;
-
-@property NSString* reason;
-
-@end
-
-@interface MessageMessage : MessageBase
-
-- (id)init;
-
-@property long long messageId;
-@property long long messageTimestamp;
-@property long long senderId;
-@property long long chatroomId;
-@property NSString* senderHandle;
-@property NSString* message;
-
-@end
-
-@interface SubmitMessageRejectMessage : MessageBase
-
-- (id)init;
-
-@property long long userId;
-@property long long chatroomId;
-@property NSString* reason;
-
-@end
-
-@interface ChatroomMessage : MessageBase
-
-- (id)init;
-
-@property long long chatroomId;
-@property long long chatroomOwnerId;
-@property NSString* chatroomName;
-@property NSString* chatroomOwnerHandle;
 @property long long latitude;
 @property long long longitude;
 @property long long radius;

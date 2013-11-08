@@ -31,15 +31,14 @@ import java.util.concurrent.ExecutionException;
  */
 public class ServerClientConnection implements ClientConnection {
     private final Logger log = LogManager.getLogger();
-
-    private final Queue<Message> queue = new LinkedList<>();
-
     private final MessageDispatcher dispatcher;
     private final TCPCrackerClient socket;
+    private final EventService eventService;
 
-    public ServerClientConnection(TCPCrackerClient socket, MessageDispatcher dispatcher) throws IOException {
+    public ServerClientConnection(EventService eventService, TCPCrackerClient socket, MessageDispatcher dispatcher) throws IOException {
         this.socket = socket;
         this.dispatcher = dispatcher;
+        this.eventService = eventService;
     }
 
     public void onCracked(ReadBuffer slice) {
@@ -75,7 +74,7 @@ public class ServerClientConnection implements ClientConnection {
     }
 
     @Override
-    public void sendMessage(Message message, boolean immediate) throws IOException {
+    public void sendMessage(final Message message, boolean immediate) throws IOException {
         if (immediate) {
             ReadWriteBuffer output = socket.getWriteBuffer();
 
@@ -89,20 +88,13 @@ public class ServerClientConnection implements ClientConnection {
             }
         }
         else {
-            if (queue.offer(message)) {
-                socket.enableWrite(true);
-            }
-            else {
-                throw new IOException("Too many messages in the queue to send. Terminating.");
-            }
-        }
-    }
-
-    public void onWriteAvailable(ReadWriteBuffer output) {
-        Message msg;
-
-        while ((msg = queue.poll()) != null)  {
-            msg.write(output);
+            eventService.addThreadedEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        message.write(socket.getWriteBuffer());
+                        socket.write();
+                    }
+                });
         }
     }
 }

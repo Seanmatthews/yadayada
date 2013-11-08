@@ -14,10 +14,6 @@ import java.nio.ByteBuffer;
  * To change this template use File | Settings | File Templates.
  */
 public interface ClientSocket {
-    void onConnect();
-    void onWriteAvailable();
-    void onReadAvailable();
-
     void enableConnect(boolean val);
     void enableRead(boolean val);
     void enableWrite(boolean val);

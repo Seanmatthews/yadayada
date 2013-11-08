@@ -1,5 +1,7 @@
 package com.chat.select;
 
+import com.chat.select.impl.ClientSocketImpl;
+
 import java.io.IOException;
 
 /**
@@ -10,7 +12,7 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public interface ServerSocket {
+    void onAccept(ClientSocket clientSocket);
+    void enableAccept(boolean accept);
     void close() throws IOException;
-    SocketListener getListener();
-    void onAccept(ClientSocket socket) throws IOException;
 }

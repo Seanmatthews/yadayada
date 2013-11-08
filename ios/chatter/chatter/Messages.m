@@ -31,12 +31,56 @@
 
 @end
 
+@implementation RegisterAcceptMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 2;
+    return self;
+}
+
+@end
+
+@implementation RegisterRejectMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 3;
+    return self;
+}
+
+@end
+
 @implementation LoginMessage
 
 - (id)init
 {
     self = [super init];
     _type = 11;
+    return self;
+}
+
+@end
+
+@implementation LoginAcceptMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 12;
+    return self;
+}
+
+@end
+
+@implementation LoginRejectMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 13;
     return self;
 }
 
@@ -53,6 +97,39 @@
 
 @end
 
+@implementation ConnectAcceptMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 17;
+    return self;
+}
+
+@end
+
+@implementation ConnectRejectMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 18;
+    return self;
+}
+
+@end
+
+@implementation HeartbeatMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 19;
+    return self;
+}
+
+@end
+
 @implementation SubmitMessageMessage
 
 - (id)init
@@ -64,12 +141,45 @@
 
 @end
 
+@implementation MessageMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 22;
+    return self;
+}
+
+@end
+
+@implementation SubmitMessageRejectMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 23;
+    return self;
+}
+
+@end
+
 @implementation SearchChatroomsMessage
 
 - (id)init
 {
     self = [super init];
     _type = 31;
+    return self;
+}
+
+@end
+
+@implementation ChatroomMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 32;
     return self;
 }
 
@@ -103,105 +213,6 @@
 {
     self = [super init];
     _type = 35;
-    return self;
-}
-
-@end
-
-@implementation RegisterAcceptMessage
-
-- (id)init
-{
-    self = [super init];
-    _type = 2;
-    return self;
-}
-
-@end
-
-@implementation RegisterRejectMessage
-
-- (id)init
-{
-    self = [super init];
-    _type = 3;
-    return self;
-}
-
-@end
-
-@implementation LoginAcceptMessage
-
-- (id)init
-{
-    self = [super init];
-    _type = 12;
-    return self;
-}
-
-@end
-
-@implementation LoginRejectMessage
-
-- (id)init
-{
-    self = [super init];
-    _type = 13;
-    return self;
-}
-
-@end
-
-@implementation ConnectAcceptMessage
-
-- (id)init
-{
-    self = [super init];
-    _type = 17;
-    return self;
-}
-
-@end
-
-@implementation ConnectRejectMessage
-
-- (id)init
-{
-    self = [super init];
-    _type = 18;
-    return self;
-}
-
-@end
-
-@implementation MessageMessage
-
-- (id)init
-{
-    self = [super init];
-    _type = 22;
-    return self;
-}
-
-@end
-
-@implementation SubmitMessageRejectMessage
-
-- (id)init
-{
-    self = [super init];
-    _type = 23;
-    return self;
-}
-
-@end
-
-@implementation ChatroomMessage
-
-- (id)init
-{
-    self = [super init];
-    _type = 32;
     return self;
 }
 

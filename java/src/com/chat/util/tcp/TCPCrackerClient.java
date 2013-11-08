@@ -39,14 +39,6 @@ public class TCPCrackerClient {
         this.socket = socket;
     }
 
-    public void enableRead(boolean read) {
-        socket.enableRead(read);
-    }
-
-    public void enableWrite(boolean write) {
-        socket.enableWrite(write);
-    }
-
     public void connect(String host, int port) throws IOException {
         this.socket.connect(host, port);
     }
@@ -70,7 +62,8 @@ public class TCPCrackerClient {
 
             if (writeBuffer.hasRemaining()) {
                 writeBuffer.compact();
-                socket.enableWrite(true);
+                log.error("  Could not write everything to socket. Disconnecting");
+                //socket.enableWrite(true);
             }
             else {
                 writeBuffer.clear();
@@ -81,7 +74,7 @@ public class TCPCrackerClient {
     public void onWriteAvailable() {
         log.debug("onWriteAvailable()");
 
-        listener.onWriteAvailable(this, writeBuffer);
+        //listener.onWriteAvailable(this, writeBuffer);
 
         write();
     }
