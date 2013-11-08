@@ -14,6 +14,9 @@ import java.nio.channels.SocketChannel;
  */
 public interface EventService {
     void run();
+    void runOnce();
+
+    void addThreadedEvent(Runnable runnable);
 
     ServerSocketChannel createServerSocket() throws IOException;
     SocketChannel createClientSocket() throws IOException;

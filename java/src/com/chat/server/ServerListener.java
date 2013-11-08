@@ -28,12 +28,14 @@ import java.util.Map;
  */
 public class ServerListener implements TCPCrackerClientListener {
     private final Logger log = LogManager.getLogger();
-
+    private final EventService eventService;
     private final MessageDispatcher dispatcher;
 
     private final Map<TCPCrackerClient, ServerClientConnection> tcpConnectionMap = new HashMap<>();
 
     public ServerListener(EventService eventService, int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
+        this.eventService = eventService;
+
         ChatServer server = new ChatServerImpl(userRepo, chatroomRepo, messageRepo);
         dispatcher = new V1Dispatcher(server, userRepo, chatroomRepo);
 
@@ -46,7 +48,7 @@ public class ServerListener implements TCPCrackerClientListener {
     @Override
     public void onConnect(TCPCrackerClient client) {
         try {
-            ServerClientConnection connection = new ServerClientConnection(client, dispatcher);
+            ServerClientConnection connection = new ServerClientConnection(eventService, client, dispatcher);
             tcpConnectionMap.put(client, connection);
         } catch (IOException e) {
             log.error("Error connecting " + client.toString(), e);
@@ -59,15 +61,6 @@ public class ServerListener implements TCPCrackerClientListener {
 
         if (connection != null) {
             connection.onCracked(slice);
-        }
-    }
-
-    @Override
-    public void onWriteAvailable(TCPCrackerClient client, ReadWriteBuffer writeBuffer) {
-        ServerClientConnection connection = tcpConnectionMap.get(client);
-
-        if (connection != null) {
-            connection.onWriteAvailable(writeBuffer);
         }
     }
 }

@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.*;
 import java.util.Iterator;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,6 +22,7 @@ import java.util.Set;
 public class EventServiceImpl implements EventService {
     private final Logger log = LogManager.getLogger();
     private final Selector selector;
+    private final Queue<Runnable> threadEvents = new ConcurrentLinkedQueue<>();
 
     public EventServiceImpl() throws IOException {
         this(Selector.open());
@@ -135,6 +138,16 @@ public class EventServiceImpl implements EventService {
                 iterator.remove();
             }
         }
+
+        Runnable runnable;
+        while((runnable = threadEvents.poll()) != null) {
+            runnable.run();
+        }
+    }
+
+    @Override
+    public void addThreadedEvent(Runnable runnable) {
+        threadEvents.add(runnable);
     }
 
     private void processKey(SelectionKey key) throws CancelledKeyException {

@@ -75,10 +75,6 @@ public class ChatClientConnection implements TCPCrackerClientListener, SocketLis
         dispatcher.onMessage(slice);
     }
 
-    @Override
-    public void onWriteAvailable(TCPCrackerClient client, ReadWriteBuffer writeBuffer) {
-    }
-
     public void sendMessage(Message message) {
         message.write(socket.getWriteBuffer());
         socket.write();
