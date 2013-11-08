@@ -4,25 +4,18 @@ import com.chat.*;
 import com.chat.client.ChatClient;
 import com.chat.client.ChatClientConnection;
 import com.chat.client.ChatClientDispatcher;
-import com.chat.client.ChatClientUtilities;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
-import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.select.EventService;
 import com.chat.select.impl.EventServiceImpl;
 import com.chat.util.NanoHTTPD;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created with IntelliJ IDEA.
