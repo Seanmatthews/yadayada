@@ -3,6 +3,7 @@
         <field name="userName" type="String" />
         <field name="password" type="String" />
         <field name="handle" type="String" />
+        <field name="UUID" type="String" />
     </msg>
 
     <msg name="RegisterAccept" val="2" origin="server">

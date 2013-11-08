@@ -2,13 +2,15 @@ package com.chat.map;
 
 import com.chat.*;
 import com.chat.client.ChatClient;
+import com.chat.client.ChatClientConnection;
 import com.chat.client.ChatClientDispatcher;
 import com.chat.client.ChatClientUtilities;
-import com.chat.impl.DataStream;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
 import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.ValidationError;
+import com.chat.select.EventService;
+import com.chat.select.impl.EventServiceImpl;
 import com.chat.util.NanoHTTPD;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,8 +32,8 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class MapServer extends NanoHTTPD implements ChatClient {
-    private final BinaryStream connection;
-    private final User user;
+    private final ChatClientConnection connection;
+    private User user;
     private final FileInputStream mapHtmlFile;
 
     private final InMemoryChatroomRepository chatroomRepo;
@@ -43,26 +45,19 @@ public class MapServer extends NanoHTTPD implements ChatClient {
 
         mapHtmlFile = new FileInputStream("/tmp/maps.html");
 
-        Socket socket = new Socket(host, port);
-        DataStream stream = new DataStream(socket);
-        stream.setUUID("MAPS");
-        stream.setAPIVersion(V1Dispatcher.VERSION_ID);
-        connection = stream;
+        EventService eventService = new EventServiceImpl();
 
-        System.out.println("Connected to " + socket);
-
-        Logger logger = LogManager.getLogger();
         chatroomRepo = new InMemoryChatroomRepository();
         userRepo = new InMemoryUserRepository();
+        ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
 
-        long userId = ChatClientUtilities.initialConnect(connection, username, password);
-        user = new User(userId, username, userRepo);
-        userRepo.addUser(user);
+        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher, username, password);
 
-        ExecutorService pool = Executors.newCachedThreadPool();
-        pool.submit(new ChatClientDispatcher(this, connection, chatroomRepo, userRepo));
+        //long userId = ChatClientUtilities.initialConnect(connection, userName, password);
+        //user = new User(userId, userName, userRepo);
+        //userRepo.addUser(user);
 
-        System.out.println("Connected!");
+        eventService.run();
     }
 
     @Override
@@ -130,5 +125,10 @@ public class MapServer extends NanoHTTPD implements ChatClient {
     @Override
     public void onJoinedChatroomReject(String reason) {
         System.err.println("Error entering chatroom: " + reason);
+    }
+
+    @Override
+    public void onLoginAccept(long userId) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

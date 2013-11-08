@@ -1,16 +1,13 @@
 package com.chat.msgs.v1;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class LoginAcceptMessage implements Message {
     private final long userId;
 
-    public LoginAcceptMessage(BinaryStream stream) throws IOException {
+    public LoginAcceptMessage(ReadBuffer stream) {
         this.userId = stream.readLong();
     }
 
@@ -23,18 +20,14 @@ public class LoginAcceptMessage implements Message {
     }
 
     @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           LoginAcceptMessage msg = this;
-           stream.startWriting(1 + 8);
-        }  
-        else {
-           stream.startWriting();
-        }
-
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.LoginAccept.getValue());
         stream.writeLong(getUserId());
-        stream.finishWriting();
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

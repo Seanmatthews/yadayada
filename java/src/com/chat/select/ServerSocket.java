@@ -11,5 +11,6 @@ import java.io.IOException;
  */
 public interface ServerSocket {
     void close() throws IOException;
-    ClientSocket accept() throws IOException;
+    SocketListener getListener();
+    void onAccept(ClientSocket socket) throws IOException;
 }

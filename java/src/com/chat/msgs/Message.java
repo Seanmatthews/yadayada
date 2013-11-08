@@ -1,8 +1,6 @@
 package com.chat.msgs;
 
-import com.chat.BinaryStream;
-
-import java.io.IOException;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,5 +10,5 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public interface Message {
-    void write(BinaryStream stream) throws IOException;
+    void write(ReadWriteBuffer stream);
 }

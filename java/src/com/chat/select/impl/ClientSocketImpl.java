@@ -1,13 +1,15 @@
 package com.chat.select.impl;
 
 import com.chat.select.ClientSocket;
-import com.chat.select.EventService;
 import com.chat.select.SocketListener;
+import com.chat.select.EventService;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 /**
@@ -27,7 +29,11 @@ public class ClientSocketImpl implements ClientSocket {
         this.channel = clientChannel;
         this.listener = listener;
         eventService.register(clientChannel, this);
-        eventService.enableRead(channel, true);
+    }
+
+    @Override
+    public void enableConnect(boolean val) {
+        eventService.enableConnect(channel, val);
     }
 
     @Override
@@ -41,6 +47,11 @@ public class ClientSocketImpl implements ClientSocket {
     }
 
     @Override
+    public void onConnect() {
+        listener.onConnect(this);
+    }
+
+    @Override
     public void onWriteAvailable() {
         listener.onWriteAvailable(this);
     }
@@ -51,19 +62,29 @@ public class ClientSocketImpl implements ClientSocket {
     }
 
     @Override
-    public int read(ByteBuffer buffer) throws IOException {
-        return channel.read(buffer);
+    public int read(ReadBuffer buffer) throws IOException {
+        return channel.read(buffer.getRawBuffer());
     }
 
     @Override
-    public void write(ByteBuffer output) throws IOException {
-        channel.write(output);
+    public void write(ReadWriteBuffer output) throws IOException {
+        channel.write(output.getRawBuffer());
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         eventService.free(channel);
-        channel.close();
+
+        try {
+            channel.close();
+        } catch (IOException e) {
+            //
+        }
+    }
+
+    @Override
+    public void connect(String host, int port) throws IOException {
+        channel.connect(new InetSocketAddress(host, port));
     }
 
     public String toString() {

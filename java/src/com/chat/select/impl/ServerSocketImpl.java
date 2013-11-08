@@ -1,9 +1,6 @@
 package com.chat.select.impl;
 
-import com.chat.select.ClientSocket;
-import com.chat.select.EventService;
-import com.chat.select.ServerSocket;
-import com.chat.select.SocketListener;
+import com.chat.select.*;
 
 import java.io.IOException;
 import java.nio.channels.ServerSocketChannel;
@@ -35,11 +32,12 @@ public class ServerSocketImpl implements ServerSocket {
     }
 
     @Override
-    public ClientSocket accept() throws IOException {
-        SocketChannel channel = this.channel.accept();
-        channel.configureBlocking(false);
-        ClientSocketImpl clientSocket = new ClientSocketImpl(eventService, channel, listener);
+    public SocketListener getListener() {
+        return listener;
+    }
+
+    @Override
+    public void onAccept(ClientSocket clientSocket) throws IOException {
         listener.onConnect(clientSocket);
-        return clientSocket;
     }
 }

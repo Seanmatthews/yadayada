@@ -1,18 +1,15 @@
 package com.chat.msgs.v1;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class SubmitMessageRejectMessage implements Message {
     private final long userId;
     private final long chatroomId;
     private final String reason;
 
-    public SubmitMessageRejectMessage(BinaryStream stream) throws IOException {
+    public SubmitMessageRejectMessage(ReadBuffer stream) {
         this.userId = stream.readLong();
         this.chatroomId = stream.readLong();
         this.reason = stream.readString();
@@ -37,20 +34,16 @@ public class SubmitMessageRejectMessage implements Message {
     }
 
     @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           SubmitMessageRejectMessage msg = this;
-           stream.startWriting(1 + 8 + 8 + getStrLen(msg.getReason()));
-        }  
-        else {
-           stream.startWriting();
-        }
-
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.SubmitMessageReject.getValue());
         stream.writeLong(getUserId());
         stream.writeLong(getChatroomId());
         stream.writeString(getReason());
-        stream.finishWriting();
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

@@ -1,9 +1,6 @@
 package com.chat.select.impl;
 
-import com.chat.select.ClientSocket;
-import com.chat.select.EventService;
-import com.chat.select.ServerSocket;
-import com.chat.select.SocketListener;
+import com.chat.select.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +22,11 @@ public class EventServiceImpl implements EventService {
 
     private final Selector selector;
 
-    public EventServiceImpl(Selector selector) {
+    public EventServiceImpl() throws IOException {
+        this(Selector.open());
+    }
+
+    protected EventServiceImpl(Selector selector) {
         this.selector = selector;
     }
 
@@ -37,6 +38,18 @@ public class EventServiceImpl implements EventService {
 
         return new ServerSocketImpl(this, serverChannel, listener);
     }
+
+    @Override
+    public ClientSocket createClientSocket(SocketListener listener) throws IOException {
+        SocketChannel clientChannel = SocketChannel.open();
+        clientChannel.configureBlocking(false);
+
+        ClientSocket socket = new ClientSocketImpl(this, clientChannel, listener);
+        socket.enableConnect(true);
+
+        return socket;
+    }
+
 
     @Override
     public void register(SelectableChannel channel, Object socket) throws IOException {
@@ -57,6 +70,16 @@ public class EventServiceImpl implements EventService {
 
         if (key != null) {
             changeOp(key, val, SelectionKey.OP_ACCEPT);
+            selector.wakeup();
+        }
+    }
+
+    @Override
+    public void enableConnect(SocketChannel channel, boolean val) {
+        SelectionKey key = channel.keyFor(selector);
+
+        if (key != null) {
+            changeOp(key, val, SelectionKey.OP_CONNECT);
             selector.wakeup();
         }
     }
@@ -129,6 +152,11 @@ public class EventServiceImpl implements EventService {
             handleAccept(key);
         }
 
+        // connecting to a server socket
+        if (key.isValid() && key.isConnectable()) {
+            handleConnect(key);
+        }
+
         // writing to a client socket
         if (key.isValid() && key.isWritable()) {
             handleWrite(key);
@@ -144,10 +172,31 @@ public class EventServiceImpl implements EventService {
         ServerSocket serverSocket = (ServerSocket) key.attachment();
 
         try {
-            serverSocket.accept();
+            SocketChannel clientChannel = ((ServerSocketChannel)key.channel()).accept();
+            clientChannel.configureBlocking(false);
+
+            SocketListener listener = ((ServerSocket) key.attachment()).getListener();
+            ClientSocketImpl clientSocket = new ClientSocketImpl(this, clientChannel, listener);
+            clientSocket.enableRead(true);
+            serverSocket.onAccept(clientSocket);
         }
         catch(IOException e) {
             log.error("Error accepting socket");
+        }
+    }
+
+    private void handleConnect(SelectionKey key) {
+        ClientSocket clientSocket = (ClientSocket) key.attachment();
+
+        SocketChannel channel = (SocketChannel) key.channel();
+        try {
+            if (channel.finishConnect()) {
+                clientSocket.enableConnect(false);
+                clientSocket.enableRead(true);
+                clientSocket.onConnect();
+            }
+        } catch (IOException e) {
+            clientSocket.close();
         }
     }
 

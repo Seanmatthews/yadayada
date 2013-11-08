@@ -4,6 +4,10 @@ import com.chat.*;
 import com.chat.impl.InMemoryUserRepository;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.tcp.TCPCrackerClientListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
@@ -16,80 +20,103 @@ import java.util.concurrent.ExecutionException;
  * Time: 10:18 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ChatClientDispatcher implements Runnable {
+public class ChatClientDispatcher {
+    private final Logger log = LogManager.getLogger();
+
     private final ChatClient client;
     private final ChatroomRepository chatroomRepo;
     private final InMemoryUserRepository userRepo;
-    private final BinaryStream connection;
 
-    public ChatClientDispatcher(ChatClient client, BinaryStream stream, ChatroomRepository chatroomRepo, InMemoryUserRepository userRepo) {
+    public ChatClientDispatcher(ChatClient client, ChatroomRepository chatroomRepo, InMemoryUserRepository userRepo) {
         this.client = client;
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
-        this.connection = stream;
     }
 
-    @Override
-    public void run() {
+    public void onMessage(ReadBuffer buffer) {
         try {
-            while (true) {
-                connection.startReading();
-                MessageTypes msgType = MessageTypes.lookup(connection.readByte());
+            MessageTypes msgType = MessageTypes.lookup(buffer.readByte());
 
-                switch(msgType) {
-                    case JoinedChatroom:
-                        JoinedChatroomMessage jcMsg = new JoinedChatroomMessage(connection);
-                        User jcUser = getOrCreateUser(jcMsg.getUserId(), jcMsg.getUserHandle());
-                        Chatroom jcChatroom = chatroomRepo.get(jcMsg.getChatroomId());
-                        client.onJoinedChatroom(jcChatroom, jcUser);
-                        break;
+            switch(msgType) {
+                case ConnectAccept:
+                    ConnectAcceptMessage caMsg = new ConnectAcceptMessage(buffer);
+                    log.info("ConnectAccept APIVersion={} GlobalChatId={}", caMsg.getAPIVersion(), caMsg.getGlobalChatId());
+                    break;
 
-                    case LoginAccept:
-                        System.out.println("WTF");
-                        break;
+                case ConnectReject:
+                    ConnectRejectMessage crMsg = new ConnectRejectMessage(buffer);
+                    log.info("ConnectReject {}" + crMsg.getReason());
+                    System.exit(0);
+                    break;
 
-                    case JoinChatroomReject:
-                        JoinChatroomRejectMessage jcrMsg = new JoinChatroomRejectMessage(connection);
-                        client.onJoinedChatroomReject(jcrMsg.getReason());
-                        break;
+                case RegisterAccept:
+                    RegisterAcceptMessage raMsg = new RegisterAcceptMessage(buffer);
+                    log.info("RegisterAccept UserId={}", raMsg.getUserId());
+                    break;
 
-                    case LeftChatroom:
-                        LeftChatroomMessage lcMsg = new LeftChatroomMessage(connection);
-                        User lcUser = userRepo.get(lcMsg.getUserId(), null).get().getUser();
-                        Chatroom lcChatroom = chatroomRepo.get(lcMsg.getChatroomId());
-                        client.onLeftChatroom(lcChatroom, lcUser);
-                        break;
+                case RegisterReject:
+                    RegisterRejectMessage rrMsg = new RegisterRejectMessage(buffer);
+                    log.info("RegisterReject {}" + rrMsg.getReason());
+                    break;
 
-                    case Chatroom:
-                        ChatroomMessage cMsg = new ChatroomMessage(connection);
-                        User owner = getOrCreateUser(cMsg.getChatroomOwnerId(), cMsg.getChatroomOwnerHandle());
-                        Chatroom chatroom = getOrCreateChatroom(cMsg.getChatroomId(), cMsg.getChatroomName(), owner);
-                        client.onChatroom(chatroom);
-                        break;
+                case LoginAccept:
+                    LoginAcceptMessage laMsg = new LoginAcceptMessage(buffer);
+                    client.onLoginAccept(laMsg.getUserId());
+                    break;
 
-                    case Message:
-                        MessageMessage msg = new MessageMessage(connection);
-                        User sender = getOrCreateUser(msg.getSenderId(), msg.getSenderHandle());
-                        Chatroom chat = chatroomRepo.get(msg.getChatroomId());
-                        ChatMessage theMsg = new ChatMessage(msg.getMessageId(), chat, sender, msg.getMessage(), msg.getMessageTimestamp());
-                        client.onMessage(theMsg);
-                        break;
+                case LoginReject:
+                    LoginRejectMessage lrMsg = new LoginRejectMessage(buffer);
+                    log.info("LoginReject {}" + lrMsg.getReason());
+                    break;
 
-                    default:
-                        throw new ValidationError("Ignoring unhandled message: " + msgType);
-                }
+                case JoinedChatroom:
+                    JoinedChatroomMessage jcMsg = new JoinedChatroomMessage(buffer);
+                    User jcUser = getOrCreateUser(jcMsg.getUserId(), jcMsg.getUserHandle());
+                    Chatroom jcChatroom = chatroomRepo.get(jcMsg.getChatroomId());
+                    client.onJoinedChatroom(jcChatroom, jcUser);
+                    break;
 
-                connection.finishReading();
+                case JoinChatroomReject:
+                    JoinChatroomRejectMessage jcrMsg = new JoinChatroomRejectMessage(buffer);
+                    client.onJoinedChatroomReject(jcrMsg.getReason());
+                    break;
+
+                case LeftChatroom:
+                    LeftChatroomMessage lcMsg = new LeftChatroomMessage(buffer);
+                    User lcUser = userRepo.get(lcMsg.getUserId(), null).get().getUser();
+                    Chatroom lcChatroom = chatroomRepo.get(lcMsg.getChatroomId());
+                    client.onLeftChatroom(lcChatroom, lcUser);
+                    break;
+
+                case Chatroom:
+                    ChatroomMessage cMsg = new ChatroomMessage(buffer);
+                    User owner = getOrCreateUser(cMsg.getChatroomOwnerId(), cMsg.getChatroomOwnerHandle());
+                    Chatroom chatroom = getOrCreateChatroom(cMsg.getChatroomId(), cMsg.getChatroomName(), owner);
+                    client.onChatroom(chatroom);
+                    break;
+
+                case Message:
+                    MessageMessage msg = new MessageMessage(buffer);
+                    User sender = getOrCreateUser(msg.getSenderId(), msg.getSenderHandle());
+                    Chatroom chat = chatroomRepo.get(msg.getChatroomId());
+                    ChatMessage theMsg = new ChatMessage(msg.getMessageId(), chat, sender, msg.getMessage(), msg.getMessageTimestamp());
+                    client.onMessage(theMsg);
+                    break;
+
+                default:
+                    throw new ValidationError("Ignoring unhandled message: " + msgType);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
+            System.exit(0);
         } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e);
+            System.exit(0);
         } catch (ExecutionException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e);
+            System.exit(0);
         } catch (ValidationError validationError) {
-            System.err.println(validationError.getMessage());
-        } finally {
+            log.error(validationError.getMessage(), validationError);
             System.exit(0);
         }
     }

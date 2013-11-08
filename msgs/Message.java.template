@@ -1,18 +1,15 @@
 package $package;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class ${msg.name}Message implements Message {
 #for $field in $msg.fields
     private final $field.type $field.name;
 #end for
 
-    public ${msg.name}Message(BinaryStream stream) throws IOException {
+    public ${msg.name}Message(ReadBuffer stream) {
     #for $field in $msg.fields
         this.$field.name = stream.read${field.type.capitalize()}();
     #end for
@@ -31,20 +28,16 @@ public class ${msg.name}Message implements Message {
 #end for
 
     @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           ${msg.name}Message msg = this;
-           stream.startWriting(${msg.length});
-        }  
-        else {
-           stream.startWriting();
-        }
-
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.${msg.name}.getValue());
     #for $field in $msg.fields
         stream.write${field.type.capitalize()}(get${field.nameCap}());
     #end for
-        stream.finishWriting();
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

@@ -1,11 +1,8 @@
 package com.chat.msgs.v1;
 
-import com.chat.BinaryStream;
 import com.chat.msgs.Message;
-
-import java.io.IOException;
-
-import static com.chat.msgs.Utilities.getStrLen;
+import com.chat.util.buffer.ReadBuffer;
+import com.chat.util.buffer.ReadWriteBuffer;
 
 public class ChatroomMessage implements Message {
     private final long chatroomId;
@@ -16,7 +13,7 @@ public class ChatroomMessage implements Message {
     private final long longitude;
     private final long radius;
 
-    public ChatroomMessage(BinaryStream stream) throws IOException {
+    public ChatroomMessage(ReadBuffer stream) {
         this.chatroomId = stream.readLong();
         this.chatroomOwnerId = stream.readLong();
         this.chatroomName = stream.readString();
@@ -65,16 +62,10 @@ public class ChatroomMessage implements Message {
     }
 
     @Override
-    public void write(BinaryStream stream) throws IOException {
-        // backwards compatability
-        if (stream.isStream()) {
-           ChatroomMessage msg = this;
-           stream.startWriting(1 + 8 + 8 + getStrLen(msg.getChatroomName()) + getStrLen(msg.getChatroomOwnerHandle()) + 8 + 8 + 8);
-        }  
-        else {
-           stream.startWriting();
-        }
-
+    public void write(ReadWriteBuffer stream) {
+        int position = stream.position();
+        stream.advance(2);
+   
         stream.writeByte(MessageTypes.Chatroom.getValue());
         stream.writeLong(getChatroomId());
         stream.writeLong(getChatroomOwnerId());
@@ -83,6 +74,8 @@ public class ChatroomMessage implements Message {
         stream.writeLong(getLatitude());
         stream.writeLong(getLongitude());
         stream.writeLong(getRadius());
-        stream.finishWriting();
+
+        // write out length of message
+        stream.writeShort(position, stream.position() - position - 2);
     }
 } 

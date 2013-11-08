@@ -53,6 +53,7 @@ typedef enum {
 @property NSString* userName;
 @property NSString* password;
 @property NSString* handle;
+@property NSString* UUID;
 
 @end
 
