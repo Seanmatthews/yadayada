@@ -1,6 +1,8 @@
 package com.chat.client.text;
 
 import com.chat.client.ChatClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.io.InputStreamReader;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatTextInput implements Runnable {
+    private final Logger log = LogManager.getLogger();
     private final ChatTextClient client;
 
     public ChatTextInput(ChatTextClient client) {
@@ -30,7 +33,7 @@ public class ChatTextInput implements Runnable {
                 client.sendMessage(msg);
             }
         } catch(IOException e) {
-            System.out.println("Error reading");
+            log.error("Error writing", e);
             e.printStackTrace();
         } finally {
             System.exit(0);

@@ -76,12 +76,17 @@ public class ServerClientConnection implements ClientConnection {
 
     @Override
     public void sendMessage(Message message, boolean immediate) throws IOException {
-        ReadWriteBuffer output = socket.getWriteBuffer();
+        if (immediate) {
+            ReadWriteBuffer output = socket.getWriteBuffer();
 
-        if (immediate && output.position() == 0) {
             // write to buffer
             message.write(output);
             socket.write();
+
+            // Message got queued up
+            if (output.position() != 0) {
+                throw new IOException("Too many messages in the queue to send. Terminating.");
+            }
         }
         else {
             if (queue.offer(message)) {
@@ -93,22 +98,11 @@ public class ServerClientConnection implements ClientConnection {
         }
     }
 
-    public boolean onWriteAvailable(ReadWriteBuffer output) {
-        if (output.position() > 0) {
-            // let's not add to queue until we're clear
-            return queue.size() > 0;
+    public void onWriteAvailable(ReadWriteBuffer output) {
+        Message msg;
+
+        while ((msg = queue.poll()) != null)  {
+            msg.write(output);
         }
-
-        Message msg = queue.poll();
-
-        if (msg == null)  {
-            return false;
-        }
-
-        // write to buffer
-        msg.write(output);
-        socket.write();
-
-        return false;
     }
 }

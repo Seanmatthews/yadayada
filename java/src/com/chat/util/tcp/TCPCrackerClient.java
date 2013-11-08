@@ -52,12 +52,38 @@ public class TCPCrackerClient {
     }
 
     public void disconnect() {
-        log.info("Disconnecting Socket");
+        log.info("  Disconnecting Socket");
         this.socket.close();
     }
 
     public void write() {
-        onWriteAvailable();
+        if (writeBuffer.position() > 0) {
+            writeBuffer.flip();
+
+            try {
+                socket.write(writeBuffer);
+            } catch (IOException e) {
+                log.error("  Error writing", e);
+                disconnect();
+                return;
+            }
+
+            if (writeBuffer.hasRemaining()) {
+                writeBuffer.compact();
+                socket.enableWrite(true);
+            }
+            else {
+                writeBuffer.clear();
+            }
+        }
+    }
+
+    public void onWriteAvailable() {
+        log.debug("onWriteAvailable()");
+
+        listener.onWriteAvailable(this, writeBuffer);
+
+        write();
     }
 
     public ReadWriteBuffer getWriteBuffer() {
@@ -109,34 +135,8 @@ public class TCPCrackerClient {
                 readBuffer.clear();
             }
         }
-    }
-
-    public void onWriteAvailable() {
-        log.debug("onWriteAvailable()");
-        boolean enableWriteAgain = listener.onWriteAvailable(this, writeBuffer);
-
-        if (writeBuffer.position() > 0) {
-            writeBuffer.flip();
-
-            try {
-                socket.write(writeBuffer);
-            } catch (IOException e) {
-                log.error("  Error writing", e);
-                disconnect();
-                return;
-            }
-
-            if (writeBuffer.hasRemaining()) {
-                writeBuffer.compact();
-                socket.enableWrite(true);
-            }
-            else {
-                writeBuffer.clear();
-
-                if (enableWriteAgain) {
-                    socket.enableWrite(true);
-                }
-            }
+        else {
+            readBuffer.clear();
         }
     }
 }

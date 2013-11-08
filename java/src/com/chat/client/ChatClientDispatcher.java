@@ -45,7 +45,7 @@ public class ChatClientDispatcher {
 
                 case ConnectReject:
                     ConnectRejectMessage crMsg = new ConnectRejectMessage(buffer);
-                    log.info("ConnectReject {}" + crMsg.getReason());
+                    log.info("ConnectReject {}", crMsg.getReason());
                     System.exit(0);
                     break;
 
@@ -56,7 +56,7 @@ public class ChatClientDispatcher {
 
                 case RegisterReject:
                     RegisterRejectMessage rrMsg = new RegisterRejectMessage(buffer);
-                    log.info("RegisterReject {}" + rrMsg.getReason());
+                    log.info("RegisterReject {}", rrMsg.getReason());
                     break;
 
                 case LoginAccept:
