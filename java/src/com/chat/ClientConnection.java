@@ -14,5 +14,5 @@ import java.io.*;
  */
 public interface ClientConnection {
     void close();
-    void sendMessage(Message message, boolean immediate) throws IOException;
+    void sendMessage(Message message) throws IOException;
 }

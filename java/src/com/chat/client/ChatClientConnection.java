@@ -75,6 +75,11 @@ public class ChatClientConnection implements TCPCrackerClientListener, SocketLis
         dispatcher.onMessage(slice);
     }
 
+    @Override
+    public void onDisconnect(TCPCrackerClient client) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public void sendMessage(Message message) {
         message.write(socket.getWriteBuffer());
         socket.write();

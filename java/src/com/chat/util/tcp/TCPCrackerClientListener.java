@@ -14,5 +14,6 @@ import java.nio.ByteBuffer;
  */
 public interface TCPCrackerClientListener {
     void onConnect(TCPCrackerClient client);
+    void onDisconnect(TCPCrackerClient client);
     void onCracked(TCPCrackerClient client, ReadBuffer slice);
 }

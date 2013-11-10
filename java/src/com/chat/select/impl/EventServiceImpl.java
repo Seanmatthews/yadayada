@@ -148,6 +148,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public void addThreadedEvent(Runnable runnable) {
         threadEvents.add(runnable);
+        selector.wakeup();
     }
 
     private void processKey(SelectionKey key) throws CancelledKeyException {

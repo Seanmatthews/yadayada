@@ -43,9 +43,10 @@ public class TCPCrackerClient {
         this.socket.connect(host, port);
     }
 
-    public void disconnect() {
+    public void close() {
         log.info("  Disconnecting Socket");
-        this.socket.close();
+        socket.close();
+        listener.onDisconnect(this);
     }
 
     public void write() {
@@ -56,7 +57,7 @@ public class TCPCrackerClient {
                 socket.write(writeBuffer);
             } catch (IOException e) {
                 log.error("  Error writing", e);
-                disconnect();
+                close();
                 return;
             }
 
@@ -97,7 +98,7 @@ public class TCPCrackerClient {
             read = socket.read(readBuffer);
         } catch (IOException e) {
             log.error("  Error reading", e);
-            disconnect();
+            close();
             return;
         }
 
@@ -105,7 +106,7 @@ public class TCPCrackerClient {
             log.info("  End of File. Disconnecting.");
 
             // EOF
-            disconnect();
+            close();
             return;
         }
 

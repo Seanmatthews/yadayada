@@ -2,10 +2,12 @@ package com.chat.server;
 
 import com.chat.*;
 import com.chat.msgs.v1.*;
+import com.chat.select.EventService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,14 +25,16 @@ import static com.chat.UserRepository.UserRepositoryCompletionHandler;
 public class ChatServerImpl implements ChatServer {
     private final Logger log = LogManager.getLogger();
 
+    private final EventService eventService;
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
     private final MessageRepository messageRepo;
 
-    private final Map<User, ClientConnection> userConnectionMap = new ConcurrentHashMap<>();
-    private final Map<ClientConnection, User> connectionUserMap = new ConcurrentHashMap<>();
+    private final Map<User, ClientConnection> userConnectionMap = new HashMap<>();
+    private final Map<ClientConnection, User> connectionUserMap = new HashMap<>();
 
-    public ChatServerImpl(UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) {
+    public ChatServerImpl(EventService eventService, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) {
+        this.eventService = eventService;
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
         this.messageRepo = messageRepo;
@@ -65,7 +69,7 @@ public class ChatServerImpl implements ChatServer {
     @Override
     public void connect(ClientConnection sender, int apiVersion, String uuid) {
         try {
-            sender.sendMessage(new ConnectAcceptMessage(apiVersion, 1, "", ""), true);
+            sender.sendMessage(new ConnectAcceptMessage(apiVersion, 1, "", ""));
         } catch (IOException e) {
             removeConnection(sender);
         }
@@ -75,12 +79,12 @@ public class ChatServerImpl implements ChatServer {
     public void newMessage(ClientConnection senderConnection, User sender, Chatroom chatroom, String message) {
         try {
             if (message.length() == 0 || message.length() > ChatMessage.MAX_LENGTH) {
-                senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(), "Invalid message length: " + message.length()), true);
+                senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(), "Invalid message length: " + message.length()));
                 return;
             }
 
             if (!chatroomRepo.containsUser(chatroom, sender)) {
-                senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(), "Not in chatroom: " + chatroom.getName()), true);
+                senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(), "Not in chatroom: " + chatroom.getName()));
                 return;
             }
         }
@@ -103,7 +107,7 @@ public class ChatServerImpl implements ChatServer {
 
             if (connection != null) {
                 try {
-                     connection.sendMessage(msgToSend, true);
+                     connection.sendMessage(msgToSend);
                 } catch (IOException e) {
                     removeConnection(connection);
                 }
@@ -125,7 +129,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     private void sendChatroom(ClientConnection senderConnection, Chatroom chatroom) throws IOException {
-        senderConnection.sendMessage(new ChatroomMessage(chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(), 0, 0, 0), true);
+        senderConnection.sendMessage(new ChatroomMessage(chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(), 0, 0, 0));
     }
 
     @Override
@@ -134,15 +138,15 @@ public class ChatServerImpl implements ChatServer {
 
         try {
             if (login.length() == 0) {
-                senderConnection.sendMessage(new RegisterRejectMessage("Invalid login"), true);
+                senderConnection.sendMessage(new RegisterRejectMessage("Invalid login"));
                 return;
             }
             if (password.length() == 0) {
-                senderConnection.sendMessage(new RegisterRejectMessage("Invalid password"), true);
+                senderConnection.sendMessage(new RegisterRejectMessage("Invalid password"));
                 return;
             }
             if (handle.length() ==0) {
-                senderConnection.sendMessage(new RegisterRejectMessage("Invalid handle"), true);
+                senderConnection.sendMessage(new RegisterRejectMessage("Invalid handle"));
                 return;
             }
         } catch (IOException e) {
@@ -151,24 +155,29 @@ public class ChatServerImpl implements ChatServer {
 
         userRepo.registerUser(login, password, handle, UUID, new UserRepositoryCompletionHandler() {
             @Override
-            public void onCompletion(UserRepositoryActionResult result) {
-                try {
-                    switch (result.getCode()) {
-                        case OK:
-                            senderConnection.sendMessage(new RegisterAcceptMessage(result.getUser().getId()), false);
-                            break;
-                        case ConnectionError:
-                            senderConnection.sendMessage(new RegisterRejectMessage("Connection error"), false);
-                            break;
-                        case UserAlreadyExists:
-                        case InvalidUserNameOrPassword:
-                        default:
-                            senderConnection.sendMessage(new RegisterRejectMessage(result.getMessage()), false);
-                            break;
-                    }
-                } catch (IOException e) {
-                    removeConnection(senderConnection);
-                }
+            public void onCompletion(final UserRepositoryActionResult result) {
+                    eventService.addThreadedEvent(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                switch (result.getCode()) {
+                                    case OK:
+                                        senderConnection.sendMessage(new RegisterAcceptMessage(result.getUser().getId()));
+                                        break;
+                                    case ConnectionError:
+                                        senderConnection.sendMessage(new RegisterRejectMessage("Connection error"));
+                                        break;
+                                    case UserAlreadyExists:
+                                    case InvalidUserNameOrPassword:
+                                    default:
+                                        senderConnection.sendMessage(new RegisterRejectMessage(result.getMessage()));
+                                        break;
+                                }
+                            } catch (IOException e) {
+                                removeConnection(senderConnection);
+                            }
+                        }
+                    });
             }
         });
     }
@@ -179,11 +188,11 @@ public class ChatServerImpl implements ChatServer {
 
         try {
             if (login == null || login.length() == 0) {
-                senderConnection.sendMessage(new LoginRejectMessage("Invalid login"), true);
+                senderConnection.sendMessage(new LoginRejectMessage("Invalid login"));
                 return;
             }
             if (password == null || password.length() == 0) {
-                senderConnection.sendMessage(new LoginRejectMessage("Invalid password"), true);
+                senderConnection.sendMessage(new LoginRejectMessage("Invalid password"));
                 return;
             }
         } catch (IOException e) {
@@ -192,26 +201,31 @@ public class ChatServerImpl implements ChatServer {
 
         userRepo.login(login, password, new UserRepositoryCompletionHandler() {
             @Override
-            public void onCompletion(UserRepositoryActionResult result) {
-                try {
-                    switch (result.getCode()) {
-                        case OK:
-                            User user = result.getUser();
-                            senderConnection.sendMessage(new LoginAcceptMessage(user.getId()), false);
-                            userConnectionMap.put(user, senderConnection);
-                            connectionUserMap.put(senderConnection, user);
-                            break;
-                        case ConnectionError:
-                            senderConnection.sendMessage(new LoginRejectMessage("Connection error"), false);
-                            break;
-                        case InvalidUserNameOrPassword:
-                        default:
-                            senderConnection.sendMessage(new LoginRejectMessage(result.getMessage()), false);
-                            break;
+            public void onCompletion(final UserRepositoryActionResult result) {
+                eventService.addThreadedEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            switch (result.getCode()) {
+                                case OK:
+                                    final User user = result.getUser();
+                                    senderConnection.sendMessage(new LoginAcceptMessage(user.getId()));
+                                    userConnectionMap.put(user, senderConnection);
+                                    connectionUserMap.put(senderConnection, user);
+                                    break;
+                                case ConnectionError:
+                                    senderConnection.sendMessage(new LoginRejectMessage("Connection error"));
+                                    break;
+                                case InvalidUserNameOrPassword:
+                                default:
+                                    senderConnection.sendMessage(new LoginRejectMessage(result.getMessage()));
+                                    break;
+                            }
+                        } catch (IOException e) {
+                            removeConnection(senderConnection);
+                        }
                     }
-                } catch (IOException e) {
-                    removeConnection(senderConnection);
-                }
+                });
             }
         });
     }
@@ -237,7 +251,7 @@ public class ChatServerImpl implements ChatServer {
 
         if (chatroom.containsUser(sender)) {
             try {
-                senderConnection.sendMessage(new JoinChatroomRejectMessage(chatroom.getId(), sender + " is already in " + chatroom), true);
+                senderConnection.sendMessage(new JoinChatroomRejectMessage(chatroom.getId(), sender + " is already in " + chatroom));
             } catch (IOException e) {
                 removeConnection(senderConnection);
             }
@@ -251,7 +265,7 @@ public class ChatServerImpl implements ChatServer {
             // notify me about other user joining chat
             User chatMember = users.next();
             try {
-                senderConnection.sendMessage(new JoinedChatroomMessage(chatroom.getId(), chatMember.getId(), chatMember.getHandle()), true);
+                senderConnection.sendMessage(new JoinedChatroomMessage(chatroom.getId(), chatMember.getId(), chatMember.getHandle()));
             } catch (IOException e) {
                 removeConnection(senderConnection);
             }
@@ -260,7 +274,7 @@ public class ChatServerImpl implements ChatServer {
             ClientConnection chatMemberSender = userConnectionMap.get(chatMember);
             if (chatMemberSender != null) {
                 try {
-                    chatMemberSender.sendMessage(meJoining, true);
+                    chatMemberSender.sendMessage(meJoining);
                 } catch (IOException e) {
                     removeConnection(chatMemberSender);
                 }
@@ -273,7 +287,7 @@ public class ChatServerImpl implements ChatServer {
 
         try {
             // Give me confirmation that I've joined the chat
-            senderConnection.sendMessage(meJoining, true);
+            senderConnection.sendMessage(meJoining);
         } catch (IOException e) {
             removeConnection(senderConnection);
         }
@@ -306,7 +320,7 @@ public class ChatServerImpl implements ChatServer {
             ClientConnection chatMemberSender = userConnectionMap.get(chatMember);
             if (chatMemberSender != null) {
                 try {
-                    chatMemberSender.sendMessage(meLeaving, true);
+                    chatMemberSender.sendMessage(meLeaving);
                 } catch (IOException e) {
                     if (!removing)
                         removeConnection(chatMemberSender);

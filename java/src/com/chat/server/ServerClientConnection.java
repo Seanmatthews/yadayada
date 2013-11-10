@@ -1,25 +1,17 @@
 package com.chat.server;
 
 import com.chat.ClientConnection;
-import com.chat.client.ChatClientDispatcher;
 import com.chat.msgs.Message;
 import com.chat.msgs.MessageDispatcher;
 import com.chat.msgs.ValidationError;
-import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
-import com.chat.util.TwoByteLengthMessageCracker;
 import com.chat.util.buffer.ReadBuffer;
 import com.chat.util.buffer.ReadWriteBuffer;
 import com.chat.util.tcp.TCPCrackerClient;
-import com.chat.util.tcp.TCPCrackerClientListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.EOFException;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -33,68 +25,39 @@ public class ServerClientConnection implements ClientConnection {
     private final Logger log = LogManager.getLogger();
     private final MessageDispatcher dispatcher;
     private final TCPCrackerClient socket;
-    private final EventService eventService;
 
-    public ServerClientConnection(EventService eventService, TCPCrackerClient socket, MessageDispatcher dispatcher) throws IOException {
+    public ServerClientConnection(TCPCrackerClient socket, MessageDispatcher dispatcher) throws IOException {
         this.socket = socket;
         this.dispatcher = dispatcher;
-        this.eventService = eventService;
     }
 
-    public void onCracked(ReadBuffer slice) {
+    public void onCracked(ReadBuffer slice) throws InterruptedException, ExecutionException, ValidationError, IOException {
         // skip size
         slice.advance(2);
-
-        try {
-            dispatcher.onMessage(this, slice);
-        } catch (EOFException e) {
-            log.debug("Customer hung up");
-            socket.disconnect();
-        } catch (IOException e) {
-            log.error("Cannot write to stream " + socket, e);
-            socket.disconnect();
-        } catch (ValidationError e) {
-            log.info("Validation error " + socket, e);
-            socket.disconnect();
-        } catch (InterruptedException e) {
-            log.debug("Thread interruption");
-            socket.disconnect();
-        } catch (ExecutionException e) {
-            log.error("Future execution exception", e);
-            socket.disconnect();
-        } catch (RuntimeException e) {
-            log.error("Unknown exception", e);
-            socket.disconnect();
-        }
+        dispatcher.onMessage(this, slice);
     }
 
     @Override
     public void close() {
-        socket.disconnect();
+        socket.close();
     }
 
     @Override
-    public void sendMessage(final Message message, boolean immediate) throws IOException {
-        if (immediate) {
-            ReadWriteBuffer output = socket.getWriteBuffer();
+    public void sendMessage(final Message message) throws IOException {
+        ReadWriteBuffer output = socket.getWriteBuffer();
 
-            // write to buffer
-            message.write(output);
-            socket.write();
+        // write to buffer
+        message.write(output);
+        socket.write();
 
-            // Message got queued up
-            if (output.position() != 0) {
-                throw new IOException("Too many messages in the queue to send. Terminating.");
-            }
+        // Message got queued up
+        if (output.position() != 0) {
+            throw new IOException("Too many messages in the queue to send. Terminating.");
         }
-        else {
-            eventService.addThreadedEvent(new Runnable() {
-                    @Override
-                    public void run() {
-                        message.write(socket.getWriteBuffer());
-                        socket.write();
-                    }
-                });
-        }
+    }
+
+    @Override
+    public String toString() {
+        return socket.toString();
     }
 }
