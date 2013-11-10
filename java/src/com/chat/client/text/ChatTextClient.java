@@ -25,20 +25,23 @@ import java.util.concurrent.Executors;
 public class ChatTextClient implements ChatClient {
     private final ChatClientConnection connection;
     private final InMemoryUserRepository userRepo;
-    private final String userName;
+
+    private final String username;
+    private final String password;
 
     private Chatroom subscribedChatroom;
     private User user;
 
-    public ChatTextClient(String host, int port, String user, String password) throws IOException, InterruptedException, ValidationError {
+    public ChatTextClient(String host, int port, String user, String pass) throws IOException, InterruptedException, ValidationError {
         EventService eventService = new EventServiceImpl();
 
         ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         userRepo = new InMemoryUserRepository();
-        this.userName = user;
+        username = user;
+        password = pass;
         ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
 
-        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher, user, password);
+        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher, user, pass);
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatTextInput(this));
@@ -47,11 +50,38 @@ public class ChatTextClient implements ChatClient {
     }
 
     @Override
+    public void onConnectAccept(int apiVersion, long globalChatId) {
+        connection.sendMessage(new RegisterMessage(username, password, username, username));
+    }
+
+    @Override
+    public void onConnectReject(String reason) {
+        System.err.println(reason);
+        System.exit(0);
+    }
+
+    @Override
     public void onLoginAccept(long userId) {
-        user = new User(userId, userName, userRepo);
+        user = new User(userId, username, userRepo);
         userRepo.addUser(user);
 
         connection.sendMessage(new SearchChatroomsMessage(0, 0));
+    }
+
+    @Override
+    public void onLoginReject(String reason) {
+        System.err.println(reason);
+        System.exit(0);
+    }
+
+    @Override
+    public void onRegisterAccept(long userId) {
+        connection.sendMessage(new LoginMessage(username, password));
+    }
+
+    @Override
+    public void onRegisterReject(String reason) {
+        connection.sendMessage(new LoginMessage(username, password));
     }
 
     @Override

@@ -58,12 +58,6 @@ public class ChatClientConnection implements TCPCrackerClientListener, SocketLis
         ConnectMessage message = new ConnectMessage(V1Dispatcher.VERSION_ID, name);
         message.write(writeBuffer);
 
-        RegisterMessage register = new RegisterMessage(username, password, username, username);
-        register.write(writeBuffer);
-
-        LoginMessage login = new LoginMessage(username, password);
-        login.write(writeBuffer);
-
         socket.write();
     }
 
@@ -77,7 +71,7 @@ public class ChatClientConnection implements TCPCrackerClientListener, SocketLis
 
     @Override
     public void onDisconnect(TCPCrackerClient client) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        System.exit(0);
     }
 
     public void sendMessage(Message message) {

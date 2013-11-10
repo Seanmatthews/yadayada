@@ -44,22 +44,25 @@ public class ChatClientDispatcher {
                 case ConnectAccept:
                     ConnectAcceptMessage caMsg = new ConnectAcceptMessage(buffer);
                     logMsg(caMsg);
+                    client.onConnectAccept(caMsg.getAPIVersion(), caMsg.getGlobalChatId());
                     break;
 
                 case ConnectReject:
                     ConnectRejectMessage crMsg = new ConnectRejectMessage(buffer);
                     logMsg(crMsg);
-                    System.exit(0);
+                    client.onConnectReject(crMsg.getReason());
                     break;
 
                 case RegisterAccept:
                     RegisterAcceptMessage raMsg = new RegisterAcceptMessage(buffer);
                     logMsg(raMsg);
+                    client.onRegisterAccept(raMsg.getUserId());
                     break;
 
                 case RegisterReject:
                     RegisterRejectMessage rrMsg = new RegisterRejectMessage(buffer);
                     logMsg(rrMsg);
+                    client.onRegisterReject(rrMsg.getReason());
                     break;
 
                 case LoginAccept:
@@ -71,7 +74,7 @@ public class ChatClientDispatcher {
                 case LoginReject:
                     LoginRejectMessage lrMsg = new LoginRejectMessage(buffer);
                     logMsg(lrMsg);
-                    System.exit(0);
+                    client.onLoginReject(lrMsg.getReason());
                     break;
 
                 case JoinedChatroom:

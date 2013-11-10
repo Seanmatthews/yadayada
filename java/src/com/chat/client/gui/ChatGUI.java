@@ -137,6 +137,21 @@ public class ChatGUI implements ChatClient {
         userRepo.addUser(user);
     }
 
+    @Override
+    public void onLoginReject(String reason) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onRegisterAccept(long userId) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onRegisterReject(String reason) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException, ValidationError {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
@@ -209,6 +224,16 @@ public class ChatGUI implements ChatClient {
     @Override
     public void onJoinedChatroomReject(String reason) {
         System.err.println("Error entering chatroom: " + reason);
+    }
+
+    @Override
+    public void onConnectAccept(int apiVersion, long globalChatId) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onConnectReject(String reason) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

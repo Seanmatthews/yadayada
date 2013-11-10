@@ -121,7 +121,32 @@ public class MapServer extends NanoHTTPD implements ChatClient {
     }
 
     @Override
+    public void onConnectAccept(int apiVersion, long globalChatId) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onConnectReject(String reason) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void onLoginAccept(long userId) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onLoginReject(String reason) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onRegisterAccept(long userId) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onRegisterReject(String reason) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }
