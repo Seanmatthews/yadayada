@@ -12,7 +12,6 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public interface ServerSocket {
-    void onAccept(ClientSocket clientSocket);
     void enableAccept(boolean accept);
     void close() throws IOException;
 }

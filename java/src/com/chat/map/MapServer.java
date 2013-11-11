@@ -44,7 +44,7 @@ public class MapServer extends NanoHTTPD implements ChatClient {
         userRepo = new InMemoryUserRepository();
         ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
 
-        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher, username, password);
+        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher);
 
         //long userId = ChatClientUtilities.initialConnect(connection, userName, password);
         //user = new User(userId, userName, userRepo);

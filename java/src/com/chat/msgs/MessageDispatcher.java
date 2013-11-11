@@ -14,5 +14,5 @@ import java.util.concurrent.ExecutionException;
  * To change this template use File | Settings | File Templates.
  */
 public interface MessageDispatcher {
-    void onMessage(ClientConnection connection, ReadBuffer buffer) throws IOException, ValidationError, ExecutionException, InterruptedException, RuntimeException;
+    void onMessage(ClientConnection connection, ReadBuffer buffer) throws ValidationError;
 }

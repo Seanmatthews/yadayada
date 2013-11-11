@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.channels.*;
 import java.util.Iterator;
 import java.util.Queue;
@@ -43,7 +42,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void register(SelectableChannel channel, EventHandler handler) throws IOException {
+    public void register(SelectableChannel channel, SelectHandler handler) throws IOException {
         channel.configureBlocking(false);
         channel.register(selector, 0, handler);
     }
@@ -174,22 +173,22 @@ public class EventServiceImpl implements EventService {
     }
 
     private void handleAccept(SelectionKey key) {
-        EventHandler handler = (EventHandler) key.attachment();
+        SelectHandler handler = (SelectHandler) key.attachment();
         handler.onAccept();
     }
 
     private void handleConnect(SelectionKey key) {
-        EventHandler handler = (EventHandler) key.attachment();
+        SelectHandler handler = (SelectHandler) key.attachment();
         handler.onConnect();
     }
 
     private void handleWrite(SelectionKey key) {
-        EventHandler handler = (EventHandler) key.attachment();
+        SelectHandler handler = (SelectHandler) key.attachment();
         handler.onWrite();
     }
 
     private void handleRead(SelectionKey key) {
-        EventHandler handler = (EventHandler) key.attachment();
+        SelectHandler handler = (SelectHandler) key.attachment();
         handler.onRead();
     }
 }

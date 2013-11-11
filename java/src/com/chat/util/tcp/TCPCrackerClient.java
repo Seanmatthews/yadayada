@@ -1,6 +1,7 @@
 package com.chat.util.tcp;
 
 import com.chat.select.ClientSocket;
+import com.chat.select.ClientSocketListener;
 import com.chat.util.ByteCracker;
 import com.chat.util.buffer.ReadBuffer;
 import com.chat.util.buffer.ReadWriteBuffer;
@@ -19,24 +20,31 @@ import java.nio.ByteBuffer;
  * Time: 12:49 PM
  * To change this template use File | Settings | File Templates.
  */
-public class TCPCrackerClient {
-    private final Logger log;
+public class TCPCrackerClient implements ClientSocketListener {
+    private final Logger log = LogManager.getLogger();
 
-    private ClientSocket socket;
+    private final ClientSocket socket;
 
     private final ByteCracker cracker;
-    private final TCPCrackerClientListener listener;
+    private TCPCrackerClientListener listener;
 
     private final ReadBuffer readBuffer;
     private final ReadWriteBuffer writeBuffer;
 
-    public TCPCrackerClient(String name, ByteCracker cracker, TCPCrackerClientListener listener, ClientSocket socket) {
+    public TCPCrackerClient(ByteCracker cracker, ClientSocket socket) {
+        this(cracker, socket, null);
+    }
+
+    public TCPCrackerClient(ByteCracker cracker, ClientSocket socket, TCPCrackerClientListener listener) {
         this.cracker = cracker;
         this.listener = listener;
         this.readBuffer = new WrappedReadBuffer(ByteBuffer.allocateDirect(1024));
         this.writeBuffer = new WrappedReadWriteByteBuffer(ByteBuffer.allocateDirect(1024));
-        this.log = LogManager.getLogger(TCPCrackerClient.class + "[" + name + "]");
         this.socket = socket;
+    }
+
+    public void setListener(TCPCrackerClientListener listener) {
+        this.listener = listener;
     }
 
     public void connect(String host, int port) throws IOException {
@@ -44,27 +52,16 @@ public class TCPCrackerClient {
     }
 
     public void close() {
-        log.info("  Disconnecting Socket");
         socket.close();
-        listener.onDisconnect(this);
     }
 
     public void write() {
         if (writeBuffer.position() > 0) {
             writeBuffer.flip();
-
-            try {
-                socket.write(writeBuffer);
-            } catch (IOException e) {
-                log.error("  Error writing", e);
-                close();
-                return;
-            }
+            socket.write(writeBuffer);
 
             if (writeBuffer.hasRemaining()) {
                 writeBuffer.compact();
-                log.error("  Could not write everything to socket. Disconnecting");
-                //socket.enableWrite(true);
             }
             else {
                 writeBuffer.clear();
@@ -72,48 +69,29 @@ public class TCPCrackerClient {
         }
     }
 
-    public void onWriteAvailable() {
-        log.debug("onWriteAvailable()");
-
-        //listener.onWriteAvailable(this, writeBuffer);
-
-        write();
-    }
 
     public ReadWriteBuffer getWriteBuffer() {
         return writeBuffer;
     }
 
-    public void onConnect() {
-        log.info("Connecting Socket");
-        listener.onConnect(this);
+
+    @Override
+    public void onWriteAvailable(ClientSocket clientSocket) {
+        log.debug("onWriteAvailable() {}", clientSocket);
+
+        write();
     }
 
-    public void onReadAvailable() {
-        log.debug("onReadAvailable()");
+    @Override
+    public void onReadAvailable(ClientSocket clientSocket) {
+        log.debug("onReadAvailable() {}", clientSocket);
 
-        int read;
+        int read = socket.read(readBuffer);
 
-        try {
-            read = socket.read(readBuffer);
-        } catch (IOException e) {
-            log.error("  Error reading", e);
-            close();
-            return;
-        }
-
-        if (read == -1) {
-            log.info("  End of File. Disconnecting.");
-
-            // EOF
-            close();
-            return;
-        }
-
-        if (read != 0) {
+        if (read > 0) {
             readBuffer.flip();
 
-            ReadBuffer slice = null;
+            ReadBuffer slice;
             while((slice = cracker.crack(readBuffer)) != null) {
                 int newPosition = readBuffer.position() + slice.remaining();
                 listener.onCracked(this, slice);
@@ -130,5 +108,23 @@ public class TCPCrackerClient {
         else {
             readBuffer.clear();
         }
+    }
+
+    @Override
+    public void onConnect(ClientSocket clientSocket) {
+        log.info("Connecting socket {}", clientSocket);
+        listener.onConnect(this);
+    }
+
+    @Override
+    public void onDisconnect(ClientSocket clientSocket) {
+        log.info("Disconnecting socket {}", clientSocket);
+        listener.onDisconnect(this);
+    }
+
+    @Override
+    public void onWriteUnavailable(ClientSocket clientSocket) {
+        log.error("Could not write everything to socket. Disconnecting");
+        close();
     }
 }

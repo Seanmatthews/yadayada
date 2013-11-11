@@ -15,4 +15,6 @@ import java.io.*;
 public interface ClientConnection {
     void close();
     void sendMessage(Message message) throws IOException;
+    void setUser(User user);
+    User getUser();
 }

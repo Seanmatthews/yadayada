@@ -41,7 +41,7 @@ public class ChatTextClient implements ChatClient {
         password = pass;
         ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
 
-        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher, user, pass);
+        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher);
 
         ExecutorService pool = Executors.newCachedThreadPool();
         pool.submit(new ChatTextInput(this));

@@ -1,17 +1,14 @@
 package com.chat.util.tcp;
 
-import com.chat.select.ClientSocket;
-import com.chat.select.EventService;
-import com.chat.select.ServerSocket;
-import com.chat.select.SocketListener;
+import com.chat.select.*;
+import com.chat.select.impl.ClientSocketImpl;
 import com.chat.select.impl.ServerSocketImpl;
 import com.chat.util.ByteCracker;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.channels.SocketChannel;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,49 +17,25 @@ import java.util.Map;
  * Time: 5:39 PM
  * To change this template use File | Settings | File Templates.
  */
-public class TCPCrackerServer implements SocketListener {
-    private final ByteCracker cracker;
-    private final TCPCrackerClientListener listener;
-    private final Map<ClientSocket, TCPCrackerClient> socketClientMap = new HashMap<>();
-
-    public TCPCrackerServer(EventService eventService, int port, ByteCracker cracker, TCPCrackerClientListener listener) throws IOException {
-        this.cracker = cracker;
-        this.listener = listener;
-
+public class TCPCrackerServer {
+    public TCPCrackerServer(EventService eventService, int port, final ByteCracker cracker, final TCPCrackerClientFactory factory) throws IOException {
         ServerSocketChannel channel = eventService.createServerSocket();
         channel.bind(new InetSocketAddress(port));
-        ServerSocket serverSocket = new ServerSocketImpl(eventService, channel, this);
+
+        ServerSocket serverSocket = new ServerSocketImpl(eventService, channel, new ClientSocketFactory() {
+            @Override
+            public ClientSocket createClickSocket(EventService eventService, SocketChannel channel) {
+                try {
+                    ClientSocket socket = new ClientSocketImpl(eventService, channel);
+                    TCPCrackerClient client = factory.createClient(cracker, socket);
+                    socket.setListener(client);
+                    return socket;
+                } catch (IOException e) {
+                    return null;
+                }
+            }
+        });
+
         serverSocket.enableAccept(true);
-    }
-
-    @Override
-    public void onAccept(ClientSocket clientSocket) {
-        TCPCrackerClient client = new TCPCrackerClient(clientSocket.toString(), cracker, listener, clientSocket);
-        socketClientMap.put(clientSocket, client);
-
-        listener.onConnect(client);
-    }
-
-    @Override
-    public void onConnect(ClientSocket clientSocket) {
-        // nothing
-    }
-
-    @Override
-    public void onReadAvailable(ClientSocket clientSocket) {
-        TCPCrackerClient client = socketClientMap.get(clientSocket);
-
-        if (client != null) {
-            client.onReadAvailable();
-        }
-    }
-
-    @Override
-    public void onWriteAvailable(ClientSocket clientSocket) {
-        TCPCrackerClient client = socketClientMap.get(clientSocket);
-
-        if (client != null) {
-            client.onWriteAvailable();
-        }
     }
 }

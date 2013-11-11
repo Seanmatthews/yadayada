@@ -7,9 +7,11 @@ package com.chat.select;
  * Time: 12:18 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface SocketListener {
-    void onAccept(ClientSocket clientSocket);
+public interface ClientSocketListener {
     void onConnect(ClientSocket clientSocket);
+    void onDisconnect(ClientSocket clientSocket);
+
     void onReadAvailable(ClientSocket clientSocket);
     void onWriteAvailable(ClientSocket clientSocket);
+    void onWriteUnavailable(ClientSocket clientSocket);
 }

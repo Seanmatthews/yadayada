@@ -7,7 +7,7 @@ package com.chat.select;
  * Time: 9:14 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface EventHandler {
+public interface SelectHandler {
     void onAccept();
     void onConnect();
     void onRead();

@@ -33,7 +33,7 @@ public class V1Dispatcher implements MessageDispatcher {
         this.chatroomRepo = chatroomRepo;
     }
 
-    public void onMessage(ClientConnection stream, ReadBuffer buffer) throws IOException, ValidationError, ExecutionException, InterruptedException, RuntimeException {
+    public void onMessage(ClientConnection stream, ReadBuffer buffer) throws ValidationError {
         byte typeByte = buffer.readByte();
         MessageTypes type = MessageTypes.lookup(typeByte);
 
@@ -109,8 +109,14 @@ public class V1Dispatcher implements MessageDispatcher {
         }
     }
 
-    private User getAndValidateUser(long userId) throws ValidationError, ExecutionException, InterruptedException {
-        User user = userRepo.get(userId, null).get().getUser();
+    private User getAndValidateUser(long userId) throws ValidationError {
+        User user;
+
+        try {
+            user = userRepo.get(userId, null).get().getUser();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ValidationError("Unknown user: " + userId);
+        }
 
         if (user == null) {
             throw new ValidationError("Unknown user: " + userId);

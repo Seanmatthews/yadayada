@@ -7,8 +7,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,17 +15,19 @@ import java.util.Set;
  * Time: 9:37 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ServerSocketImpl implements ServerSocket, EventHandler {
+public class ServerSocketImpl implements ServerSocket, SelectHandler {
     private final Logger log = LogManager.getLogger();
 
     private final ServerSocketChannel channel;
-    private final SocketListener listener;
     private final EventService eventService;
+    private final ClientSocketFactory factory;
 
-    public ServerSocketImpl(EventService eventService, ServerSocketChannel channel, SocketListener listener) throws IOException {
+    public ServerSocketImpl(EventService eventService,
+                            ServerSocketChannel channel,
+                            ClientSocketFactory factory) throws IOException {
         this.eventService = eventService;
         this.channel = channel;
-        this.listener = listener;
+        this.factory = factory;
 
         eventService.register(channel, this);
     }
@@ -35,11 +35,6 @@ public class ServerSocketImpl implements ServerSocket, EventHandler {
     public void close() throws IOException {
         eventService.free(channel);
         channel.close();
-    }
-
-    @Override
-    public void onAccept(ClientSocket clientSocket) {
-        listener.onConnect(clientSocket);
     }
 
     @Override
@@ -51,8 +46,14 @@ public class ServerSocketImpl implements ServerSocket, EventHandler {
     public void onAccept() {
         try {
             SocketChannel acceptedChannel = channel.accept();
-            ClientSocket clientSocket = new ClientSocketImpl(eventService, acceptedChannel, listener);
-            clientSocket.enableRead(true);
+            ClientSocket clientSocket = factory.createClickSocket(eventService, acceptedChannel);
+
+            if (clientSocket != null) {
+                clientSocket.enableRead(true);
+            }
+            else {
+                log.error("Error accepting client");
+            }
         } catch (IOException e) {
             log.error("Error accepting client", e);
         }

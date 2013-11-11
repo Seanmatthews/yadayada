@@ -59,7 +59,7 @@ public class ChatGUI implements ChatClient {
         InMemoryUserRepository userRepo = new InMemoryUserRepository();
         ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
 
-        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher, userName, password);
+        connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher);
 
         this.userName = userName;
         this.userRepo = userRepo;

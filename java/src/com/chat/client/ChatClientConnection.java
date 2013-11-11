@@ -3,11 +3,8 @@ package com.chat.client;
 import com.chat.msgs.Message;
 import com.chat.msgs.V1Dispatcher;
 import com.chat.msgs.v1.ConnectMessage;
-import com.chat.msgs.v1.LoginMessage;
-import com.chat.msgs.v1.RegisterMessage;
 import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
-import com.chat.select.SocketListener;
 import com.chat.select.impl.ClientSocketImpl;
 import com.chat.util.TwoByteLengthMessageCracker;
 import com.chat.util.buffer.ReadBuffer;
@@ -25,40 +22,37 @@ import java.nio.channels.SocketChannel;
  * Time: 12:43 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ChatClientConnection implements TCPCrackerClientListener, SocketListener {
+public class ChatClientConnection implements TCPCrackerClientListener {
     private final ChatClientDispatcher dispatcher;
-    private final TCPCrackerClient socket;
+    private final TCPCrackerClient crackerClient;
     private final String name;
-    private final String username;
-    private final String password;
 
     public ChatClientConnection(String name,
                                 EventService eventService,
                                 String host,
                                 int port,
-                                ChatClientDispatcher dispatcher,
-                                String username,
-                                String password) throws IOException {
+                                ChatClientDispatcher dispatcher) throws IOException {
         SocketChannel channel = eventService.createClientSocket();
-        ClientSocket socket = new ClientSocketImpl(eventService, channel, this);
+        ClientSocket socket = new ClientSocketImpl(eventService, channel);
         socket.enableConnect(true);
 
         this.name = name;
-        this.socket = new TCPCrackerClient(name, new TwoByteLengthMessageCracker(), this, socket);
-        this.socket.connect(host, port);
+
+        crackerClient = new TCPCrackerClient(new TwoByteLengthMessageCracker(), socket, this);
+        socket.setListener(crackerClient);
+
+        this.crackerClient.connect(host, port);
         this.dispatcher = dispatcher;
-        this.username = username;
-        this.password = password;
     }
 
     @Override
     public void onConnect(TCPCrackerClient client) {
-        ReadWriteBuffer writeBuffer = socket.getWriteBuffer();
+        ReadWriteBuffer writeBuffer = crackerClient.getWriteBuffer();
 
         ConnectMessage message = new ConnectMessage(V1Dispatcher.VERSION_ID, name);
         message.write(writeBuffer);
 
-        socket.write();
+        crackerClient.write();
     }
 
     @Override
@@ -75,27 +69,7 @@ public class ChatClientConnection implements TCPCrackerClientListener, SocketLis
     }
 
     public void sendMessage(Message message) {
-        message.write(socket.getWriteBuffer());
-        socket.write();
-    }
-
-    @Override
-    public void onAccept(ClientSocket clientSocket) {
-        // nothing
-    }
-
-    @Override
-    public void onConnect(ClientSocket clientSocket) {
-        socket.onConnect();
-    }
-
-    @Override
-    public void onReadAvailable(ClientSocket clientSocket) {
-        socket.onReadAvailable();
-    }
-
-    @Override
-    public void onWriteAvailable(ClientSocket clientSocket) {
-        socket.onWriteAvailable();
+        message.write(crackerClient.getWriteBuffer());
+        crackerClient.write();
     }
 }

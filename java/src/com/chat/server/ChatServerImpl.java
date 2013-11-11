@@ -31,7 +31,6 @@ public class ChatServerImpl implements ChatServer {
     private final MessageRepository messageRepo;
 
     private final Map<User, ClientConnection> userConnectionMap = new HashMap<>();
-    private final Map<ClientConnection, User> connectionUserMap = new HashMap<>();
 
     public ChatServerImpl(EventService eventService, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) {
         this.eventService = eventService;
@@ -42,7 +41,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void removeConnection(ClientConnection sender) {
-        User user = connectionUserMap.remove(sender);
+        User user = sender.getUser();
 
         if (user != null) {
             log.debug("Removing connection user {} {}", sender, user);
@@ -211,7 +210,7 @@ public class ChatServerImpl implements ChatServer {
                                     final User user = result.getUser();
                                     senderConnection.sendMessage(new LoginAcceptMessage(user.getId()));
                                     userConnectionMap.put(user, senderConnection);
-                                    connectionUserMap.put(senderConnection, user);
+                                    senderConnection.setUser(user);
                                     break;
                                 case ConnectionError:
                                     senderConnection.sendMessage(new LoginRejectMessage("Connection error"));

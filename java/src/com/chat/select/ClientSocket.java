@@ -14,12 +14,14 @@ import java.nio.ByteBuffer;
  * To change this template use File | Settings | File Templates.
  */
 public interface ClientSocket {
+    void setListener(ClientSocketListener listener);
+
     void enableConnect(boolean val);
     void enableRead(boolean val);
     void enableWrite(boolean val);
 
-    int read(ReadBuffer buffer) throws IOException;
-    void write(ReadWriteBuffer output) throws IOException;
+    int read(ReadBuffer buffer);
+    void write(ReadWriteBuffer output);
 
     void connect(String host, int port) throws IOException;
     void close();

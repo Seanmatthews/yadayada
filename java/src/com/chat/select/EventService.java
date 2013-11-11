@@ -21,7 +21,7 @@ public interface EventService {
     ServerSocketChannel createServerSocket() throws IOException;
     SocketChannel createClientSocket() throws IOException;
 
-    void register(SelectableChannel channel, EventHandler handler) throws IOException;
+    void register(SelectableChannel channel, SelectHandler handler) throws IOException;
     void enableAccept(SelectableChannel channel, boolean val);
     void enableConnect(SocketChannel channel, boolean val);
     void enableWrite(SelectableChannel channel, boolean val);
