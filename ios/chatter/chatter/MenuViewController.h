@@ -15,6 +15,7 @@
 {
     UserDetails* ud;
     Connection* connection;
+    BOOL alreadyRegistered;
 }
 
 @property (nonatomic, strong) NSString* userHandle;

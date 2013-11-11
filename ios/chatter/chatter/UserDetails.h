@@ -17,6 +17,7 @@
 @property NSString* UUID;
 @property long long userId;
 @property NSString* userIconName;
+@property BOOL registeredHandle;
 
 // TODO: The type of this property will change ot accommodate
 // being joined to several chats at once.

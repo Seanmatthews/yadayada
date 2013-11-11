@@ -196,10 +196,10 @@
             </objects>
             <point key="canvasLocation" x="-74" y="407"/>
         </scene>
-        <!--Table View Controller-->
+        <!--Menu Table View Controller-->
         <scene sceneID="vLH-Xf-r3o">
             <objects>
-                <tableViewController id="xjH-xq-8XB" sceneMemberID="viewController">
+                <tableViewController id="xjH-xq-8XB" customClass="MenuTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="static" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="1RS-V0-j38">
                         <rect key="frame" x="0.0" y="0.0" width="196" height="220"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

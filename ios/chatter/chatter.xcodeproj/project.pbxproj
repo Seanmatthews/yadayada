@@ -13,6 +13,7 @@
 		641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147D182C7D6C001D8959 /* ChatListViewController.m */; };
 		641C1480182C7FF8001D8959 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C147F182C7FF8001D8959 /* MapKit.framework */; };
 		641C1482182C7FFF001D8959 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C1481182C7FFF001D8959 /* CoreLocation.framework */; };
+		641C148518319F9A001D8959 /* MenuTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C148418319F9A001D8959 /* MenuTableViewController.m */; };
 		6458F38D18172E7400AA8E81 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F38C18172E7400AA8E81 /* Foundation.framework */; };
 		6458F38F18172E7400AA8E81 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F38E18172E7400AA8E81 /* CoreGraphics.framework */; };
 		6458F39118172E7400AA8E81 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F39018172E7400AA8E81 /* UIKit.framework */; };
@@ -66,6 +67,8 @@
 		641C147D182C7D6C001D8959 /* ChatListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatListViewController.m; sourceTree = "<group>"; };
 		641C147F182C7FF8001D8959 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		641C1481182C7FFF001D8959 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		641C148318319F9A001D8959 /* MenuTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTableViewController.h; sourceTree = "<group>"; };
+		641C148418319F9A001D8959 /* MenuTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuTableViewController.m; sourceTree = "<group>"; };
 		6458F38918172E7400AA8E81 /* chatter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chatter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6458F38C18172E7400AA8E81 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6458F38E18172E7400AA8E81 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -155,6 +158,8 @@
 				641C147A182C7D31001D8959 /* SettingsViewController.m */,
 				641C147C182C7D6C001D8959 /* ChatListViewController.h */,
 				641C147D182C7D6C001D8959 /* ChatListViewController.m */,
+				641C148318319F9A001D8959 /* MenuTableViewController.h */,
+				641C148418319F9A001D8959 /* MenuTableViewController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -413,6 +418,7 @@
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
 				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,
 				6458F39918172E7400AA8E81 /* main.m in Sources */,
+				641C148518319F9A001D8959 /* MenuTableViewController.m in Sources */,
 				64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

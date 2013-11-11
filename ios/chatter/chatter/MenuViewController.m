@@ -7,6 +7,7 @@
 //
 
 #import "MenuViewController.h"
+#import "ViewController.h"
 
 @interface MenuViewController ()
 
@@ -32,6 +33,8 @@
     ud = [UserDetails sharedInstance];
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
         ud.handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"userHandle"];
+        ud.registeredHandle = [[NSUserDefaults standardUserDefaults] boolForKey:@"registeredHandle"];
+        NSLog(@"Using handle: %@",ud.handle);
     }
     else {
         // Getting here implies that the user has done the tutorial
@@ -52,6 +55,11 @@
     // We need this because the run loops of connection don't work until
     // the view is completely loaded.
     [self performSelector:@selector(connectMessage) withObject:nil afterDelay:1.0];
+    
+    // Skip this menu view on first load
+    //[self performSegueWithIdentifier:@"chatSegue" sender:<#(id)#>]
+    
+    
 }
 
 
@@ -66,14 +74,14 @@
     _bgImageView.image = _image;
 }
 
-- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    NSString * segueName = segue.identifier;
-    if ([segueName isEqualToString: @"menuContainerSegue"]) {
-        UITableViewController* menu = (UITableViewController*)[segue destinationViewController];
-        [menu performSegueWithIdentifier:@"chatSegue" sender:self];
-    }
-}
+//- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+//{
+//    NSString * segueName = segue.identifier;
+//    if ([segueName isEqualToString: @"menuContainerSegue"]) {
+//        UITableViewController* menu = (UITableViewController*)[segue destinationViewController];
+//        [menu performSegueWithIdentifier:@"chatSegue" sender:self];
+//    }
+//}
 
 - (IBAction)unwindToMenu:(UIStoryboardSegue*)unwindSegue
 {
@@ -96,11 +104,17 @@
 
 - (void)registerMessage
 {
-    RegisterMessage* rm = [[RegisterMessage alloc] init];
-    rm.handle = @"sean";
-    rm.userName = ud.UUID;
-    rm.password = @"pass";
-    [connection sendMessage:rm];
+    if (!ud.registeredHandle) {
+        RegisterMessage* rm = [[RegisterMessage alloc] init];
+        rm.handle = @"sean";
+        rm.userName = ud.UUID;
+        rm.password = @"pass";
+        [connection sendMessage:rm];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"registeredhandle"];
+    }
+    else {
+        [self loginMessage];
+    }
 }
 
 - (void)loginMessage
