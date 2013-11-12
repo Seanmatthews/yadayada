@@ -13,6 +13,7 @@
 @interface ChatListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 {
     Location* location;
+    NSMutableArray* chatroomList;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;

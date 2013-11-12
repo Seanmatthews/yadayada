@@ -10,6 +10,7 @@
 #import "UIImage+ImageEffects.h"
 #import "MenuViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "ChatroomListCell.h"
 
 @interface ChatListViewController ()
 
@@ -34,6 +35,8 @@
     // Give the map view rounded corners
     _tableView.layer.cornerRadius = 5;
     _tableView.layer.masksToBounds = YES;
+    
+    chatroomList = [[NSMutableArray alloc] init];
 }
 
 - (void)didReceiveMemoryWarning
@@ -49,9 +52,8 @@
 - (void)messageCallback:(MessageBase*)message
 {
     switch (message.type) {
-            
         case Chatroom:
-            // TODO
+            [chatroomList addObject:(ChatroomMessage*)message];
             break;
             
         case JoinedChatroom:
@@ -97,30 +99,54 @@
 
 #pragma mark - UITableViewDataSource methods
 
-// TODO
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Globals and Locals
     return 2;
 }
 
-// TODO
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // There will only ever be one section for a table.
-    // TODO: alter this behavior for multiple chatrooms
-    return 0;
+    return [chatroomList count];
 }
 
-// TODO
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"Cell";
-    const int WEBVIEW_TAG = 1;
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    static NSString *CellIdentifier = @"ChatroomListCell";
+    ChatroomListCell *cell = (ChatroomListCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
+    if (cell == nil) {
+        NSArray* topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ChatroomListCell" owner:self options:nil];
+        for (id currentObject in topLevelObjects) {
+            if ([currentObject isKindOfClass:[UITableViewCell class]]) {
+                cell = (ChatroomListCell*)currentObject;
+                break;
+            }
+        }
+    }
     
+    // Configure the cell.
+    ChatroomMessage *chatroom = [chatroomList objectAtIndex:indexPath.row];
+    
+    // calculate miles from origin
+    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake(chatroom.latitude, chatroom.longitude);
+    CLLocationCoordinate2D userOrigin = CLLocationCoordinate2DMake([location currentLat], [location currentLong]);
+    CGFloat distance = [Location milesBetweenSource:chatroomOrigin andDestination:userOrigin];
+    
+    // TODO: get an image
+    cell.chatroomImage.image = [[UIImage alloc] init];
+    
+    cell.chatroomName.text = chatroom.chatroomName;
+    cell.milesFromOrigin.text = [NSString stringWithFormat:@"%f miles away",distance];
+    cell.percentActive.text = [NSString stringWithFormat:@"%d% active",chatroom.chatActivity];
+    cell.numberOfUsers.text = [NSString stringWithFormat:@"%d users",chatroom.numberOfUsers];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
+}
+
+#pragma mark - UITableViewDelegate methods
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 55.0;
 }
 
 @end

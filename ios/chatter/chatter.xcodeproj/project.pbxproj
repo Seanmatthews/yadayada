@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		641C1474182C40CA001D8959 /* MenuSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C1473182C40CA001D8959 /* MenuSegue.m */; };
 		641C1477182C7B9F001D8959 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C1476182C7B9F001D8959 /* MapViewController.m */; };
 		641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147A182C7D31001D8959 /* SettingsViewController.m */; };
 		641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147D182C7D6C001D8959 /* ChatListViewController.m */; };
@@ -44,6 +43,8 @@
 		B343A50F18282CF600B36450 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B343A50E18282CF600B36450 /* MenuViewController.m */; };
 		B3ADCB68181855C500A25383 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB66181855C500A25383 /* Default.png */; };
 		B3ADCB69181855C500A25383 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB67181855C500A25383 /* Default@2x.png */; };
+		B3E79A481832AE27003227E7 /* ChatroomListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E79A471832AE27003227E7 /* ChatroomListCell.m */; };
+		B3E79A4A1832AF23003227E7 /* ChatroomListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3E79A491832AF23003227E7 /* ChatroomListCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,8 +58,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		641C1472182C40CA001D8959 /* MenuSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuSegue.h; sourceTree = "<group>"; };
-		641C1473182C40CA001D8959 /* MenuSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuSegue.m; sourceTree = "<group>"; };
 		641C1475182C7B9F001D8959 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
 		641C1476182C7B9F001D8959 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		641C1479182C7D31001D8959 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
@@ -117,6 +116,9 @@
 		B343A50E18282CF600B36450 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		B3ADCB66181855C500A25383 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		B3ADCB67181855C500A25383 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		B3E79A461832AE27003227E7 /* ChatroomListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomListCell.h; sourceTree = "<group>"; };
+		B3E79A471832AE27003227E7 /* ChatroomListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomListCell.m; sourceTree = "<group>"; };
+		B3E79A491832AF23003227E7 /* ChatroomListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatroomListCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +162,9 @@
 				641C147D182C7D6C001D8959 /* ChatListViewController.m */,
 				641C148318319F9A001D8959 /* MenuTableViewController.h */,
 				641C148418319F9A001D8959 /* MenuTableViewController.m */,
+				B3E79A461832AE27003227E7 /* ChatroomListCell.h */,
+				B3E79A471832AE27003227E7 /* ChatroomListCell.m */,
+				B3E79A491832AF23003227E7 /* ChatroomListCell.xib */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -284,8 +289,6 @@
 				64A10D56181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m */,
 				64A10D58181FA45300A499B0 /* UITableView+UITableViewCategory.h */,
 				64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */,
-				641C1472182C40CA001D8959 /* MenuSegue.h */,
-				641C1473182C40CA001D8959 /* MenuSegue.m */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -378,6 +381,7 @@
 				6458F3A518172E7400AA8E81 /* Images.xcassets in Resources */,
 				6458F39718172E7400AA8E81 /* InfoPlist.strings in Resources */,
 				64A10D4E181DFDEF00A499B0 /* v1.xml in Resources */,
+				B3E79A4A1832AF23003227E7 /* ChatroomListCell.xib in Resources */,
 				B3ADCB69181855C500A25383 /* Default@2x.png in Resources */,
 				6458F3A018172E7400AA8E81 /* Main.storyboard in Resources */,
 				B3ADCB68181855C500A25383 /* Default.png in Resources */,
@@ -404,7 +408,6 @@
 				64674BD8181761C500922109 /* SecondPageViewController.m in Sources */,
 				641C1477182C7B9F001D8959 /* MapViewController.m in Sources */,
 				B343A50F18282CF600B36450 /* MenuViewController.m in Sources */,
-				641C1474182C40CA001D8959 /* MenuSegue.m in Sources */,
 				64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */,
 				64A10D51181E1B2300A499B0 /* Connection.m in Sources */,
 				64674BD5181761A500922109 /* FirstPageViewController.m in Sources */,
@@ -415,6 +418,7 @@
 				64A10DA41824BBDA00A499B0 /* Location.m in Sources */,
 				641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */,
 				64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */,
+				B3E79A481832AE27003227E7 /* ChatroomListCell.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
 				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,
 				6458F39918172E7400AA8E81 /* main.m in Sources */,
