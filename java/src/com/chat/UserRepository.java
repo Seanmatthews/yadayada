@@ -27,17 +27,27 @@ public interface UserRepository {
         private final User user;
         private final String message;
         private final UserRepositoryActionResultCode code;
+        private final boolean threaded;
 
-        public UserRepositoryActionResult(User user) {
+        public UserRepositoryActionResult(User user, boolean threaded) {
             this.user = user;
             this.message = "";
             this.code = UserRepositoryActionResultCode.OK;
+            this.threaded = threaded;
         }
 
-        public UserRepositoryActionResult(UserRepositoryActionResultCode code, String message) {
+        public UserRepositoryActionResult(UserRepositoryActionResultCode code, String message, boolean threaded) {
             this.user = null;
             this.message = message;
             this.code = code;
+            this.threaded = threaded;
+        }
+
+        public UserRepositoryActionResult(UserRepositoryActionResultCode code, String message, User user, boolean threaded) {
+            this.user = user;
+            this.message = message;
+            this.code = code;
+            this.threaded = threaded;
         }
 
         public User getUser() {
@@ -50,6 +60,10 @@ public interface UserRepository {
 
         public UserRepositoryActionResultCode getCode() {
             return code;
+        }
+
+        public boolean isThreaded() {
+            return threaded;
         }
     }
 

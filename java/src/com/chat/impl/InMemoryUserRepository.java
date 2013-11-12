@@ -30,7 +30,7 @@ public class InMemoryUserRepository implements UserRepository {
 
         // already registered
         if (user != null) {
-            UserRepositoryActionResult result = new UserRepositoryActionResult(UserAlreadyExists, "User already exists");
+            UserRepositoryActionResult result = new UserRepositoryActionResult(UserAlreadyExists, "User already exists", user, false);
             return new UserFuture(result, handler);
         }
 
@@ -38,7 +38,7 @@ public class InMemoryUserRepository implements UserRepository {
 
         addUser(user);
 
-        return new UserFuture(new UserRepositoryActionResult(user), handler);
+        return new UserFuture(new UserRepositoryActionResult(user, false), handler);
     }
 
     public Future<UserRepositoryActionResult> login(String login, String password, UserRepositoryCompletionHandler handler) {
@@ -46,20 +46,20 @@ public class InMemoryUserRepository implements UserRepository {
 
         // don't know this user
         if (user == null || !user.getPassword().equals(password)) {
-            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserNameOrPassword, "Invalid username or password"), handler);
+            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserNameOrPassword, "Invalid username or password", false), handler);
         }
 
-        return new UserFuture(new UserRepositoryActionResult(user), handler);
+        return new UserFuture(new UserRepositoryActionResult(user, false), handler);
     }
 
     public Future<UserRepositoryActionResult> get(long id, UserRepositoryCompletionHandler handler) {
         User user = idToUserMap.get(id);
 
         if (user == null) {
-            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserId, "Unknown user id " + id), handler);
+            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserId, "Unknown user id " + id, false), handler);
         }
 
-        return new UserFuture(new UserRepositoryActionResult(user), handler);
+        return new UserFuture(new UserRepositoryActionResult(user, false), handler);
     }
 
     public void addUser(User user) {

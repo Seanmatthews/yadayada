@@ -54,13 +54,13 @@ public class AwsRdsUserRepository implements UserRepository {
 
                     if (set.next()) {
                         // yep, set result and bail out
-                        future.setResult(new UserRepositoryActionResult(UserAlreadyExists, login + " is already taken"));
+                        future.setResult(new UserRepositoryActionResult(UserAlreadyExists, login + " is already taken", true));
                         return;
                     }
                 } catch (Exception e) {
                     // SQL error
                     e.printStackTrace();
-                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot check if user exists"));
+                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot check if user exists", true));
                     return;
                 } finally {
                     future.removeStatement(userExistsStatement);
@@ -89,15 +89,15 @@ public class AwsRdsUserRepository implements UserRepository {
                             User user = new User(id, login, password, handle, AwsRdsUserRepository.this);
                             idToUserMap.put(id, user);
 
-                            future.setResult(new UserRepositoryActionResult(user));
+                            future.setResult(new UserRepositoryActionResult(user, true));
                         } else {
                             // Hmm weird, we didn't generate a key
-                            future.setResult(new UserRepositoryActionResult(ConnectionError, "Unknown connection error"));
+                            future.setResult(new UserRepositoryActionResult(ConnectionError, "Unknown connection error", true));
                         }
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
-                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot insert new user"));
+                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot insert new user", true));
                 } finally {
                     future.removeStatement(insertUserStatement);
                 }
@@ -130,14 +130,14 @@ public class AwsRdsUserRepository implements UserRepository {
                         User user = new User(id, login, password, handle, AwsRdsUserRepository.this);
                         addUser(user);
 
-                        future.setResult(new UserRepositoryActionResult(user));
+                        future.setResult(new UserRepositoryActionResult(user, true));
                     }
                     else {
                         // login/password combo doesn't exist
-                        future.setResult(new UserRepositoryActionResult(InvalidUserNameOrPassword, "Invalid user name or password"));
+                        future.setResult(new UserRepositoryActionResult(InvalidUserNameOrPassword, "Invalid user name or password", true));
                     }
                 } catch(SQLException e) {
-                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Could not log user in"));
+                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Could not log user in", true));
                 } finally {
                     future.removeStatement(loginStatement);
                 }
@@ -180,14 +180,14 @@ public class AwsRdsUserRepository implements UserRepository {
                         User user2 = new User(id, login, "<BLANK>", handle, AwsRdsUserRepository.this);
                         addUser(user2);
 
-                        future.setResult(new UserRepositoryActionResult(user2));
+                        future.setResult(new UserRepositoryActionResult(user2, true));
                     }
                     else {
-                        future.setResult(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserId, "Unknown user id"));
+                        future.setResult(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserId, "Unknown user id", true));
                     }
                 } catch(SQLException e) {
                     e.printStackTrace();
-                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot insert new user"));
+                    future.setResult(new UserRepositoryActionResult(ConnectionError, "Cannot insert new user", true));
                 } finally {
                     future.removeStatement(findStatement);
                 }
@@ -225,7 +225,7 @@ public class AwsRdsUserRepository implements UserRepository {
         }
 
         public UserFuture(User user, UserRepositoryCompletionHandler handler) {
-            this.result = new UserRepositoryActionResult(user);
+            this.result = new UserRepositoryActionResult(user, false);
             this.handler = handler;
             this.latch = new CountDownLatch(0);
         }

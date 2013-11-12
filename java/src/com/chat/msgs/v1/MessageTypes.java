@@ -10,6 +10,7 @@ public enum MessageTypes {
     Login((byte)11),
     LoginAccept((byte)12),
     LoginReject((byte)13),
+    QuickLogin((byte)14),
     Connect((byte)16),
     ConnectAccept((byte)17),
     ConnectReject((byte)18),

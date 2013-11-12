@@ -83,8 +83,6 @@ public class ChatServerImpl implements ChatServer {
             return;
         }
 
-        log.debug("New message {} {}", sender, message);
-
         ChatMessage msg = messageRepo.create(chatroom, sender, message);
         //chatroom.addMessage(msg);
 
@@ -125,7 +123,7 @@ public class ChatServerImpl implements ChatServer {
             senderConnection.sendMessage(new RegisterRejectMessage("Invalid password"));
             return;
         }
-        if (handle.length() ==0) {
+        if (handle.length() == 0) {
             senderConnection.sendMessage(new RegisterRejectMessage("Invalid handle"));
             return;
         }
@@ -133,7 +131,7 @@ public class ChatServerImpl implements ChatServer {
         userRepo.registerUser(login, password, handle, UUID, new UserRepositoryCompletionHandler() {
             @Override
             public void onCompletion(final UserRepositoryActionResult result) {
-                eventService.addThreadedEvent(new Runnable() {
+                Runnable complete = new Runnable() {
                     @Override
                     public void run() {
                         switch (result.getCode()) {
@@ -150,7 +148,9 @@ public class ChatServerImpl implements ChatServer {
                                 break;
                         }
                     }
-                });
+                };
+
+                runOrQueue(eventService, result, complete);
             }
         });
     }
@@ -159,11 +159,11 @@ public class ChatServerImpl implements ChatServer {
     public void login(final ClientConnection senderConnection, final String login, String password) {
         log.debug("Logging in user {}", login);
 
-        if (login == null || login.length() == 0) {
+        if (login.length() == 0) {
             senderConnection.sendMessage(new LoginRejectMessage("Invalid login"));
             return;
         }
-        if (password == null || password.length() == 0) {
+        if (password.length() == 0) {
             senderConnection.sendMessage(new LoginRejectMessage("Invalid password"));
             return;
         }
@@ -171,26 +171,80 @@ public class ChatServerImpl implements ChatServer {
         userRepo.login(login, password, new UserRepositoryCompletionHandler() {
             @Override
             public void onCompletion(final UserRepositoryActionResult result) {
-                eventService.addThreadedEvent(new Runnable() {
+                Runnable complete = new Runnable() {
                     @Override
                     public void run() {
-                    switch (result.getCode()) {
-                        case OK:
-                            final User user = result.getUser();
-                            senderConnection.sendMessage(new LoginAcceptMessage(user.getId()));
-                            userConnectionMap.put(user, senderConnection);
-                            senderConnection.setUser(user);
-                            break;
-                        case ConnectionError:
-                            senderConnection.sendMessage(new LoginRejectMessage("Connection error"));
-                            break;
-                        case InvalidUserNameOrPassword:
-                        default:
-                            senderConnection.sendMessage(new LoginRejectMessage(result.getMessage()));
-                            break;
+                        switch (result.getCode()) {
+                            case OK:
+                                final User user = result.getUser();
+                                userConnectionMap.put(user, senderConnection);
+                                senderConnection.setUser(user);
+                                senderConnection.sendMessage(new LoginAcceptMessage(user.getId()));
+                                break;
+                            case ConnectionError:
+                                senderConnection.sendMessage(new LoginRejectMessage("Connection error"));
+                                break;
+                            case InvalidUserNameOrPassword:
+                            default:
+                                senderConnection.sendMessage(new LoginRejectMessage(result.getMessage()));
+                                break;
+                        }
                     }
-                    }
-                });
+                };
+
+                runOrQueue(eventService, result, complete);
+            }
+        });
+    }
+
+    private static void runOrQueue(EventService eventService, UserRepositoryActionResult result, Runnable complete) {
+        if(result.isThreaded())
+            eventService.addThreadedEvent(complete);
+        else
+            complete.run();
+    }
+
+    @Override
+    public void quickLogin(final ClientConnection senderConnection, String handle, String UUID) {
+        log.debug("Quick login user {}", handle);
+
+        if (handle.length() == 0) {
+            senderConnection.sendMessage(new LoginRejectMessage("Invalid handle"));
+            return;
+        }
+
+        if (UUID.length() == 0) {
+            senderConnection.sendMessage(new LoginRejectMessage("Invalid UUID"));
+            return;
+        }
+
+        userRepo.registerUser(handle, handle, handle, UUID, new UserRepositoryCompletionHandler() {
+                @Override
+                public void onCompletion(final UserRepositoryActionResult result) {
+                    Runnable complete = new Runnable() {
+                        @Override
+                        public void run() {
+                            // assumed to be single threaded
+                            switch (result.getCode()) {
+                                case OK:
+                                case UserAlreadyExists:
+                                    User user = result.getUser();
+                                    userConnectionMap.put(user, senderConnection);
+                                    senderConnection.setUser(user);
+                                    senderConnection.sendMessage(new LoginAcceptMessage(user.getId()));
+                                    break;
+                                case ConnectionError:
+                                    senderConnection.sendMessage(new LoginRejectMessage("Connection error"));
+                                    break;
+                                case InvalidUserNameOrPassword:
+                                default:
+                                    senderConnection.sendMessage(new LoginRejectMessage(result.getMessage()));
+                                    break;
+                            }
+                        }
+                    };
+
+                    runOrQueue(eventService, result, complete);
             }
         });
     }

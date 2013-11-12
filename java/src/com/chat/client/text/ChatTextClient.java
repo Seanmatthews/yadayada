@@ -51,7 +51,7 @@ public class ChatTextClient implements ChatClient {
 
     @Override
     public void onConnectAccept(int apiVersion, long globalChatId) {
-        connection.sendMessage(new RegisterMessage(username, password, username, username));
+        connection.sendMessage(new QuickLoginMessage(username, username));
     }
 
     @Override

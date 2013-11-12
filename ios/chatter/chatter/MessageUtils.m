@@ -43,6 +43,10 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[LoginRejectMessage alloc] init];
         break;
 
+        case QuickLogin:
+        mb = [[QuickLoginMessage alloc] init];
+        break;
+
         case Connect:
         mb = [[ConnectMessage alloc] init];
         break;

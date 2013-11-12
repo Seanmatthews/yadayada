@@ -36,7 +36,6 @@ public class Main {
         myOptions.addOption("sqlurl", true, "URL of SQL Server");
         myOptions.addOption("sqluser", true, "SQL Username");
         myOptions.addOption("sqlpassword", true, "SQL Username");
-        myOptions.addOption("io", true, "blocking or nonblocking");
         CommandLine options;
 
         Logger logger = LogManager.getLogger();

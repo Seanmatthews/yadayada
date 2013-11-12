@@ -89,12 +89,17 @@ public class V1Dispatcher implements MessageDispatcher {
                 server.login(stream, lMsg.getUserName(), lMsg.getPassword());
                 break;
 
+            case QuickLogin:
+                QuickLoginMessage qlMsg = new QuickLoginMessage(buffer);
+                logMsg(qlMsg);
+                server.quickLogin(stream, qlMsg.getHandle(), qlMsg.getUUID());
+                break;
+
             case SubmitMessage:
                 SubmitMessageMessage smMsg = new SubmitMessageMessage(buffer);
                 logMsg(smMsg);
                 User user = getAndValidateUser(smMsg.getUserId());
                 Chatroom chatroom = getAndValidateChatroom(smMsg.getChatroomId());
-                log.debug("Sending {}", smMsg.getMessage());
                 server.newMessage(stream, user, chatroom, smMsg.getMessage());
                 break;
 

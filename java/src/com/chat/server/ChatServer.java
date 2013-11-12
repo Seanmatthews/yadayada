@@ -18,6 +18,8 @@ public interface ChatServer {
     void registerUser(ClientConnection sender, String login, String password, String handle, String UUID);
     void login(ClientConnection sender, String login, String password);
 
+    void quickLogin(ClientConnection sender, String handle, String UUID);
+
     void createChatroom(ClientConnection sender, User user, String name);
     void newMessage(ClientConnection sender, User senderUser, Chatroom chatroom, String message);
 
