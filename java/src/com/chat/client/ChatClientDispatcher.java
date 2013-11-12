@@ -81,7 +81,7 @@ public class ChatClientDispatcher {
                     JoinedChatroomMessage jcMsg = new JoinedChatroomMessage(buffer);
                     logMsg(jcMsg);
                     User jcUser = getOrCreateUser(jcMsg.getUserId(), jcMsg.getUserHandle());
-                    Chatroom jcChatroom = chatroomRepo.get(jcMsg.getChatroomId());
+                    Chatroom jcChatroom = getOrCreateChatroom(jcMsg.getChatroomId(), "Global", jcUser);
                     client.onJoinedChatroom(jcChatroom, jcUser);
                     break;
 
@@ -139,7 +139,7 @@ public class ChatClientDispatcher {
         synchronized (chatroomRepo) {
             chatroom = chatroomRepo.get(chatroomId);
             if (chatroom == null) {
-                chatroom = new Chatroom(chatroomId, chatroomName, owner, chatroomRepo);
+                chatroom = new Chatroom(chatroomId, chatroomName, owner, chatroomRepo, 0, 0, 0);
                 chatroomRepo.addChatroom(chatroom);
             }
         }

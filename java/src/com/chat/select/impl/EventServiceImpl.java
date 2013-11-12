@@ -56,6 +56,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public void wakeup() {
+        selector.wakeup();
+    }
+
+    @Override
     public void enableAccept(SelectableChannel channel, boolean val) {
         SelectionKey key = channel.keyFor(selector);
 

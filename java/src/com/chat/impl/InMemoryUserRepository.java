@@ -19,26 +19,26 @@ import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
  * To change this template use File | Settings | File Templates.
  */
 public class InMemoryUserRepository implements UserRepository {
-    private AtomicLong nextUserId = new AtomicLong(1);
+    private long nextUserId = 1;
 
-    private final Map<Long, User> idToUserMap = new ConcurrentHashMap<>();
-    private final Map<String, User> loginToUserMap = new ConcurrentHashMap<>();
-    private final Map<User, Set<Chatroom>> userChatroomMap = new ConcurrentHashMap<>();
+    private final Map<Long, User> idToUserMap = new HashMap<>();
+    private final Map<String, User> loginToUserMap = new HashMap<>();
+    private final Map<User, Set<Chatroom>> userChatroomMap = new HashMap<>();
 
     public Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, UserRepositoryCompletionHandler handler) {
         User user = loginToUserMap.get(login);
 
         // already registered
         if (user != null) {
-            UserRepositoryActionResult result = new UserRepositoryActionResult(UserAlreadyExists, "User already exists");
+            UserRepositoryActionResult result = new UserRepositoryActionResult(UserAlreadyExists, "User already exists", user, false);
             return new UserFuture(result, handler);
         }
 
-        user = new User(nextUserId.getAndIncrement(), login, password, handle, this);
+        user = new User(nextUserId++, login, password, handle, this);
 
         addUser(user);
 
-        return new UserFuture(new UserRepositoryActionResult(user), handler);
+        return new UserFuture(new UserRepositoryActionResult(user, false), handler);
     }
 
     public Future<UserRepositoryActionResult> login(String login, String password, UserRepositoryCompletionHandler handler) {
@@ -46,20 +46,20 @@ public class InMemoryUserRepository implements UserRepository {
 
         // don't know this user
         if (user == null || !user.getPassword().equals(password)) {
-            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserNameOrPassword, "Invalid username or password"), handler);
+            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserNameOrPassword, "Invalid username or password", false), handler);
         }
 
-        return new UserFuture(new UserRepositoryActionResult(user), handler);
+        return new UserFuture(new UserRepositoryActionResult(user, false), handler);
     }
 
     public Future<UserRepositoryActionResult> get(long id, UserRepositoryCompletionHandler handler) {
         User user = idToUserMap.get(id);
 
         if (user == null) {
-            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserId, "Unknown user id " + id), handler);
+            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserId, "Unknown user id " + id, false), handler);
         }
 
-        return new UserFuture(new UserRepositoryActionResult(user), handler);
+        return new UserFuture(new UserRepositoryActionResult(user, false), handler);
     }
 
     public void addUser(User user) {

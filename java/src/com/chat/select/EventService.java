@@ -27,4 +27,6 @@ public interface EventService {
     void enableWrite(SelectableChannel channel, boolean val);
     void enableRead(SelectableChannel channel, boolean val);
     void free(SelectableChannel channel);
+
+    void wakeup();
 }

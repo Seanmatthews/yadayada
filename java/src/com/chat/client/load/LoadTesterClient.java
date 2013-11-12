@@ -10,9 +10,7 @@ import com.chat.client.ChatClientDispatcher;
 import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
 import com.chat.msgs.ValidationError;
-import com.chat.msgs.v1.JoinChatroomMessage;
-import com.chat.msgs.v1.SearchChatroomsMessage;
-import com.chat.msgs.v1.SubmitMessageMessage;
+import com.chat.msgs.v1.*;
 import com.chat.select.EventService;
 import com.chat.select.impl.EventServiceImpl;
 
@@ -27,56 +25,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Time: 8:50 AM
  * To change this template use File | Settings | File Templates.
  */
-public class LoadTesterClient implements ChatClient, Runnable {
-    private final String host;
-    private final int port;
+public class LoadTesterClient implements ChatClient {
     private final String username;
     private final String password;
-    private final CountDownLatch latch;
-    private ChatClientConnection connection;
+    private final ChatClientConnection connection;
 
-    private Chatroom subscribedChatroom;
-    private User user;
-    public volatile boolean alive;
-    public AtomicInteger messagesRecv = new AtomicInteger(0);
+    private long chatroomId = 1;
+    private long userId;
 
-    public LoadTesterClient(String host, int port, String user, String password, CountDownLatch latch) throws IOException, InterruptedException, ValidationError {
-        this.host = host;
-        this.port = port;
+    private LoginState state = LoginState.None;
+
+    private int messagesRecv = 0;
+    private int sentMessages = 0;
+
+    public LoadTesterClient(EventService eventService, String host, int port, String user, String password, ChatroomRepository chatroomRepo, InMemoryUserRepository userRepo) throws IOException {
         this.username = user;
         this.password = password;
-        this.latch = latch;
-    }
 
-    @Override
-    public void run() {
-        try {
-            EventService eventService = new EventServiceImpl();
-
-            ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-            InMemoryUserRepository userRepo = new InMemoryUserRepository();
-            ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
-
-            //connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher);
-
-            //long userId = ChatClientUtilities.initialConnect(connection, userName, password);
-            //user = new User(userId, userName, userRepo);
-            //userRepo.addUser(user);
-
-            connection.sendMessage(new SearchChatroomsMessage(0, 0));
-            Chatroom global = new Chatroom(1, "Global", user, chatroomRepo);
-            connection.sendMessage(new JoinChatroomMessage(user.getId(), global.getId(), 0, 0));
-            subscribedChatroom = global;
-
-            alive = true;
-            latch.countDown();
-        }
-        catch(Exception e) {
-            alive = false;
-            System.err.println("Crapping out! " + e.getMessage());
-            e.printStackTrace();
-            latch.countDown();
-        }
+        ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
+        connection = new ChatClientConnection(user, eventService, host, port, dispatcher);
     }
 
     @Override
@@ -86,16 +53,58 @@ public class LoadTesterClient implements ChatClient, Runnable {
 
     @Override
     public void onMessage(ChatMessage message) {
-        messagesRecv.incrementAndGet();
+        messagesRecv++;
     }
 
     public void sendMessage(String message) throws IOException {
-        connection.sendMessage(new SubmitMessageMessage(user.getId(), subscribedChatroom.getId(), message));
+        sentMessages++;
+        connection.sendMessage(new SubmitMessageMessage(userId, chatroomId, message));
+    }
+
+    @Override
+    public void onConnectAccept(int apiVersion, long globalChatId) {
+        state = LoginState.ConnectAccept;
+        connection.sendMessage(new RegisterMessage(username, password, username, username));
+    }
+
+    @Override
+    public void onConnectReject(String reason) {
+        state = LoginState.Error;
+        System.err.println("connectReject: " + reason);
+        System.exit(0);
+    }
+
+    @Override
+    public void onRegisterAccept(long userId) {
+        state = LoginState.RegisterAcceptOrReject;
+        connection.sendMessage(new LoginMessage(username, password));
+    }
+
+    @Override
+    public void onRegisterReject(String reason) {
+        state = LoginState.RegisterAcceptOrReject;
+        connection.sendMessage(new LoginMessage(username, password));
+    }
+
+    @Override
+    public void onLoginAccept(long userId) {
+        state = LoginState.LoginAccept;
+        this.userId = userId;
+        connection.sendMessage(new JoinChatroomMessage(userId, 1, 0, 0));
+    }
+
+    @Override
+    public void onLoginReject(String reason) {
+        state = LoginState.Error;
+        System.err.println("Login reject: " + reason);
+        System.exit(0);
     }
 
     @Override
     public void onJoinedChatroom(Chatroom chat, User user) {
-
+        if (user.getId() == userId && chat.getId() == chatroomId) {
+            state = LoginState.JoinedChatroom;
+        }
     }
 
     @Override
@@ -105,36 +114,28 @@ public class LoadTesterClient implements ChatClient, Runnable {
 
     @Override
     public void onJoinedChatroomReject(String reason) {
-        System.err.println("Error entering chatroom: " + reason);
+        System.err.println("joinedChatroomReject: " + reason);
+        state = LoginState.Error;
     }
 
-    @Override
-    public void onConnectAccept(int apiVersion, long globalChatId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public LoginState getState() {
+        return state;
     }
 
-    @Override
-    public void onConnectReject(String reason) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public boolean isAlive() {
+        return connection.isConnected() && state == LoginState.JoinedChatroom;
     }
 
-    @Override
-    public void onLoginAccept(long userId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public int getMessagesRecv() {
+        return messagesRecv;
     }
 
-    @Override
-    public void onLoginReject(String reason) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void onRegisterAccept(long userId) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void onRegisterReject(String reason) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public enum LoginState {
+        None,
+        ConnectAccept,
+        RegisterAcceptOrReject,
+        LoginAccept,
+        JoinedChatroom,
+        Error
     }
 }

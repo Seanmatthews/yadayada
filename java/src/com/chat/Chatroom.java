@@ -23,15 +23,21 @@ public class Chatroom {
     private final long id;
     private final String name;
     private final User owner;
+    private final long latitude;
+    private final long longitude;
+    private final long radius;
 
     // back-reference for easy access
     private final ChatroomRepository repo;
 
-    public Chatroom(long id, String name, User owner, ChatroomRepository inMemoryChatroomRepository) {
+    public Chatroom(long id, String name, User owner, ChatroomRepository inMemoryChatroomRepository, long latitude, long longitude, long radius) {
         this.id = id;
         this.name = name;
         this.owner = owner;
         this.repo = inMemoryChatroomRepository;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.radius = radius;
     }
 
     public long getId() {
@@ -97,5 +103,21 @@ public class Chatroom {
 
     public boolean containsUser(User user) {
         return repo.containsUser(this, user);
+    }
+
+    public int getUserCount() {
+        return repo.getChatroomUserCount(this);
+    }
+
+    public long getRadius() {
+        return radius;
+    }
+
+    public long getLongitude() {
+        return longitude;
+    }
+
+    public long getLatitude() {
+        return latitude;
     }
 }

@@ -12,17 +12,18 @@ import com.chat.User;
  * To change this template use File | Settings | File Templates.
  */
 public interface ChatServer {
-    void removeConnection(ClientConnection sender);
+    void connect(ClientConnection sender, int apiVersion, String uuid);
+    void disconnect(ClientConnection sender);
 
     void registerUser(ClientConnection sender, String login, String password, String handle, String UUID);
     void login(ClientConnection sender, String login, String password);
 
-    void createChatroom(ClientConnection sender, User user, String name);
+    void quickLogin(ClientConnection sender, String handle, String UUID);
+
+    void createChatroom(ClientConnection sender, User user, String name, long latitude, long longitude, long radius);
     void newMessage(ClientConnection sender, User senderUser, Chatroom chatroom, String message);
 
     void searchChatrooms(ClientConnection sender);
     void joinChatroom(ClientConnection sender, User user, Chatroom chatroom);
-    void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom, boolean removing);
-
-    void connect(ClientConnection sender, int apiVersion, String uuid);
+    void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom);
 }

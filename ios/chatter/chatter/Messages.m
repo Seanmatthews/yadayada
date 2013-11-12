@@ -86,6 +86,17 @@
 
 @end
 
+@implementation QuickLoginMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 14;
+    return self;
+}
+
+@end
+
 @implementation ConnectMessage
 
 - (id)init

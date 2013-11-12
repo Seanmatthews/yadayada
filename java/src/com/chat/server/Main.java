@@ -36,7 +36,6 @@ public class Main {
         myOptions.addOption("sqlurl", true, "URL of SQL Server");
         myOptions.addOption("sqluser", true, "SQL Username");
         myOptions.addOption("sqlpassword", true, "SQL Username");
-        myOptions.addOption("io", true, "blocking or nonblocking");
         CommandLine options;
 
         Logger logger = LogManager.getLogger();
@@ -78,7 +77,7 @@ public class Main {
         MessageRepository messageRepo = new STMessageRepository();
         //ChatroomRepository chatroomRepo = new STChatroomRepository();
         ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-        chatroomRepo.createChatroom(admin, "Global");
+        chatroomRepo.createChatroom(admin, "Global", 0, 0, 0);
 
         new ServerListener(new EventServiceImpl(), port, userRepo, chatroomRepo, messageRepo);
     }

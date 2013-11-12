@@ -11,12 +11,13 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface ChatroomRepository {
-    Chatroom createChatroom(User owner, String name);
+    Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius);
     Iterator<Chatroom> search(ChatroomSearchCriteria search);
     Chatroom get(long chatroomId);
     void addChatroom(Chatroom chatroom);
     Iterator<Chatroom> iterator();
 
+    int getChatroomUserCount(Chatroom chatroom);
     Iterator<User> getUsers(Chatroom chatroom);
     void addUser(Chatroom chatroom, User user);
     void removeUser(Chatroom chatroom, User user);

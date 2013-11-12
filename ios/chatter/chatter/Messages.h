@@ -15,6 +15,7 @@ typedef enum {
     Login = 11,
     LoginAccept = 12,
     LoginReject = 13,
+    QuickLogin = 14,
     Connect = 16,
     ConnectAccept = 17,
     ConnectReject = 18,
@@ -96,6 +97,15 @@ typedef enum {
 - (id)init;
 
 @property NSString* reason;
+
+@end
+
+@interface QuickLoginMessage : MessageBase
+
+- (id)init;
+
+@property NSString* handle;
+@property NSString* UUID;
 
 @end
 
@@ -187,6 +197,7 @@ typedef enum {
 @property long long latitude;
 @property long long longitude;
 @property long long radius;
+@property int userCount;
 
 @end
 
