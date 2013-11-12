@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Location.h"
+#import "Messages.h"
 
 @interface ChatListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 {
@@ -15,5 +16,7 @@
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;
+
+- (void)messageCallback:(MessageBase*)message;
 
 @end

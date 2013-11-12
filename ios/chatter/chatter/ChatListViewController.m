@@ -43,6 +43,28 @@
 }
 
 
+#pragma mark - incoming and outgoing messages
+
+
+- (void)messageCallback:(MessageBase*)message
+{
+    switch (message.type) {
+            
+        case Chatroom:
+            // TODO
+            break;
+            
+        case JoinedChatroom:
+            NSLog(@"Joined Chatroom");
+            break;
+            
+        case LeftChatroom:
+            NSLog(@"Left Chatroom");
+            break;
+    }
+}
+
+
 #pragma mark - Blurred Snapshot
 
 - (UIImage*)blurredSnapshot
