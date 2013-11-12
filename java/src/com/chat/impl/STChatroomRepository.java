@@ -6,7 +6,6 @@ import com.chat.ChatroomSearchCriteria;
 import com.chat.User;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,8 +22,8 @@ public class STChatroomRepository implements ChatroomRepository {
     private final Map<Chatroom, Set<User>> chatroomUserMap = new HashMap<>();
 
     @Override
-    public Chatroom createChatroom(User owner, String name) {
-        Chatroom chatroom = new Chatroom(nextChatroomId++, name, owner, this);
+    public Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius) {
+        Chatroom chatroom = new Chatroom(nextChatroomId++, name, owner, this, latitude, longitude, radius);
         addChatroom(chatroom);
         return chatroom;
     }
@@ -48,6 +47,11 @@ public class STChatroomRepository implements ChatroomRepository {
     @Override
     public Iterator<Chatroom> iterator() {
         return chatroomIdMap.values().iterator();
+    }
+
+    @Override
+    public int getChatroomUserCount(Chatroom chatroom) {
+        return chatroomUserMap.get(chatroom).size();
     }
 
     @Override

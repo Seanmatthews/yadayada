@@ -20,7 +20,7 @@ public interface ChatServer {
 
     void quickLogin(ClientConnection sender, String handle, String UUID);
 
-    void createChatroom(ClientConnection sender, User user, String name);
+    void createChatroom(ClientConnection sender, User user, String name, long latitude, long longitude, long radius);
     void newMessage(ClientConnection sender, User senderUser, Chatroom chatroom, String message);
 
     void searchChatrooms(ClientConnection sender);

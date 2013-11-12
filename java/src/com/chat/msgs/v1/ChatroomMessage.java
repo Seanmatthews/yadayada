@@ -12,6 +12,7 @@ public class ChatroomMessage implements Message {
     private final long latitude;
     private final long longitude;
     private final long radius;
+    private final int userCount;
 
     public ChatroomMessage(ReadBuffer stream) {
         this.chatroomId = stream.readLong();
@@ -21,9 +22,10 @@ public class ChatroomMessage implements Message {
         this.latitude = stream.readLong();
         this.longitude = stream.readLong();
         this.radius = stream.readLong();
+        this.userCount = stream.readInt();
     }
 
-    public ChatroomMessage(long chatroomId, long chatroomOwnerId, String chatroomName, String chatroomOwnerHandle, long latitude, long longitude, long radius) {
+    public ChatroomMessage(long chatroomId, long chatroomOwnerId, String chatroomName, String chatroomOwnerHandle, long latitude, long longitude, long radius, int userCount) {
         this.chatroomId = chatroomId;
         this.chatroomOwnerId = chatroomOwnerId;
         this.chatroomName = chatroomName;
@@ -31,6 +33,7 @@ public class ChatroomMessage implements Message {
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
+        this.userCount = userCount;
     }
 
     public long getChatroomId() {
@@ -61,6 +64,10 @@ public class ChatroomMessage implements Message {
         return radius;
     }
 
+    public int getUserCount() {
+        return userCount;
+    }
+
     @Override
     public void write(ReadWriteBuffer stream) {
         int position = stream.position();
@@ -75,6 +82,7 @@ public class ChatroomMessage implements Message {
         stream.writeLong(getLatitude());
         stream.writeLong(getLongitude());
         stream.writeLong(getRadius());
+        stream.writeInt(getUserCount());
 
         // write out length of message
         stream.writeShort(position, stream.position() - position - 2);
@@ -91,6 +99,7 @@ public class ChatroomMessage implements Message {
         builder.append(",Latitude=").append(getLatitude());
         builder.append(",Longitude=").append(getLongitude());
         builder.append(",Radius=").append(getRadius());
+        builder.append(",UserCount=").append(getUserCount());
         return builder.toString();        
     }
 } 

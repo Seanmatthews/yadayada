@@ -6,11 +6,9 @@ import com.chat.select.EventService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.chat.UserRepository.UserRepositoryActionResult;
 import static com.chat.UserRepository.UserRepositoryCompletionHandler;
@@ -100,15 +98,15 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void createChatroom(ClientConnection senderConnection, User sender, String name) {
+    public void createChatroom(ClientConnection senderConnection, User sender, String name, long latitude, long longitude, long radius) {
         log.debug("Creating chatroom {} by {}", name, sender);
 
-        Chatroom chatroom = chatroomRepo.createChatroom(sender, name);
+        Chatroom chatroom = chatroomRepo.createChatroom(sender, name, latitude, longitude, radius);
         sendChatroom(senderConnection, chatroom);
     }
 
     private void sendChatroom(ClientConnection senderConnection, Chatroom chatroom) {
-        senderConnection.sendMessage(new ChatroomMessage(chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(), 0, 0, 0));
+        senderConnection.sendMessage(new ChatroomMessage(chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(), chatroom.getLatitude(), chatroom.getLongitude(), chatroom.getRadius(), chatroom.getUserCount()));
     }
 
     @Override

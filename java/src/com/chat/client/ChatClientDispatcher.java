@@ -139,7 +139,7 @@ public class ChatClientDispatcher {
         synchronized (chatroomRepo) {
             chatroom = chatroomRepo.get(chatroomId);
             if (chatroom == null) {
-                chatroom = new Chatroom(chatroomId, chatroomName, owner, chatroomRepo);
+                chatroom = new Chatroom(chatroomId, chatroomName, owner, chatroomRepo, 0, 0, 0);
                 chatroomRepo.addChatroom(chatroom);
             }
         }
