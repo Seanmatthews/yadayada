@@ -10,4 +10,6 @@
 
 @interface SecondPageViewController : UIViewController
 
+- (IBAction)unwindToSecondScreen:(UIStoryboardSegue*)unwindSegue;
+
 @end

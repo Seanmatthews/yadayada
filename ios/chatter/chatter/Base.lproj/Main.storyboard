@@ -189,7 +189,6 @@
                     <navigationItem key="navigationItem" id="ara-XM-H9e"/>
                     <connections>
                         <outlet property="bgImageView" destination="Etv-Mh-w6a" id="tJ2-bq-gGU"/>
-                        <segue destination="vXZ-lx-hvc" kind="push" identifier="chatroomSegue" id="76q-x3-677"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4wC-fA-fk9" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -422,13 +421,15 @@
                         <gestureRecognizers/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="bQ8-Rj-COU" appends="YES" id="3Hd-cG-Dbc"/>
+                            <outletCollection property="gestureRecognizers" destination="RIT-Yp-KE2" appends="YES" id="TKS-l9-fAo"/>
                         </connections>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rN8-QZ-ez3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="VUl-IZ-eV0" userLabel="Exit" sceneMemberID="exit"/>
                 <swipeGestureRecognizer direction="right" id="RIT-Yp-KE2">
                     <connections>
-                        <segue destination="gCN-Hl-IEh" kind="modal" id="Yh6-mj-CWd"/>
+                        <segue destination="VUl-IZ-eV0" kind="unwind" unwindAction="unwindToFirstScreen:" id="0on-D6-wKU"/>
                     </connections>
                 </swipeGestureRecognizer>
                 <swipeGestureRecognizer direction="left" id="bQ8-Rj-COU">
@@ -466,6 +467,9 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="udt-tc-Rby" appends="YES" id="mzU-71-KZq"/>
+                        </connections>
                     </view>
                     <connections>
                         <outlet property="handleTextField" destination="Lde-vM-0fr" id="z6V-AF-UQO"/>
@@ -473,9 +477,10 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eV2-RC-NL8" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <swipeGestureRecognizer direction="right" id="bHN-Oe-CiY">
+                <exit id="bPq-ev-zqI" userLabel="Exit" sceneMemberID="exit"/>
+                <swipeGestureRecognizer direction="right" id="udt-tc-Rby">
                     <connections>
-                        <segue destination="YaD-MZ-04F" kind="modal" id="dDv-Bn-jI2"/>
+                        <segue destination="bPq-ev-zqI" kind="unwind" unwindAction="unwindToSecondScreen:" id="BiI-fr-jBq"/>
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
@@ -487,8 +492,4 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
-    <inferredMetricsTieBreakers>
-        <segue reference="dDv-Bn-jI2"/>
-        <segue reference="RtA-0b-Q7V"/>
-    </inferredMetricsTieBreakers>
 </document>

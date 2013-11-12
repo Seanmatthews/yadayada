@@ -10,4 +10,6 @@
 
 @interface FirstPageViewController : UIViewController
 
+- (IBAction)unwindToFirstScreen:(UIStoryboardSegue*)unwindSegue;
+
 @end

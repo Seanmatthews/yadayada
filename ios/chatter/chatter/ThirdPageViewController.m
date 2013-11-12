@@ -102,8 +102,10 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    MenuViewController* vc = ((UINavigationController *)segue.destinationViewController).viewControllers[0];
-    vc.userHandle = handleTextField.text;
+    if ([segue.identifier isEqualToString:@"firstTimeSegue"]) {
+        MenuViewController* vc = ((UINavigationController *)segue.destinationViewController).viewControllers[0];
+        vc.userHandle = handleTextField.text;
+    }
 }
 
 
