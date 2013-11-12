@@ -62,7 +62,6 @@
     
 }
 
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -102,20 +101,20 @@
     [connection sendMessage:cm];
 }
 
-- (void)registerMessage
-{
-    if (!ud.registeredHandle) {
-        RegisterMessage* rm = [[RegisterMessage alloc] init];
-        rm.handle = @"sean";
-        rm.userName = ud.UUID;
-        rm.password = @"pass";
-        [connection sendMessage:rm];
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"registeredhandle"];
-    }
-    else {
-        [self loginMessage];
-    }
-}
+//- (void)registerMessage
+//{
+//    if (!ud.registeredHandle) {
+//        RegisterMessage* rm = [[RegisterMessage alloc] init];
+//        rm.handle = @"sean";
+//        rm.userName = ud.UUID;
+//        rm.password = @"pass";
+//        [connection sendMessage:rm];
+//        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"registeredhandle"];
+//    }
+//    else {
+//        [self loginMessage];
+//    }
+//}
 
 - (void)loginMessage
 {
@@ -153,7 +152,7 @@
         case ConnectAccept:
             NSLog(@"Connect Accept");
             ud.chatroomId = ((ConnectAcceptMessage*)message).globalChatId;
-            [self registerMessage];
+            [self loginMessage];
             break;
             
         case ConnectReject:

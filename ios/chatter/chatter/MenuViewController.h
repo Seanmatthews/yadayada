@@ -24,7 +24,7 @@
 @property (nonatomic, retain) IBOutlet UITableView* menuTableView;
 
 - (void)connectMessage;
-- (void)registerMessage;
+//- (void)registerMessage;
 - (void)loginMessage;
 - (void)joinGlobalChatroom;
 - (void)messageCallback:(MessageBase*)message;

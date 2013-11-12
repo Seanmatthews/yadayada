@@ -9,11 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "Location.h"
 #import "Messages.h"
+#import "Connection.h"
 
 @interface ChatListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 {
     Location* location;
-    NSMutableArray* chatroomList;
+    Connection* connection;
+    NSMutableArray* localChatroomList;
+    NSMutableArray* globalChatroomList;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;

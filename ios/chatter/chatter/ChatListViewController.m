@@ -36,13 +36,43 @@
     _tableView.layer.cornerRadius = 5;
     _tableView.layer.masksToBounds = YES;
     
-    chatroomList = [[NSMutableArray alloc] init];
+    localChatroomList = [[NSMutableArray alloc] init];
+    globalChatroomList = [[NSMutableArray alloc] init];
+    
+    // Get connection object and add this controller's callback
+    // method for incoming connections.
+    connection = [Connection sharedInstance];
+    ChatListViewController* __weak weakSelf = self;
+    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    // Send a chatroom search message.
+    // Redraw the table as the chatrooms come in.
+    SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
+    [connection sendMessage:msg];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)addChatroom:(ChatroomMessage*)chatroom
+{
+    // Determine whether chatroom is local or global
+    if (chatroom.radius <= 0) {
+        [globalChatroomList addObject:chatroom];
+    }
+    else {
+        [localChatroomList addObject:chatroom];
+    }
+    
+    [_tableView reloadData];
 }
 
 
@@ -53,7 +83,7 @@
 {
     switch (message.type) {
         case Chatroom:
-            [chatroomList addObject:(ChatroomMessage*)message];
+            [self addChatroom:(ChatroomMessage*)message];
             break;
             
         case JoinedChatroom:
@@ -107,7 +137,14 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [chatroomList count];
+    int count = 0;
+    if (section == 0) {
+        count = [localChatroomList count];
+    }
+    else if (section == 1) {
+        count = [globalChatroomList count];
+    }
+    return count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -125,7 +162,14 @@
     }
     
     // Configure the cell.
-    ChatroomMessage *chatroom = [chatroomList objectAtIndex:indexPath.row];
+    ChatroomMessage *chatroom;
+    
+    if (indexPath.section == 0) { // Local chats
+        chatroom = [localChatroomList objectAtIndex:indexPath.row];
+    }
+    else if (indexPath.section == 1) {
+        chatroom = [globalChatroomList objectAtIndex:indexPath.row];
+    }
     
     // calculate miles from origin
     CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake(chatroom.latitude, chatroom.longitude);
@@ -137,10 +181,22 @@
     
     cell.chatroomName.text = chatroom.chatroomName;
     cell.milesFromOrigin.text = [NSString stringWithFormat:@"%f miles away",distance];
-    cell.percentActive.text = [NSString stringWithFormat:@"%d% active",chatroom.chatActivity];
-    cell.numberOfUsers.text = [NSString stringWithFormat:@"%d users",chatroom.numberOfUsers];
+    cell.percentActive.text = [NSString stringWithFormat:@"%d%% active",chatroom.chatActivity];
+    cell.numberOfUsers.text = [NSString stringWithFormat:@"%d users",chatroom.userCount];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSString* title = @"Woops";
+    if (section == 0) {
+        title = @"Local Chats";
+    }
+    else if (section == 1) {
+        title = @"Global Chats";
+    }
+    return title;
 }
 
 #pragma mark - UITableViewDelegate methods

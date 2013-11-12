@@ -65,7 +65,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
                 <exit id="w3R-cb-9I3" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="806" y="407"/>
+            <point key="canvasLocation" x="1246" y="379"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="pkd-zD-3k1">
@@ -152,6 +152,7 @@
                     </view>
                     <connections>
                         <outlet property="tableView" destination="ov8-Ka-lVd" id="OUT-Jz-7Ac"/>
+                        <segue destination="vXZ-lx-hvc" kind="modal" identifier="pickedChatroomSegue" id="t6j-Ha-H7P"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jow-q3-5wI" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -360,7 +361,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E6d-qd-fwg" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="P4n-Xr-HbX" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1246" y="407"/>
+            <point key="canvasLocation" x="806" y="379"/>
         </scene>
         <!--First Page View Controller-->
         <scene sceneID="5v6-Qh-BVD">
@@ -492,4 +493,7 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
+    <inferredMetricsTieBreakers>
+        <segue reference="t6j-Ha-H7P"/>
+    </inferredMetricsTieBreakers>
 </document>
