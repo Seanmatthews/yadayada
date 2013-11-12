@@ -198,6 +198,7 @@ typedef enum {
 @property long long longitude;
 @property long long radius;
 @property int userCount;
+@property short chatActivity;
 
 @end
 
