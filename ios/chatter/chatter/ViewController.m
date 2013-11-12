@@ -305,15 +305,8 @@ const int MESSAGE_NUM_THRESH = 50;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"pickedChatroomSegue"]) {
-        // TODO:
-        // Pass chat title
-        // etc
-    }
-    else {
-        MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-        vc.image =[self blurredSnapshot];
-    }
+    MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
+    vc.image =[self blurredSnapshot];
 }
 
 @end
