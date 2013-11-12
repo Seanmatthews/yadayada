@@ -8,7 +8,6 @@ import com.chat.select.EventService;
 import com.chat.select.impl.ClientSocketImpl;
 import com.chat.util.TwoByteLengthMessageCracker;
 import com.chat.util.buffer.ReadBuffer;
-import com.chat.util.buffer.ReadWriteBuffer;
 import com.chat.util.tcp.TCPCrackerClient;
 import com.chat.util.tcp.TCPCrackerClientListener;
 
@@ -26,6 +25,7 @@ public class ChatClientConnection implements TCPCrackerClientListener {
     private final ChatClientDispatcher dispatcher;
     private final TCPCrackerClient crackerClient;
     private final String name;
+    private boolean connected = false;
 
     public ChatClientConnection(String name,
                                 EventService eventService,
@@ -47,12 +47,8 @@ public class ChatClientConnection implements TCPCrackerClientListener {
 
     @Override
     public void onConnect(TCPCrackerClient client) {
-        ReadWriteBuffer writeBuffer = crackerClient.getWriteBuffer();
-
-        ConnectMessage message = new ConnectMessage(V1Dispatcher.VERSION_ID, name);
-        message.write(writeBuffer);
-
-        crackerClient.write();
+        connected = true;
+        sendMessage(new ConnectMessage(V1Dispatcher.VERSION_ID, name));
     }
 
     @Override
@@ -65,11 +61,15 @@ public class ChatClientConnection implements TCPCrackerClientListener {
 
     @Override
     public void onDisconnect(TCPCrackerClient client) {
-        System.exit(0);
+        connected = false;
     }
 
     public void sendMessage(Message message) {
         message.write(crackerClient.getWriteBuffer());
         crackerClient.write();
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }

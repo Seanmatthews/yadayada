@@ -1,14 +1,15 @@
 package com.chat.client.load;
 
-import com.chat.client.text.ChatTextClient;
+import com.chat.impl.InMemoryChatroomRepository;
+import com.chat.impl.InMemoryUserRepository;
 import com.chat.msgs.ValidationError;
+import com.chat.select.EventService;
+import com.chat.select.impl.EventServiceImpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -27,80 +28,92 @@ public class LoadTester {
         int numClients = Integer.parseInt(args[2]);
         int startClient = Integer.parseInt(args[3]);
 
+        final EventService eventService = new EventServiceImpl();
+        InMemoryChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
+        InMemoryUserRepository userRepo = new InMemoryUserRepository();
+
         System.out.println("Starting setup of clients " + startClient + " -> " + (startClient + numClients - 1));
-
-        ExecutorService exec = Executors.newCachedThreadPool();
-
-        CountDownLatch countDownLatch = new CountDownLatch(numClients);
 
         List<LoadTesterClient> clients = new ArrayList<>(numClients);
         for (int i=0; i<numClients; i++) {
-            if (i % 100 == 0) {
-                System.out.println("- Starting client " + (i + startClient));
+            int userNum = i + startClient;
+
+            if (userNum % 100 == 0) {
+                System.out.println("- Starting client " + i + " - " + userNum);
             }
 
-            LoadTesterClient client = new LoadTesterClient(host, port, "Load" + (i + startClient), "Pass" + (i + startClient), countDownLatch);
-            clients.add(client);
-            exec.execute(client);
+            clients.add(new LoadTesterClient(eventService, host, port, "Load" + userNum, "Pass" + userNum, chatroomRepo, userRepo));
         }
 
-        while(true) {
-            countDownLatch.await(1, TimeUnit.SECONDS);
-            long count = countDownLatch.getCount();
-            System.out.println("Latch - " + count);
-            if (count == 0)
-                break;
-        }
-
-        int alive = 0;
-        int dead = 0;
-
-        List<LoadTesterClient> aliveClients = new ArrayList<>(numClients);
-        for (int i=0; i<clients.size(); i++) {
-            LoadTesterClient client = clients.get(i);
-            if (client.alive) {
-                aliveClients.add(client);
-                alive++;
-            }
-            else {
-                dead++;
-            }
-        }
-
-        System.out.println("Configured " + alive + " alive and " + dead + " dead");
-
-        int sentMessages = 0;
-
-        long lastTimestamp = System.currentTimeMillis();
-
+        boolean allReady = false;
         Random random = new Random();
-        while(true) {
-            int i = random.nextInt(aliveClients.size());
-            LoadTesterClient client = aliveClients.get(i);
+        int sentMessages = 0;
+        long lastTimestamp = 0;
 
-            if (client.alive) {
-                client.sendMessage("Hey there");
-                sentMessages++;
-
-                if (sentMessages % 100 == 0) {
-                    long newTimestamp = System.currentTimeMillis();
-
-                    double timeDiffSec = (newTimestamp - lastTimestamp) / 1000.0;
-                    System.out.println("Sent " + sentMessages + " messages @ " + 100/timeDiffSec + " msgs/s");
-
-                    int messages = 0;
-                    for (int j=0; j<aliveClients.size(); j++) {
-                        LoadTesterClient c = aliveClients.get(j);
-                        if (client.alive) {
-                            messages += client.messagesRecv.get();
+        Executors.newCachedThreadPool().execute(
+            new Runnable() {
+                @Override
+                public void run() {
+                    while(true) {
+                        try {
+                            eventService.wakeup();
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
                         }
                     }
+                }
+            });
 
-                    System.out.println("Recv " + messages + " messages @ " + messages/timeDiffSec + " msgs/s");
+        while(true) {
+            eventService.runOnce();
+
+            int ready = 0;
+            int error = 0;
+            int oldMessages = 0;
+
+            if (!allReady) {
+                for (LoadTesterClient client : clients) {
+                    if (client.getState() == LoadTesterClient.LoginState.Error)
+                        error++;
+
+                    if (client.getState() == LoadTesterClient.LoginState.JoinedChatroom)
+                        ready++;
+                }
+
+                if (ready + error >= numClients) {
+                    allReady = true;
+                    lastTimestamp = System.currentTimeMillis();
+                }
+
+                System.out.println("Ready: " + ready + ", Error: " + error);
+            }
+            else {
+                int i = random.nextInt(clients.size());
+                LoadTesterClient client = clients.get(i);
+
+                if (client.isAlive()) {
+                    client.sendMessage("Hey there");
+                    sentMessages++;
+
+                    if (sentMessages % 1000 == 0) {
+                        long newTimestamp = System.currentTimeMillis();
+
+                        double timeDiffSec = (newTimestamp - lastTimestamp) / 1000.0;
+                        System.out.println("Sent " + sentMessages + " messages @ " + 1000/timeDiffSec + " msgs/s");
+
+                        int messages = 0;
+                        for (LoadTesterClient c : clients) {
+                            if (c.isAlive()) {
+                                messages += client.getMessagesRecv();
+                            }
+                        }
+
+                        System.out.println("Recv " + messages + " messages @ " + (messages - oldMessages)/timeDiffSec + " msgs/s");
+                        oldMessages = messages;
+                    }
                 }
             }
-
-            Thread.sleep(10);
         }
     }
 }
+

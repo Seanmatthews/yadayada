@@ -5,17 +5,12 @@ import com.chat.User;
 import com.chat.msgs.Message;
 import com.chat.msgs.MessageDispatcher;
 import com.chat.msgs.ValidationError;
-import com.chat.select.EventService;
 import com.chat.util.buffer.ReadBuffer;
 import com.chat.util.buffer.ReadWriteBuffer;
 import com.chat.util.tcp.TCPCrackerClient;
 import com.chat.util.tcp.TCPCrackerClientListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.EOFException;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,20 +25,25 @@ public class ServerClientConnection implements ClientConnection, TCPCrackerClien
     private final TCPCrackerClient socket;
     private final ChatServer server;
     private User user;
+    private boolean connected;
 
     public ServerClientConnection(ChatServer server, TCPCrackerClient socket, MessageDispatcher dispatcher)  {
         this.server = server;
         this.socket = socket;
         this.dispatcher = dispatcher;
+        this.connected = true;
     }
 
-    @Override
     public void close() {
+        connected = false;
         socket.close();
     }
 
     @Override
     public void sendMessage(final Message message) {
+        if (!connected)
+            return;
+
         ReadWriteBuffer output = socket.getWriteBuffer();
 
         // write to buffer
@@ -68,12 +68,13 @@ public class ServerClientConnection implements ClientConnection, TCPCrackerClien
 
     @Override
     public void onConnect(TCPCrackerClient client) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // nothing
     }
 
     @Override
     public void onDisconnect(TCPCrackerClient client) {
-        server.removeConnection(this);
+        connected = false;
+        server.disconnect(this);
     }
 
     @Override

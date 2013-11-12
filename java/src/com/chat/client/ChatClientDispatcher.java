@@ -81,7 +81,7 @@ public class ChatClientDispatcher {
                     JoinedChatroomMessage jcMsg = new JoinedChatroomMessage(buffer);
                     logMsg(jcMsg);
                     User jcUser = getOrCreateUser(jcMsg.getUserId(), jcMsg.getUserHandle());
-                    Chatroom jcChatroom = chatroomRepo.get(jcMsg.getChatroomId());
+                    Chatroom jcChatroom = getOrCreateChatroom(jcMsg.getChatroomId(), "Global", jcUser);
                     client.onJoinedChatroom(jcChatroom, jcUser);
                     break;
 
