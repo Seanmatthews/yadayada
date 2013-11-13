@@ -3,10 +3,7 @@ package com.chat.impl;
 import com.chat.Chatroom;
 import com.chat.User;
 import com.chat.UserRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import java.io.InvalidObjectException;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;

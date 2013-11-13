@@ -6,9 +6,7 @@ import com.chat.select.EventService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import static com.chat.UserRepository.UserRepositoryActionResult;
 import static com.chat.UserRepository.UserRepositoryCompletionHandler;
@@ -27,7 +25,6 @@ public class ChatServerImpl implements ChatServer {
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
     private final MessageRepository messageRepo;
-
     private final Map<User, ClientConnection> userConnectionMap = new HashMap<>();
 
     public ChatServerImpl(EventService eventService, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) {
@@ -41,12 +38,23 @@ public class ChatServerImpl implements ChatServer {
     public void disconnect(ClientConnection sender) {
         User user = sender.getUser();
 
+        log.debug("Disconnect {}", sender);
+
         if (user != null) {
-            log.debug("Removing connection user {} {}", sender, user);
+            sender.setUser(null);
+            userConnectionMap.remove(user);
+
+            log.debug("Removing connection {} {}", user, sender);
 
             Iterator<Chatroom> chatrooms = user.getChatrooms();
-            while(chatrooms.hasNext()) {
+
+            while(chatrooms != null && chatrooms.hasNext()) {
                 Chatroom chatroom = chatrooms.next();
+
+                // Remove our user
+                chatroom.removeUser(user);
+                chatrooms.remove();
+                //user.removeFromChatroom(chatroom);
 
                 Iterator<User> users = chatroom.getUsers();
 
@@ -54,7 +62,7 @@ public class ChatServerImpl implements ChatServer {
                     User chatroomUser = users.next();
                     ClientConnection chatroomUserConnection = userConnectionMap.get(chatroomUser);
 
-                    if (!chatroomUser.equals(user))
+                    if (chatroomUserConnection != null)
                         leaveChatroom(chatroomUserConnection, user, chatroom);
                 }
             }
@@ -314,12 +322,9 @@ public class ChatServerImpl implements ChatServer {
 
             // notify other user about me leaving chat
             ClientConnection chatMemberSender = userConnectionMap.get(chatMember);
+
             if (chatMemberSender != null)
                 chatMemberSender.sendMessage(meLeaving);
         }
-
-        // Now remove our user
-        chatroom.removeUser(sender);
-        sender.removeFromChatroom(chatroom);
     }
 }

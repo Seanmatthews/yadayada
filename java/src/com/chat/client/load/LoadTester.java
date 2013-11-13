@@ -64,12 +64,14 @@ public class LoadTester {
                 }
             });
 
+
+        int oldMessages = 0;
+
         while(true) {
             eventService.runOnce();
 
             int ready = 0;
             int error = 0;
-            int oldMessages = 0;
 
             if (!allReady) {
                 for (LoadTesterClient client : clients) {

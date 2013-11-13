@@ -56,6 +56,9 @@ public class TCPCrackerClient implements ClientSocketListener {
     }
 
     public void write() {
+        if (!socket.isConnected())
+            return;
+
         if (writeBuffer.position() > 0) {
             writeBuffer.flip();
             socket.write(writeBuffer);

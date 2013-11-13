@@ -3,11 +3,9 @@ package com.chat.impl;
 import com.chat.Chatroom;
 import com.chat.User;
 import com.chat.UserRepository;
-import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
 
@@ -65,7 +63,7 @@ public class InMemoryUserRepository implements UserRepository {
     public void addUser(User user) {
         loginToUserMap.put(user.getLogin(), user);
         idToUserMap.put(user.getId(), user);
-        userChatroomMap.put(user, Collections.newSetFromMap(new ConcurrentHashMap<Chatroom, Boolean>()));
+        userChatroomMap.put(user, Collections.newSetFromMap(new HashMap<Chatroom, Boolean>()));
     }
 
     @Override

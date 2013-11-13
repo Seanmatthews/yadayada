@@ -7,7 +7,6 @@ import com.chat.util.buffer.ReadBuffer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -74,6 +73,8 @@ public class V1Dispatcher implements MessageDispatcher {
                 logMsg(lcMsg);
                 User lcUser = getAndValidateUser(lcMsg.getUserId());
                 Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
+                lcChatroom.removeUser(lcUser);
+                lcUser.removeFromChatroom(lcChatroom);
                 server.leaveChatroom(stream, lcUser, lcChatroom);
                 break;
 

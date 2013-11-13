@@ -99,6 +99,9 @@ public class ClientSocketImpl implements ClientSocket, SelectHandler {
 
     @Override
     public int read(ReadBuffer buffer) {
+        if (!isConnected())
+            return 0;
+
         try {
             int read = channel.read(buffer.getRawBuffer());
 
@@ -119,6 +122,9 @@ public class ClientSocketImpl implements ClientSocket, SelectHandler {
 
     @Override
     public void write(ReadWriteBuffer output) {
+        if (!isConnected())
+            return;
+
         ByteBuffer outBuffer = output.getRawBuffer();
 
         try {
@@ -128,7 +134,7 @@ public class ClientSocketImpl implements ClientSocket, SelectHandler {
                 listener.onWriteUnavailable(this);
             }
         } catch (IOException e) {
-            log.error("Error writing " + channel, e);
+            //log.error("Error writing " + channel, e);
             close();
         }
     }
@@ -146,6 +152,11 @@ public class ClientSocketImpl implements ClientSocket, SelectHandler {
         }
 
         listener.onDisconnect(this);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return channel.isConnected();
     }
 
     @Override
