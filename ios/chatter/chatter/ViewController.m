@@ -36,6 +36,8 @@ const int MESSAGE_NUM_THRESH = 50;
     // Give the table view rounded corners
     mTableView.layer.cornerRadius = 5;
     mTableView.layer.masksToBounds = YES;
+    mTableView.backgroundView = nil;
+    mTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     userInputTextField.returnKeyType = UIReturnKeySend;
     [self registerForKeyboardNotifications];
@@ -45,6 +47,12 @@ const int MESSAGE_NUM_THRESH = 50;
     connection = [Connection sharedInstance];
     ViewController* __weak weakSelf = self;
     [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
+    
+    // CSS for table cells
+    pageCSS = @"body { margin:0; padding:1}";
+    cellMsgCSS = @"div.msg { font:12px/13px baskerville,serif; color:#004C3D; text-align:left; vertical-align:text-top; margin:0; padding:0 }";
+    handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#D0D0D0 }";
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -141,8 +149,8 @@ const int MESSAGE_NUM_THRESH = 50;
             [self receivedMessage:(MessageMessage*)message];
             [mTableView reloadData];
             NSLog(@"num msgs: %d",[chatQueue count]);
-            //ipath = [NSIndexPath indexPathForRow:[chatQueue count]-1 inSection:0];
-            //[mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+            ipath = [NSIndexPath indexPathForRow:[chatQueue count]-1 inSection:0];
+            [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             break;
             
         case JoinedChatroom:
@@ -187,15 +195,21 @@ const int MESSAGE_NUM_THRESH = 50;
 {
     static NSString *CellIdentifier = @"ChatCell";
     const int WEBVIEW_TAG = 1;
+    const int ICONVIEW_TAG = 2;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     UIWebView* webview;
+    UIImageView* iconView;
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.userInteractionEnabled = YES;
-        
+        //CGRect cellFrame = CGRectMake(5, 5, cell.frame.size.width-10, cell.frame.size.height-10);
+        //cell.frame = cellFrame;
+        //cell.frame = CGRectOffset(cellFrame, 5, 5);
+//        [cell.contentView.layer setBorderColor:[UIColor redColor].CGColor];
+//        [cell.contentView.layer setBorderWidth:1.0f];
         
         // Add voting gestures to the cell
         UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
@@ -205,34 +219,38 @@ const int MESSAGE_NUM_THRESH = 50;
         swiped.direction = UISwipeGestureRecognizerDirectionLeft | UISwipeGestureRecognizerDirectionRight;
         [cell addGestureRecognizer:swiped];
         
-        // TODO: where to get icon size from? ConnectAccept message?
-        cell.imageView.frame = CGRectMake(0, 0, 53, 53);
+        // Add the icon view
+        CGRect iviewFrame = CGRectMake(0, 0, 44, 44);
+        iconView = [[UIImageView alloc] init];
+        iconView.frame = iviewFrame;
+        iconView.tag = ICONVIEW_TAG;
+        [cell.contentView addSubview:iconView];
         
+        // Add the webview
         webview = [[UIWebView alloc] init];
         webview.tag = WEBVIEW_TAG;
-        // does this fill the content view?
-        webview.frame = cell.contentView.bounds;
+        CGRect wviewFrame = CGRectMake(44, 0, cell.contentView.bounds.size.width-44, cell.contentView.bounds.size.height);
+        webview.frame = wviewFrame;
         webview.scrollView.scrollEnabled = NO;
+//        [webview.layer setBorderColor:[UIColor blueColor].CGColor];
+//        [webview.layer setBorderWidth:1.0f];
         [cell.contentView addSubview:webview];
     }
     else {
         webview = (UIWebView*)[cell.contentView viewWithTag:WEBVIEW_TAG];
+        iconView = (UIImageView*)[cell.contentView viewWithTag:ICONVIEW_TAG];
     }
     
-//    NSLog(@"called");
-//    UITableViewCell* cell = cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
-//    cell.accessoryType = UITableViewCellAccessoryNone;
-//    cell.userInteractionEnabled = YES;
-//    cell.textLabel.text = @"msg";
-    
-    
     MessageMessage* msg = [chatQueue objectAtIndex:indexPath.row];
+    iconView.image = [UIImage imageNamed:@"default-icon.png"];
     if (msg != nil) {
         // TODO: image view
-        NSString* html = msg.message;
+        NSString* html = [NSString stringWithFormat:@"<html><head><style> %@ %@ %@ </style></head><body><div class=msg>%@</div><div class=handle>%@</div></body></html>",pageCSS,cellMsgCSS,handleCSS,msg.message,msg.senderHandle];
         [webview loadHTMLString:html baseURL:nil];
     }
     
+    cell.layer.cornerRadius = 5;
+    cell.layer.masksToBounds = YES;
     return cell;
 }
 

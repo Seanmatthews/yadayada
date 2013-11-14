@@ -39,9 +39,8 @@
     else {
         // Getting here implies that the user has done the tutorial
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
         [[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
         ud.handle = userHandle;
     }
     
@@ -121,6 +120,7 @@
 //    LoginMessage* lm = [[LoginMessage alloc] init];
 //    lm.userName = ud.UUID;
 //    lm.password = @"";
+    NSLog(@"Logging in with handle: %@",ud.handle);
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
     qlm.handle = ud.handle;
     qlm.UUID = ud.UUID;
@@ -171,6 +171,7 @@
             
         case LoginReject:
             NSLog(@"Login Reject");
+            NSLog(@"%@",((LoginRejectMessage*)message).reason);
             break;
             
         case Chatroom:

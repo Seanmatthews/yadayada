@@ -39,6 +39,7 @@
 		64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D56181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m */; };
 		64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */; };
 		64A10DA41824BBDA00A499B0 /* Location.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10DA31824BBDA00A499B0 /* Location.m */; };
+		B33C55C61835598400EF28B7 /* default-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B33C55C51835598400EF28B7 /* default-icon.png */; };
 		B343A50C1828134F00B36450 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = B343A50B1828134F00B36450 /* UIImage+ImageEffects.m */; };
 		B343A50F18282CF600B36450 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B343A50E18282CF600B36450 /* MenuViewController.m */; };
 		B3ADCB68181855C500A25383 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B3ADCB66181855C500A25383 /* Default.png */; };
@@ -110,6 +111,7 @@
 		64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableView+UITableViewCategory.m"; sourceTree = "<group>"; };
 		64A10DA21824BBDA00A499B0 /* Location.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Location.h; sourceTree = "<group>"; };
 		64A10DA31824BBDA00A499B0 /* Location.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Location.m; sourceTree = "<group>"; };
+		B33C55C51835598400EF28B7 /* default-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-icon.png"; sourceTree = "<group>"; };
 		B343A50A1828134F00B36450 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		B343A50B1828134F00B36450 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		B343A50D18282CF600B36450 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
@@ -296,6 +298,7 @@
 		B3ADCB65181855A700A25383 /* Media */ = {
 			isa = PBXGroup;
 			children = (
+				B33C55C51835598400EF28B7 /* default-icon.png */,
 				B3ADCB66181855C500A25383 /* Default.png */,
 				B3ADCB67181855C500A25383 /* Default@2x.png */,
 			);
@@ -384,6 +387,7 @@
 				B3E79A4A1832AF23003227E7 /* ChatroomListCell.xib in Resources */,
 				B3ADCB69181855C500A25383 /* Default@2x.png in Resources */,
 				6458F3A018172E7400AA8E81 /* Main.storyboard in Resources */,
+				B33C55C61835598400EF28B7 /* default-icon.png in Resources */,
 				B3ADCB68181855C500A25383 /* Default.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -20,6 +20,9 @@
     UserDetails* ud;
     Connection* connection;
     NSThread* connectionThread;
+    NSString* cellMsgCSS;
+    NSString* handleCSS;
+    NSString* pageCSS;
     
     // TODO: this will be an array of arrays of dicts for multiple chat rooms
     NSMutableArray* chatQueue;
