@@ -6,9 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.channels.*;
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -22,6 +20,7 @@ public class EventServiceImpl implements EventService {
     private final Logger log = LogManager.getLogger();
     private final Selector selector;
     private final Queue<Runnable> threadEvents = new ConcurrentLinkedQueue<>();
+    private final Queue<Timer> timers = new PriorityQueue<>();
 
     public EventServiceImpl() throws IOException {
         this(Selector.open());
@@ -122,9 +121,15 @@ public class EventServiceImpl implements EventService {
     }
 
     public void runOnce() {
+        long timeout = 0;
+
+        if (!timers.isEmpty()) {
+            timeout = triggerTimers(System.currentTimeMillis());
+        }
+
         int select = 0;
         try {
-            select = selector.select();
+            select = selector.select(timeout);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -142,11 +147,38 @@ public class EventServiceImpl implements EventService {
                 iterator.remove();
             }
         }
+        else {
+            // triggered from a timeout
+            if (!timers.isEmpty()) {
+                triggerTimers(System.currentTimeMillis());
+            }
+        }
 
         Runnable runnable;
         while((runnable = threadEvents.poll()) != null) {
             runnable.run();
         }
+    }
+
+    private long triggerTimers(long currentTime) {
+        Iterator<Timer> iterator = timers.iterator();
+        while(iterator.hasNext()) {
+            Timer time = iterator.next();
+            if (time.time <= currentTime) {
+                iterator.remove();
+                time.handler.onTimer();
+            }
+            else {
+                return time.time - currentTime;
+            }
+        }
+
+        return 0;
+    }
+
+    @Override
+    public void scheduleTimer(long nanos, TimerHandler handler) {
+        timers.add(new Timer(handler, nanos));
     }
 
     @Override
@@ -195,5 +227,20 @@ public class EventServiceImpl implements EventService {
     private void handleRead(SelectionKey key) {
         SelectHandler handler = (SelectHandler) key.attachment();
         handler.onRead();
+    }
+
+    private static class Timer implements Comparable<Timer> {
+        public TimerHandler handler;
+        public long time;
+
+        public Timer(TimerHandler handler, long time) {
+            this.handler = handler;
+            this.time = System.currentTimeMillis() + time;
+        }
+
+        @Override
+        public int compareTo(Timer o) {
+            return Long.compare(time, o.time);
+        }
     }
 }
