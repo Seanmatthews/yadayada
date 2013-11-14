@@ -334,6 +334,9 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="XYq-9b-29s">
                                 <rect key="frame" x="10" y="49" width="300" height="475"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <connections>
+                                    <outlet property="delegate" destination="WWi-aR-deD" id="Djw-2R-Hfw"/>
+                                </connections>
                             </mapView>
                             <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DEt-LC-X0o">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -356,7 +359,7 @@
                         <color key="backgroundColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
-                        <outlet property="mapView" destination="XYq-9b-29s" id="pzg-34-m4M"/>
+                        <outlet property="mapView" destination="XYq-9b-29s" id="gro-3T-dX3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E6d-qd-fwg" userLabel="First Responder" sceneMemberID="firstResponder"/>

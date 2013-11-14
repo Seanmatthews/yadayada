@@ -25,6 +25,11 @@
     }
     self.window.rootViewController = uvc;
     [self.window makeKeyAndVisible];
+    
+    // start location service
+    location = [Location sharedInstance];
+    [location startService];
+    
     return YES;
 }
 							

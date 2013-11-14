@@ -26,6 +26,8 @@
         
         _currentLat = 0;
         _currentLong = 0;
+        _currentLocation = CLLocationCoordinate2DMake([Location fromLongLong:_currentLat], [Location fromLongLong:_currentLong]);
+        
         _sleepBetweenUpdateSec = 10;
     }
     return self;
@@ -49,21 +51,31 @@
     dispatch_source_set_timer(timerSource, dispatch_time(DISPATCH_TIME_NOW, 0), 10.0*NSEC_PER_SEC, 0*NSEC_PER_SEC);
     dispatch_source_set_event_handler(timerSource, ^{[self updateLocation];});
     dispatch_resume(timerSource);
+    
 }
 
-
+static BOOL firstTimeLocation = YES;
 - (void)updateLocation
 {
-    [locationManager startUpdatingLocation];
-    sleep(_sleepBetweenUpdateSec);
-    [locationManager stopUpdatingLocation];
-    //NSLog(@"location : %f : %f, %f", [bestEffortAtLocation.timestamp timeIntervalSince1970],
-    //      bestEffortAtLocation.coordinate.latitude, bestEffortAtLocation.coordinate.longitude);
+    if (firstTimeLocation) {
+        firstTimeLocation = NO;
+        [locationManager startUpdatingLocation];
+        sleep(2);
+        [locationManager stopUpdatingLocation];
+    }
+    else {
+        [locationManager startUpdatingLocation];
+        sleep(_sleepBetweenUpdateSec);
+        [locationManager stopUpdatingLocation];
+    }
+    NSLog(@"location : %f : %f, %f", [bestEffortAtLocation.timestamp timeIntervalSince1970],
+          bestEffortAtLocation.coordinate.latitude, bestEffortAtLocation.coordinate.longitude);
     
     _currentLat = (long long)(bestEffortAtLocation.coordinate.latitude + 400.) * 1000000.;
     _currentLong = (long long)(bestEffortAtLocation.coordinate.longitude + 400.) * 1000000.;
+    _currentLocation = CLLocationCoordinate2DMake([Location fromLongLong:_currentLat], [Location fromLongLong:_currentLong]);
     
-    NSLog(@"Updating location %lli, %lli",_currentLat,_currentLong);
+    NSLog(@"Updating location %f, %f",[Location fromLongLong:_currentLat],[Location fromLongLong:_currentLong]);
 }
 
 

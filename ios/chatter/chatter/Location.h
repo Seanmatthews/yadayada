@@ -20,6 +20,7 @@
 
 @property long long currentLat;
 @property long long currentLong;
+@property CLLocationCoordinate2D currentLocation;
 @property int sleepBetweenUpdateSec;
 
 - (id)init;

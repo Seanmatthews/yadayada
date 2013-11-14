@@ -7,8 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Location.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
+{
+    Location* location;
+}
 
 @property (strong, nonatomic) UIWindow *window;
 

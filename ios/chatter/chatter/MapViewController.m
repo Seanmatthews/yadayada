@@ -11,6 +11,7 @@
 #import "MenuViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
+
 @interface MapViewController ()
 
 @end
@@ -30,10 +31,25 @@
 {
     [super viewDidLoad];
     location = [Location sharedInstance];
+    chatrooms = [[NSMutableArray alloc] init];
     
     // Give the map view rounded corners
     _mapView.layer.cornerRadius = 5;
     _mapView.layer.masksToBounds = YES;
+    
+    // Get connection object and add this controller's callback
+    // method for incoming connections.
+    connection = [Connection sharedInstance];
+    MapViewController* __weak weakSelf = self;
+    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([location currentLocation], 5000., 5000);
+    [_mapView setRegion:region animated:YES];
+    [_mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+    [_mapView setCenterCoordinate:[location currentLocation] animated:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -70,6 +86,41 @@
 {
     MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
     vc.image =[self blurredSnapshot];
+}
+
+
+#pragma mark - Annotations
+
+- (void)addChatroomAnnotation:(ChatroomMessage*)message
+{
+    // Get local chatrooms from server
+
+    
+}
+
+
+#pragma mark - MKMapViewDelegate methods
+
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+{
+    [mapView removeAnnotations:mapView.annotations];
+    SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
+    [connection sendMessage:msg];
+}
+
+
+#pragma mark - Message I/O
+
+- (void)messageCallback:(MessageBase*)message
+{
+    switch (message.type) {
+        case Chatroom:
+            NSLog(@"Chatroom");
+            [self addChatroomAnnotation:(ChatroomMessage*)message];
+            break;
+    }
 }
 
 @end
