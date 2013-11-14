@@ -140,12 +140,17 @@ const int MESSAGE_NUM_THRESH = 50;
             NSLog(@"Message");
             [self receivedMessage:(MessageMessage*)message];
             [mTableView reloadData];
-            ipath = [NSIndexPath indexPathForRow:[chatQueue count]-1 inSection:0];
-            [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+            NSLog(@"num msgs: %d",[chatQueue count]);
+            //ipath = [NSIndexPath indexPathForRow:[chatQueue count]-1 inSection:0];
+            //[mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             break;
             
         case JoinedChatroom:
             NSLog(@"Joined Chatroom");
+            break;
+            
+        case JoinChatroomReject:
+            NSLog(@"Could not join chatroom");
             break;
             
         case LeftChatroom:
@@ -164,10 +169,10 @@ const int MESSAGE_NUM_THRESH = 50;
 
 #pragma mark - UITableViewDataSource methods
 
-//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-//{
-//    return 1;
-//}
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -180,14 +185,14 @@ const int MESSAGE_NUM_THRESH = 50;
 // It is not for filling in cell data.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
+    static NSString *CellIdentifier = @"ChatCell";
     const int WEBVIEW_TAG = 1;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     UIWebView* webview;
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.userInteractionEnabled = YES;
         
@@ -213,6 +218,13 @@ const int MESSAGE_NUM_THRESH = 50;
     else {
         webview = (UIWebView*)[cell.contentView viewWithTag:WEBVIEW_TAG];
     }
+    
+//    NSLog(@"called");
+//    UITableViewCell* cell = cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+//    cell.accessoryType = UITableViewCellAccessoryNone;
+//    cell.userInteractionEnabled = YES;
+//    cell.textLabel.text = @"msg";
+    
     
     MessageMessage* msg = [chatQueue objectAtIndex:indexPath.row];
     if (msg != nil) {

@@ -37,7 +37,7 @@
 }
 
 static BOOL once = YES;
-- (void)viewWillLayoutSubviews
+- (void)viewDidAppear:(BOOL)animated
 {
     if (once) {
         once = NO;

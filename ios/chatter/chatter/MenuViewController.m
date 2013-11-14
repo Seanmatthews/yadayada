@@ -118,10 +118,13 @@
 
 - (void)loginMessage
 {
-    LoginMessage* lm = [[LoginMessage alloc] init];
-    lm.userName = ud.UUID;
-    lm.password = @"pass";
-    [connection sendMessage:lm];
+//    LoginMessage* lm = [[LoginMessage alloc] init];
+//    lm.userName = ud.UUID;
+//    lm.password = @"";
+    QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
+    qlm.handle = ud.handle;
+    qlm.UUID = ud.UUID;
+    [connection sendMessage:qlm];
 }
 
 - (void)joinGlobalChatroom
@@ -152,6 +155,7 @@
         case ConnectAccept:
             NSLog(@"Connect Accept");
             ud.chatroomId = ((ConnectAcceptMessage*)message).globalChatId;
+            NSLog(@"global chatroom id: %llx",ud.chatroomId);
             [self loginMessage];
             break;
             
@@ -161,6 +165,7 @@
             
         case LoginAccept:
             NSLog(@"Login Accept");
+            ud.userId = ((RegisterAcceptMessage*)message).userId;
             [self joinGlobalChatroom];
             break;
             

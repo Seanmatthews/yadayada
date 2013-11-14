@@ -129,9 +129,9 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     [data appendBytes:&b length:1];
     
     for (NSString* key in props) {
-        NSLog(@"msgLen: %d",msgLen);
+//        NSLog(@"msgLen: %d",msgLen);
         NSString* typename = [props valueForKey:key];
-        NSLog(@"%@ : %@",key,typename);
+//        NSLog(@"%@ : %@",key,typename);
         //Class C = NSClassFromString([props valueForKey:key]);
         
         if ([typename isEqualToString:@"NSString"]) {
@@ -142,6 +142,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             msgLen += 2 + strLen;
         }
         else if ([typename isEqualToString:@"q"]) {
+            NSLog(@"long val: %lld",[[message valueForKey:key] longLongValue]);
             long long l = CFSwapInt64HostToBig([[message valueForKey:key] longLongValue]);
             [data appendBytes:&l length:8];
             msgLen += 8;

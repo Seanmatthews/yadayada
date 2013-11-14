@@ -84,7 +84,6 @@
 
 - (void)parseMessage:(BUFTYPE)buffer withLength:(int)length
 {
-    NSLog(@"parse");
     memcpy(internalBuffer+internalBufferLen, buffer, length);
     internalBufferLen += length;
     NSLog(@"%d bytes total",internalBufferLen);
@@ -130,7 +129,6 @@
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
-    NSLog(@"stream event %i",eventCode);
     
     switch (eventCode) {
         case NSStreamEventOpenCompleted:
