@@ -82,6 +82,7 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
                 // inefficient but easy to understand
                 mpsBuckets[(int) (i % mpsBuckets.length)] = 0;
             }
+            mpsBuckets[(int) (currentSecond % mpsBuckets.length)]++;
 
             double mps = calculateMessagesPerSecond();
 
@@ -104,6 +105,7 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
     }
 
     private void recluster() {
+        Arrays.fill(mpsBuckets, 0);
         userClusterMap.clear();
         clusters.clear();
 
