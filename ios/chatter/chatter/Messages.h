@@ -32,6 +32,7 @@ typedef enum {
     JoinedChatroom = 37,
     LeftChatroom = 38,
     CreateChatroomReject = 39,
+    Vote = 44,
 } MessageTypes;
 
 @interface MessageBase : NSObject
@@ -268,5 +269,17 @@ typedef enum {
 
 @property NSString* chatroomName;
 @property NSString* reason;
+
+@end
+
+@interface VoteMessage : MessageBase
+
+- (id)init;
+
+@property long long senderId;
+@property long long targetUserId;
+@property long long msgId;
+@property long long chatroomId;
+@property Byte upvote;
 
 @end

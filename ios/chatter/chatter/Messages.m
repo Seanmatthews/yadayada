@@ -272,3 +272,14 @@
 }
 
 @end
+
+@implementation VoteMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 44;
+    return self;
+}
+
+@end

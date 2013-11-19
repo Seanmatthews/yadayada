@@ -46,6 +46,7 @@
 - (void)registerForKeyboardNotifications;
 - (void)keyboardWasShown:(NSNotification*)aNotification;
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
+- (void)swipeCell:(UITableViewRowAnimation)animation;
 - (void)swipedCellLeft:(id)sender;
 - (void)swipedCellRight:(id)sender;
 - (void)tappedCell:(id)sender;

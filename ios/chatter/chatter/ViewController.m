@@ -94,7 +94,6 @@ const int MESSAGE_NUM_THRESH = 50;
 - (void)tappedCell:(id)sender
 {
     NSLog(@"double tapped cell: %d",swipedCellIndex);
-//    [mTableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:swipedCellIndex inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
     // Make cell flash
     UITableViewCell* cell = [mTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:swipedCellIndex inSection:0]];
     UIView* wv = (UIView*)[cell.contentView viewWithTag:3];
@@ -108,7 +107,6 @@ const int MESSAGE_NUM_THRESH = 50;
     {
         [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
          {
-             NSLog(@"here");
              [cell setHighlighted:NO animated:NO];
              [wv setBackgroundColor:[UIColor clearColor]];
          } completion: NULL];
@@ -117,34 +115,29 @@ const int MESSAGE_NUM_THRESH = 50;
     // Send upvote
 }
 
-- (void)swipedCellRight:(id)sender
+- (void)swipeCell:(UITableViewRowAnimation)animation
 {
     NSLog(@"swiped cell: %d",swipedCellIndex);
     NSIndexPath* cellPath = [NSIndexPath indexPathForRow:swipedCellIndex inSection:0];
     NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
-
+    
     // Remove cell
     [mTableView beginUpdates];
-    [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:UITableViewRowAnimationRight];
+    [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:animation];
     [chatQueue removeObjectAtIndex:cellPath.row];
     [mTableView endUpdates];
     
     // Send downvote
 }
 
+- (void)swipedCellRight:(id)sender
+{
+    [self swipeCell:UITableViewRowAnimationRight];
+}
+
 - (void)swipedCellLeft:(id)sender
 {
-    NSLog(@"swiped cell: %d",swipedCellIndex);
-    NSIndexPath* cellPath = [NSIndexPath indexPathForRow:swipedCellIndex inSection:0];
-    NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
-    
-    // Remove cell
-    [mTableView beginUpdates];
-    [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:UITableViewRowAnimationLeft];
-    [chatQueue removeObjectAtIndex:cellPath.row];
-    [mTableView endUpdates];
-    
-    // Send downvote
+    [self swipeCell:UITableViewRowAnimationLeft];
 }
 
 - (void)receivedMessage:(MessageMessage*) message

@@ -27,6 +27,7 @@ public enum MessageTypes {
     JoinedChatroom((byte)37),
     LeftChatroom((byte)38),
     CreateChatroomReject((byte)39),
+    Vote((byte)44),
     ;
 
     private final byte value;
