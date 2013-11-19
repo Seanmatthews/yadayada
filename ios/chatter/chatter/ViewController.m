@@ -117,7 +117,7 @@ const int MESSAGE_NUM_THRESH = 50;
     // Send upvote
 }
 
-- (void)swipedCell:(id)sender
+- (void)swipedCellRight:(id)sender
 {
     NSLog(@"swiped cell: %d",swipedCellIndex);
     NSIndexPath* cellPath = [NSIndexPath indexPathForRow:swipedCellIndex inSection:0];
@@ -126,6 +126,21 @@ const int MESSAGE_NUM_THRESH = 50;
     // Remove cell
     [mTableView beginUpdates];
     [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:UITableViewRowAnimationRight];
+    [chatQueue removeObjectAtIndex:cellPath.row];
+    [mTableView endUpdates];
+    
+    // Send downvote
+}
+
+- (void)swipedCellLeft:(id)sender
+{
+    NSLog(@"swiped cell: %d",swipedCellIndex);
+    NSIndexPath* cellPath = [NSIndexPath indexPathForRow:swipedCellIndex inSection:0];
+    NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
+    
+    // Remove cell
+    [mTableView beginUpdates];
+    [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:UITableViewRowAnimationLeft];
     [chatQueue removeObjectAtIndex:cellPath.row];
     [mTableView endUpdates];
     
@@ -303,9 +318,12 @@ const int MESSAGE_NUM_THRESH = 50;
         UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
         tapped.numberOfTapsRequired = 2;
         [cell addGestureRecognizer:tapped];
-        UISwipeGestureRecognizer* swiped = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCell:)];
-        swiped.direction = UISwipeGestureRecognizerDirectionLeft | UISwipeGestureRecognizerDirectionRight;
-        [cell addGestureRecognizer:swiped];
+        UISwipeGestureRecognizer* swipedLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellLeft:)];
+        swipedLeft.direction = UISwipeGestureRecognizerDirectionLeft;
+        [cell addGestureRecognizer:swipedLeft];
+        UISwipeGestureRecognizer* swipedRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellRight:)];
+        swipedRight.direction = UISwipeGestureRecognizerDirectionRight;
+        [cell addGestureRecognizer:swipedRight];
     }
     else {
         webview = (UIWebView*)[cell.contentView viewWithTag:WEBVIEW_TAG];

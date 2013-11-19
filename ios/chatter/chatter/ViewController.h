@@ -46,11 +46,12 @@
 - (void)registerForKeyboardNotifications;
 - (void)keyboardWasShown:(NSNotification*)aNotification;
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
+- (void)swipedCellLeft:(id)sender;
+- (void)swipedCellRight:(id)sender;
 - (void)tappedCell:(id)sender;
-- (void)swipedCell:(id)sender;
 - (void)receivedMessage:(MessageMessage*) message;
 - (UIImage*)blurredSnapshot;
-- (void)tapTimerFired:(NSTimer *)aTimer;
+
 
 
 
