@@ -124,7 +124,7 @@ public class EventServiceImpl implements EventService {
         long timeout = 0;
 
         if (!timers.isEmpty()) {
-            timeout = triggerTimers(System.currentTimeMillis());
+            timeout = triggerTimers(System.nanoTime());
         }
 
         int select = 0;
@@ -145,12 +145,6 @@ public class EventServiceImpl implements EventService {
                 }
 
                 iterator.remove();
-            }
-        }
-        else {
-            // triggered from a timeout
-            if (!timers.isEmpty()) {
-                triggerTimers(System.currentTimeMillis());
             }
         }
 
@@ -235,7 +229,7 @@ public class EventServiceImpl implements EventService {
 
         public Timer(TimerHandler handler, long time) {
             this.handler = handler;
-            this.time = System.currentTimeMillis() + time;
+            this.time = System.nanoTime() + time;
         }
 
         @Override

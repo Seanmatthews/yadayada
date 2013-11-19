@@ -1,12 +1,9 @@
 package com.chat;
 
-import java.util.Collections;
+import com.chat.server.cluster.ChatroomCluster;
+import com.chat.server.cluster.MPSClusteringStrategy;
+
 import java.util.Iterator;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,10 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * To change this template use File | Settings | File Templates.
  */
 public class Chatroom {
-    //private static final int MESSAGES_TO_STORE = 20;
-    //private final Queue<ChatMessage> recentMessages = new ConcurrentLinkedQueue<>();
-    //private final AtomicInteger messageCount = new AtomicInteger(0);
-
     private final long id;
     private final String name;
     private final User owner;
@@ -29,6 +22,7 @@ public class Chatroom {
 
     // back-reference for easy access
     private final ChatroomRepository repo;
+    private final MPSClusteringStrategy clusterStrategy;
 
     public Chatroom(long id, String name, User owner, ChatroomRepository inMemoryChatroomRepository, long latitude, long longitude, long radius) {
         this.id = id;
@@ -38,6 +32,7 @@ public class Chatroom {
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
+        this.clusterStrategy = new MPSClusteringStrategy(this, 0.33, 2.0);
     }
 
     public long getId() {
@@ -74,20 +69,9 @@ public class Chatroom {
         return name;
     }
 
-    /*public void addMessage(ChatMessage message) {
-        int count = messageCount.incrementAndGet();
-
-        // don't want to get recentMessages.size() because it iterates through the entire list
-        if (count > MESSAGES_TO_STORE) {
-            recentMessages.remove();
-        }
-
-        recentMessages.add(message);
+    public ChatroomCluster addMessage(ChatMessage message) {
+        return clusterStrategy.addMessage(message);
     }
-
-    public Iterator<ChatMessage> getRecentMessages() {
-        return recentMessages.iterator();
-    }   */
 
     public Iterator<User> getUsers() {
         return repo.getUsers(this);
@@ -95,10 +79,12 @@ public class Chatroom {
 
     public void addUser(User user) {
         repo.addUser(this, user);
+        clusterStrategy.addUser(user);
     }
 
     public void removeUser(User user) {
         repo.removeUser(this, user);
+        clusterStrategy.removeUser(user);
     }
 
     public boolean containsUser(User user) {

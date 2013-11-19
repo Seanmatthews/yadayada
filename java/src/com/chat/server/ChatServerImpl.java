@@ -3,6 +3,7 @@ package com.chat.server;
 import com.chat.*;
 import com.chat.msgs.v1.*;
 import com.chat.select.EventService;
+import com.chat.server.cluster.ChatroomCluster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,11 +91,11 @@ public class ChatServerImpl implements ChatServer {
         }
 
         ChatMessage msg = messageRepo.create(chatroom, sender, message);
-        //chatroom.addMessage(msg);
+        ChatroomCluster cluster = chatroom.addMessage(msg);
 
         MessageMessage msgToSend = new MessageMessage(msg.getId(), msg.getTimestamp(), msg.getSender().getId(), msg.getChatroom().getId(), msg.getSender().getHandle(), msg.getMessage());
 
-        Iterator<User> chatUsers = chatroom.getUsers();
+        Iterator<User> chatUsers = cluster.getUsers();
         while (chatUsers.hasNext()) {
             User user = chatUsers.next();
 
@@ -114,7 +115,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     private void sendChatroom(ClientConnection senderConnection, Chatroom chatroom) {
-        senderConnection.sendMessage(new ChatroomMessage(chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(), chatroom.getLatitude(), chatroom.getLongitude(), chatroom.getRadius(), chatroom.getUserCount()));
+        senderConnection.sendMessage(new ChatroomMessage(chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(), chatroom.getLatitude(), chatroom.getLongitude(), chatroom.getRadius(), chatroom.getUserCount(), (short)0));
     }
 
     @Override
