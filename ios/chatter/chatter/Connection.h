@@ -27,6 +27,6 @@
 - (void)sendMessage:(MessageBase*)message;
 - (void)parseMessage:(BUFTYPE)buffer withLength:(int)length;
 - (void)addCallbackBlock:(void (^)(MessageBase*))block fromSender:(id)sender;
-- (void)removeCallbackBlockFromSender:(id)sender;
+- (void)removeCallbackBlockFromSender:(NSString*)sender;
 
 @end

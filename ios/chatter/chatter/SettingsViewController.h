@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Connection.h"
 
 @interface SettingsViewController : UIViewController
 {
-    
+    Connection* connection;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;

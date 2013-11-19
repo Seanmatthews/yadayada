@@ -61,6 +61,13 @@
     [connection sendMessage:msg];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    if ([self isBeingDismissed]) {
+        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
+    }
+}
+
 static BOOL onceToChatView = YES;
 - (void)viewDidAppear:(BOOL)animated
 {

@@ -54,6 +54,13 @@
     [_mapView setCenterCoordinate:[location currentLocation] animated:YES];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    if ([self isBeingDismissed]) {
+        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
+    }
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

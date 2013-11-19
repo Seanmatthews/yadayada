@@ -39,13 +39,15 @@ const int MESSAGE_NUM_THRESH = 50;
     [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
     
     // CSS for table cells
-    pageCSS = @"body { margin:0; padding:1}";
+    pageCSS = @"body { margin:0; padding:1; }";
     cellMsgCSS = @"div.msg { font:12px/13px baskerville,serif; color:#004C3D; text-align:left; vertical-align:text-top; margin:0; padding:0 }";
     handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#D0D0D0 }";
 }
 
+// This is called whenever the view is loaded through storyboard segues
 - (id)initWithCoder:(NSCoder*)coder
 {
+    NSLog(@"initwithcoder vc");
     if (self = [super initWithCoder:coder]) {
         [self initCode];
     }
@@ -61,6 +63,8 @@ const int MESSAGE_NUM_THRESH = 50;
     mTableView.layer.masksToBounds = YES;
     mTableView.backgroundView = nil;
     mTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+//    [mTableView setEditing:YES animated:YES];
+
     
     // Make the return key say 'Send'
     userInputTextField.returnKeyType = UIReturnKeySend;
@@ -69,6 +73,14 @@ const int MESSAGE_NUM_THRESH = 50;
 - (void)viewWillAppear:(BOOL)animated
 {
     navBar.topItem.title = _chatTitle;
+}
+
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    if ([self isBeingDismissed]) {
+        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -81,12 +93,43 @@ const int MESSAGE_NUM_THRESH = 50;
 
 - (void)tappedCell:(id)sender
 {
-    NSLog(@"double tapped cell");
+    NSLog(@"double tapped cell: %d",swipedCellIndex);
+//    [mTableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:swipedCellIndex inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+    // Make cell flash
+    UITableViewCell* cell = [mTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:swipedCellIndex inSection:0]];
+    UIView* wv = (UIView*)[cell.contentView viewWithTag:3];
+
+    
+    [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
+    {
+        [cell setHighlighted:YES animated:YES];
+        [wv setBackgroundColor:[UIColor blueColor]];
+    } completion:^(BOOL finished)
+    {
+        [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
+         {
+             NSLog(@"here");
+             [cell setHighlighted:NO animated:NO];
+             [wv setBackgroundColor:[UIColor clearColor]];
+         } completion: NULL];
+    }];
+
+    // Send upvote
 }
 
 - (void)swipedCell:(id)sender
 {
-    NSLog(@"swiped cell");
+    NSLog(@"swiped cell: %d",swipedCellIndex);
+    NSIndexPath* cellPath = [NSIndexPath indexPathForRow:swipedCellIndex inSection:0];
+    NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
+
+    // Remove cell
+    [mTableView beginUpdates];
+    [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:UITableViewRowAnimationRight];
+    [chatQueue removeObjectAtIndex:cellPath.row];
+    [mTableView endUpdates];
+    
+    // Send downvote
 }
 
 - (void)receivedMessage:(MessageMessage*) message
@@ -97,6 +140,7 @@ const int MESSAGE_NUM_THRESH = 50;
         [chatQueue removeObjectAtIndex:0];
     }
 }
+
 
 #pragma mark - Keyboard Interaction
 
@@ -181,10 +225,15 @@ const int MESSAGE_NUM_THRESH = 50;
 
 #pragma mark - UITableViewDelegate methods
 
-//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    return 0.0;
-//}
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    swipedCellIndex = indexPath.row;
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewCellEditingStyleNone;
+}
 
 
 #pragma mark - UITableViewDataSource methods
@@ -208,34 +257,26 @@ const int MESSAGE_NUM_THRESH = 50;
     static NSString *CellIdentifier = @"ChatCell";
     const int WEBVIEW_TAG = 1;
     const int ICONVIEW_TAG = 2;
+    const int HIDDEN_VIEW = 3;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     UIWebView* webview;
     UIImageView* iconView;
+    UIView* hiddenView;
     
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.userInteractionEnabled = YES;
-        //CGRect cellFrame = CGRectMake(5, 5, cell.frame.size.width-10, cell.frame.size.height-10);
-        //cell.frame = cellFrame;
-        //cell.frame = CGRectOffset(cellFrame, 5, 5);
-//        [cell.contentView.layer setBorderColor:[UIColor redColor].CGColor];
-//        [cell.contentView.layer setBorderWidth:1.0f];
-        
-        // Add voting gestures to the cell
-        UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
-        tapped.numberOfTapsRequired = 2;
-        [cell addGestureRecognizer:tapped];
-        UISwipeGestureRecognizer* swiped = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCell:)];
-        swiped.direction = UISwipeGestureRecognizerDirectionLeft | UISwipeGestureRecognizerDirectionRight;
-        [cell addGestureRecognizer:swiped];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         // Add the icon view
         CGRect iviewFrame = CGRectMake(0, 0, 44, 44);
         iconView = [[UIImageView alloc] init];
         iconView.frame = iviewFrame;
         iconView.tag = ICONVIEW_TAG;
+        iconView.opaque = NO;
+        iconView.userInteractionEnabled = NO;
         [cell.contentView addSubview:iconView];
         
         // Add the webview
@@ -244,13 +285,32 @@ const int MESSAGE_NUM_THRESH = 50;
         CGRect wviewFrame = CGRectMake(44, 0, cell.contentView.bounds.size.width-44, cell.contentView.bounds.size.height);
         webview.frame = wviewFrame;
         webview.scrollView.scrollEnabled = NO;
-//        [webview.layer setBorderColor:[UIColor blueColor].CGColor];
-//        [webview.layer setBorderWidth:1.0f];
+        webview.userInteractionEnabled = NO;
+        webview.opaque = YES;
         [cell.contentView addSubview:webview];
+        
+        // Add the hidden view
+        hiddenView = [[UIView alloc] init];
+        hiddenView.tag = HIDDEN_VIEW;
+        hiddenView.opaque = NO;
+        hiddenView.backgroundColor = [UIColor clearColor];
+        hiddenView.alpha = 0.25;
+        hiddenView.frame = cell.contentView.bounds;
+        hiddenView.userInteractionEnabled = NO;
+        [cell.contentView addSubview:hiddenView];
+        
+        // Add voting gestures to the cell
+        UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
+        tapped.numberOfTapsRequired = 2;
+        [cell addGestureRecognizer:tapped];
+        UISwipeGestureRecognizer* swiped = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCell:)];
+        swiped.direction = UISwipeGestureRecognizerDirectionLeft | UISwipeGestureRecognizerDirectionRight;
+        [cell addGestureRecognizer:swiped];
     }
     else {
         webview = (UIWebView*)[cell.contentView viewWithTag:WEBVIEW_TAG];
         iconView = (UIImageView*)[cell.contentView viewWithTag:ICONVIEW_TAG];
+        hiddenView = (UIView*)[cell.contentView viewWithTag:HIDDEN_VIEW];
     }
     
     MessageMessage* msg = [chatQueue objectAtIndex:indexPath.row];

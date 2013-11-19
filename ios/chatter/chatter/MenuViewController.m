@@ -70,6 +70,13 @@
     _bgImageView.image = _image;
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    if ([self isBeingDismissed]) {
+        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
+    }
+}
+
 
 #pragma mark - Segues
 

@@ -19,7 +19,7 @@
 
 - (void)initCode
 {
-    
+    connection = [Connection sharedInstance];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -37,6 +37,13 @@
     // Give the map view rounded corners
     _tableView.layer.cornerRadius = 5;
     _tableView.layer.masksToBounds = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    if ([self isBeingDismissed]) {
+        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
+    }
 }
 
 - (void)didReceiveMemoryWarning

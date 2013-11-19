@@ -24,6 +24,8 @@
     NSString* handleCSS;
     NSString* pageCSS;
     
+    int swipedCellIndex;
+    
     // TODO: this will be an array of arrays of dicts for multiple chat rooms
     NSMutableArray* chatQueue;
 }
@@ -48,6 +50,7 @@
 - (void)swipedCell:(id)sender;
 - (void)receivedMessage:(MessageMessage*) message;
 - (UIImage*)blurredSnapshot;
+- (void)tapTimerFired:(NSTimer *)aTimer;
 
 
 
