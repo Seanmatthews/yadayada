@@ -25,25 +25,19 @@ public class ServerClientConnection implements ClientConnection, TCPCrackerClien
     private final TCPCrackerClient socket;
     private final ChatServer server;
     private User user;
-    private boolean connected;
 
     public ServerClientConnection(ChatServer server, TCPCrackerClient socket, MessageDispatcher dispatcher)  {
         this.server = server;
         this.socket = socket;
         this.dispatcher = dispatcher;
-        this.connected = true;
     }
 
     public void close() {
-        connected = false;
         socket.close();
     }
 
     @Override
     public void sendMessage(final Message message) {
-        if (!connected)
-            return;
-
         ReadWriteBuffer output = socket.getWriteBuffer();
 
         // write to buffer
@@ -73,7 +67,6 @@ public class ServerClientConnection implements ClientConnection, TCPCrackerClien
 
     @Override
     public void onDisconnect(TCPCrackerClient client) {
-        connected = false;
         server.disconnect(this);
     }
 

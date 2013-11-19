@@ -15,6 +15,7 @@ import java.nio.channels.SocketChannel;
 public interface EventService {
     void run();
     void runOnce();
+    void scheduleTimer(long nanos, TimerHandler handler);
 
     void addThreadedEvent(Runnable runnable);
 

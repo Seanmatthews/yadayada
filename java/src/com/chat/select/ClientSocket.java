@@ -25,4 +25,6 @@ public interface ClientSocket {
 
     void connect(String host, int port) throws IOException;
     void close();
+
+    boolean isConnected();
 }
