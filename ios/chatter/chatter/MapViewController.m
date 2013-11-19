@@ -18,11 +18,21 @@
 
 @implementation MapViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (void)initCode
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
+    location = [Location sharedInstance];
+    
+    // Get connection object and add this controller's callback
+    // method for incoming connections.
+    connection = [Connection sharedInstance];
+    MapViewController* __weak weakSelf = self;
+    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
+}
+
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if (self = [super initWithCoder:coder]) {
+        [self initCode];
     }
     return self;
 }
@@ -30,18 +40,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    location = [Location sharedInstance];
-    chatrooms = [[NSMutableArray alloc] init];
     
     // Give the map view rounded corners
     _mapView.layer.cornerRadius = 5;
     _mapView.layer.masksToBounds = YES;
-    
-    // Get connection object and add this controller's callback
-    // method for incoming connections.
-    connection = [Connection sharedInstance];
-    MapViewController* __weak weakSelf = self;
-    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
 }
 
 - (void)viewWillAppear:(BOOL)animated

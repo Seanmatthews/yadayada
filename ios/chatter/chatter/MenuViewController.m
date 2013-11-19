@@ -8,6 +8,7 @@
 
 #import "MenuViewController.h"
 #import "ViewController.h"
+#import "MenuTableViewController.h"
 
 @interface MenuViewController ()
 
@@ -17,19 +18,8 @@
 
 @synthesize userHandle;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (void)initCode
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
     ud = [UserDetails sharedInstance];
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
         ud.handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"userHandle"];
@@ -54,11 +44,19 @@
     // We need this because the run loops of connection don't work until
     // the view is completely loaded.
     [self performSelector:@selector(connectMessage) withObject:nil afterDelay:1.0];
-    
-    // Skip this menu view on first load
-    //[self performSegueWithIdentifier:@"chatSegue" sender:<#(id)#>]
-    
-    
+}
+
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if (self = [super initWithCoder:coder]) {
+        [self initCode];
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
 }
 
 - (void)didReceiveMemoryWarning
@@ -72,18 +70,17 @@
     _bgImageView.image = _image;
 }
 
-//- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-//{
-//    NSString * segueName = segue.identifier;
-//    if ([segueName isEqualToString: @"menuContainerSegue"]) {
-//        UITableViewController* menu = (UITableViewController*)[segue destinationViewController];
-//        [menu performSegueWithIdentifier:@"chatSegue" sender:self];
-//    }
-//}
+
+#pragma mark - Segues
 
 - (IBAction)unwindToMenu:(UIStoryboardSegue*)unwindSegue
 {
     
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    containerView = (MenuTableViewController*)segue.destinationViewController;
 }
 
 
@@ -100,26 +97,9 @@
     [connection sendMessage:cm];
 }
 
-//- (void)registerMessage
-//{
-//    if (!ud.registeredHandle) {
-//        RegisterMessage* rm = [[RegisterMessage alloc] init];
-//        rm.handle = @"sean";
-//        rm.userName = ud.UUID;
-//        rm.password = @"pass";
-//        [connection sendMessage:rm];
-//        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"registeredhandle"];
-//    }
-//    else {
-//        [self loginMessage];
-//    }
-//}
 
 - (void)loginMessage
 {
-//    LoginMessage* lm = [[LoginMessage alloc] init];
-//    lm.userName = ud.UUID;
-//    lm.password = @"";
     NSLog(@"Logging in with handle: %@",ud.handle);
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
     qlm.handle = ud.handle;
@@ -127,16 +107,17 @@
     [connection sendMessage:qlm];
 }
 
-- (void)joinGlobalChatroom
-{
-    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
-    jcm.userId = ud.userId;
-    jcm.chatroomId = ud.chatroomId;
-    jcm.latitude = 0;
-    jcm.longitude = 0;
-    [connection sendMessage:jcm];
-}
+//- (void)joinGlobalChatroom
+//{
+//    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
+//    jcm.userId = ud.userId;
+//    jcm.chatroomId = ud.chatroomId;
+//    jcm.latitude = 0;
+//    jcm.longitude = 0;
+//    [connection sendMessage:jcm];
+//}
 
+static BOOL onceToChatListView = YES;
 - (void)messageCallback:(MessageBase*)message
 {
     switch (message.type) {
@@ -166,7 +147,10 @@
         case LoginAccept:
             NSLog(@"Login Accept");
             ud.userId = ((RegisterAcceptMessage*)message).userId;
-            [self joinGlobalChatroom];
+            if (onceToChatListView) {
+                onceToChatListView = NO;
+                [containerView performSegueWithIdentifier:@"chatListSegue" sender:containerView];
+            }
             break;
             
         case LoginReject:

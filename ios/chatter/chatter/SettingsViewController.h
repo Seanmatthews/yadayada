@@ -15,4 +15,6 @@
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;
 
+- (void)initCode;
+
 @end

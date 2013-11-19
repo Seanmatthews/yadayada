@@ -36,13 +36,10 @@
     
 }
 
-static BOOL once = YES;
+
 - (void)viewDidAppear:(BOOL)animated
 {
-    if (once) {
-        once = NO;
-        [self performSegueWithIdentifier:@"chatSegue" sender:self];
-    }
+
 }
 
 - (void)didReceiveMemoryWarning

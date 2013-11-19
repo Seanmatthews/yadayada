@@ -16,6 +16,7 @@
     UserDetails* ud;
     Connection* connection;
     BOOL alreadyRegistered;
+    UITableViewController* containerView;
 }
 
 @property (nonatomic, strong) NSString* userHandle;
@@ -23,10 +24,11 @@
 @property (nonatomic,retain) IBOutlet UIImageView* bgImageView;
 @property (nonatomic, retain) IBOutlet UITableView* menuTableView;
 
+- (void)initCode;
 - (void)connectMessage;
 //- (void)registerMessage;
 - (void)loginMessage;
-- (void)joinGlobalChatroom;
+//- (void)joinGlobalChatroom;
 - (void)messageCallback:(MessageBase*)message;
 - (IBAction)unwindToMenu:(UIStoryboardSegue*)unwindSegue;
 

@@ -15,6 +15,7 @@
 @property (nonatomic, retain) IBOutlet UILabel* numberOfUsers;
 @property (nonatomic, retain) IBOutlet UILabel* percentActive;
 @property (nonatomic, retain) IBOutlet UIImageView* chatroomImage;
+@property (nonatomic) long long chatroomId;
 
 
 @end

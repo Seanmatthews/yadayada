@@ -32,8 +32,14 @@
 @property (nonatomic, retain) IBOutlet UITextField* userInputTextField;
 @property (nonatomic, retain) IBOutlet UIScrollView* scrollView;
 @property (nonatomic, retain) IBOutlet UITableView* mTableView;
+@property (nonatomic, retain) IBOutlet UINavigationBar* navBar;
+
+// Passed from chat list view
+@property (nonatomic, strong) NSString* chatTitle;
+@property (nonatomic) long long chatId;
 
 
+- (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
 - (void)registerForKeyboardNotifications;
 - (void)keyboardWasShown:(NSNotification*)aNotification;

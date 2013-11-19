@@ -10,17 +10,25 @@
 #import "Location.h"
 #import "Messages.h"
 #import "Connection.h"
+#import "UserDetails.h"
+
 
 @interface ChatListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 {
     Location* location;
     Connection* connection;
+    UserDetails* ud;
     NSMutableArray* localChatroomList;
     NSMutableArray* globalChatroomList;
+    ChatroomMessage *tappedCellInfo;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;
 
+// Navigation property
+@property (nonatomic) BOOL jumpToGlobalChat;
+
+- (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
 
 @end

@@ -10,6 +10,7 @@
 #import "UIImage+ImageEffects.h"
 #import "MenuViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "ViewController.h"
 #import "ChatroomListCell.h"
 
 @interface ChatListViewController ()
@@ -18,23 +19,10 @@
 
 @implementation ChatListViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (void)initCode
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	location = [Location sharedInstance];
-    
-    // Give the map view rounded corners
-    _tableView.layer.cornerRadius = 5;
-    _tableView.layer.masksToBounds = YES;
+    location = [Location sharedInstance];
+    ud = [UserDetails sharedInstance];
     
     localChatroomList = [[NSMutableArray alloc] init];
     globalChatroomList = [[NSMutableArray alloc] init];
@@ -46,6 +34,23 @@
     [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
 }
 
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if (self = [super initWithCoder:coder]) {
+        [self initCode];
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	
+    // Give the map view rounded corners
+    _tableView.layer.cornerRadius = 5;
+    _tableView.layer.masksToBounds = YES;
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     // Send a chatroom search message.
@@ -54,6 +59,20 @@
     msg.latitude = [location currentLat];
     msg.longitude = [location currentLong];
     [connection sendMessage:msg];
+}
+
+static BOOL onceToChatView = YES;
+- (void)viewDidAppear:(BOOL)animated
+{
+//    if (onceToChatView) {
+//        onceToChatView = NO;
+//        JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
+//        msg.userId = ud.userId;
+//        msg.chatroomId = ud.chatroomId;
+//        msg.latitude = 0;
+//        msg.longitude = 0;
+//        [connection sendMessage:msg];
+//    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -84,10 +103,17 @@
     switch (message.type) {
         case Chatroom:
             [self addChatroom:(ChatroomMessage*)message];
+            [_tableView reloadData];
             break;
             
         case JoinedChatroom:
             NSLog(@"Joined Chatroom");
+            [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:nil];
+            break;
+            
+        case JoinChatroomReject:
+            NSLog(@"Could not join chatroom");
+            // TODO: pop-up an alert with the reason
             break;
             
         case LeftChatroom:
@@ -97,7 +123,7 @@
 }
 
 
-#pragma mark - Blurred Snapshot
+#pragma mark - Blurred Snapshot & Segue
 
 - (UIImage*)blurredSnapshot
 {
@@ -123,9 +149,9 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"pickedChatroomSegue"]) {
-        // TODO:
-        // Pass chat title
-        // etc
+        ViewController* vc = (ViewController*)segue.destinationViewController;
+        vc.chatId = tappedCellInfo.chatroomId;
+        vc.chatTitle = tappedCellInfo.chatroomName;
     }
     else {
         MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
@@ -211,5 +237,24 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 55.0;
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0) {
+        tappedCellInfo = (ChatroomMessage*)[localChatroomList objectAtIndex:indexPath.row];
+    }
+    else if (indexPath.section == 1) {
+        tappedCellInfo = (ChatroomMessage*)[globalChatroomList objectAtIndex:indexPath.row];
+    }
+
+    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
+    msg.chatroomId = tappedCellInfo.chatroomId;
+    msg.userId = ud.userId;
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
+    [connection sendMessage:msg];
+}
+
+
 
 @end

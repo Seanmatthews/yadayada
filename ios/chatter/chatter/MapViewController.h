@@ -20,6 +20,7 @@
 
 @property (nonatomic,retain) IBOutlet MKMapView* mapView;
 
+- (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
 - (void)addChatroomAnnotation:(ChatroomMessage*)message;
 

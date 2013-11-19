@@ -17,11 +17,15 @@
 
 @implementation SettingsViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (void)initCode
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
+    
+}
+
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if (self = [super initWithCoder:coder]) {
+        [self initCode];
     }
     return self;
 }

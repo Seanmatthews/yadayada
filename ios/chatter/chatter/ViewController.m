@@ -24,22 +24,12 @@ const int MESSAGE_NUM_THRESH = 50;
 @synthesize userInputTextField;
 @synthesize scrollView;
 @synthesize mTableView;
+@synthesize navBar;
 
-
-- (void)viewDidLoad
+- (void)initCode
 {
-    [super viewDidLoad];
-    
     ud = [UserDetails sharedInstance];
     chatQueue = [[NSMutableArray alloc] init];
-    
-    // Give the table view rounded corners
-    mTableView.layer.cornerRadius = 5;
-    mTableView.layer.masksToBounds = YES;
-    mTableView.backgroundView = nil;
-    mTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    
-    userInputTextField.returnKeyType = UIReturnKeySend;
     [self registerForKeyboardNotifications];
     
     // Get connection object and add this controller's callback
@@ -52,7 +42,33 @@ const int MESSAGE_NUM_THRESH = 50;
     pageCSS = @"body { margin:0; padding:1}";
     cellMsgCSS = @"div.msg { font:12px/13px baskerville,serif; color:#004C3D; text-align:left; vertical-align:text-top; margin:0; padding:0 }";
     handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#D0D0D0 }";
+}
+
+- (id)initWithCoder:(NSCoder*)coder
+{
+    if (self = [super initWithCoder:coder]) {
+        [self initCode];
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
     
+    // Give the table view rounded corners
+    mTableView.layer.cornerRadius = 5;
+    mTableView.layer.masksToBounds = YES;
+    mTableView.backgroundView = nil;
+    mTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
+    // Make the return key say 'Send'
+    userInputTextField.returnKeyType = UIReturnKeySend;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    navBar.topItem.title = _chatTitle;
 }
 
 - (void)didReceiveMemoryWarning
@@ -157,10 +173,6 @@ const int MESSAGE_NUM_THRESH = 50;
             NSLog(@"Joined Chatroom");
             break;
             
-        case JoinChatroomReject:
-            NSLog(@"Could not join chatroom");
-            break;
-            
         case LeftChatroom:
             NSLog(@"Left Chatroom");
             break;
@@ -254,59 +266,8 @@ const int MESSAGE_NUM_THRESH = 50;
     return cell;
 }
 
-/*
- // Override to support conditional editing of the table view.
- - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
- {
- // Return NO if you do not want the specified item to be editable.
- return YES;
- }
- */
 
-/*
- // Override to support editing the table view.
- - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
- {
- if (editingStyle == UITableViewCellEditingStyleDelete) {
- // Delete the row from the data source
- [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
- }
- else if (editingStyle == UITableViewCellEditingStyleInsert) {
- // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
- }
- }
- */
-
-/*
- // Override to support rearranging the table view.
- - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
- {
- }
- */
-
-/*
- // Override to support conditional rearranging of the table view.
- - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
- {
- // Return NO if you do not want the item to be re-orderable.
- return YES;
- }
- */
-
-/*
- #pragma mark - Navigation
- 
- // In a story board-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
- {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- 
- */
-
-
-#pragma mark - Blurred Snapshot
+#pragma mark - Blurred Snapshot & Segue
 
 - (UIImage*)blurredSnapshot
 {
@@ -337,6 +298,11 @@ const int MESSAGE_NUM_THRESH = 50;
 {
     MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
     vc.image =[self blurredSnapshot];
+    
+    LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
+    msg.chatroomId = ud.chatroomId;
+    msg.userId = ud.userId;
+    [connection sendMessage:msg];
 }
 
 @end
