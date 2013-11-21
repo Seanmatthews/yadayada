@@ -49,16 +49,17 @@
     // Give the map view rounded corners
     _tableView.layer.cornerRadius = 5;
     _tableView.layer.masksToBounds = YES;
+    
+    // Setup the refresh control
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(refreshTable:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:refreshControl];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     // Send a chatroom search message.
-    // Redraw the table as the chatrooms come in.
-    SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
-    msg.latitude = [location currentLat];
-    msg.longitude = [location currentLong];
-    [connection sendMessage:msg];
+    [self searchChatrooms];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -99,6 +100,14 @@ static BOOL onceToChatView = YES;
     }
     
     [_tableView reloadData];
+}
+
+- (void)searchChatrooms
+{
+    SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
+    [connection sendMessage:msg];
 }
 
 
@@ -262,6 +271,16 @@ static BOOL onceToChatView = YES;
     [connection sendMessage:msg];
 }
 
+
+#pragma mark - Refresh Control
+
+- (void)refreshTable:(UIRefreshControl*)refreshControl
+{
+    [localChatroomList removeAllObjects];
+    [globalChatroomList removeAllObjects];
+    [self searchChatrooms];
+    [refreshControl endRefreshing];
+}
 
 
 @end

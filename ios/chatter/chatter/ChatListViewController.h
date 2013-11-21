@@ -30,5 +30,8 @@
 
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
+- (void)refreshTable:(UIRefreshControl*)refreshControl;
+- (void)searchChatrooms;
+
 
 @end
