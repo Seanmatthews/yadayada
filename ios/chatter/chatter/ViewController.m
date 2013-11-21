@@ -98,6 +98,9 @@ const int MESSAGE_NUM_THRESH = 50;
     UITableViewCell* cell = [mTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:swipedCellIndex inSection:0]];
     UIView* wv = (UIView*)[cell.contentView viewWithTag:3];
 
+    // Send upvote
+    MessageMessage* msg = [chatQueue objectAtIndex:swipedCellIndex];
+    [self upvote:YES user:msg.senderId becauseOfMessage:msg.messageId];
     
     [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
     {
@@ -111,8 +114,6 @@ const int MESSAGE_NUM_THRESH = 50;
              [wv setBackgroundColor:[UIColor clearColor]];
          } completion: NULL];
     }];
-
-    // Send upvote
 }
 
 - (void)swipeCell:(UITableViewRowAnimation)animation
@@ -121,13 +122,31 @@ const int MESSAGE_NUM_THRESH = 50;
     NSIndexPath* cellPath = [NSIndexPath indexPathForRow:swipedCellIndex inSection:0];
     NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
     
+    // Send downvote
+    MessageMessage* msg = [chatQueue objectAtIndex:cellPath.row];
+    [self upvote:NO user:msg.senderId becauseOfMessage:msg.messageId];
+    
     // Remove cell
     [mTableView beginUpdates];
     [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:animation];
     [chatQueue removeObjectAtIndex:cellPath.row];
     [mTableView endUpdates];
-    
-    // Send downvote
+}
+
+- (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId
+{
+    VoteMessage* msg = [[VoteMessage alloc] init];
+    msg.chatroomId = ud.chatroomId;
+    msg.voterId = ud.userId;
+    msg.votedId = theirId;
+    msg.msgId = msgId;
+    if (upvote) {
+        msg.upvote = 1;
+    }
+    else {
+        msg.upvote = 0;
+    }
+    [connection sendMessage:msg];
 }
 
 - (void)swipedCellRight:(id)sender

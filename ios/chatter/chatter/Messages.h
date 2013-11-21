@@ -276,8 +276,8 @@ typedef enum {
 
 - (id)init;
 
-@property long long senderId;
-@property long long targetUserId;
+@property long long voterId;
+@property long long votedId;
 @property long long msgId;
 @property long long chatroomId;
 @property Byte upvote;

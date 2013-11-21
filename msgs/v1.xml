@@ -131,8 +131,8 @@
     </msg>
 
     <msg name="Vote" val="44" origin="client">
-        <field name="senderId" type="long" />
-        <field name="targetUserId" type="long" />
+        <field name="voterId" type="long" />
+        <field name="votedId" type="long" />
         <field name="msgId" type="long" />
         <field name="chatroomId" type="long" />
         <field name="upvote" type="byte" />

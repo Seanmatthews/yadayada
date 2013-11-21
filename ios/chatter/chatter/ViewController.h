@@ -52,6 +52,7 @@
 - (void)tappedCell:(id)sender;
 - (void)receivedMessage:(MessageMessage*) message;
 - (UIImage*)blurredSnapshot;
+- (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
 
 
 
