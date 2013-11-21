@@ -116,6 +116,7 @@ static BOOL onceToChatView = YES;
 
 - (void)messageCallback:(MessageBase*)message
 {
+    UIAlertView *alert;
     switch (message.type) {
         case Chatroom:
             [self addChatroom:(ChatroomMessage*)message];
@@ -129,7 +130,8 @@ static BOOL onceToChatView = YES;
             
         case JoinChatroomReject:
             NSLog(@"Could not join chatroom");
-            // TODO: pop-up an alert with the reason
+            alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
             break;
             
         case LeftChatroom:
