@@ -30,6 +30,6 @@
 + (double)fromLongLong:(long long)storedCoord;
 + (long long)toLongLong:(double)coord;
 + (CGFloat)milesBetweenSource:(CLLocationCoordinate2D)firstCoords andDestination:(CLLocationCoordinate2D)secondCoords;
-
++ (long long)metersFromMiles:(CGFloat)miles;
 
 @end

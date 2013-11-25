@@ -116,6 +116,11 @@ static BOOL firstTimeLocation = YES;
     return nD;
 }
 
++ (long long)metersFromMiles:(CGFloat)miles
+{
+    return (long long)(1609.344 * miles);
+}
+
 
 #pragma mark - CoreLocation functions
 

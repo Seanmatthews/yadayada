@@ -12,6 +12,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "ViewController.h"
 #import "ChatroomListCell.h"
+#import "CreateChatViewController.h"
 
 @interface ChatListViewController ()
 
@@ -171,10 +172,19 @@ static BOOL onceToChatView = YES;
         vc.chatId = tappedCellInfo.chatroomId;
         vc.chatTitle = tappedCellInfo.chatroomName;
     }
+    else if ([segue.identifier isEqualToString:@"chatList2CreateChatSegue"]) {
+        CreateChatViewController* ccvc = (CreateChatViewController*)segue.destinationViewController;
+        ccvc.unwindSegueName = @"unwindToChatList";
+    }
     else {
         MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
         vc.image =[self blurredSnapshot];
     }
+}
+
+- (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue
+{
+    
 }
 
 

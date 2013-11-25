@@ -32,6 +32,7 @@
 - (void)messageCallback:(MessageBase*)message;
 - (void)refreshTable:(UIRefreshControl*)refreshControl;
 - (void)searchChatrooms;
+- (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue;
 
 
 @end

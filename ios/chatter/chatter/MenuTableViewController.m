@@ -7,6 +7,7 @@
 //
 
 #import "MenuTableViewController.h"
+#import "CreateChatViewController.h"
 
 @interface MenuTableViewController ()
 
@@ -36,7 +37,6 @@
     
 }
 
-
 - (void)viewDidAppear:(BOOL)animated
 {
 
@@ -46,6 +46,14 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"createChatroomSegue"]) {
+        CreateChatViewController* ccvc = (CreateChatViewController*)segue.destinationViewController;
+        ccvc.unwindSegueName = @"unwindToMenu";
+    }
 }
 
 @end

@@ -7,16 +7,25 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Connection.h"
+#import "Location.h"
+#import "UserDetails.h"
 
 @interface CreateChatViewController : UIViewController
 {
-    
+    Connection* connection;
+    Location* location;
+    UserDetails* ud;
 }
 
 @property (nonatomic, retain) IBOutlet UITextField* chatroomNameTextField;
 @property (nonatomic, retain) IBOutlet UIButton* chatroomIconButton;
 @property (nonatomic, retain) IBOutlet UILabel* chatroomRadiusLabel;
+@property NSString* unwindSegueName;
+
 
 - (IBAction)sliderChanged:(id)sender;
+- (IBAction)createChatroom:(id)sender;
+- (IBAction)unwindToPreviousView:(id)sender;
 
 @end

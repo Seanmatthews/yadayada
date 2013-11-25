@@ -7,6 +7,7 @@
 //
 
 #import "CreateChatViewController.h"
+#import "Messages.h"
 
 @interface CreateChatViewController ()
 
@@ -14,11 +15,14 @@
 
 @implementation CreateChatViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+
+- (id)initWithCoder:(NSCoder *)aDecoder
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    self = [super initWithCoder:aDecoder];
     if (self) {
-        // Custom initialization
+        connection = [Connection sharedInstance];
+        location = [Location sharedInstance];
+        ud = [UserDetails sharedInstance];
     }
     return self;
 }
@@ -39,6 +43,23 @@
 {
     UISlider* slider = (UISlider*)sender;
     [_chatroomRadiusLabel setText:[NSString stringWithFormat:@"%f",slider.value]];
+}
+
+- (IBAction)createChatroom:(id)sender
+{
+    CreateChatroomMessage* msg = [[CreateChatroomMessage alloc] init];
+    msg.chatroomName = _chatroomNameTextField.text;
+    msg.radius = [_chatroomRadiusLabel.text floatValue];
+    msg.ownerId = ud.userId;
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
+    [connection sendMessage:msg];
+}
+
+- (IBAction)unwindToPreviousView:(id)sender
+{
+    NSLog(@"%@",_unwindSegueName);
+    [self performSegueWithIdentifier:_unwindSegueName sender:self];
 }
 
 @end
