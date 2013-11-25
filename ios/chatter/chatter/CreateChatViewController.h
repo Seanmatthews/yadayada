@@ -22,10 +22,12 @@
 @property (nonatomic, retain) IBOutlet UIButton* chatroomIconButton;
 @property (nonatomic, retain) IBOutlet UILabel* chatroomRadiusLabel;
 @property NSString* unwindSegueName;
+@property (nonatomic, retain) IBOutlet UIImageView* iconView;
 
 
 - (IBAction)sliderChanged:(id)sender;
 - (IBAction)createChatroom:(id)sender;
 - (IBAction)unwindToPreviousView:(id)sender;
+
 
 @end

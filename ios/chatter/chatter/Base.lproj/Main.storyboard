@@ -152,13 +152,14 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gQF-ek-eZa">
-                                        <rect key="frame" x="97" y="192" width="110" height="110"/>
+                                    <containerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FJ8-jR-cBL">
+                                        <rect key="frame" x="76" y="192" width="135" height="123"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="Image">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                    </button>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <segue destination="hwE-7p-Ci3" kind="embed" id="bRL-ae-1hb"/>
+                                        </connections>
+                                    </containerView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
@@ -166,7 +167,6 @@
                         <color key="backgroundColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
-                        <outlet property="chatroomIconButton" destination="gQF-ek-eZa" id="GgP-44-oTR"/>
                         <outlet property="chatroomNameTextField" destination="g70-YX-Vsd" id="NN5-Rm-lQr"/>
                         <outlet property="chatroomRadiusLabel" destination="cfe-E7-mva" id="4N4-j3-TmY"/>
                         <segue destination="7aN-Zb-7oT" kind="unwind" identifier="unwindToChatList" unwindAction="unwindToChatList:" id="BaX-Wi-cnZ"/>
@@ -279,24 +279,6 @@
                 <exit id="tCQ-vX-SQA" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1246" y="1083"/>
-        </scene>
-        <!--Icon Picker View Controller-->
-        <scene sceneID="dfi-NQ-B2R">
-            <objects>
-                <viewController id="d1O-a1-ZVW" customClass="IconPickerViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="7Y4-c3-2dm"/>
-                        <viewControllerLayoutGuide type="bottom" id="0Cr-jk-V5C"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="ufl-wc-rD2">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Lw0-PA-kzY" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1702" y="1081"/>
         </scene>
         <!--Menu View Controller-->
         <scene sceneID="bhO-fs-yNU">
@@ -628,7 +610,38 @@
             </objects>
             <point key="canvasLocation" x="1246" y="-358"/>
         </scene>
+        <!--Drag Image Controller-->
+        <scene sceneID="G7f-co-0OC">
+            <objects>
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="hwE-7p-Ci3" customClass="DragImageController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Zcn-FW-mHn"/>
+                        <viewControllerLayoutGuide type="bottom" id="XhD-aR-a7T"/>
+                    </layoutGuides>
+                    <view key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="1oO-0v-zFp">
+                        <rect key="frame" x="0.0" y="0.0" width="135" height="123"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Default.png" translatesAutoresizingMaskIntoConstraints="NO" id="x2D-Dt-f64">
+                                <rect key="frame" x="0.0" y="0.0" width="135" height="123"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <toolbarItems/>
+                    <connections>
+                        <outlet property="imageView" destination="x2D-Dt-f64" id="6Gl-ME-rZD"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rEL-4m-jwh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1799" y="1220"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="Default.png" width="640" height="1136"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

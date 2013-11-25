@@ -14,7 +14,7 @@
 		641C1482182C7FFF001D8959 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C1481182C7FFF001D8959 /* CoreLocation.framework */; };
 		641C148518319F9A001D8959 /* MenuTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C148418319F9A001D8959 /* MenuTableViewController.m */; };
 		6445107D183DA911000112D4 /* CreateChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6445107C183DA911000112D4 /* CreateChatViewController.m */; };
-		644510801842DBBE000112D4 /* IconPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6445107F1842DBBE000112D4 /* IconPickerViewController.m */; };
+		644510831842FCF9000112D4 /* DragImageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 644510821842FCF9000112D4 /* DragImageController.m */; };
 		6458F38D18172E7400AA8E81 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F38C18172E7400AA8E81 /* Foundation.framework */; };
 		6458F38F18172E7400AA8E81 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F38E18172E7400AA8E81 /* CoreGraphics.framework */; };
 		6458F39118172E7400AA8E81 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F39018172E7400AA8E81 /* UIKit.framework */; };
@@ -73,8 +73,8 @@
 		641C148418319F9A001D8959 /* MenuTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuTableViewController.m; sourceTree = "<group>"; };
 		6445107B183DA911000112D4 /* CreateChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateChatViewController.h; sourceTree = "<group>"; };
 		6445107C183DA911000112D4 /* CreateChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateChatViewController.m; sourceTree = "<group>"; };
-		6445107E1842DBBE000112D4 /* IconPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconPickerViewController.h; sourceTree = "<group>"; };
-		6445107F1842DBBE000112D4 /* IconPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IconPickerViewController.m; sourceTree = "<group>"; };
+		644510811842FCF9000112D4 /* DragImageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragImageController.h; sourceTree = "<group>"; };
+		644510821842FCF9000112D4 /* DragImageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DragImageController.m; sourceTree = "<group>"; };
 		6458F38918172E7400AA8E81 /* chatter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chatter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6458F38C18172E7400AA8E81 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6458F38E18172E7400AA8E81 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -175,8 +175,8 @@
 				B3E79A491832AF23003227E7 /* ChatroomListCell.xib */,
 				6445107B183DA911000112D4 /* CreateChatViewController.h */,
 				6445107C183DA911000112D4 /* CreateChatViewController.m */,
-				6445107E1842DBBE000112D4 /* IconPickerViewController.h */,
-				6445107F1842DBBE000112D4 /* IconPickerViewController.m */,
+				644510811842FCF9000112D4 /* DragImageController.h */,
+				644510821842FCF9000112D4 /* DragImageController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -421,7 +421,6 @@
 				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
 				64674BD8181761C500922109 /* SecondPageViewController.m in Sources */,
 				641C1477182C7B9F001D8959 /* MapViewController.m in Sources */,
-				644510801842DBBE000112D4 /* IconPickerViewController.m in Sources */,
 				B343A50F18282CF600B36450 /* MenuViewController.m in Sources */,
 				64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */,
 				64A10D51181E1B2300A499B0 /* Connection.m in Sources */,
@@ -430,6 +429,7 @@
 				64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */,
 				641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */,
 				6458F3A318172E7400AA8E81 /* ViewController.m in Sources */,
+				644510831842FCF9000112D4 /* DragImageController.m in Sources */,
 				64A10DA41824BBDA00A499B0 /* Location.m in Sources */,
 				641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */,
 				64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */,
