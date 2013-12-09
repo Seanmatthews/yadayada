@@ -18,6 +18,8 @@
 @property long long userId;
 @property NSString* userIconName;
 @property BOOL registeredHandle;
+@property BOOL receiveChatroomNotifications;
+@property BOOL receiveMessageNotifications;
 
 // TODO: The type of this property will change ot accommodate
 // being joined to several chats at once.

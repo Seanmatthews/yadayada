@@ -17,6 +17,11 @@
     
     if (self) {
         _handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"UserHandle"];
+        _receiveChatroomNotifications = [[NSUserDefaults standardUserDefaults] boolForKey:@"ReceiveChatNotifications"];
+        _receiveMessageNotifications = [[NSUserDefaults standardUserDefaults] boolForKey:@"ReceiveMessageNotifications"];
+        
+        // TODO: this
+        // self = [[NSUserDefaults standardUserDefaults] objectForKey:@"UserDetails"];
         
         // This will be the same while the user has any apps installed with the
         // same com.whatever app identifier, and will change when the user

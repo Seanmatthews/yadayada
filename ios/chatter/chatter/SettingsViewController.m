@@ -20,6 +20,7 @@
 - (void)initCode
 {
     connection = [Connection sharedInstance];
+    ud = [UserDetails sharedInstance];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -33,10 +34,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	
-    // Give the map view rounded corners
-    _tableView.layer.cornerRadius = 5;
-    _tableView.layer.masksToBounds = YES;
+    _handleTextField.text = ud.handle;
+    _chatroomNotificationControl.selectedSegmentIndex = ud.receiveChatroomNotifications ? 0 : 1;
+    _messageNotificationControl.selectedSegmentIndex = ud.receiveMessageNotifications ? 0 : 1;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -78,8 +78,36 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-    vc.image =[self blurredSnapshot];
+    if ([segue.identifier isEqualToString:@"unwindSettingsSegue"]) {
+        MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
+        vc.image =[self blurredSnapshot];
+    }
 }
+
+
+#pragma mark - UI elements
+
+- (IBAction)chatroomNotificationValueChanged:(id)sender
+{
+    UISegmentedControl* sc = (UISegmentedControl*)sender;
+    ud.receiveChatroomNotifications = sc.selectedSegmentIndex == 0;
+}
+
+- (IBAction)messageNotificationValueChanged:(id)sender
+{
+    UISegmentedControl* sc = (UISegmentedControl*)sender;
+    ud.receiveMessageNotifications = sc.selectedSegmentIndex == 0;
+}
+
+
+#pragma mark - UITextFieldDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    ud.handle = [textField text];
+    [textField resignFirstResponder];
+    return YES;
+}
+
 
 @end
