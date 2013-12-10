@@ -27,6 +27,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self.view.layer setBorderWidth:2.0];
+    [self.view.layer setBorderColor:[[UIColor blackColor] CGColor]];
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;

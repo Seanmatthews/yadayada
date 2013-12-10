@@ -34,9 +34,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _handleTextField.text = ud.handle;
-    _chatroomNotificationControl.selectedSegmentIndex = ud.receiveChatroomNotifications ? 0 : 1;
-    _messageNotificationControl.selectedSegmentIndex = ud.receiveMessageNotifications ? 0 : 1;
+    _handleTextField.text = ud.handle;		
+    [_chatroomNotificationControl setSelectedSegmentIndex:(ud.receiveChatroomNotifications ? 0 : 1)];
+    [_messageNotificationControl setSelectedSegmentIndex:(ud.receiveMessageNotifications ? 0 : 1)];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
