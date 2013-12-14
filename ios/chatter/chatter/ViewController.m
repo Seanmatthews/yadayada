@@ -22,7 +22,6 @@ const int MESSAGE_NUM_THRESH = 50;
 
 //@synthesize userHandle;
 @synthesize userInputTextField;
-@synthesize scrollView;
 @synthesize mTableView;
 @synthesize navBar;
 
@@ -66,7 +65,6 @@ const int MESSAGE_NUM_THRESH = 50;
 //    [mTableView setEditing:YES animated:YES];
     
     mTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-
     
     // Make the return key say 'Send'
     userInputTextField.returnKeyType = UIReturnKeySend;
@@ -173,6 +171,7 @@ const int MESSAGE_NUM_THRESH = 50;
 
 #pragma mark - Keyboard Interaction
 
+
 - (void)registerForKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
@@ -184,12 +183,14 @@ const int MESSAGE_NUM_THRESH = 50;
 {
     NSDictionary* info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-    CGPoint kbOrigin = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].origin;
-    CGRect bkgndRect = userInputTextField.superview.frame;
-    bkgndRect.size.height += kbSize.height;
-    [userInputTextField.superview setFrame:bkgndRect];
-    [scrollView setContentOffset:CGPointMake(0.0, userInputTextField.frame.origin.y-kbOrigin.y+kbSize.height+userInputTextField.frame.size.height+5) animated:YES];
-//    [scrollView setContentOffset:CGPointMake(0.0, userInputTextField.frame.origin.y-kbSize.height) animated:YES];
+    
+    // Animate the current view out of the way
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.3]; // if you want to slide up the view
+    CGRect rect = self.view.frame;
+    rect.origin.y -= kbSize.height;
+    self.view.frame = rect;
+    [UIView commitAnimations];
 }
 
 // Called when the UIKeyboardWillHideNotification is sent
@@ -198,11 +199,16 @@ const int MESSAGE_NUM_THRESH = 50;
     
     NSDictionary* info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-    CGRect bkgndRect = userInputTextField.superview.frame;
-    bkgndRect.size.height -= kbSize.height;
-    [userInputTextField.superview setFrame:bkgndRect];
-    [scrollView setContentOffset:CGPointMake(0.0, 0.0) animated:YES];
+    
+    // Animate the current view back to where it was
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.3]; // if you want to slide up the view
+    CGRect rect = self.view.frame;
+    rect.origin.y += kbSize.height;
+    self.view.frame = rect;
+    [UIView commitAnimations];
 }
+
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
@@ -224,7 +230,6 @@ const int MESSAGE_NUM_THRESH = 50;
 
 
 #pragma mark - incoming and outgoing messages
-
 
 - (void)messageCallback:(MessageBase*)message
 {
