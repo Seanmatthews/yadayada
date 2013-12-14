@@ -57,31 +57,43 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
 }
 
+//// Called when the UIKeyboardDidShowNotification is sent.
+//- (void)keyboardWasShown:(NSNotification*)aNotification
+//{
+//    UIScrollView* scrollView = (UIScrollView*)[self view];
+//    
+//    NSDictionary* info = [aNotification userInfo];
+//    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+//    CGRect bkgndRect = handleTextField.superview.frame;
+//    //kbSize.height += 100;
+//    bkgndRect.size.height += kbSize.height;
+//    [handleTextField.superview setFrame:bkgndRect];
+//    [scrollView setContentOffset:CGPointMake(0.0, handleTextField.frame.origin.y-kbSize.height) animated:YES];
+//}
+
+
 // Called when the UIKeyboardDidShowNotification is sent.
 - (void)keyboardWasShown:(NSNotification*)aNotification
 {
-    UIScrollView* scrollView = (UIScrollView*)[self view];
-    
+//    UIScrollView* scrollView = (UIScrollView*)[self view];
+
     NSDictionary* info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     CGRect bkgndRect = handleTextField.superview.frame;
-    kbSize.height += 100;
     bkgndRect.size.height += kbSize.height;
     [handleTextField.superview setFrame:bkgndRect];
-    [scrollView setContentOffset:CGPointMake(0.0, handleTextField.frame.origin.y-kbSize.height) animated:YES];
+    [_scrollView setContentOffset:CGPointMake(0.0, handleTextField.frame.origin.y-kbSize.height) animated:YES];
 }
 
 // Called when the UIKeyboardWillHideNotification is sent
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification
 {
-    UIScrollView* scrollView = (UIScrollView*)[self view];
-    
     NSDictionary* info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     CGRect bkgndRect = handleTextField.superview.frame;
     bkgndRect.size.height -= kbSize.height;
     [handleTextField.superview setFrame:bkgndRect];
-    [scrollView setContentOffset:CGPointMake(0.0, 0.0) animated:YES];
+    [_scrollView setContentOffset:CGPointMake(0.0, 0.0) animated:YES];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -96,7 +108,7 @@
 - (void)leftSwipeAction
 {
     if ([handleTextField.text length] > 0) {
-        [self performSegueWithIdentifier: @"firstTimeSegue" sender: self];
+        [self performSegueWithIdentifier: @"firstTimeSegue" sender:self];
     }
 }
 

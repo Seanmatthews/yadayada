@@ -64,6 +64,8 @@ const int MESSAGE_NUM_THRESH = 50;
     mTableView.backgroundView = nil;
     mTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
 //    [mTableView setEditing:YES animated:YES];
+    
+    mTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
     
     // Make the return key say 'Send'
@@ -180,16 +182,14 @@ const int MESSAGE_NUM_THRESH = 50;
 // Called when the UIKeyboardDidShowNotification is sent.
 - (void)keyboardWasShown:(NSNotification*)aNotification
 {
-    //UIScrollView* scrollView = (UIScrollView*)[self view];
-    
     NSDictionary* info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    CGPoint kbOrigin = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].origin;
     CGRect bkgndRect = userInputTextField.superview.frame;
-    // TODO: figure out why this works and the normal way doesn't
-    kbSize.height += 100;
     bkgndRect.size.height += kbSize.height;
     [userInputTextField.superview setFrame:bkgndRect];
-    [scrollView setContentOffset:CGPointMake(0.0, userInputTextField.frame.origin.y-kbSize.height) animated:YES];
+    [scrollView setContentOffset:CGPointMake(0.0, userInputTextField.frame.origin.y-kbOrigin.y+kbSize.height+userInputTextField.frame.size.height+5) animated:YES];
+//    [scrollView setContentOffset:CGPointMake(0.0, userInputTextField.frame.origin.y-kbSize.height) animated:YES];
 }
 
 // Called when the UIKeyboardWillHideNotification is sent

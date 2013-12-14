@@ -20,8 +20,8 @@
 }
 
 @property (nonatomic, strong) NSString* userHandle;
-@property (nonatomic,strong) UIImage* image;
-@property (nonatomic,retain) IBOutlet UIImageView* bgImageView;
+@property (nonatomic, strong) UIImage* image;
+@property (nonatomic, retain) IBOutlet UIImageView* bgImageView;
 @property (nonatomic, retain) IBOutlet UITableView* menuTableView;
 
 - (void)initCode;

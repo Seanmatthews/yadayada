@@ -13,6 +13,7 @@
     
 }
 
+@property BOOL finishedTutorial;
 @property (readwrite, nonatomic) NSString* handle;
 @property NSString* UUID;
 @property long long userId;
@@ -26,6 +27,7 @@
 @property long long chatroomId;
 
 + (id)sharedInstance;
++ (void)save;
 - (id)init;
 - (id) initWithHandle:(NSString*)handle;
 - (void)setHandle:(NSString *)handle;

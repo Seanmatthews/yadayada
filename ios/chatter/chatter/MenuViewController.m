@@ -21,18 +21,6 @@
 - (void)initCode
 {
     ud = [UserDetails sharedInstance];
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
-        ud.handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"userHandle"];
-        ud.registeredHandle = [[NSUserDefaults standardUserDefaults] boolForKey:@"registeredHandle"];
-        NSLog(@"Using handle: %@",ud.handle);
-    }
-    else {
-        // Getting here implies that the user has done the tutorial
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"HasFinishedTutorial"];
-        [[NSUserDefaults standardUserDefaults] setObject:userHandle forKey:@"userHandle"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        ud.handle = userHandle;
-    }
     
     // Get connection object and add this controller's callback
     // method for incoming connections.
@@ -57,6 +45,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // This does not work when placed in initCode()
+    if (!ud.finishedTutorial) {
+        // Getting here implies that the user has done the tutorial for the first time
+        ud.finishedTutorial = YES;
+        ud.handle = userHandle;
+
+        // Maybe not necessary, but just in case
+        [UserDetails save];
+    }
 }
 
 - (void)didReceiveMemoryWarning

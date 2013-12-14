@@ -17,7 +17,11 @@
                    initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     UIViewController* uvc;
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"]) {
+    
+    // Load user details
+    ud = [UserDetails sharedInstance];
+    
+    if (ud.finishedTutorial) {
         uvc = [uis instantiateViewControllerWithIdentifier:@"mainPage"];
     }
     else {
@@ -58,6 +62,7 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    [UserDetails save];
 }
 
 @end

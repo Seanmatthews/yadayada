@@ -16,12 +16,12 @@
     self = [super init];
     
     if (self) {
+        
+        // Some user details are persistent
         _handle = [[NSUserDefaults standardUserDefaults] stringForKey:@"UserHandle"];
         _receiveChatroomNotifications = [[NSUserDefaults standardUserDefaults] boolForKey:@"ReceiveChatNotifications"];
         _receiveMessageNotifications = [[NSUserDefaults standardUserDefaults] boolForKey:@"ReceiveMessageNotifications"];
-        
-        // TODO: this
-        // self = [[NSUserDefaults standardUserDefaults] objectForKey:@"UserDetails"];
+        _finishedTutorial = [[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"];
         
         // This will be the same while the user has any apps installed with the
         // same com.whatever app identifier, and will change when the user
@@ -42,6 +42,7 @@
     return _sharedObject;
 }
 
+
 - (id) initWithHandle:(NSString*)handle
 {
     self = [super init];
@@ -57,8 +58,17 @@
 {
     if (_handle != handle) {
         _handle = handle;
-        [[NSUserDefaults standardUserDefaults] setObject:_handle forKey:@"UserHandle"];
     }
+}
+
++ (void)save
+{
+    UserDetails* ud = [self sharedInstance];
+    [[NSUserDefaults standardUserDefaults] setObject:ud.handle forKey:@"UserHandle"];
+    [[NSUserDefaults standardUserDefaults] setBool:ud.receiveChatroomNotifications forKey:@"ReceiveChatNotifications"];
+    [[NSUserDefaults standardUserDefaults] setBool:ud.receiveMessageNotifications forKey:@"ReceiveMessageNotifications"];
+    [[NSUserDefaults standardUserDefaults] setBool:ud.finishedTutorial forKey:@"HasFinishedTutorial"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 @end
