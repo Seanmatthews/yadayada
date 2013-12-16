@@ -71,8 +71,8 @@ static BOOL firstTimeLocation = YES;
     NSLog(@"location : %f : %f, %f", [bestEffortAtLocation.timestamp timeIntervalSince1970],
           bestEffortAtLocation.coordinate.latitude, bestEffortAtLocation.coordinate.longitude);
     
-    _currentLat = (long long)(bestEffortAtLocation.coordinate.latitude + 400.) * 1000000.;
-    _currentLong = (long long)(bestEffortAtLocation.coordinate.longitude + 400.) * 1000000.;
+    _currentLat = (long long)((bestEffortAtLocation.coordinate.latitude + 400.) * 1000000.);
+    _currentLong = (long long)((bestEffortAtLocation.coordinate.longitude + 400.) * 1000000.);
     _currentLocation = CLLocationCoordinate2DMake([Location fromLongLong:_currentLat], [Location fromLongLong:_currentLong]);
     
     NSLog(@"Updating location %f, %f",[Location fromLongLong:_currentLat],[Location fromLongLong:_currentLong]);
@@ -89,6 +89,14 @@ static BOOL firstTimeLocation = YES;
 + (long long)toLongLong:(double)coord
 {
     return (long long)((coord + 400.) * 1000000.);
+}
+
++ (CLLocationCoordinate2D)fromLongLongLatitude:(long long)latitude Longitude:(long long)longitude
+{
+    CLLocationCoordinate2D ret;
+    ret.latitude = [Location fromLongLong:latitude];
+    ret.longitude = [Location fromLongLong:longitude];
+    return ret;
 }
 
 + (CGFloat)milesBetweenSource:(CLLocationCoordinate2D)firstCoords andDestination:(CLLocationCoordinate2D)secondCoords
@@ -114,6 +122,11 @@ static BOOL firstTimeLocation = YES;
     double nD = nRadius * nC;
     
     return nD;
+}
+
+- (CGFloat)mileToCurrentLocationFrom:(CLLocationCoordinate2D)coords
+{
+    return [Location milesBetweenSource:_currentLocation andDestination:coords];
 }
 
 + (long long)metersFromMiles:(CGFloat)miles

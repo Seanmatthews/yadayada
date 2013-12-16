@@ -11,7 +11,7 @@
 #import "Location.h"
 #import "UserDetails.h"
 
-@interface CreateChatViewController : UIViewController
+@interface CreateChatViewController : UIViewController <UITextFieldDelegate>
 {
     Connection* connection;
     Location* location;

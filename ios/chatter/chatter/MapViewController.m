@@ -67,6 +67,13 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)locateButtonPressed:(id)sender
+{
+    [_mapView setCenterCoordinate:[location currentLocation]];
+}
+
+
+
 
 #pragma mark - Blurred Snapshot
 
@@ -91,20 +98,43 @@
     return blurredSnapshotImage;
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-    vc.image =[self blurredSnapshot];
-}
+//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+//{
+//    MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
+//    vc.image =[self blurredSnapshot];
+//}
 
 
 #pragma mark - Annotations
 
 - (void)addChatroomAnnotation:(ChatroomMessage*)message
 {
-    // Get local chatrooms from server
+    MKPointAnnotation* mpa = [[MKPointAnnotation alloc] init];
+    CLLocationCoordinate2D coord;
+    coord = [Location fromLongLongLatitude:message.latitude Longitude:message.longitude];
+    mpa.coordinate = coord;
+    mpa.title = message.chatroomName;
+    CGFloat milesToChat = [location mileToCurrentLocationFrom:mpa.coordinate];
+    mpa.subtitle = [NSString stringWithFormat:@"%fmiles  %dusers  %d%%",milesToChat,message.userCount,message.chatActivity];
+    [_mapView addAnnotation:mpa];
+}
 
-    
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"ChatAnnotation"])
+    {
+        //MKAnnotationView *annotationView = sender;
+        //[segue.destinationViewController setAnnotation:annotationView.annotation];
+    }
+    else { //if ([segue.identifier isEqualToString:@""]) {
+        MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
+        vc.image =[self blurredSnapshot];
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+{
+    //[self performSegueWithIdentifier:@"ChatAnnotation" sender:view];
 }
 
 
@@ -117,6 +147,27 @@
     msg.latitude = [location currentLat];
     msg.longitude = [location currentLong];
     [connection sendMessage:msg];
+}
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id < MKAnnotation >)annotation
+{
+    if ([annotation isKindOfClass:[MKAnnotationView class]]) {
+        
+        MKAnnotationView* annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:@"AnnotationView"];
+        
+        if (annotationView) {
+            annotationView.annotation = annotation;
+        }
+        else {
+            annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"AnnotationView"];
+        }
+        
+        annotationView.canShowCallout = NO;
+        
+        return annotationView;
+    }
+    return nil;
+    
 }
 
 

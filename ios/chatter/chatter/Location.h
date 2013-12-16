@@ -28,8 +28,10 @@
 - (void)startService;
 - (void)updateLocation;
 + (double)fromLongLong:(long long)storedCoord;
++ (CLLocationCoordinate2D)fromLongLongLatitude:(long long)latitude Longitude:(long long)longitude;
 + (long long)toLongLong:(double)coord;
 + (CGFloat)milesBetweenSource:(CLLocationCoordinate2D)firstCoords andDestination:(CLLocationCoordinate2D)secondCoords;
+- (CGFloat)mileToCurrentLocationFrom:(CLLocationCoordinate2D)coords;
 + (long long)metersFromMiles:(CGFloat)miles;
 
 @end

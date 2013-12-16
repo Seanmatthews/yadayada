@@ -23,6 +23,7 @@
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
 - (void)addChatroomAnnotation:(ChatroomMessage*)message;
+- (IBAction)locateButtonPressed:(id)sender;
 
 
 @end
