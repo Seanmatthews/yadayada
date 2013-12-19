@@ -114,7 +114,7 @@
     coord = [Location fromLongLongLatitude:message.latitude Longitude:message.longitude];
     mpa.coordinate = coord;
     mpa.title = message.chatroomName;
-    CGFloat milesToChat = [location mileToCurrentLocationFrom:mpa.coordinate];
+    CGFloat milesToChat = [location milesToCurrentLocationFrom:mpa.coordinate];
     mpa.subtitle = [NSString stringWithFormat:@"%fmiles  %dusers  %d%%",milesToChat,message.userCount,message.chatActivity];
     [_mapView addAnnotation:mpa];
 }

@@ -31,7 +31,7 @@
 + (CLLocationCoordinate2D)fromLongLongLatitude:(long long)latitude Longitude:(long long)longitude;
 + (long long)toLongLong:(double)coord;
 + (CGFloat)milesBetweenSource:(CLLocationCoordinate2D)firstCoords andDestination:(CLLocationCoordinate2D)secondCoords;
-- (CGFloat)mileToCurrentLocationFrom:(CLLocationCoordinate2D)coords;
+- (CGFloat)milesToCurrentLocationFrom:(CLLocationCoordinate2D)coords;
 + (long long)metersFromMiles:(CGFloat)miles;
 
 @end

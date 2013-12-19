@@ -90,6 +90,19 @@ static BOOL onceToChatView = YES;
     // Dispose of any resources that can be recreated.
 }
 
+- (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom
+{
+    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
+    CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
+    
+    // Only display local chatrooms that the user is able to join
+    if (distance - chatroom.radius > 0) {
+        NSLog(@"Chatroom is too far away");
+        return NO;
+    }
+    return YES;
+}
+
 - (void)addChatroom:(ChatroomMessage*)chatroom
 {
     // Determine whether chatroom is local or global
@@ -97,9 +110,11 @@ static BOOL onceToChatView = YES;
         [globalChatroomList addObject:chatroom];
     }
     else {
-        [localChatroomList addObject:chatroom];
+        // Are we close enough to join this chatroom?
+        if ([self canJoinChatroom:chatroom]) {
+            [localChatroomList addObject:chatroom];
+        }
     }
-    
     [_tableView reloadData];
 }
 
@@ -222,28 +237,32 @@ static BOOL onceToChatView = YES;
         }
     }
     
-    // Configure the cell.
+    // Configure the cell based on whether chatroom is global or local
+    NSNumberFormatter* format = [[NSNumberFormatter alloc] init];
+    [format setNumberStyle:NSNumberFormatterDecimalStyle];
+    [format setMaximumFractionDigits:2];
     ChatroomMessage *chatroom;
+    NSString* distanceStr = @"";
     
     if (indexPath.section == 0) { // Local chats
         chatroom = [localChatroomList objectAtIndex:indexPath.row];
+        CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
+        CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
+        distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
     }
     else if (indexPath.section == 1) {
         chatroom = [globalChatroomList objectAtIndex:indexPath.row];
+        distanceStr = @"na";
     }
-    
-    // calculate miles from origin
-    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake(chatroom.latitude, chatroom.longitude);
-    CLLocationCoordinate2D userOrigin = CLLocationCoordinate2DMake([location currentLat], [location currentLong]);
-    CGFloat distance = [Location milesBetweenSource:chatroomOrigin andDestination:userOrigin];
     
     // TODO: get an image
     cell.chatroomImage.image = [[UIImage alloc] init];
-    
     cell.chatroomName.text = chatroom.chatroomName;
-    cell.milesFromOrigin.text = [NSString stringWithFormat:@"%f miles away",distance];
-    cell.percentActive.text = [NSString stringWithFormat:@"%d%% active",chatroom.chatActivity];
-    cell.numberOfUsers.text = [NSString stringWithFormat:@"%d users",chatroom.userCount];
+    cell.milesFromOrigin.text = [NSString stringWithFormat:@"%@ miles away",distanceStr];
+    NSString* activityStr = [format stringFromNumber:[NSNumber numberWithShort:chatroom.chatActivity]];
+    cell.percentActive.text = [NSString stringWithFormat:@"%@%% active",activityStr];
+    NSString* userStr = [format stringFromNumber:[NSNumber numberWithInt:chatroom.userCount]];
+    cell.numberOfUsers.text = [NSString stringWithFormat:@"%@ users",userStr];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }

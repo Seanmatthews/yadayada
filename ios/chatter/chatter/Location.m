@@ -124,7 +124,7 @@ static BOOL firstTimeLocation = YES;
     return nD;
 }
 
-- (CGFloat)mileToCurrentLocationFrom:(CLLocationCoordinate2D)coords
+- (CGFloat)milesToCurrentLocationFrom:(CLLocationCoordinate2D)coords
 {
     return [Location milesBetweenSource:_currentLocation andDestination:coords];
 }

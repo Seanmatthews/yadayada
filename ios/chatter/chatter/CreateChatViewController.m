@@ -159,6 +159,8 @@
             NSLog(@"Could not join chatroom");
             alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
+            
+            // TODO: https://bitbucket.org/rowboat/chatter/issue/98/handle-join-chatroom-reject-on-chat-create
             break;
             
         case CreateChatroomReject:
