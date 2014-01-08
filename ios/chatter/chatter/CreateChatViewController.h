@@ -17,6 +17,7 @@
     Location* location;
     UserDetails* ud;
     long long chatroomId;
+    BOOL viewIsVisible;
 }
 
 @property (nonatomic, retain) IBOutlet UITextField* chatroomNameTextField;

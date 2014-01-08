@@ -14,6 +14,7 @@
 {
     Connection* connection;
     UserDetails* ud;
+    BOOL viewIsVisible;
 }
 
 @property (nonatomic,retain) IBOutlet UITextField* handleTextField;
@@ -21,6 +22,7 @@
 @property (nonatomic,retain) IBOutlet UISegmentedControl* messageNotificationControl;
 
 - (void)initCode;
+- (void)messageCallback:(MessageBase*)message;
 - (IBAction)chatroomNotificationValueChanged:(id)sender;
 - (IBAction)messageNotificationValueChanged:(id)sender;
 

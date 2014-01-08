@@ -12,14 +12,18 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    // start location service
+    location = [Location sharedInstance];
+    [location startService];
+    
+    // Load user details
+    ud = [UserDetails sharedInstance];
+    
     UIStoryboard *uis = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     self.window = [[UIWindow alloc]
                    initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     UIViewController* uvc;
-    
-    // Load user details
-    ud = [UserDetails sharedInstance];
     
     if (ud.finishedTutorial) {
         uvc = [uis instantiateViewControllerWithIdentifier:@"mainPage"];
@@ -29,10 +33,6 @@
     }
     self.window.rootViewController = uvc;
     [self.window makeKeyAndVisible];
-    
-    // start location service
-    location = [Location sharedInstance];
-    [location startService];
     
     return YES;
 }

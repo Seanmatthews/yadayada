@@ -46,7 +46,6 @@ const int MESSAGE_NUM_THRESH = 50;
 // This is called whenever the view is loaded through storyboard segues
 - (id)initWithCoder:(NSCoder*)coder
 {
-    NSLog(@"initwithcoder vc");
     if (self = [super initWithCoder:coder]) {
         [self initCode];
     }
@@ -68,6 +67,11 @@ const int MESSAGE_NUM_THRESH = 50;
     
     // Make the return key say 'Send'
     userInputTextField.returnKeyType = UIReturnKeySend;
+    
+    // Pass chatId to UserDetails, which will use it to
+    // save which chatrooms the user was joined to when
+    // the app enters the background
+    ud.chatroomId = _chatId;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -136,7 +140,7 @@ const int MESSAGE_NUM_THRESH = 50;
 - (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId
 {
     VoteMessage* msg = [[VoteMessage alloc] init];
-    msg.chatroomId = ud.chatroomId;
+    msg.chatroomId = _chatId;
     msg.voterId = ud.userId;
     msg.votedId = theirId;
     msg.msgId = msgId;
@@ -157,15 +161,6 @@ const int MESSAGE_NUM_THRESH = 50;
 - (void)swipedCellLeft:(id)sender
 {
     [self swipeCell:UITableViewRowAnimationLeft];
-}
-
-- (void)receivedMessage:(MessageMessage*) message
-{
-    [chatQueue addObject:message];
-    
-    if ([chatQueue count] > MESSAGE_NUM_THRESH) {
-        [chatQueue removeObjectAtIndex:0];
-    }
 }
 
 
@@ -216,7 +211,7 @@ const int MESSAGE_NUM_THRESH = 50;
     if ([text length] > 0) {
         SubmitMessageMessage* sm = [[SubmitMessageMessage alloc] init];
         sm.userId = ud.userId;
-        sm.chatroomId = ud.chatroomId;
+        sm.chatroomId = _chatId;
         sm.message = text;
         
         NSLog(@"%lli, %lli, %@",sm.userId,sm.chatroomId,sm.message);
@@ -244,16 +239,18 @@ const int MESSAGE_NUM_THRESH = 50;
             ipath = [NSIndexPath indexPathForRow:[chatQueue count]-1 inSection:0];
             [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             break;
-            
-        case JoinedChatroom:
-            NSLog(@"Joined Chatroom");
-            break;
-            
-        case LeftChatroom:
-            NSLog(@"Left Chatroom");
-            break;
     }
 }
+
+- (void)receivedMessage:(MessageMessage*) message
+{
+    [chatQueue addObject:message];
+    
+    if ([chatQueue count] > MESSAGE_NUM_THRESH) {
+        [chatQueue removeObjectAtIndex:0];
+    }
+}
+
 
 #pragma mark - UITableViewDelegate methods
 
@@ -395,7 +392,7 @@ const int MESSAGE_NUM_THRESH = 50;
     vc.image =[self blurredSnapshot];
     
     LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
-    msg.chatroomId = ud.chatroomId;
+    msg.chatroomId = _chatId;
     msg.userId = ud.userId;
     [connection sendMessage:msg];
 }

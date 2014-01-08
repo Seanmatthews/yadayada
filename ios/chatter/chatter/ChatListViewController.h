@@ -21,6 +21,7 @@
     NSMutableArray* localChatroomList;
     NSMutableArray* globalChatroomList;
     ChatroomMessage *tappedCellInfo;
+    BOOL viewIsVisible;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;

@@ -10,6 +10,9 @@
 #import "UIImage+ImageEffects.h"
 #import "MenuViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "ViewController.h"
+#import "ChatPointAnnotation.h"
+#import "SmartButton.h"
 
 
 @interface MapViewController ()
@@ -48,6 +51,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    viewIsVisible = YES;
     MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([location currentLocation], 5000., 5000);
     [_mapView setRegion:region animated:YES];
     [_mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
@@ -59,6 +63,7 @@
     if ([self isBeingDismissed]) {
         [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
     }
+    viewIsVisible = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -98,33 +103,48 @@
     return blurredSnapshotImage;
 }
 
-//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-//{
-//    MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-//    vc.image =[self blurredSnapshot];
-//}
-
 
 #pragma mark - Annotations
 
 - (void)addChatroomAnnotation:(ChatroomMessage*)message
 {
-    MKPointAnnotation* mpa = [[MKPointAnnotation alloc] init];
+    ChatPointAnnotation* mpa = [[ChatPointAnnotation alloc] init];
     CLLocationCoordinate2D coord;
     coord = [Location fromLongLongLatitude:message.latitude Longitude:message.longitude];
-    mpa.coordinate = coord;
-    mpa.title = message.chatroomName;
-    CGFloat milesToChat = [location milesToCurrentLocationFrom:mpa.coordinate];
-    mpa.subtitle = [NSString stringWithFormat:@"%fmiles  %dusers  %d%%",milesToChat,message.userCount,message.chatActivity];
-    [_mapView addAnnotation:mpa];
+    
+    // Need this check because in case of bad lat/long data.
+    // iOS throws a nondescript deallocation error if you try to draw out of bounds lat/long annotations.
+    if (coord.latitude >= -90. && coord.latitude <=90. && coord.longitude >= -180. && coord.longitude <= 180.) {
+        NSNumberFormatter* format = [[NSNumberFormatter alloc] init];
+        [format setNumberStyle:NSNumberFormatterDecimalStyle];
+        [format setMaximumFractionDigits:2];
+        
+        mpa.chatroomId = message.chatroomId;
+        mpa.coordinate = coord;
+        mpa.title = message.chatroomName;
+        CGFloat milesToChat = [location milesToCurrentLocationFrom:mpa.coordinate];
+        mpa.subtitle = [NSString stringWithFormat:@"%@miles  %dusers  %d%%",[format stringFromNumber:[NSNumber numberWithFloat:milesToChat]],message.userCount,message.chatActivity];
+        [_mapView addAnnotation:mpa];
+    }
 }
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl*)control
+{
+    NSLog(@"calloutAccessoryControlTapped");
+    [self performSegueWithIdentifier:@"ChatAnnotation" sender:view];
+}
+
+
+#pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"ChatAnnotation"])
-    {
-        //MKAnnotationView *annotationView = sender;
-        //[segue.destinationViewController setAnnotation:annotationView.annotation];
+    if ([segue.identifier isEqualToString:@"ChatAnnotation"]) {
+        MKPinAnnotationView* mkv = (MKPinAnnotationView*)sender;
+        ChatPointAnnotation* mpa = (ChatPointAnnotation*)mkv.annotation;
+        ViewController* vc = (ViewController*)segue.destinationViewController;
+        vc.chatId = mpa.chatroomId;
+        vc.chatTitle = mpa.title;
     }
     else { //if ([segue.identifier isEqualToString:@""]) {
         MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
@@ -132,9 +152,9 @@
     }
 }
 
-- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+- (void)segueToChat:(id)sender
 {
-    //[self performSegueWithIdentifier:@"ChatAnnotation" sender:view];
+    [self performSegueWithIdentifier:@"ChatAnnotation" sender:((SmartButton*)sender).parent];
 }
 
 
@@ -151,23 +171,24 @@
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id < MKAnnotation >)annotation
 {
-    if ([annotation isKindOfClass:[MKAnnotationView class]]) {
-        
-        MKAnnotationView* annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:@"AnnotationView"];
-        
+    NSLog(@"viewforannotation");
+    MKPinAnnotationView* annotationView = nil;
+    if ([annotation isKindOfClass:[ChatPointAnnotation class]]) {
+        annotationView = (MKPinAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:@"AnnotationView"];
         if (annotationView) {
             annotationView.annotation = annotation;
         }
         else {
-            annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"AnnotationView"];
+            annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"AnnotationView"];
         }
-        
-        annotationView.canShowCallout = NO;
-        
+        annotationView.canShowCallout = YES;
+        SmartButton *disclosureButton = [SmartButton buttonWithType:UIButtonTypeContactAdd];
+        disclosureButton.parent = annotationView;
+        [disclosureButton addTarget:self action:@selector(segueToChat:) forControlEvents:UIControlEventTouchUpInside];
+        annotationView.rightCalloutAccessoryView = disclosureButton;
         return annotationView;
     }
-    return nil;
-    
+    return annotationView;
 }
 
 

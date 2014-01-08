@@ -41,6 +41,16 @@
     [_globalChatSelect setSelectedSegmentIndex:1];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    viewIsVisible = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    viewIsVisible = NO;
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -142,36 +152,38 @@
 
 - (void)messageCallback:(MessageBase*)message
 {
-    UIAlertView *alert;
-    switch (message.type) {
-        case Chatroom:
-            NSLog(@"Chatroom %@",((ChatroomMessage*)message).chatroomName);
-            chatroomId = ((ChatroomMessage*)message).chatroomId;
-            [self joinCreatedChatroom];
-            break;
-            
-        case JoinedChatroom:
-            NSLog(@"Joined Chatroom");
-            [self performSegueWithIdentifier:@"create2ChatSegue" sender:nil];
-            break;
-            
-        case JoinChatroomReject:
-            NSLog(@"Could not join chatroom");
-            alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-            
-            // TODO: https://bitbucket.org/rowboat/chatter/issue/98/handle-join-chatroom-reject-on-chat-create
-            break;
-            
-        case CreateChatroomReject:
-            NSLog(@"Could not create chatroom");
-            alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((CreateChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-            break;
-            
-        case LeftChatroom:
-            NSLog(@"Left Chatroom");
-            break;
+    if (viewIsVisible) {
+        UIAlertView *alert;
+        switch (message.type) {
+            case Chatroom:
+                NSLog(@"Chatroom %@",((ChatroomMessage*)message).chatroomName);
+                chatroomId = ((ChatroomMessage*)message).chatroomId;
+                [self joinCreatedChatroom];
+                break;
+                
+            case JoinedChatroom:
+                NSLog(@"Joined Chatroom");
+                [self performSegueWithIdentifier:@"create2ChatSegue" sender:nil];
+                break;
+                
+            case JoinChatroomReject:
+                NSLog(@"Could not join chatroom");
+                alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+                
+                // TODO: https://bitbucket.org/rowboat/chatter/issue/98/handle-join-chatroom-reject-on-chat-create
+                break;
+                
+            case CreateChatroomReject:
+                NSLog(@"Could not create chatroom");
+                alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((CreateChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+                break;
+                
+            case LeftChatroom:
+                NSLog(@"Left Chatroom");
+                break;
+        }
     }
 }
 

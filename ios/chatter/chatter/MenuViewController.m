@@ -20,6 +20,14 @@
 
 - (void)initCode
 {
+    location = [Location sharedInstance];
+    if ([location didUpdateFirstLocation]) {
+        _waitingView.hidden = YES;
+    }
+    else {
+        _waitingView.hidden = NO;
+    }
+    
     ud = [UserDetails sharedInstance];
     
     // Get connection object and add this controller's callback
@@ -75,6 +83,15 @@
     }
 }
 
+- (void)waitForLocation
+{
+    while (![location didUpdateFirstLocation]) {
+        //NSLog(@"waiting");
+        usleep(50000);
+    }
+    _waitingView.hidden = YES;
+}
+
 
 #pragma mark - Segues
 
@@ -93,6 +110,7 @@
 
 - (void)connectMessage
 {
+    [self waitForLocation];
     NSLog(@"Going to try to connect now");
     
     ConnectMessage* cm = [[ConnectMessage alloc] init];
@@ -161,18 +179,6 @@ static BOOL onceToChatListView = YES;
         case LoginReject:
             NSLog(@"Login Reject");
             NSLog(@"%@",((LoginRejectMessage*)message).reason);
-            break;
-            
-        case Chatroom:
-            NSLog(@"Chatroom");
-            break;
-            
-        case JoinChatroomReject:
-            NSLog(@"Join Chatroom Reject");
-            break;
-            
-        case JoinedChatroom:
-            NSLog(@"Joined Chatroom");
             break;
     }
 }

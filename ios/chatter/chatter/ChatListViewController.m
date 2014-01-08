@@ -59,8 +59,8 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    // Send a chatroom search message.
-    [self searchChatrooms];
+    viewIsVisible = YES;
+    [self refreshTable:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -68,6 +68,7 @@
     if ([self isBeingDismissed]) {
         [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
     }
+    viewIsVisible = NO;
 }
 
 static BOOL onceToChatView = YES;
@@ -129,30 +130,31 @@ static BOOL onceToChatView = YES;
 
 #pragma mark - incoming and outgoing messages
 
-
 - (void)messageCallback:(MessageBase*)message
 {
-    UIAlertView *alert;
-    switch (message.type) {
-        case Chatroom:
-            [self addChatroom:(ChatroomMessage*)message];
-            [_tableView reloadData];
-            break;
-            
-        case JoinedChatroom:
-            NSLog(@"Joined Chatroom");
-            [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:nil];
-            break;
-            
-        case JoinChatroomReject:
-            NSLog(@"Could not join chatroom");
-            alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-            break;
-            
-        case LeftChatroom:
-            NSLog(@"Left Chatroom");
-            break;
+    if (viewIsVisible) {
+        UIAlertView *alert;
+        switch (message.type) {
+            case Chatroom:
+                [self addChatroom:(ChatroomMessage*)message];
+                [_tableView reloadData];
+                break;
+                
+            case JoinedChatroom:
+                NSLog(@"Joined Chatroom");
+                [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:nil];
+                break;
+                
+            case JoinChatroomReject:
+                NSLog(@"Could not join chatroom");
+                alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+                break;
+                
+            case LeftChatroom:
+                NSLog(@"Left Chatroom");
+                break;
+        }
     }
 }
 
@@ -182,6 +184,7 @@ static BOOL onceToChatView = YES;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    NSLog(@"segue %@",segue.identifier);
     if ([segue.identifier isEqualToString:@"pickedChatroomSegue"]) {
         ViewController* vc = (ViewController*)segue.destinationViewController;
         vc.chatId = tappedCellInfo.chatroomId;
@@ -191,9 +194,9 @@ static BOOL onceToChatView = YES;
         CreateChatViewController* ccvc = (CreateChatViewController*)segue.destinationViewController;
         ccvc.unwindSegueName = @"unwindToChatList";
     }
-    else {
+    else { // this is an unwind segue
         MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-        vc.image =[self blurredSnapshot];
+        vc.image = [self blurredSnapshot];
     }
 }
 
@@ -287,6 +290,7 @@ static BOOL onceToChatView = YES;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"Something was selected!");
     if (indexPath.section == 0) {
         tappedCellInfo = (ChatroomMessage*)[localChatroomList objectAtIndex:indexPath.row];
     }
@@ -310,7 +314,9 @@ static BOOL onceToChatView = YES;
     [localChatroomList removeAllObjects];
     [globalChatroomList removeAllObjects];
     [self searchChatrooms];
-    [refreshControl endRefreshing];
+    if (refreshControl) {
+        [refreshControl endRefreshing];
+    }
 }
 
 

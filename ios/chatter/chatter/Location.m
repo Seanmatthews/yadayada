@@ -10,6 +10,8 @@
 
 @implementation Location
 
+@synthesize didUpdateFirstLocation;
+
 - (id)init
 {
     self = [super init];
@@ -29,6 +31,7 @@
         _currentLocation = CLLocationCoordinate2DMake([Location fromLongLong:_currentLat], [Location fromLongLong:_currentLong]);
         
         _sleepBetweenUpdateSec = 10;
+        didUpdateFirstLocation = NO;
     }
     return self;
 }
@@ -74,7 +77,7 @@ static BOOL firstTimeLocation = YES;
     _currentLat = (long long)((bestEffortAtLocation.coordinate.latitude + 400.) * 1000000.);
     _currentLong = (long long)((bestEffortAtLocation.coordinate.longitude + 400.) * 1000000.);
     _currentLocation = CLLocationCoordinate2DMake([Location fromLongLong:_currentLat], [Location fromLongLong:_currentLong]);
-    
+    didUpdateFirstLocation = YES;
     NSLog(@"Updating location %f, %f",[Location fromLongLong:_currentLat],[Location fromLongLong:_currentLong]);
 }
 

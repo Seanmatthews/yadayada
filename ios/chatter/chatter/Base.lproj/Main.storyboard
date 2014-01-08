@@ -228,7 +228,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RvB-m5-ndS" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="7aN-Zb-7oT" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1679" y="379"/>
+            <point key="canvasLocation" x="1703" y="379"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="pkd-zD-3k1">
@@ -432,6 +432,44 @@
                                     <segue destination="xjH-xq-8XB" kind="embed" identifier="menuContainerSegue" id="LIq-Wh-KyQ"/>
                                 </connections>
                             </containerView>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dz7-4r-Bgr">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="6hi-vG-8hp">
+                                        <rect key="frame" x="150" y="299" width="20" height="20"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </activityIndicatorView>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Please wait" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8HE-2x-Eco">
+                                        <rect key="frame" x="107" y="202" width="106" height="26"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                                        <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                        <color key="shadowColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
+                                        <size key="shadowOffset" width="-1" height="-1"/>
+                                    </label>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="while your location" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aSp-Br-xg9">
+                                        <rect key="frame" x="77" y="236" width="173" height="26"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                                        <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                        <color key="shadowColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
+                                        <size key="shadowOffset" width="-1" height="-1"/>
+                                    </label>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="is acquired" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XPO-TV-ADT">
+                                        <rect key="frame" x="98" y="270" width="124" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                                        <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                        <color key="shadowColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
+                                        <size key="shadowOffset" width="-1" height="-1"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -448,6 +486,7 @@
                     <navigationItem key="navigationItem" id="ara-XM-H9e"/>
                     <connections>
                         <outlet property="bgImageView" destination="Etv-Mh-w6a" id="tJ2-bq-gGU"/>
+                        <outlet property="waitingView" destination="dz7-4r-Bgr" id="SEV-wG-t9R"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4wC-fA-fk9" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -886,7 +925,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Default.png" width="640" height="1136"/>
+        <image name="Default.png" width="320" height="480"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

@@ -19,8 +19,10 @@
 
 - (void)initCode
 {
-    connection = [Connection sharedInstance];
     ud = [UserDetails sharedInstance];
+    connection = [Connection sharedInstance];
+    SettingsViewController* __weak weakSelf = self;
+    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -39,11 +41,17 @@
     [_messageNotificationControl setSelectedSegmentIndex:(ud.receiveMessageNotifications ? 0 : 1)];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    viewIsVisible = YES;
+}
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     if ([self isBeingDismissed]) {
         [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
     }
+    viewIsVisible = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -107,6 +115,16 @@
     ud.handle = [textField text];
     [textField resignFirstResponder];
     return YES;
+}
+
+
+#pragma mark - Message I/O
+
+- (void)messageCallback:(MessageBase*)message
+{
+    if (viewIsVisible) {
+        // TODO
+    }
 }
 
 

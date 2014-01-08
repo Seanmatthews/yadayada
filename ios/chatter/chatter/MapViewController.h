@@ -16,6 +16,7 @@
 {
     Location* location;
     Connection* connection;
+    BOOL viewIsVisible;
 }
 
 @property (nonatomic,retain) IBOutlet MKMapView* mapView;

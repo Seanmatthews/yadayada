@@ -22,6 +22,7 @@
 @property long long currentLong;
 @property CLLocationCoordinate2D currentLocation;
 @property int sleepBetweenUpdateSec;
+@property BOOL didUpdateFirstLocation;
 
 - (id)init;
 + (id)sharedInstance;
