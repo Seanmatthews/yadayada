@@ -257,6 +257,9 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="Jyv-o4-cVp" id="26A-Ye-B9x"/>
+                                        </connections>
                                     </textField>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="New chatroom notification" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZKU-29-zLZ">
                                         <rect key="frame" x="20" y="263" width="180" height="21"/>
@@ -264,7 +267,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" segmentControlStyle="bar" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="wNf-NU-7p4">
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" segmentControlStyle="bar" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="wNf-NU-7p4">
                                         <rect key="frame" x="206" y="260" width="81" height="29"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <segments>
@@ -281,7 +284,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" segmentControlStyle="bar" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="TE0-65-cxT">
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" segmentControlStyle="bar" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="TE0-65-cxT">
                                         <rect key="frame" x="206" y="312" width="81" height="29"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <segments>
@@ -306,6 +309,16 @@
                                             <segue destination="Lzf-b9-kJ8" kind="embed" identifier="settingsEmbedSegue" id="HaX-Se-SGS"/>
                                         </connections>
                                     </containerView>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yYB-gH-LKL">
+                                        <rect key="frame" x="0.0" y="444" width="300" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Apply Settings">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="applySettingsButtonPressed:" destination="Jyv-o4-cVp" eventType="touchUpInside" id="GuP-cA-HmN"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </scrollView>
                             <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BV4-kR-VC5">
@@ -337,7 +350,7 @@
                     </view>
                     <connections>
                         <outlet property="chatroomNotificationControl" destination="wNf-NU-7p4" id="Jek-q3-pLm"/>
-                        <outlet property="handleTextField" destination="KuT-qE-xkr" id="AaU-GB-K7K"/>
+                        <outlet property="handleTextField" destination="KuT-qE-xkr" id="cFa-fF-Bai"/>
                         <outlet property="messageNotificationControl" destination="TE0-65-cxT" id="O8s-fs-Mi2"/>
                     </connections>
                 </viewController>

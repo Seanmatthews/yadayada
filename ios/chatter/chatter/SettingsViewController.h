@@ -23,7 +23,10 @@
 
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
+- (void)reregisterHandle;
+- (void)registerForKeyboardNotifications;
 - (IBAction)chatroomNotificationValueChanged:(id)sender;
 - (IBAction)messageNotificationValueChanged:(id)sender;
+- (IBAction)applySettingsButtonPressed:(id)sender;
 
 @end
