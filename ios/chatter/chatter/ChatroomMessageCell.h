@@ -27,5 +27,6 @@
 @property BOOL selfMessage;
 
 - (void)arrangeElements;
++ (CGFloat)heightForText:(NSString*)text;
 
 @end

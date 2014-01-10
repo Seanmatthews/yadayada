@@ -11,6 +11,7 @@
 #import "UIImage+ImageEffects.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ChatroomMessageCell.h"
+//#import "NSObjCRuntime.h"
 
 const int MESSAGE_NUM_THRESH = 50;
 
@@ -265,6 +266,12 @@ const int MESSAGE_NUM_THRESH = 50;
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return UITableViewCellEditingStyleNone;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MessageMessage* msg = [chatQueue objectAtIndex:indexPath.row];
+    return [ChatroomMessageCell heightForText:msg.message];
 }
 
 

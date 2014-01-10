@@ -47,7 +47,6 @@
 		64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */; };
 		64A10DA41824BBDA00A499B0 /* Location.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10DA31824BBDA00A499B0 /* Location.m */; };
 		64E6AB57187F53B100B46504 /* ChatroomMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */; };
-		64E6AB59187F541100B46504 /* ChatroomMessageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 64E6AB58187F541100B46504 /* ChatroomMessageCell.xib */; };
 		B33C55C61835598400EF28B7 /* default-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B33C55C51835598400EF28B7 /* default-icon.png */; };
 		B343A50C1828134F00B36450 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = B343A50B1828134F00B36450 /* UIImage+ImageEffects.m */; };
 		B343A50F18282CF600B36450 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B343A50E18282CF600B36450 /* MenuViewController.m */; };
@@ -131,7 +130,6 @@
 		64A10DA31824BBDA00A499B0 /* Location.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Location.m; sourceTree = "<group>"; };
 		64E6AB55187F53B100B46504 /* ChatroomMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomMessageCell.h; sourceTree = "<group>"; };
 		64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomMessageCell.m; sourceTree = "<group>"; };
-		64E6AB58187F541100B46504 /* ChatroomMessageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatroomMessageCell.xib; sourceTree = "<group>"; };
 		B33C55C51835598400EF28B7 /* default-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-icon.png"; sourceTree = "<group>"; };
 		B343A50A1828134F00B36450 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		B343A50B1828134F00B36450 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
@@ -192,7 +190,6 @@
 				644510821842FCF9000112D4 /* DragImageController.m */,
 				64E6AB55187F53B100B46504 /* ChatroomMessageCell.h */,
 				64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */,
-				64E6AB58187F541100B46504 /* ChatroomMessageCell.xib */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -417,7 +414,6 @@
 			files = (
 				64770588187B880200A97F74 /* Default@2x.png in Resources */,
 				6458F3A518172E7400AA8E81 /* Images.xcassets in Resources */,
-				64E6AB59187F541100B46504 /* ChatroomMessageCell.xib in Resources */,
 				6458F39718172E7400AA8E81 /* InfoPlist.strings in Resources */,
 				64770586187B880200A97F74 /* Default.png in Resources */,
 				64A10D4E181DFDEF00A499B0 /* v1.xml in Resources */,

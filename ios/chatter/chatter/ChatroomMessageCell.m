@@ -12,9 +12,11 @@
 
 const CGFloat BORDER_WIDTH = 2.;
 const CGFloat PADDING = 2.;
-const int WEBVIEW_TAG = 1;
-const int ICONVIEW_TAG = 2;
-const int HIDDEN_VIEW = 3;
+const CGFloat ICON_SIZE = 50. - (2 * BORDER_WIDTH) - PADDING;
+const int CHARS_PER_LINE = 30;
+const CGFloat DEFAULT_CELL_HEIGHT = 50.;
+const CGFloat HEIGHT_PER_LINE = 15.;
+
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -29,18 +31,15 @@ const int HIDDEN_VIEW = 3;
         self.layer.masksToBounds = YES;
         
         iconView = [[UIImageView alloc] init];
-        iconView.tag = ICONVIEW_TAG;
         iconView.opaque = NO;
         iconView.userInteractionEnabled = NO;
         
         webview = [[UIWebView alloc] init];
-        webview.tag = WEBVIEW_TAG;
         webview.scrollView.scrollEnabled = NO;
         webview.userInteractionEnabled = NO;
         webview.opaque = YES;
         
         hiddenView = [[UIView alloc] init];
-        hiddenView.tag = HIDDEN_VIEW;
         hiddenView.opaque = NO;
         hiddenView.backgroundColor = [UIColor clearColor];
         hiddenView.alpha = 0.25;
@@ -69,36 +68,40 @@ const int HIDDEN_VIEW = 3;
 }
 
 - (void)setFrame:(CGRect)frame {
-    frame.size.width = 300;
-    frame.size.height = 50;
     [super setFrame:frame];
 }
 
 - (void)arrangeElements
 {
+    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, 300, [ChatroomMessageCell heightForText:_message])];
+    
     CGFloat cellWidth = self.frame.size.width;
     CGFloat cellHeight = self.frame.size.height;
     NSString* html;
     CGFloat heightWithoutBorders = cellHeight-(2*BORDER_WIDTH)-PADDING;
     CGFloat totalPadding = (2*BORDER_WIDTH) + PADDING;
-    CGFloat iconViewWidth = heightWithoutBorders;
-    CGFloat webViewWidth = cellWidth - iconViewWidth - totalPadding;
+    CGFloat webViewWidth = cellWidth - ICON_SIZE - totalPadding;
     
     // BORDER_WIDTH's worth of natural padding is included after the first element
     if (_selfMessage) {
         webview.frame = CGRectMake(BORDER_WIDTH, BORDER_WIDTH+PADDING, webViewWidth, heightWithoutBorders);
-        iconView.frame = CGRectMake(webViewWidth+BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, iconViewWidth, heightWithoutBorders);
+        iconView.frame = CGRectMake(webViewWidth+BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, ICON_SIZE, ICON_SIZE);
         html = [NSString stringWithFormat:@"<html><head><style> %@ %@ %@ </style></head><body><div class=msg>%@</div><div class=handle>%@</div></body></html>",
                 pageCSS,selfMsgCSS,selfHandleCSS,_message,_userHandle];
     }
     else {
-        iconView.frame = CGRectMake(BORDER_WIDTH, BORDER_WIDTH+PADDING, iconViewWidth, heightWithoutBorders);
-        webview.frame = CGRectMake(iconViewWidth+BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, webViewWidth, heightWithoutBorders);
+        iconView.frame = CGRectMake(BORDER_WIDTH, BORDER_WIDTH+PADDING, ICON_SIZE, ICON_SIZE);
+        webview.frame = CGRectMake(ICON_SIZE+BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, webViewWidth, heightWithoutBorders);
         html = [NSString stringWithFormat:@"<html><head><style> %@ %@ %@ </style></head><body><div class=msg>%@</div><div class=handle>%@</div></body></html>",
                 pageCSS,cellMsgCSS,handleCSS,_message,_userHandle];
     }
     iconView.image = _userIcon;
     [webview loadHTMLString:html baseURL:nil];
+}
+
++ (CGFloat)heightForText:(NSString*)text
+{
+    return MAX(DEFAULT_CELL_HEIGHT, HEIGHT_PER_LINE * ( ceilf((CGFloat)text.length / (CGFloat)CHARS_PER_LINE) + 1.)); // 1 extra for the handle line
 }
 
 
