@@ -445,25 +445,29 @@
                                     <segue destination="xjH-xq-8XB" kind="embed" identifier="menuContainerSegue" id="LIq-Wh-KyQ"/>
                                 </connections>
                             </containerView>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dz7-4r-Bgr">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dz7-4r-Bgr">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="6hi-vG-8hp">
-                                        <rect key="frame" x="150" y="299" width="20" height="20"/>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="6hi-vG-8hp">
+                                        <rect key="frame" x="150" y="305" width="20" height="20"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </activityIndicatorView>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Please wait" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8HE-2x-Eco">
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please wait" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8HE-2x-Eco">
                                         <rect key="frame" x="107" y="202" width="106" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="26" id="EHh-J9-EkA"/>
+                                            <constraint firstAttribute="width" constant="106" id="EQn-AX-ve8"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="21"/>
                                         <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                         <color key="shadowColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
                                         <size key="shadowOffset" width="-1" height="-1"/>
                                     </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="while your location" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aSp-Br-xg9">
-                                        <rect key="frame" x="74" y="236" width="173" height="26"/>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="while your location" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aSp-Br-xg9">
+                                        <rect key="frame" x="73" y="235" width="174" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="21"/>
                                         <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
@@ -471,8 +475,8 @@
                                         <color key="shadowColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
                                         <size key="shadowOffset" width="-1" height="-1"/>
                                     </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="is acquired" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XPO-TV-ADT">
-                                        <rect key="frame" x="98" y="270" width="124" height="21"/>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="is acquired" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XPO-TV-ADT">
+                                        <rect key="frame" x="109" y="270" width="102" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="21"/>
                                         <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
@@ -483,22 +487,31 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstItem="aSp-Br-xg9" firstAttribute="centerX" secondItem="6hi-vG-8hp" secondAttribute="centerX" id="91a-yf-9lK"/>
-                                    <constraint firstItem="aSp-Br-xg9" firstAttribute="centerX" secondItem="XPO-TV-ADT" secondAttribute="centerX" id="axv-xw-iG7"/>
-                                    <constraint firstItem="aSp-Br-xg9" firstAttribute="centerX" secondItem="8HE-2x-Eco" secondAttribute="centerX" id="fAT-KG-tdQ"/>
+                                    <constraint firstItem="XPO-TV-ADT" firstAttribute="top" secondItem="aSp-Br-xg9" secondAttribute="bottom" constant="8" symbolic="YES" id="1IZ-AT-JEu"/>
+                                    <constraint firstItem="6hi-vG-8hp" firstAttribute="centerX" secondItem="XPO-TV-ADT" secondAttribute="centerX" id="444-FT-FMS"/>
+                                    <constraint firstItem="6hi-vG-8hp" firstAttribute="centerX" secondItem="dz7-4r-Bgr" secondAttribute="centerX" id="D86-a5-3JS"/>
+                                    <constraint firstItem="aSp-Br-xg9" firstAttribute="centerX" secondItem="8HE-2x-Eco" secondAttribute="centerX" id="TMi-GY-9ZO"/>
+                                    <constraint firstItem="aSp-Br-xg9" firstAttribute="top" secondItem="8HE-2x-Eco" secondAttribute="bottom" constant="7" id="Uf3-LO-WH3"/>
+                                    <constraint firstItem="aSp-Br-xg9" firstAttribute="centerX" secondItem="XPO-TV-ADT" secondAttribute="centerX" id="WIE-ww-6CF"/>
+                                    <constraint firstItem="8HE-2x-Eco" firstAttribute="top" secondItem="dz7-4r-Bgr" secondAttribute="top" constant="202" id="hID-fW-CJL"/>
+                                    <constraint firstItem="6hi-vG-8hp" firstAttribute="top" secondItem="XPO-TV-ADT" secondAttribute="bottom" constant="8" symbolic="YES" id="lEd-Hd-lj4"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="9H2-88-emW" firstAttribute="centerX" secondItem="Etv-Mh-w6a" secondAttribute="centerX" id="Hqt-75-5wE"/>
-                            <constraint firstItem="9H2-88-emW" firstAttribute="top" secondItem="Mfj-VN-GPw" secondAttribute="bottom" constant="154" id="ULW-su-OCK"/>
-                            <constraint firstItem="9H2-88-emW" firstAttribute="leading" secondItem="vXd-kx-9HD" secondAttribute="leading" constant="62" id="XEG-Tc-0cE"/>
-                            <constraint firstItem="9H2-88-emW" firstAttribute="centerY" secondItem="Etv-Mh-w6a" secondAttribute="centerY" id="bqE-3x-Z4t"/>
-                            <constraint firstAttribute="centerX" secondItem="9H2-88-emW" secondAttribute="centerX" id="eZG-XJ-i8U"/>
-                            <constraint firstAttribute="centerY" secondItem="9H2-88-emW" secondAttribute="centerY" id="nwy-rT-i7N"/>
-                            <constraint firstItem="Etv-Mh-w6a" firstAttribute="top" secondItem="vXd-kx-9HD" secondAttribute="top" id="xGN-qH-eaf"/>
-                            <constraint firstItem="Etv-Mh-w6a" firstAttribute="leading" secondItem="vXd-kx-9HD" secondAttribute="leading" id="xuM-wC-wxn"/>
+                            <constraint firstItem="9H2-88-emW" firstAttribute="top" secondItem="Mfj-VN-GPw" secondAttribute="bottom" constant="154" id="3y4-hD-mxc"/>
+                            <constraint firstAttribute="bottom" secondItem="dz7-4r-Bgr" secondAttribute="bottom" id="8Rg-Js-fxh"/>
+                            <constraint firstItem="Etv-Mh-w6a" firstAttribute="leading" secondItem="vXd-kx-9HD" secondAttribute="leading" id="DzM-EG-QUG"/>
+                            <constraint firstItem="dz7-4r-Bgr" firstAttribute="bottom" secondItem="Etv-Mh-w6a" secondAttribute="bottom" id="LZi-jw-4aQ"/>
+                            <constraint firstAttribute="trailing" secondItem="dz7-4r-Bgr" secondAttribute="trailing" id="SVm-fy-sqA"/>
+                            <constraint firstItem="dz7-4r-Bgr" firstAttribute="centerX" secondItem="9H2-88-emW" secondAttribute="centerX" id="VWH-Hu-54n"/>
+                            <constraint firstItem="9H2-88-emW" firstAttribute="leading" secondItem="vXd-kx-9HD" secondAttribute="leading" constant="62" id="aMS-R1-8Xv"/>
+                            <constraint firstItem="dz7-4r-Bgr" firstAttribute="top" secondItem="vXd-kx-9HD" secondAttribute="top" id="g4m-kA-6EX"/>
+                            <constraint firstItem="dz7-4r-Bgr" firstAttribute="top" secondItem="Etv-Mh-w6a" secondAttribute="top" id="loz-6I-KkG"/>
+                            <constraint firstItem="Etv-Mh-w6a" firstAttribute="trailing" secondItem="dz7-4r-Bgr" secondAttribute="trailing" id="mYC-Vk-KlR"/>
+                            <constraint firstItem="9H2-88-emW" firstAttribute="centerY" secondItem="Etv-Mh-w6a" secondAttribute="centerY" id="x0i-eW-ovd"/>
+                            <constraint firstItem="dz7-4r-Bgr" firstAttribute="leading" secondItem="Etv-Mh-w6a" secondAttribute="leading" id="xwv-bN-TaI"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ara-XM-H9e"/>
