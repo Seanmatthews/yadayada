@@ -30,7 +30,10 @@
     tapped.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:tapped];
     UIPanGestureRecognizer* panned = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panned:)];
+
     [self.view addGestureRecognizer:panned];
+    
+    lastTrans = CGPointMake(0., 0.);
 }
 
 - (void)didReceiveMemoryWarning
@@ -38,6 +41,9 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
+#pragma mark - Gesture Recognizers
 
 - (void)tapped:(UITapGestureRecognizer*)sender
 {
@@ -52,13 +58,25 @@
 
 - (void)panned:(UIPanGestureRecognizer*)sender
 {
-    NSLog(@"panned");
+    CGPoint trans = [sender translationInView:_imageView];
+    CGPoint newTrans = CGPointMake(trans.x-lastTrans.x, trans.y-lastTrans.y);
     CGPoint location = [sender locationInView:self.view];
     if (location.x > 0 && location.y > 0 &&
         location.x < self.view.bounds.origin.x+self.view.bounds.size.width &&
         location.y < self.view.bounds.origin.y+self.view.bounds.size.height) {
-        _imageView.center = location;
+        CGPoint newLoc;
+        newLoc.x = _imageView.center.x + newTrans.x;
+        newLoc.y = _imageView.center.y + newTrans.y;
+        _imageView.center = newLoc;
+        lastTrans = trans;
     }
+    
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    lastTrans.x = 0.;
+    lastTrans.y = 0.;
 }
 
 

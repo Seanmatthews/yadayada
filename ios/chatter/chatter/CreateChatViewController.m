@@ -7,6 +7,8 @@
 //
 
 #import "CreateChatViewController.h"
+#import <QuartzCore/QuartzCore.h>
+#import "UIImage+ImageEffects.h"
 #import "Messages.h"
 #import "ViewController.h"
 
@@ -93,14 +95,25 @@
 }
 
 
-#pragma mark - Segues
+#pragma mark - Segues + Blurred Snapshot
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    NSLog(@"segue %@",segue.identifier);
     if ([segue.identifier isEqualToString:@"create2ChatSegue"]) {
         ViewController* vc = (ViewController*)segue.destinationViewController;
         vc.chatId = chatroomId;
         vc.chatTitle = _chatroomNameTextField.text;
+    }
+    else if ([segue.identifier isEqualToString:@"unwindToChatList"]) {
+        
+    }
+    else if ([segue.identifier isEqualToString:@"createChatContainerSegue"]) {
+        
+    }
+    else if ([segue.identifier isEqualToString:@"unwindToMenu"]) {
+        MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
+        vc.image = [self blurredSnapshot];
     }
 }
 
@@ -108,6 +121,31 @@
 {
     NSLog(@"%@",_unwindSegueName);
     [self performSegueWithIdentifier:_unwindSegueName sender:self];
+}
+
+- (UIImage*)blurredSnapshot
+{
+    // Create the image context
+    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, YES, self.view.window.screen.scale);
+    
+    // There he is! The new API method
+    [self.view drawViewHierarchyInRect:self.view.frame afterScreenUpdates:NO];
+    
+    // Get the snapshot
+    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
+    //[UIImage imageNamed:@"Default@2x.png"];
+    
+    // Now apply the blur effect using Apple's UIImageEffect category
+    UIImage *blurredSnapshotImage = [snapshotImage applyLightEffect];
+    
+    // Or apply any other effects available in "UIImage+ImageEffects.h"
+    //UIImage *blurredSnapshotImage = [snapshotImage applyDarkEffect];
+    //UIImage *blurredSnapshotImage = [snapshotImage applyExtraLightEffect];
+    
+    // Be nice and clean your mess up
+    UIGraphicsEndImageContext();
+    
+    return blurredSnapshotImage;
 }
 
 

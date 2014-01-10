@@ -10,7 +10,7 @@
 
 @interface DragImageController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 {
-    
+    CGPoint lastTrans;
 }
 
 @property (nonatomic, retain) IBOutlet UIImageView* imageView;

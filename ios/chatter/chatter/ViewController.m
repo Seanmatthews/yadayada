@@ -367,7 +367,7 @@ const int MESSAGE_CHAR_LIMIT = 200;
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-    vc.image =[self blurredSnapshot];
+    vc.image = [self blurredSnapshot];
     
     LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
     msg.chatroomId = _chatId;
