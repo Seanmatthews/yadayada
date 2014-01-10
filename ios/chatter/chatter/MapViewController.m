@@ -145,10 +145,11 @@
         ViewController* vc = (ViewController*)segue.destinationViewController;
         vc.chatId = mpa.chatroomId;
         vc.chatTitle = mpa.title;
+        [_mapView deselectAnnotation:mpa animated:NO];
     }
     else { //if ([segue.identifier isEqualToString:@""]) {
         MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-        vc.image =[self blurredSnapshot];
+        vc.image = [self blurredSnapshot];
     }
 }
 

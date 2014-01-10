@@ -23,6 +23,9 @@
     NSString* cellMsgCSS;
     NSString* handleCSS;
     NSString* pageCSS;
+    NSString* selfMsgCSS;
+    NSString* selfHandleCSS;
+    
     
     int swipedCellIndex;
     
