@@ -13,7 +13,7 @@
 const CGFloat BORDER_WIDTH = 2.;
 const CGFloat PADDING = 2.;
 const CGFloat ICON_SIZE = 50. - (2 * BORDER_WIDTH) - PADDING;
-const int CHARS_PER_LINE = 30;
+const int CHARS_PER_LINE = 50;
 const CGFloat DEFAULT_CELL_HEIGHT = 50.;
 const CGFloat HEIGHT_PER_LINE = 15.;
 

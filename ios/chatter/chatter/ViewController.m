@@ -14,6 +14,7 @@
 //#import "NSObjCRuntime.h"
 
 const int MESSAGE_NUM_THRESH = 50;
+const int MESSAGE_CHAR_LIMIT = 200;
 
 
 @interface ViewController ()
@@ -168,7 +169,7 @@ const int MESSAGE_NUM_THRESH = 50;
 }
 
 
-#pragma mark - Keyboard Interaction
+#pragma mark - Keyboard Interaction + UITextFieldDelegate
 
 
 - (void)registerForKeyboardNotifications
@@ -218,12 +219,27 @@ const int MESSAGE_NUM_THRESH = 50;
         sm.chatroomId = _chatId;
         sm.message = text;
         
-        NSLog(@"%lli, %lli, %@",sm.userId,sm.chatroomId,sm.message);
+//        NSLog(@"%lli, %lli, %@",sm.userId,sm.chatroomId,sm.message);
         
         [connection sendMessage:sm];
     }
     [textField setText:@""];
     [textField resignFirstResponder];
+    return YES;
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    NSString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    if (newString.length >= MESSAGE_CHAR_LIMIT) {
+        // Send message automatically
+        SubmitMessageMessage* sm = [[SubmitMessageMessage alloc] init];
+        sm.userId = ud.userId;
+        sm.chatroomId = _chatId;
+        sm.message = newString;
+        [textField setText:@""];
+        [connection sendMessage:sm];
+    }
     return YES;
 }
 
