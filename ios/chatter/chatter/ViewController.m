@@ -11,7 +11,7 @@
 #import "UIImage+ImageEffects.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ChatroomMessageCell.h"
-//#import "NSObjCRuntime.h"
+
 
 const int MESSAGE_NUM_THRESH = 50;
 const int MESSAGE_CHAR_LIMIT = 200;

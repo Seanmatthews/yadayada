@@ -104,6 +104,12 @@ public class V1Dispatcher implements MessageDispatcher {
                 server.newMessage(stream, user, chatroom, smMsg.getMessage());
                 break;
 
+            case VoteMessage:
+                VoteMessage vMsg = new VoteMessage(buffer);
+                logMsg(vMsg);
+                // TODO
+                break;
+
             default:
                 throw new ValidationError("Unhandled message: " + type);
         }

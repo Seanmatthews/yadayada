@@ -160,7 +160,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             [data appendBytes:&i length:4];
             msgLen += 4;
         }
-        else if ([typename isEqualToString:@"Byte"]) {
+        else if ([typename isEqualToString:@"C"]) {
             Byte b = (Byte)[[message valueForKey:key] unsignedCharValue];
             [data appendBytes:&b length:1];
             msgLen += 1;
@@ -222,7 +222,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             idx += 4;
             [mb setValue:[NSNumber numberWithInt:i] forKey:key];
         }
-        else if ([typename isEqualToString:@"Byte"]) {
+        else if ([typename isEqualToString:@"C"]) {
             unsigned char b = *(unsigned char*)&data[idx];
             idx++;
             [mb setValue:[NSNumber numberWithUnsignedChar:b] forKey:key];
