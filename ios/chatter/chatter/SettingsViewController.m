@@ -11,6 +11,7 @@
 #import "MenuViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Messages.h"
+#import "DragImageController.h"
 
 @interface SettingsViewController ()
 
@@ -93,6 +94,12 @@
         MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
         vc.image =[self blurredSnapshot];
     }
+    else if ([segue.identifier isEqualToString:@"settingsEmbedSegue"]) {
+        DragImageController* dic = (DragImageController*)segue.destinationViewController;
+        if (ud.userIcon) {
+            dic.imageView.image = ud.userIcon;
+        }
+    }
 }
 
 
@@ -149,7 +156,6 @@
 // Called when the UIKeyboardWillHideNotification is sent
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification
 {
-    
 //    NSDictionary* info = [aNotification userInfo];
 //    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
 //    

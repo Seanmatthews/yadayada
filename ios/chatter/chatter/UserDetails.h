@@ -21,6 +21,7 @@
 @property BOOL registeredHandle;
 @property BOOL receiveChatroomNotifications;
 @property BOOL receiveMessageNotifications;
+@property UIImage* userIcon;
 
 // TODO: The type of this property will change ot accommodate
 // being joined to several chats at once.
