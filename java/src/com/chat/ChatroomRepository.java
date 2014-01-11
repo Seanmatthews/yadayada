@@ -15,6 +15,7 @@ public interface ChatroomRepository {
     Iterator<Chatroom> search(ChatroomSearchCriteria search);
     Chatroom get(long chatroomId);
     void addChatroom(Chatroom chatroom);
+    void removeChatroom(long chatroomID);
     Iterator<Chatroom> iterator();
 
     int getChatroomUserCount(Chatroom chatroom);

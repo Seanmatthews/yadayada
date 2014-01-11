@@ -23,7 +23,7 @@ public interface ChatServer {
     void createChatroom(ClientConnection sender, User user, String name, long latitude, long longitude, long radius);
     void newMessage(ClientConnection sender, User senderUser, Chatroom chatroom, String message);
 
-    void searchChatrooms(ClientConnection sender);
+    void searchChatrooms(ClientConnection sender, long latitude, long longitude, long metersFromCoords, byte onlyJoinable);
     void joinChatroom(ClientConnection sender, User user, Chatroom chatroom);
     void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom);
 }

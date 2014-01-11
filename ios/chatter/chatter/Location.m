@@ -12,6 +12,9 @@
 
 @synthesize didUpdateFirstLocation;
 
+static const double kDegreesToRadians = M_PI / 180.0;
+static const double kRadiansToDegrees = 180.0 / M_PI;
+
 - (id)init
 {
     self = [super init];
@@ -105,26 +108,21 @@ static BOOL firstTimeLocation = YES;
 + (CGFloat)milesBetweenSource:(CLLocationCoordinate2D)firstCoords andDestination:(CLLocationCoordinate2D)secondCoords
 {
     
-    // this radius is in M //KM
-    
-    double nRadius = 1609.344; //6371;
-    
-    // Get the difference between our two points
-    // then convert the difference into radians
-    
-    double nDLat = (firstCoords.latitude - secondCoords.latitude)* (M_PI/180);
-    double nDLon = (firstCoords.longitude - secondCoords.longitude)* (M_PI/180);
-    
-    double nLat1 =  secondCoords.latitude * (M_PI/180);
-    double nLat2 =  secondCoords.latitude * (M_PI/180);
-    
-    double nA = pow ( sin(nDLat/2), 2 ) + cos(nLat1) * cos(nLat2) * pow ( sin(nDLon/2), 2 );
-    
-    double nC = 2 * atan2( sqrt(nA), sqrt( 1 - nA ));
-    
-    double nD = nRadius * nC;
-    
-    return nD;
+    double earthRadius = 6371.01; // Earth's radius in Kilometers
+	
+	// Get the difference between our two points then convert the difference into radians
+	double nDLat = (firstCoords.latitude - secondCoords.latitude) * kDegreesToRadians;
+	double nDLon = (firstCoords.longitude - secondCoords.longitude) * kDegreesToRadians;
+	
+	double fromLat =  secondCoords.latitude * kDegreesToRadians;
+	double toLat =  firstCoords.latitude * kDegreesToRadians;
+	
+	double nA =	pow ( sin(nDLat/2), 2 ) + cos(fromLat) * cos(toLat) * pow ( sin(nDLon/2), 2 );
+	
+	double nC = 2 * atan2( sqrt(nA), sqrt( 1 - nA ));
+	double nD = earthRadius * nC;
+	
+	return nD * 1000. / 1609.34; // Return our calculated distance in MILES
 }
 
 - (CGFloat)milesToCurrentLocationFrom:(CLLocationCoordinate2D)coords
@@ -134,7 +132,7 @@ static BOOL firstTimeLocation = YES;
 
 + (long long)metersFromMiles:(CGFloat)miles
 {
-    return (long long)(1609.344 * miles);
+    return (long long)(1609.34 * miles);
 }
 
 

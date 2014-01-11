@@ -9,4 +9,22 @@ package com.chat;
  */
 public class ChatroomSearchCriteria {
 
+    private long latitude;
+    private long longitude;
+    private long metersFromCoords;
+    private byte onlyJoinable;
+
+    public ChatroomSearchCriteria(long latitude, long longitude, long metersFromCoords, byte onlyJoinable) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.metersFromCoords = metersFromCoords;
+        this.onlyJoinable = onlyJoinable;
+    }
+
+    public long getLatitude() { return latitude; }
+    public long getLongitude() { return longitude; }
+    public long getMetersFromCoords() { return metersFromCoords; }
+    public boolean returnOnlyJoinable() { return onlyJoinable > 0; }
 }
+
+

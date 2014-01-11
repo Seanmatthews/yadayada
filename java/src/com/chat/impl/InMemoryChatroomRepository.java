@@ -34,7 +34,29 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
 
     @Override
     public Iterator<Chatroom> search(ChatroomSearchCriteria search) {
-        return chatroomIdMap.values().iterator();
+        Iterator<Chatroom> chatrooms = chatroomIdMap.values().iterator();
+        Vector<Chatroom> ret = new Vector<>();
+
+        while (chatrooms.hasNext()) {
+            Chatroom c = chatrooms.next();
+            long distMeters = distanceBetweenCoords(search.getLatitude(), search.getLongitude(), c.getLatitude(), c.getLongitude());
+            boolean canJoin = !search.returnOnlyJoinable() || distMeters <= c.getRadius() || c.getRadius() <= 0;
+            if (canJoin && distMeters <= search.getMetersFromCoords()) {
+
+                // !!! TODO (FIX)
+                // THIS IS A QUICK FIX TO EMPTY CHAT DELETION
+                // !!! TODO (FIX)
+                if (c.getUserCount() > 0) {
+                    ret.add(c);
+                }
+                else {
+                    removeChatroom(c.getId());
+                }
+            }
+        }
+
+        return ret.iterator();
+        //return chatroomIdMap.values().iterator();
     }
 
     @Override
@@ -46,6 +68,13 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
     public void addChatroom(Chatroom chatroom) {
         chatroomIdMap.put(chatroom.getId(), chatroom);
         chatroomUserMap.put(chatroom, Collections.newSetFromMap(new ConcurrentHashMap<User, Boolean>()));
+    }
+
+    @Override
+    public void removeChatroom(long chatroomID) {
+        Chatroom c = chatroomIdMap.get(chatroomID);
+        chatroomUserMap.remove(c);
+        chatroomIdMap.remove(chatroomID);
     }
 
     @Override
@@ -77,4 +106,25 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
     public boolean containsUser(Chatroom chatroom, User sender) {
         return chatroomUserMap.get(chatroom).contains(sender);
     }
+
+    // This really shouldn't be here, but I really don't want to create a whole
+    // utility class for this function that will only be used here.
+    private long distanceBetweenCoords(long lat1, long lon1, long lat2, long lon2) {
+        double earthRadius = 6371.01; // Earth's radius in Kilometers
+
+        // Get the difference between our two points then convert the difference into radians
+        double nDLat = (lat1 - lat2) * Math.PI / 180.0;
+        double nDLon = (lon1 - lon2) * Math.PI / 180.0;
+
+        double fromLat =  lat2 * Math.PI / 180.0;
+        double toLat =  lat1 * Math.PI / 180.0;
+
+        double nA =	pow ( sin(nDLat/2), 2 ) + cos(fromLat) * cos(toLat) * pow ( sin(nDLon/2), 2 );
+
+        double nC = 2 * atan2( sqrt(nA), sqrt( 1 - nA ));
+        double nD = earthRadius * nC;
+
+        return (long)(nD * 1000.); // Return our calculated distance in meters
+    }
+}
 }

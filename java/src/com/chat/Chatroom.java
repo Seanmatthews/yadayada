@@ -106,4 +106,6 @@ public class Chatroom {
     public long getLatitude() {
         return latitude;
     }
+
+    public boolean global() { return 0 >= radius; }
 }

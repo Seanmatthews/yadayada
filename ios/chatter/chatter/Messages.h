@@ -184,6 +184,8 @@ typedef enum {
 
 @property long long latitude;
 @property long long longitude;
+@property Byte onlyJoinable;
+@property long long metersFromCoords;
 
 @end
 

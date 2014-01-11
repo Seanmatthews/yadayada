@@ -75,6 +75,8 @@
     <msg name="SearchChatrooms" val="31" origin="client">
         <field name="latitude" type="long" />
         <field name="longitude" type="long" />
+        <field name="onlyJoinable" type="byte" />
+        <field name="metersFromCoords" type="long" />
     </msg>
 
     <msg name="Chatroom" val="32" origin="server">

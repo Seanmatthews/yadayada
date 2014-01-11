@@ -257,10 +257,10 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void searchChatrooms(ClientConnection senderConnection) {
+    public void searchChatrooms(ClientConnection sender, long latitude, long longitude, long metersFromCoords, byte onlyJoinable) {
         log.debug("Searching chatrooms {}", senderConnection);
 
-        Iterator<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria());
+        Iterator<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria(latitude, longitude, metersFromCoords, onlyJoinable));
 
         while(chatrooms.hasNext()) {
             sendChatroom(senderConnection, chatrooms.next());

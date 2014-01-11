@@ -163,6 +163,12 @@
         return;
     }
     
+    if ([ud.handle isEqualToString:@""]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:@"Cannot join a chatroom with no handle" delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
+    
     CreateChatroomMessage* msg = [[CreateChatroomMessage alloc] init];
     msg.chatroomName = _chatroomNameTextField.text;
     if (_globalChatSelect.selectedSegmentIndex == 0) {
@@ -209,7 +215,7 @@
                 alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alert show];
                 
-                // TODO: https://bitbucket.org/rowboat/chatter/issue/98/handle-join-chatroom-reject-on-chat-create
+                // TODO: Do anything else here?
                 break;
                 
             case CreateChatroomReject:
