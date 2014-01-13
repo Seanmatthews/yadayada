@@ -50,7 +50,7 @@ public class V1Dispatcher implements MessageDispatcher {
             case SearchChatrooms:
                 SearchChatroomsMessage scMsg = new SearchChatroomsMessage(buffer);
                 logMsg(scMsg);
-                server.searchChatrooms(stream);
+                server.searchChatrooms(stream, scMsg.getLatitude(), scMsg.getLongitude(), scMsg.getOnlyJoinable(), scMsg.getOnlyJoinable());
                 break;
 
             case CreateChatroom:
@@ -104,7 +104,7 @@ public class V1Dispatcher implements MessageDispatcher {
                 server.newMessage(stream, user, chatroom, smMsg.getMessage());
                 break;
 
-            case VoteMessage:
+            case Vote:
                 VoteMessage vMsg = new VoteMessage(buffer);
                 logMsg(vMsg);
                 // TODO

@@ -83,7 +83,7 @@ public class ChatGUI implements ChatClient {
         searchChatroomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            connection.sendMessage(new SearchChatroomsMessage(0, 0));
+            connection.sendMessage(new SearchChatroomsMessage(0L, 0L, (byte)0, 0L));
             }
         });
 

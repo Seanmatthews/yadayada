@@ -47,13 +47,16 @@
 
 - (void)tapped:(UITapGestureRecognizer*)sender
 {
-    NSLog(@"tapped");
-    UIImagePickerController *ipc = [[UIImagePickerController alloc] init];
-    ipc.modalPresentationStyle = UIModalPresentationCurrentContext;
-    ipc.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    ipc.delegate = self;
-    _imagePickerController = ipc;
-    [self presentViewController:_imagePickerController animated:YES completion:nil];
+//    NSLog(@"tapped");
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:@"No icons available" delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+    
+//    UIImagePickerController *ipc = [[UIImagePickerController alloc] init];
+//    ipc.modalPresentationStyle = UIModalPresentationCurrentContext;
+//    ipc.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+//    ipc.delegate = self;
+//    _imagePickerController = ipc;
+//    [self presentViewController:_imagePickerController animated:YES completion:nil];
 }
 
 - (void)panned:(UIPanGestureRecognizer*)sender

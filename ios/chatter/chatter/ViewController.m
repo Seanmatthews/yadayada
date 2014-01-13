@@ -329,7 +329,7 @@ const int MESSAGE_CHAR_LIMIT = 200;
     }
     [cell setUserHandle:msg.senderHandle];
     [cell setMessage:msg.message];
-    [cell setUserIcon:[UIImage imageNamed:@"default-icon.png"]];
+    //[cell setUserIcon:[UIImage imageNamed:@"default-icon.png"]];
     [cell setSelfMessage:(msg.senderId == ud.userId ? YES : NO)];
     [cell arrangeElements];
     

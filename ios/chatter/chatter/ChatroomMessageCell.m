@@ -30,6 +30,7 @@ const CGFloat HEIGHT_PER_LINE = 15.;
         self.layer.cornerRadius = 5;
         self.layer.masksToBounds = YES;
         
+        _userIcon = nil;
         iconView = [[UIImageView alloc] init];
         iconView.opaque = NO;
         iconView.userInteractionEnabled = NO;
@@ -46,7 +47,9 @@ const CGFloat HEIGHT_PER_LINE = 15.;
         hiddenView.frame = self.contentView.bounds; // Should this be set after init?
         hiddenView.userInteractionEnabled = NO;
         
-        [self.contentView addSubview:iconView];
+        if (_userIcon) {
+            [self.contentView addSubview:iconView];
+        }
         [self.contentView addSubview:webview];
         [self.contentView addSubview:hiddenView];
         
@@ -84,14 +87,24 @@ const CGFloat HEIGHT_PER_LINE = 15.;
     
     // BORDER_WIDTH's worth of natural padding is included after the first element
     if (_selfMessage) {
-        webview.frame = CGRectMake(BORDER_WIDTH, BORDER_WIDTH+PADDING, webViewWidth, heightWithoutBorders);
-        iconView.frame = CGRectMake(webViewWidth+BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, ICON_SIZE, ICON_SIZE);
+        if (_userIcon) {
+            webview.frame = CGRectMake(BORDER_WIDTH, BORDER_WIDTH+PADDING, webViewWidth, heightWithoutBorders);
+            iconView.frame = CGRectMake(webViewWidth+BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, ICON_SIZE, ICON_SIZE);
+        }
+        else {
+            webview.frame = CGRectMake(BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, webViewWidth+ICON_SIZE, heightWithoutBorders);
+        }
         html = [NSString stringWithFormat:@"<html><head><style> %@ %@ %@ </style></head><body><div class=msg>%@</div><div class=handle>%@</div></body></html>",
                 pageCSS,selfMsgCSS,selfHandleCSS,_message,_userHandle];
     }
     else {
-        iconView.frame = CGRectMake(BORDER_WIDTH, BORDER_WIDTH+PADDING, ICON_SIZE, ICON_SIZE);
-        webview.frame = CGRectMake(ICON_SIZE+BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, webViewWidth, heightWithoutBorders);
+        if (_userIcon) {
+            iconView.frame = CGRectMake(BORDER_WIDTH, BORDER_WIDTH+PADDING, ICON_SIZE, ICON_SIZE);
+            webview.frame = CGRectMake(ICON_SIZE+BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, webViewWidth, heightWithoutBorders);
+        }
+        else {
+            webview.frame = CGRectMake(BORDER_WIDTH+PADDING, BORDER_WIDTH+PADDING, webViewWidth+ICON_SIZE, heightWithoutBorders);
+        }
         html = [NSString stringWithFormat:@"<html><head><style> %@ %@ %@ </style></head><body><div class=msg>%@</div><div class=handle>%@</div></body></html>",
                 pageCSS,cellMsgCSS,handleCSS,_message,_userHandle];
     }

@@ -56,7 +56,7 @@ public class STChatroomRepository implements ChatroomRepository {
     }
 
     @Override
-    public Chatroom get(Long chatroomId) {
+    public Chatroom get(long chatroomId) {
         return chatroomIdMap.get(chatroomId);
     }
 
@@ -115,9 +115,9 @@ public class STChatroomRepository implements ChatroomRepository {
         double fromLat =  lat2 * Math.PI / 180.0;
         double toLat =  lat1 * Math.PI / 180.0;
 
-        double nA =	pow ( sin(nDLat/2), 2 ) + cos(fromLat) * cos(toLat) * pow ( sin(nDLon/2), 2 );
+        double nA =	Math.pow( Math.sin(nDLat/2), 2 ) + Math.cos(fromLat) * Math.cos(toLat) * Math.pow( Math.sin(nDLon/2), 2 );
 
-        double nC = 2 * atan2( sqrt(nA), sqrt( 1 - nA ));
+        double nC = 2 * Math.atan2( Math.sqrt(nA), Math.sqrt( 1 - nA ));
         double nD = earthRadius * nC;
 
         return (long)(nD * 1000.); // Return our calculated distance in meters

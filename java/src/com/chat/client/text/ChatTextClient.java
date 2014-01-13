@@ -65,7 +65,7 @@ public class ChatTextClient implements ChatClient {
         user = new User(userId, username, userRepo);
         userRepo.addUser(user);
 
-        connection.sendMessage(new SearchChatroomsMessage(0, 0));
+        connection.sendMessage(new SearchChatroomsMessage(0L, 0L, (byte)0, 0L));
     }
 
     @Override
