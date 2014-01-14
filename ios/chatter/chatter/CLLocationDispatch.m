@@ -67,7 +67,7 @@
         _locationManager.headingFilter = kCLHeadingFilterNone;
         _locationManager.delegate = self;
         
-        _locationManager.purpose = NSLocalizedStringWithDefaultValue(@"LocationManagerPurpose", nil, [NSBundle mainBundle], @"In order to provide place search and route guidance, StreetWise needs your permission to use Location Services.", @"LocationManager purpose");
+        //_locationManager.purpose = NSLocalizedStringWithDefaultValue(@"LocationManagerPurpose", nil, [NSBundle mainBundle], @"In order to provide place search and route guidance, StreetWise needs your permission to use Location Services.", @"LocationManager purpose");
         
         _listeners = [[NSMutableArray alloc] initWithCapacity:0];        
         _isRunningDemo = NO;

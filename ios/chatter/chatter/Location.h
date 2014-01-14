@@ -33,6 +33,7 @@
 + (long long)toLongLong:(double)coord;
 + (CGFloat)milesBetweenSource:(CLLocationCoordinate2D)firstCoords andDestination:(CLLocationCoordinate2D)secondCoords;
 - (CGFloat)milesToCurrentLocationFrom:(CLLocationCoordinate2D)coords;
+- (NSUInteger)metersToCurrentLocationFrom:(CLLocationCoordinate2D)coords;
 + (long long)metersFromMiles:(CGFloat)miles;
 
 @end

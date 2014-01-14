@@ -39,6 +39,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.view setAutoresizingMask:UIViewAutoresizingFlexibleHeight];
+    [_scrollView setAutoresizingMask:UIViewAutoresizingFlexibleHeight];
     _handleTextField.text = ud.handle;
 	_handleTextField.returnKeyType = UIReturnKeyDone;
     [_chatroomNotificationControl setSelectedSegmentIndex:(ud.receiveChatroomNotifications ? 0 : 1)];

@@ -46,7 +46,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	
     // Give the map view rounded corners
     _tableView.layer.cornerRadius = 5;
     _tableView.layer.masksToBounds = YES;
@@ -65,9 +64,9 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    if ([self isBeingDismissed]) {
-        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
-    }
+//    if ([self isBeingDismissed]) {
+//        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
+//    }
     viewIsVisible = NO;
 }
 
@@ -94,7 +93,7 @@ static BOOL onceToChatView = YES;
 - (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom
 {
     CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
-    CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
+    NSUInteger distance = [location metersToCurrentLocationFrom:chatroomOrigin];
     
     // Only display local chatrooms that the user is able to join
     if (distance - chatroom.radius > 0) {
@@ -136,6 +135,7 @@ static BOOL onceToChatView = YES;
         UIAlertView *alert;
         switch (message.type) {
             case Chatroom:
+                NSLog(@"chatroom");
                 [self addChatroom:(ChatroomMessage*)message];
                 [_tableView reloadData];
                 break;
@@ -202,7 +202,7 @@ static BOOL onceToChatView = YES;
 
 - (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue
 {
-    
+
 }
 
 
@@ -227,6 +227,14 @@ static BOOL onceToChatView = YES;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+//    if (indexPath.section == 0 && indexPath.row > [localChatroomList count]-1) {
+//        return nil;
+//    }
+//    if (indexPath.section == 1 && indexPath.row > [globalChatroomList count]-1) {
+//        return nil;
+//    }
+    
     static NSString *CellIdentifier = @"ChatroomListCell";
     ChatroomListCell *cell = (ChatroomListCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
@@ -251,11 +259,19 @@ static BOOL onceToChatView = YES;
         chatroom = [localChatroomList objectAtIndex:indexPath.row];
         CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
         CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
+//        NSLog(@"dist: %f",distance);
+//        NSLog(@"current loc: %f, %f",[location currentLocation].latitude, [location currentLocation].longitude);
+//        NSLog(@"chat loc: %f, %f",[Location fromLongLong:chatroom.latitude],[Location fromLongLong:chatroom.longitude]);
+//        NSLog(@"chat activity: %d",chatroom.chatActivity);
         distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
     }
     else if (indexPath.section == 1) {
         chatroom = [globalChatroomList objectAtIndex:indexPath.row];
         distanceStr = @"na";
+    }
+    
+    if (chatroom.chatActivity > 100) {
+        chatroom.chatActivity = 0;
     }
     
     // TODO: get an image
@@ -290,7 +306,6 @@ static BOOL onceToChatView = YES;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"Something was selected!");
     if (indexPath.section == 0) {
         tappedCellInfo = (ChatroomMessage*)[localChatroomList objectAtIndex:indexPath.row];
     }
@@ -313,6 +328,7 @@ static BOOL onceToChatView = YES;
 {
     [localChatroomList removeAllObjects];
     [globalChatroomList removeAllObjects];
+    [_tableView reloadData];
     [self searchChatrooms];
     if (refreshControl) {
         [refreshControl endRefreshing];

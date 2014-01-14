@@ -14,6 +14,7 @@
 
 static const double kDegreesToRadians = M_PI / 180.0;
 static const double kRadiansToDegrees = 180.0 / M_PI;
+static const double MILES_METERS = 1609.34;
 
 - (id)init
 {
@@ -122,7 +123,7 @@ static BOOL firstTimeLocation = YES;
 	double nC = 2 * atan2( sqrt(nA), sqrt( 1 - nA ));
 	double nD = earthRadius * nC;
 	
-	return nD * 1000. / 1609.34; // Return our calculated distance in MILES
+	return nD * 1000. / MILES_METERS; // Return our calculated distance in MILES
 }
 
 - (CGFloat)milesToCurrentLocationFrom:(CLLocationCoordinate2D)coords
@@ -130,9 +131,14 @@ static BOOL firstTimeLocation = YES;
     return [Location milesBetweenSource:_currentLocation andDestination:coords];
 }
 
+- (NSUInteger)metersToCurrentLocationFrom:(CLLocationCoordinate2D)coords
+{
+    return [self milesToCurrentLocationFrom:coords] * MILES_METERS;
+}
+
 + (long long)metersFromMiles:(CGFloat)miles
 {
-    return (long long)(1609.34 * miles);
+    return (long long)(MILES_METERS * miles);
 }
 
 

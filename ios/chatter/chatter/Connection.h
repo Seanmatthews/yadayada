@@ -10,12 +10,13 @@
 #import "MessageUtils.h"
 #import "UserDetails.h"
 
+
 @interface Connection : NSObject <NSStreamDelegate>
 {
     NSInputStream* is;
     NSOutputStream* os;
     NSMutableDictionary* controllers;
-    BUFDECLTYPE internalBuffer[1024];
+    BUFDECLTYPE internalBuffer[8096];
     int internalBufferLen;
 }
 

@@ -38,7 +38,7 @@ const int MESSAGE_CHAR_LIMIT = 200;
     // method for incoming connections.
     connection = [Connection sharedInstance];
     ViewController* __weak weakSelf = self;
-    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
+    //[connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
     
     // CSS for table cells
     pageCSS = @"body { margin:0; padding:1; }";
@@ -46,6 +46,8 @@ const int MESSAGE_CHAR_LIMIT = 200;
     handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#D0D0D0 }";
     selfMsgCSS = @"div.msg { font:12px/13px baskerville,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0 }";
     selfHandleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#D0D0D0; text-align:right }";
+    
+    [connection performSelector:@selector(addCallbackBlock:fromSender:) withObject:^(MessageBase* m){ [weakSelf messageCallback:m];} withObject:NSStringFromClass([self class])];
 }
 
 // This is called whenever the view is loaded through storyboard segues
@@ -84,6 +86,11 @@ const int MESSAGE_CHAR_LIMIT = 200;
     navBar.topItem.title = _chatTitle;
 }
 
+-(void)viewDidAppear:(BOOL)animated
+{
+
+}
+
 
 - (void)viewWillDisappear:(BOOL)animated
 {
@@ -102,7 +109,6 @@ const int MESSAGE_CHAR_LIMIT = 200;
 
 - (void)tappedCell:(id)sender
 {
-    NSLog(@"double tapped cell: %d",swipedCellIndex);
     // Make cell flash
     UITableViewCell* cell = [mTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:swipedCellIndex inSection:0]];
     UIView* wv = (UIView*)[cell.contentView viewWithTag:3];
@@ -127,7 +133,6 @@ const int MESSAGE_CHAR_LIMIT = 200;
 
 - (void)swipeCell:(UITableViewRowAnimation)animation
 {
-    NSLog(@"swiped cell: %d",swipedCellIndex);
     NSIndexPath* cellPath = [NSIndexPath indexPathForRow:swipedCellIndex inSection:0];
     NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
     
@@ -255,7 +260,6 @@ const int MESSAGE_CHAR_LIMIT = 200;
             NSLog(@"Message");
             [self receivedMessage:(MessageMessage*)message];
             [mTableView reloadData];
-            NSLog(@"num msgs: %d",[chatQueue count]);
             ipath = [NSIndexPath indexPathForRow:[chatQueue count]-1 inSection:0];
             [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             break;
@@ -329,7 +333,7 @@ const int MESSAGE_CHAR_LIMIT = 200;
     }
     [cell setUserHandle:msg.senderHandle];
     [cell setMessage:msg.message];
-    //[cell setUserIcon:[UIImage imageNamed:@"default-icon.png"]];
+    [cell setUserIcon:nil];
     [cell setSelfMessage:(msg.senderId == ud.userId ? YES : NO)];
     [cell arrangeElements];
     

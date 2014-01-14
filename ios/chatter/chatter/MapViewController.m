@@ -74,7 +74,8 @@
 
 - (IBAction)locateButtonPressed:(id)sender
 {
-    [_mapView setCenterCoordinate:[location currentLocation]];
+    [_mapView setCenterCoordinate:[location currentLocation] animated:YES];
+    
 }
 
 
@@ -172,7 +173,6 @@
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id < MKAnnotation >)annotation
 {
-    NSLog(@"viewforannotation");
     MKPinAnnotationView* annotationView = nil;
     if ([annotation isKindOfClass:[ChatPointAnnotation class]]) {
         annotationView = (MKPinAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:@"AnnotationView"];

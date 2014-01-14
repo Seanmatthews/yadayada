@@ -47,13 +47,14 @@
     [is scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     [os scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     
+    
     [is open];
     [os open];
 }
 
 - (void)sendMessage:(MessageBase*)message
 {
-    NSLog(@"Sending message of type %d",(MessageTypes)message.type);
+    //NSLog(@"Sending message of type %d",(MessageTypes)message.type);
     NSData* d = [MessageUtils serializeMessage:message];
     [os write:[d bytes] maxLength:[d length]];
 }
@@ -85,30 +86,26 @@
 
 - (void)parseMessage:(BUFTYPE)buffer withLength:(int)length
 {
+    NSDictionary* tmpControllers = [[NSDictionary alloc] initWithDictionary:controllers copyItems:YES];
     memcpy(internalBuffer+internalBufferLen, buffer, length);
     internalBufferLen += length;
-    NSLog(@"%d bytes total",internalBufferLen);
-    
-//    int msgLen = CFSwapInt16BigToHost(*(short*)&internalBuffer[0]);
-//    while (msgLen <= internalBufferLen-2 && internalBufferLen > 1) {
+
     while (internalBufferLen > 1) {
         short msgLen = CFSwapInt16BigToHost(*(short*)&internalBuffer[0]);
-        NSLog(@"msg len: %d",msgLen);
         if (internalBufferLen-2 < msgLen) {
             break;
         }
         
         MessageBase* m = [MessageUtils deserializeMessage:internalBuffer+2 withLength:msgLen];
-        for (NSString* sender in controllers) {
-            ((void (^)(MessageBase*))[controllers objectForKey:sender])(m);
+        for (NSString* sender in tmpControllers) {
+            ((void (^)(MessageBase*))[tmpControllers objectForKey:sender])(m);
         }
-        
+
         // move unused bytes to the beginning of the buffer
         internalBufferLen -= (msgLen+2);
-        memcpy(internalBuffer, internalBuffer+msgLen+2, internalBufferLen);
-//        if (internalBufferLen > 1) {
-//            msgLen = CFSwapInt16BigToHost(*(short*)&internalBuffer[0]);
-//        }
+        if (internalBufferLen > 0) {
+            memcpy(internalBuffer, internalBuffer+msgLen+2, internalBufferLen);
+        }
     }
 }
 
@@ -138,14 +135,12 @@
             break;
             
         case NSStreamEventHasBytesAvailable:
-            NSLog(@"bytes available");
             if (aStream == is) {
                 BUFDECLTYPE buffer[1024];
                 int len;
                 
                 while ([is hasBytesAvailable]) {
                     len = [is read:buffer maxLength:1024];
-                    NSLog(@"%i bytes",len);
                     if (len > 0) {
                         [self parseMessage:buffer withLength:len];
                     }

@@ -20,6 +20,7 @@
 @property (nonatomic,retain) IBOutlet UITextField* handleTextField;
 @property (nonatomic,retain) IBOutlet UISegmentedControl* chatroomNotificationControl;
 @property (nonatomic,retain) IBOutlet UISegmentedControl* messageNotificationControl;
+@property (nonatomic,retain) IBOutlet UIScrollView* scrollView;
 
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;

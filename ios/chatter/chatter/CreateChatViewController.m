@@ -19,6 +19,8 @@
 
 @implementation CreateChatViewController
 
+const double MILES_TO_METERS = 1609.34;
+
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -175,7 +177,7 @@
         msg.radius = 0;
     }
     else {
-        msg.radius = [_chatroomRadiusLabel.text floatValue];
+        msg.radius = [_chatroomRadiusLabel.text floatValue] * MILES_TO_METERS;
     }
     msg.ownerId = ud.userId;
     msg.latitude = [location currentLat];
@@ -214,8 +216,6 @@
                 NSLog(@"Could not join chatroom");
                 alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alert show];
-                
-                // TODO: Do anything else here?
                 break;
                 
             case CreateChatroomReject:
