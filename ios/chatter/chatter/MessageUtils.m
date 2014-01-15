@@ -133,9 +133,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     [data appendBytes:&b length:1];
     
     for (NSString* key in props) {
-        //NSLog(@"msgLen: %d",msgLen);
         NSString* typename = [props valueForKey:key];
-        //NSLog(@"%@ : %@",key,typename);
         //Class C = NSClassFromString([props valueForKey:key]);
         
         if ([typename isEqualToString:@"NSString"]) {
@@ -171,7 +169,6 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     }
     
     // set the correct msg length
-    //NSLog(@"msgLen: %d",msgLen);
     short newMsgLen = CFSwapInt16HostToBig(msgLen);
     [data replaceBytesInRange:NSMakeRange(0, 2) withBytes:&newMsgLen length:2];
 
@@ -236,7 +233,6 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 static const char *getPropertyType(objc_property_t property) {
     const char *attributes = property_getAttributes(property);
-    //printf("attributes=%s\n", attributes);
     char buffer[1 + strlen(attributes)];
     strcpy(buffer, attributes);
     char *state = buffer, *attribute;

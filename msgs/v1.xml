@@ -89,6 +89,7 @@
         <field name="radius" type="long" />
         <field name="userCount" type="int" />
         <field name="chatActivity" type="short" />
+        <field name="creationTime" type="long" />
     </msg>
 
     <msg name="JoinChatroom" val="33" origin="client">

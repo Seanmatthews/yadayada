@@ -70,7 +70,7 @@
     viewIsVisible = NO;
 }
 
-static BOOL onceToChatView = YES;
+//static BOOL onceToChatView = YES;
 - (void)viewDidAppear:(BOOL)animated
 {
 //    if (onceToChatView) {
