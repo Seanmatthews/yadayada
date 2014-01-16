@@ -155,7 +155,7 @@
         [_listeners addObject:listener];
         if (_newLocation) {
             // immediately update new listener with current location
-            [listener locationManager:self.isRunningDemo?nil:_locationManager  didUpdateToLocation:_newLocation fromLocation:_oldLocation];
+            [listener locationManager:self.isRunningDemo?nil:_locationManager  didUpdateLocations:[NSArray arrayWithObjects:_oldLocation, _newLocation, nil]];
         }
         if (_newHeading) {
             [listener locationManager:_locationManager didUpdateHeading:_newHeading];
@@ -393,7 +393,7 @@
     NSInteger index = i+_startIndexForPlayingLog;
     CLLocation *currLocation = [_loggedLocations objectAtIndex:index];
     CLLocation *prevLocation = i>0?[_loggedLocations objectAtIndex:index-1]:nil;
-    [self locationManager:_locationManager didUpdateToLocation:currLocation fromLocation:prevLocation];    
+    [self locationManager:_locationManager didUpdateLocations:[NSArray arrayWithObjects:currLocation, prevLocation, nil]];
 }
 
 
@@ -428,7 +428,7 @@
     CLLocation *currLocation = Retain([_locationEnumerator nextObject]);
     
     if (currLocation) {
-        [self locationManager:_locationManager didUpdateToLocation:currLocation fromLocation:prevLocation];
+        [self locationManager:_locationManager didUpdateLocations:[NSArray arrayWithObjects:currLocation, prevLocation, nil]];
     }
     else{
         [self stopDemoRoute];

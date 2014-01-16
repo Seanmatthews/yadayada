@@ -11,11 +11,13 @@
 #import "Location.h"
 #import "Messages.h"
 #import "Connection.h"
+#import "UserDetails.h"
 
 @interface MapViewController : UIViewController <MKMapViewDelegate>
 {
     Location* location;
     Connection* connection;
+    UserDetails* ud;
     BOOL viewIsVisible;
 }
 
@@ -24,6 +26,8 @@
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
 - (void)addChatroomAnnotation:(ChatroomMessage*)message;
+- (void)joinChatroom:(id)sender;
+- (void)deselectAllAnnotations;
 - (IBAction)locateButtonPressed:(id)sender;
 
 

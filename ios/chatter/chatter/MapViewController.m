@@ -24,6 +24,7 @@
 - (void)initCode
 {
     location = [Location sharedInstance];
+    ud = [UserDetails sharedInstance];
     
     // Get connection object and add this controller's callback
     // method for incoming connections.
@@ -135,18 +136,29 @@
     [self performSegueWithIdentifier:@"ChatAnnotation" sender:view];
 }
 
+- (void)deselectAllAnnotations
+{
+    NSArray *selectedAnnotations = _mapView.selectedAnnotations;
+    for(id annotationView in selectedAnnotations) {
+        if ([annotationView isSelected]) {
+            [_mapView deselectAnnotation:[annotationView annotation] animated:NO];
+        }
+    }
+}
+
 
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    NSLog(@"segue: %@",segue.identifier);
     if ([segue.identifier isEqualToString:@"ChatAnnotation"]) {
-        MKPinAnnotationView* mkv = (MKPinAnnotationView*)sender;
-        ChatPointAnnotation* mpa = (ChatPointAnnotation*)mkv.annotation;
+        JoinedChatroomMessage* jcm = (JoinedChatroomMessage*)sender;
         ViewController* vc = (ViewController*)segue.destinationViewController;
-        vc.chatId = mpa.chatroomId;
-        vc.chatTitle = mpa.title;
-        [_mapView deselectAnnotation:mpa animated:NO];
+        vc.chatId = jcm.chatroomId;
+        vc.chatTitle = jcm.chatroomName;
+        //[_mapView deselectAnnotation:mpa animated:NO];
+        //[self deselectAllAnnotations];
     }
     else { //if ([segue.identifier isEqualToString:@""]) {
         MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
@@ -154,9 +166,24 @@
     }
 }
 
-- (void)segueToChat:(id)sender
+- (void)joinChatroom:(id)sender
 {
-    [self performSegueWithIdentifier:@"ChatAnnotation" sender:((SmartButton*)sender).parent];
+    NSLog(@"join chatroom");
+//    MKPinAnnotationView* mkp = (MKPinAnnotationView*)(((SmartButton*)sender).parent);
+//    ChatPointAnnotation* cpa = (ChatPointAnnotation*)mkp.annotation;
+    ChatPointAnnotation* cpa = (ChatPointAnnotation*)(((SmartButton*)sender).parent);
+    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
+    
+    msg.chatroomId = cpa.chatroomId;
+    msg.userId = ud.userId;
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
+    NSLog(@"chatid: %lld",msg.chatroomId);
+    NSLog(@"userId: %lld",msg.userId);
+    NSLog(@"%f, %f",[Location fromLongLong:msg.latitude],[Location fromLongLong:msg.longitude]);
+    [connection sendMessage:msg];
+    [_mapView deselectAnnotation:cpa animated:NO];
+    NSLog(@"out of join chatroom");
 }
 
 
@@ -168,6 +195,8 @@
     SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
     msg.latitude = [location currentLat];
     msg.longitude = [location currentLong];
+    msg.onlyJoinable = YES;
+    msg.metersFromCoords = 1609.34 * 5.; // TODO: change to screen region bounds
     [connection sendMessage:msg];
 }
 
@@ -184,8 +213,8 @@
         }
         annotationView.canShowCallout = YES;
         SmartButton *disclosureButton = [SmartButton buttonWithType:UIButtonTypeContactAdd];
-        disclosureButton.parent = annotationView;
-        [disclosureButton addTarget:self action:@selector(segueToChat:) forControlEvents:UIControlEventTouchUpInside];
+        disclosureButton.parent = annotationView.annotation;
+        [disclosureButton addTarget:self action:@selector(joinChatroom:) forControlEvents:UIControlEventTouchUpInside];
         annotationView.rightCalloutAccessoryView = disclosureButton;
         return annotationView;
     }
@@ -201,6 +230,15 @@
         case Chatroom:
             NSLog(@"Chatroom");
             [self addChatroomAnnotation:(ChatroomMessage*)message];
+            break;
+            
+        case JoinedChatroom:
+            NSLog(@"joined chatroom");
+            [self performSegueWithIdentifier:@"ChatAnnotation" sender:message];
+            break;
+            
+        case JoinChatroomReject:
+            NSLog(@"%@",((JoinChatroomRejectMessage*)message).reason);
             break;
     }
 }

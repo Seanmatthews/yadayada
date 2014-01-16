@@ -276,13 +276,13 @@ public class ChatServerImpl implements ChatServer {
             return;
         }
 
-        JoinedChatroomMessage meJoining = new JoinedChatroomMessage(chatroom.getId(), sender.getId(), sender.getHandle());
+        JoinedChatroomMessage meJoining = new JoinedChatroomMessage(chatroom.getId(), chatroom.getName(), sender.getId(), sender.getHandle());
 
         Iterator<User> users = chatroomRepo.getUsers(chatroom);// chatroom.getUsers();
         while(users.hasNext()) {
             // notify me about other user joining chat
             User chatMember = users.next();
-            senderConnection.sendMessage(new JoinedChatroomMessage(chatroom.getId(), chatMember.getId(), chatMember.getHandle()));
+            senderConnection.sendMessage(new JoinedChatroomMessage(chatroom.getId(), chatroom.getName(), chatMember.getId(), chatMember.getHandle()));
 
             // notify other user about me joining chat
             ClientConnection chatMemberSender = userConnectionMap.get(chatMember);

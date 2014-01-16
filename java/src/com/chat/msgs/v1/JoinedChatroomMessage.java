@@ -6,23 +6,30 @@ import com.chat.util.buffer.ReadWriteBuffer;
 
 public class JoinedChatroomMessage implements Message {
     private final long chatroomId;
+    private final String chatroomName;
     private final long userId;
     private final String userHandle;
 
     public JoinedChatroomMessage(ReadBuffer stream) {
         this.chatroomId = stream.readLong();
+        this.chatroomName = stream.readString();
         this.userId = stream.readLong();
         this.userHandle = stream.readString();
     }
 
-    public JoinedChatroomMessage(long chatroomId, long userId, String userHandle) {
+    public JoinedChatroomMessage(long chatroomId, String chatroomName, long userId, String userHandle) {
         this.chatroomId = chatroomId;
+        this.chatroomName = chatroomName;
         this.userId = userId;
         this.userHandle = userHandle;
     }
 
     public long getChatroomId() {
         return chatroomId;
+    }
+
+    public String getChatroomName() {
+        return chatroomName;
     }
 
     public long getUserId() {
@@ -41,6 +48,7 @@ public class JoinedChatroomMessage implements Message {
    
         stream.writeByte(MessageTypes.JoinedChatroom.getValue());
         stream.writeLong(getChatroomId());
+        stream.writeString(getChatroomName());
         stream.writeLong(getUserId());
         stream.writeString(getUserHandle());
 
@@ -53,6 +61,7 @@ public class JoinedChatroomMessage implements Message {
         StringBuilder builder = new StringBuilder();
         builder.append("Msg=JoinedChatroom");
         builder.append(",ChatroomId=").append(getChatroomId());
+        builder.append(",ChatroomName=").append(getChatroomName());
         builder.append(",UserId=").append(getUserId());
         builder.append(",UserHandle=").append(getUserHandle());
         return builder.toString();        

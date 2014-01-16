@@ -202,7 +202,6 @@ typedef enum {
 @property long long radius;
 @property int userCount;
 @property short chatActivity;
-@property long long creationTime;
 
 @end
 
@@ -252,6 +251,7 @@ typedef enum {
 - (id)init;
 
 @property long long chatroomId;
+@property NSString* chatroomName;
 @property long long userId;
 @property NSString* userHandle;
 

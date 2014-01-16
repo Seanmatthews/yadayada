@@ -14,7 +14,6 @@ public class ChatroomMessage implements Message {
     private final long radius;
     private final int userCount;
     private final short chatActivity;
-    private final long creationTime;
 
     public ChatroomMessage(ReadBuffer stream) {
         this.chatroomId = stream.readLong();
@@ -26,10 +25,9 @@ public class ChatroomMessage implements Message {
         this.radius = stream.readLong();
         this.userCount = stream.readInt();
         this.chatActivity = stream.readShort();
-        this.creationTime = stream.readLong();
     }
 
-    public ChatroomMessage(long chatroomId, long chatroomOwnerId, String chatroomName, String chatroomOwnerHandle, long latitude, long longitude, long radius, int userCount, short chatActivity, long creationTime) {
+    public ChatroomMessage(long chatroomId, long chatroomOwnerId, String chatroomName, String chatroomOwnerHandle, long latitude, long longitude, long radius, int userCount, short chatActivity) {
         this.chatroomId = chatroomId;
         this.chatroomOwnerId = chatroomOwnerId;
         this.chatroomName = chatroomName;
@@ -39,7 +37,6 @@ public class ChatroomMessage implements Message {
         this.radius = radius;
         this.userCount = userCount;
         this.chatActivity = chatActivity;
-        this.creationTime = creationTime;
     }
 
     public long getChatroomId() {
@@ -78,10 +75,6 @@ public class ChatroomMessage implements Message {
         return chatActivity;
     }
 
-    public long getCreationTime() {
-        return creationTime;
-    }
-
     @Override
     public void write(ReadWriteBuffer stream) {
         int position = stream.position();
@@ -98,7 +91,6 @@ public class ChatroomMessage implements Message {
         stream.writeLong(getRadius());
         stream.writeInt(getUserCount());
         stream.writeShort(getChatActivity());
-        stream.writeLong(getCreationTime());
 
         // write out length of message
         stream.writeShort(position, stream.position() - position - 2);
@@ -117,7 +109,6 @@ public class ChatroomMessage implements Message {
         builder.append(",Radius=").append(getRadius());
         builder.append(",UserCount=").append(getUserCount());
         builder.append(",ChatActivity=").append(getChatActivity());
-        builder.append(",CreationTime=").append(getCreationTime());
         return builder.toString();        
     }
 } 

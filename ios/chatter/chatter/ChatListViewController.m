@@ -123,6 +123,8 @@
     SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
     msg.latitude = [location currentLat];
     msg.longitude = [location currentLong];
+    msg.onlyJoinable = YES;
+    msg.metersFromCoords = 0;
     [connection sendMessage:msg];
 }
 
@@ -136,6 +138,8 @@
         switch (message.type) {
             case Chatroom:
                 NSLog(@"chatroom");
+
+                NSLog(@"%f, %f",[Location fromLongLong:((ChatroomMessage*)message).latitude],[Location fromLongLong:((ChatroomMessage*)message).longitude]);
                 [self addChatroom:(ChatroomMessage*)message];
                 [_tableView reloadData];
                 break;

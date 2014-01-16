@@ -31,28 +31,28 @@ public class STChatroomRepository implements ChatroomRepository {
     @Override
     public Iterator<Chatroom> search(ChatroomSearchCriteria search) {
         Iterator<Chatroom> chatrooms = chatroomIdMap.values().iterator();
-        Vector<Chatroom> ret = new Vector<>();
+//        Vector<Chatroom> ret = new Vector<>();
+//
+//        while (chatrooms.hasNext()) {
+//            Chatroom c = chatrooms.next();
+//            long distMeters = distanceBetweenCoords(search.getLatitude(), search.getLongitude(), c.getLatitude(), c.getLongitude());
+//            boolean canJoin = !search.returnOnlyJoinable() || distMeters <= c.getRadius() || c.getRadius() <= 0;
+//            if (canJoin && distMeters <= search.getMetersFromCoords()) {
+//
+//                // !!! TODO (FIX)
+//                // THIS IS A QUICK FIX TO EMPTY CHAT DELETION
+//                // !!! TODO (FIX)
+//                if (c.getUserCount() > 0) {
+//                    ret.add(c);
+//                }
+//                else {
+//                    removeChatroom(c.getId());
+//                }
+//            }
+//        }
 
-        while (chatrooms.hasNext()) {
-            Chatroom c = chatrooms.next();
-            long distMeters = distanceBetweenCoords(search.getLatitude(), search.getLongitude(), c.getLatitude(), c.getLongitude());
-            boolean canJoin = !search.returnOnlyJoinable() || distMeters <= c.getRadius() || c.getRadius() <= 0;
-            if (canJoin && distMeters <= search.getMetersFromCoords()) {
-
-                // !!! TODO (FIX)
-                // THIS IS A QUICK FIX TO EMPTY CHAT DELETION
-                // !!! TODO (FIX)
-                if (c.getUserCount() > 0) {
-                    ret.add(c);
-                }
-                else {
-                    removeChatroom(c.getId());
-                }
-            }
-        }
-
-        return ret.iterator();
-        //return chatroomIdMap.values().iterator();
+        //return ret.iterator();
+        return chatroomIdMap.values().iterator();
     }
 
     @Override
