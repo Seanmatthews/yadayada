@@ -159,6 +159,8 @@ static BOOL onceToChatListView = YES;
         case ConnectAccept:
             NSLog(@"Connect Accept");
             ud.chatroomId = ((ConnectAcceptMessage*)message).globalChatId;
+            ud.iconDownloadURL = ((ConnectAcceptMessage*)message).imageDownloadUrl;
+            ud.iconUploadURL = ((ConnectAcceptMessage*)message).imageUploadUrl;
             NSLog(@"global chatroom id: %llx",ud.chatroomId);
             [self loginMessage];
             break;

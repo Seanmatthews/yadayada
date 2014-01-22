@@ -23,6 +23,11 @@
 @property BOOL receiveMessageNotifications;
 @property UIImage* userIcon;
 
+// This is not a user detail, but rather an app global
+@property NSString* iconUploadURL;
+@property NSString* iconDownloadURL;
+
+
 // TODO: The type of this property will change ot accommodate
 // being joined to several chats at once.
 @property long long chatroomId;
