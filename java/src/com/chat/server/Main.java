@@ -47,7 +47,7 @@ public class Main {
             return;
         }
 
-        int port = Integer.parseInt(options.getOptionValue("port", "5001"));
+        int port = Integer.parseInt(options.getOptionValue("port", "5000"));
 
         UserRepository userRepo;
         User admin;

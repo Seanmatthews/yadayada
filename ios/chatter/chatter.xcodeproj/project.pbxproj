@@ -643,7 +643,7 @@
 				INFOPLIST_FILE = "chatter/chatter-Info.plist";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "FC17D600-287E-4BA1-A876-4568CC5019B3";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -659,7 +659,7 @@
 				INFOPLIST_FILE = "chatter/chatter-Info.plist";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "FC17D600-287E-4BA1-A876-4568CC5019B3";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

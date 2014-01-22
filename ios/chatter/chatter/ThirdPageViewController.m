@@ -30,6 +30,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    viewAdjusted = 0.;
 	
     // setup gesture recognizer
     UISwipeGestureRecognizer * recognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(leftSwipeAction)];
@@ -57,43 +59,35 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
 }
 
-//// Called when the UIKeyboardDidShowNotification is sent.
-//- (void)keyboardWasShown:(NSNotification*)aNotification
-//{
-//    UIScrollView* scrollView = (UIScrollView*)[self view];
-//    
-//    NSDictionary* info = [aNotification userInfo];
-//    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-//    CGRect bkgndRect = handleTextField.superview.frame;
-//    //kbSize.height += 100;
-//    bkgndRect.size.height += kbSize.height;
-//    [handleTextField.superview setFrame:bkgndRect];
-//    [scrollView setContentOffset:CGPointMake(0.0, handleTextField.frame.origin.y-kbSize.height) animated:YES];
-//}
-
-
 // Called when the UIKeyboardDidShowNotification is sent.
 - (void)keyboardWasShown:(NSNotification*)aNotification
 {
-//    UIScrollView* scrollView = (UIScrollView*)[self view];
-
-    NSDictionary* info = [aNotification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-    CGRect bkgndRect = handleTextField.superview.frame;
-    bkgndRect.size.height += kbSize.height;
-    [handleTextField.superview setFrame:bkgndRect];
-    [_scrollView setContentOffset:CGPointMake(0.0, handleTextField.frame.origin.y-kbSize.height) animated:YES];
+    const CGFloat PADDING = 20;
+    
+    // Get the keyboard frame
+    NSDictionary* keyboardInfo = [aNotification userInfo];
+    NSValue* keyboardFrameBegin = [keyboardInfo valueForKey:UIKeyboardFrameBeginUserInfoKey];
+    CGRect keyboardFrameBeginRect = [keyboardFrameBegin CGRectValue];
+    
+    // Move the view so that the text field is just above the keyboard
+    CGFloat kbDiff = keyboardFrameBeginRect.size.height - handleTextField.frame.origin.y + handleTextField.frame.size.height;
+    if (kbDiff < PADDING) {
+        CGRect viewFrame = self.view.frame;
+        viewFrame.origin.y += kbDiff - PADDING;
+        self.view.frame = viewFrame;
+        viewAdjusted = kbDiff - PADDING;
+    }
 }
 
 // Called when the UIKeyboardWillHideNotification is sent
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification
 {
-    NSDictionary* info = [aNotification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-    CGRect bkgndRect = handleTextField.superview.frame;
-    bkgndRect.size.height -= kbSize.height;
-    [handleTextField.superview setFrame:bkgndRect];
-    [_scrollView setContentOffset:CGPointMake(0.0, 0.0) animated:YES];
+    if (viewAdjusted < 0.) {
+        CGRect viewFrame = self.view.frame;
+        viewFrame.origin.y -= viewAdjusted;
+        self.view.frame = viewFrame;
+        viewAdjusted = 0.;
+    }
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

@@ -10,7 +10,7 @@
 
 @interface ThirdPageViewController : UIViewController <UITextFieldDelegate>
 {
-    
+    CGFloat viewAdjusted;
 }
 
 - (void)registerForKeyboardNotifications;
@@ -18,6 +18,7 @@
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
 
 @property (nonatomic, retain) IBOutlet UITextField* handleTextField;
-@property (nonatomic, retain) IBOutlet UIScrollView* scrollView;
+//@property (nonatomic, retain) IBOutlet UIScrollView* scrollView;
+@property (nonatomic, retain) IBOutlet UILabel* bottomLabel;
 
 @end
