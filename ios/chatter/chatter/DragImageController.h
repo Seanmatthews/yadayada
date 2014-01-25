@@ -16,4 +16,7 @@
 @property (nonatomic, retain) IBOutlet UIImageView* imageView;
 @property (nonatomic) UIImagePickerController *imagePickerController;
 
+- (UIImage*)cropImage;
+- (BOOL)uploadImage;
+
 @end
