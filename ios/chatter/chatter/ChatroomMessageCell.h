@@ -29,5 +29,6 @@
 
 - (void)arrangeElements;
 + (CGFloat)heightForText:(NSString*)text;
++ (int)getMessageCharLimit;
 
 @end

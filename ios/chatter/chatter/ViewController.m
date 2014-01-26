@@ -14,7 +14,6 @@
 
 
 const int MESSAGE_NUM_THRESH = 50;
-const int MESSAGE_CHAR_LIMIT = 200;
 
 
 @interface ViewController ()
@@ -236,7 +235,7 @@ const int MESSAGE_CHAR_LIMIT = 200;
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     NSString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    if (newString.length >= MESSAGE_CHAR_LIMIT) {
+    if (newString.length >= [ChatroomMessageCell getMessageCharLimit]) {
         // Send message automatically
         SubmitMessageMessage* sm = [[SubmitMessageMessage alloc] init];
         sm.userId = ud.userId;

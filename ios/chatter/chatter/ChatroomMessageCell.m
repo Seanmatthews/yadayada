@@ -16,7 +16,13 @@ const CGFloat ICON_SIZE = 50. - (2 * BORDER_WIDTH) - PADDING;
 const int CHARS_PER_LINE = 50;
 const CGFloat DEFAULT_CELL_HEIGHT = 50.;
 const CGFloat HEIGHT_PER_LINE = 15.;
+const int MESSAGE_CHAR_LIMIT = 200;
 
+
++ (int)getMessageCharLimit
+{
+    return MESSAGE_CHAR_LIMIT;
+}
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -55,10 +61,10 @@ const CGFloat HEIGHT_PER_LINE = 15.;
         
         // CSS for table cells
         pageCSS = @"body { margin:0; padding:1; }";
-        cellMsgCSS = @"div.msg { font:12px/13px baskerville,serif; color:#004C3D; text-align:left; vertical-align:text-top; margin:0; padding:0; word-wrap:break-word }";
-        handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#D0D0D0 }";
-        selfMsgCSS = @"div.msg { font:12px/13px baskerville,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0; word-wrap:break-word }";
-        selfHandleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#D0D0D0; text-align:right }";
+        cellMsgCSS = @"div.msg { font:13px/14px helveticaneue,serif; color:#004C3D; text-align:left; vertical-align:text-top; margin:0; padding:0; word-wrap:break-word }";
+        handleCSS = @"div.handle { font:12px/13px helveticaneue,serif; color:#666666 }";
+        selfMsgCSS = @"div.msg { font:13px/14px helveticaneue,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0; word-wrap:break-word }";
+        selfHandleCSS = @"div.handle { font:12px/13px helveticaneue,serif; color:#666666; text-align:right }";
     }
     return self;
 }
@@ -114,7 +120,30 @@ const CGFloat HEIGHT_PER_LINE = 15.;
 
 + (CGFloat)heightForText:(NSString*)text
 {
-    return MAX(DEFAULT_CELL_HEIGHT, HEIGHT_PER_LINE * ( ceilf((CGFloat)text.length / (CGFloat)CHARS_PER_LINE) + 1.)); // 1 extra for the handle line
+    CGFloat totalPadding = (2*BORDER_WIDTH) + PADDING;
+    CGFloat webViewWidth = 300 - totalPadding;
+    NSString* pageCSS = @"body { margin:0; padding:1; }";
+    NSString* selfMsgCSS = @"div.msg { font:13px/14px helveticaneue,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0; word-wrap:break-word }";
+    NSString* selfHandleCSS = @"div.handle { font:12px/13px helveticaneue,serif; color:#666666; text-align:right }";
+    NSString* html = [NSString stringWithFormat:@"<html><head><style> %@ %@ %@ </style></head><body><div class=msg>%@</div><div class=handle>testuser</div></body></html>",
+                      pageCSS,selfMsgCSS,selfHandleCSS,text];
+    
+    NSAttributedString *strml = [[NSAttributedString alloc] initWithData:[html dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType} documentAttributes:nil error:nil];
+
+//    UIFont *font = [UIFont fontWithName:@"HelveticaNeue" size:13];
+//    NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text
+//        attributes:@
+//        {
+//            NSFontAttributeName: font
+//        }];
+    CGRect rect = [strml boundingRectWithSize:(CGSize){webViewWidth, CGFLOAT_MAX}
+                                               options:NSStringDrawingUsesLineFragmentOrigin
+                                               context:nil];
+
+    NSLog(@"height %f",rect.size.height);
+    return ceilf(rect.size.height)+(2*BORDER_WIDTH)+PADDING;
+    
+//    return MAX(DEFAULT_CELL_HEIGHT, HEIGHT_PER_LINE * ( ceilf((CGFloat)_message.length / (CGFloat)CHARS_PER_LINE) + 1.)); // 1 extra for the handle line
 }
 
 
