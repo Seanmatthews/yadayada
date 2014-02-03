@@ -41,10 +41,10 @@ const int MESSAGE_NUM_THRESH = 50;
     
     // CSS for table cells
     pageCSS = @"body { margin:0; padding:1; }";
-    cellMsgCSS = @"div.msg { font:12px/13px baskerville,serif; color:#004C3D; text-align:left; vertical-align:text-top; margin:0; padding:0 }";
-    handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#D0D0D0 }";
-    selfMsgCSS = @"div.msg { font:12px/13px baskerville,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0 }";
-    selfHandleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#D0D0D0; text-align:right }";
+    cellMsgCSS = @"div.msg { font:13px/14px baskerville,serif; color:#004C3D; text-align:left; vertical-align:text-top; margin:0; padding:0 }";
+    handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#DADADA }";
+    selfMsgCSS = @"div.msg { font:13px/14px baskerville,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0 }";
+    selfHandleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#DADADA; text-align:right }";
     
     [connection performSelector:@selector(addCallbackBlock:fromSender:) withObject:^(MessageBase* m){ [weakSelf messageCallback:m];} withObject:NSStringFromClass([self class])];
 }
