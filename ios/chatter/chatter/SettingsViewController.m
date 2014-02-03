@@ -11,7 +11,7 @@
 #import "MenuViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Messages.h"
-#import "DragImageController.h"
+
 
 @interface SettingsViewController ()
 
@@ -101,6 +101,9 @@
         if (ud.userIcon) {
             dic.imageView.image = ud.userIcon;
         }
+        
+        // ARC is enabled, but is this being retained?
+        iconView = dic.imageView;
     }
 }
 
@@ -122,7 +125,8 @@
 - (IBAction)applySettingsButtonPressed:(id)sender
 {
     [self reregisterHandle];
-    //TODO: image upload
+    UIImage* img = iconView.image;
+    //[connection uploadImage:[UIImage imageNamed:@"lena.jpg"] forUserId:ud.userId toURL:ud.iconUploadURL];
 }
 
 

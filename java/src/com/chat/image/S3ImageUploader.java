@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -18,9 +19,12 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class S3ImageUploader {
+
     public S3ImageUploader(int port, AWSCredentials cred, String bucket) throws IOException {
+
         AmazonS3Client client = new AmazonS3Client(cred);
         S3Uploader uploader = new S3Uploader(client, bucket);
+        uploader = new S3Uploader(client, bucket);
         ExecutorService execService = Executors.newCachedThreadPool();
         ServerSocket serverSocket = new ServerSocket(port);
         System.out.println("Listening on: " + port);
@@ -40,4 +44,5 @@ public class S3ImageUploader {
 
         new S3ImageUploader(port, new BasicAWSCredentials(username, password), bucket);
     }
+
 }

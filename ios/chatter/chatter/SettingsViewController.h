@@ -9,18 +9,21 @@
 #import <UIKit/UIKit.h>
 #import "Connection.h"
 #import "UserDetails.h"
+#import "DragImageController.h"
 
 @interface SettingsViewController : UIViewController <UITextFieldDelegate>
 {
     Connection* connection;
     UserDetails* ud;
     BOOL viewIsVisible;
+    UIImageView* iconView;
 }
 
 @property (nonatomic,retain) IBOutlet UITextField* handleTextField;
 @property (nonatomic,retain) IBOutlet UISegmentedControl* chatroomNotificationControl;
 @property (nonatomic,retain) IBOutlet UISegmentedControl* messageNotificationControl;
 @property (nonatomic,retain) IBOutlet UIScrollView* scrollView;
+
 
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;

@@ -37,6 +37,8 @@
     MenuViewController* __weak weakSelf = self;
     [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
     
+    //[connection connectToImageServer];
+    
     // We need this because the run loops of connection don't work until
     // the view is completely loaded.
     [self performSelector:@selector(connectMessage) withObject:nil afterDelay:1.0];
@@ -140,6 +142,7 @@
 //    [connection sendMessage:jcm];
 //}
 
+
 static BOOL onceToChatListView = YES;
 - (void)messageCallback:(MessageBase*)message
 {
@@ -162,6 +165,8 @@ static BOOL onceToChatListView = YES;
             ud.iconDownloadURL = ((ConnectAcceptMessage*)message).imageDownloadUrl;
             ud.iconUploadURL = ((ConnectAcceptMessage*)message).imageUploadUrl;
             NSLog(@"global chatroom id: %llx",ud.chatroomId);
+            NSLog(@"img DL: %@",ud.iconDownloadURL);
+            NSLog(@"img UL: %@",ud.iconUploadURL);
             [self loginMessage];
             break;
             

@@ -10,6 +10,9 @@
 
 @implementation Connection
 
+const int IMAGE_SERVER_PORT = 5001;
+const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
+
 - (id)init
 {
     self = [super init];
@@ -32,11 +35,16 @@
     return _sharedObject;
 }
 
+- (int)getImageServerPort
+{
+    return IMAGE_SERVER_PORT;
+}
+
 - (void)connect
 {
     CFReadStreamRef readStream;
     CFWriteStreamRef writeStream;
-    CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"ec2-54-200-202-37.us-west-2.compute.amazonaws.com", 5000, &readStream, &writeStream);
+    CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"ec2-54-198-228-23.compute-1.amazonaws.com", 5000, &readStream, &writeStream);
     //CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.1.108", 5001, &readStream, &writeStream);
     is = (__bridge NSInputStream*)readStream;
     os = (__bridge NSOutputStream*)writeStream;
@@ -47,9 +55,27 @@
     [is scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     [os scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     
-    
     [is open];
     [os open];
+}
+
+- (void)connectToImageServer
+{
+    CFReadStreamRef imgReadStream;
+    CFWriteStreamRef imgWriteStream;
+    CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"ec2-54-200-202-37.us-west-2.compute.amazonaws.com", 5001, &imgReadStream, &imgWriteStream);
+    
+    imgIs = (__bridge NSInputStream*)imgReadStream;
+    imgOs = (__bridge NSOutputStream*)imgWriteStream;
+    
+    [imgIs setDelegate:self];
+    [imgOs setDelegate:self];
+    
+    [imgIs scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [imgOs scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    
+    [imgIs open];
+    [imgOs open];
 }
 
 - (void)sendMessage:(MessageBase*)message
@@ -57,6 +83,16 @@
     //NSLog(@"Sending message of type %d",(MessageTypes)message.type);
     NSData* d = [MessageUtils serializeMessage:message];
     [os write:[d bytes] maxLength:[d length]];
+}
+
+- (void)uploadImage:(UIImage*)image forUserId:(long long)userId toURL:(NSString*)url
+{
+    NSMutableData* imageData = [[NSMutableData alloc] init];
+    long long uid = CFSwapInt64HostToBig(userId);
+    NSData* b = [NSData dataWithBytes:&uid length:sizeof(long long)];
+    [imageData appendData:b];
+    [imageData appendData:UIImageJPEGRepresentation(image, JPEG_COMPRESSION_QUALITY)];
+    [imgOs write:[b bytes] maxLength:[b length]];
 }
 
 // See https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/WorkingwithBlocks/WorkingwithBlocks.html

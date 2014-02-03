@@ -40,6 +40,7 @@
 		6488FD101887183E00EA07D3 /* icon60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6488FD0F1887183E00EA07D3 /* icon60@2x.png */; };
 		6488FD131887C8E300EA07D3 /* icon29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6488FD111887C8E300EA07D3 /* icon29@2x.png */; };
 		6488FD141887C8E300EA07D3 /* icon40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6488FD121887C8E300EA07D3 /* icon40@2x.png */; };
+		648A751C189624F300FE686E /* lena.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 648A751B189624F300FE686E /* lena.jpg */; };
 		64A10D3D181964DA00A499B0 /* Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D3C181964DA00A499B0 /* Messages.m */; };
 		64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D441819CE9A00A499B0 /* MessageUtils.m */; };
 		64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D48181A281A00A499B0 /* OrderedDictionary.m */; };
@@ -121,6 +122,7 @@
 		6488FD0F1887183E00EA07D3 /* icon60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon60@2x.png"; path = "media/icon60@2x.png"; sourceTree = "<group>"; };
 		6488FD111887C8E300EA07D3 /* icon29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon29@2x.png"; path = "media/icon29@2x.png"; sourceTree = "<group>"; };
 		6488FD121887C8E300EA07D3 /* icon40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon40@2x.png"; path = "media/icon40@2x.png"; sourceTree = "<group>"; };
+		648A751B189624F300FE686E /* lena.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = lena.jpg; path = ../../../../../Desktop/lena.jpg; sourceTree = "<group>"; };
 		64A10D3B181964DA00A499B0 /* Messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Messages.h; sourceTree = "<group>"; };
 		64A10D3C181964DA00A499B0 /* Messages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Messages.m; sourceTree = "<group>"; };
 		64A10D431819CE9A00A499B0 /* MessageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageUtils.h; sourceTree = "<group>"; };
@@ -361,6 +363,7 @@
 		B3ADCB65181855A700A25383 /* Media */ = {
 			isa = PBXGroup;
 			children = (
+				648A751B189624F300FE686E /* lena.jpg */,
 				6488FD111887C8E300EA07D3 /* icon29@2x.png */,
 				6488FD121887C8E300EA07D3 /* icon40@2x.png */,
 				6488FD0F1887183E00EA07D3 /* icon60@2x.png */,
@@ -461,6 +464,7 @@
 				B3E79A4A1832AF23003227E7 /* ChatroomListCell.xib in Resources */,
 				64770589187B880200A97F74 /* Default-568h@2x.png in Resources */,
 				6458F3A018172E7400AA8E81 /* Main.storyboard in Resources */,
+				648A751C189624F300FE686E /* lena.jpg in Resources */,
 				B33C55C61835598400EF28B7 /* default-icon.png in Resources */,
 				6488FD101887183E00EA07D3 /* icon60@2x.png in Resources */,
 			);
@@ -636,14 +640,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "chatter/chatter-Prefix.pch";
 				INFOPLIST_FILE = "chatter/chatter-Info.plist";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "FC17D600-287E-4BA1-A876-4568CC5019B3";
+				PROVISIONING_PROFILE = "3B0439F5-7EB1-4BB5-8A55-4734EA716EC6";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -652,14 +656,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "chatter/chatter-Prefix.pch";
 				INFOPLIST_FILE = "chatter/chatter-Info.plist";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "FC17D600-287E-4BA1-A876-4568CC5019B3";
+				PROVISIONING_PROFILE = "3B0439F5-7EB1-4BB5-8A55-4734EA716EC6";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
