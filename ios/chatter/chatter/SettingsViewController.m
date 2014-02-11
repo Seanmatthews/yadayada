@@ -8,8 +8,6 @@
 
 #import "SettingsViewController.h"
 #import "UIImage+ImageEffects.h"
-#import "MenuViewController.h"
-#import <QuartzCore/QuartzCore.h>
 #import "Messages.h"
 
 
@@ -67,36 +65,11 @@
 }
 
 
-#pragma mark - Blurred Snapshot
-
-- (UIImage*)blurredSnapshot
-{
-    // Create the image context
-    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, YES, self.view.window.screen.scale);
-    
-    // There he is! The new API method
-    [self.view drawViewHierarchyInRect:self.view.frame afterScreenUpdates:NO];
-    
-    // Get the snapshot
-    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
-    //[UIImage imageNamed:@"Default@2x.png"];
-    
-    // Now apply the blur effect using Apple's UIImageEffect category
-    UIImage *blurredSnapshotImage = [snapshotImage applyLightEffect];
-    
-    // Be nice and clean your mess up
-    UIGraphicsEndImageContext();
-    
-    return blurredSnapshotImage;
-}
+#pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"unwindSettingsSegue"]) {
-        MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-        vc.image =[self blurredSnapshot];
-    }
-    else if ([segue.identifier isEqualToString:@"settingsEmbedSegue"]) {
+    if ([segue.identifier isEqualToString:@"settingsEmbedSegue"]) {
         DragImageController* dic = (DragImageController*)segue.destinationViewController;
         if (ud.userIcon) {
             dic.imageView.image = ud.userIcon;
@@ -105,6 +78,12 @@
         // ARC is enabled, but is this being retained?
         iconView = dic.imageView;
     }
+}
+
+- (IBAction)unwindToPreviousView:(id)sender
+{
+    NSLog(@"%@",_unwindSegueName);
+    [self performSegueWithIdentifier:_unwindSegueName sender:self];
 }
 
 
@@ -125,7 +104,7 @@
 - (IBAction)applySettingsButtonPressed:(id)sender
 {
     [self reregisterHandle];
-    UIImage* img = iconView.image;
+    //UIImage* img = iconView.image;
     //[connection uploadImage:[UIImage imageNamed:@"lena.jpg"] forUserId:ud.userId toURL:ud.iconUploadURL];
 }
 

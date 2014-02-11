@@ -23,6 +23,10 @@
 }
 
 @property BOOL streamReady;
+@property NSCondition* messageCondition;
+@property dispatch_group_t parseGroup;
+@property dispatch_queue_t parseQueue;
+
 
 + (id)sharedInstance;
 - (id)init;

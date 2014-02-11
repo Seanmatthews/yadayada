@@ -2,7 +2,7 @@
 //  MenuViewController.m
 //  chatter
 //
-//  Created by Jim Greco on 11/4/13.
+//  Created by Sean Matthews on 11/4/13.
 //  Copyright (c) 2013 rowboat entertainment. All rights reserved.
 //
 
@@ -16,18 +16,11 @@
 
 @implementation MenuViewController
 
-@synthesize userHandle;
+//@synthesize userHandle;
 
 - (void)initCode
 {
     location = [Location sharedInstance];
-    if ([location didUpdateFirstLocation]) {
-        _waitingView.hidden = YES;
-    }
-    else {
-        _waitingView.hidden = NO;
-    }
-    
     ud = [UserDetails sharedInstance];
     
     // Get connection object and add this controller's callback
@@ -60,7 +53,7 @@
     if (!ud.finishedTutorial) {
         // Getting here implies that the user has done the tutorial for the first time
         ud.finishedTutorial = YES;
-        ud.handle = userHandle;
+        //ud.handle = userHandle;
 
         // Maybe not necessary, but just in case
         [UserDetails save];
@@ -75,7 +68,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    _bgImageView.image = _image;
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -91,20 +84,6 @@
         //NSLog(@"waiting");
         usleep(50000);
     }
-    _waitingView.hidden = YES;
-}
-
-
-#pragma mark - Segues
-
-- (IBAction)unwindToMenu:(UIStoryboardSegue*)unwindSegue
-{
-    
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    containerView = (MenuTableViewController*)segue.destinationViewController;
 }
 
 
@@ -122,7 +101,6 @@
     [connection sendMessage:cm];
 }
 
-
 - (void)loginMessage
 {
     NSLog(@"Logging in with handle: %@",ud.handle);
@@ -132,18 +110,6 @@
     [connection sendMessage:qlm];
 }
 
-//- (void)joinGlobalChatroom
-//{
-//    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
-//    jcm.userId = ud.userId;
-//    jcm.chatroomId = ud.chatroomId;
-//    jcm.latitude = 0;
-//    jcm.longitude = 0;
-//    [connection sendMessage:jcm];
-//}
-
-
-static BOOL onceToChatListView = YES;
 - (void)messageCallback:(MessageBase*)message
 {
     switch (message.type) {
@@ -177,10 +143,7 @@ static BOOL onceToChatListView = YES;
         case LoginAccept:
             NSLog(@"Login Accept");
             ud.userId = ((RegisterAcceptMessage*)message).userId;
-            if (onceToChatListView) {
-                onceToChatListView = NO;
-                [containerView performSegueWithIdentifier:@"chatListSegue" sender:containerView];
-            }
+            [self performSegueWithIdentifier:@"chatListSegue" sender:nil];
             break;
             
         case LoginReject:
@@ -189,9 +152,6 @@ static BOOL onceToChatListView = YES;
             break;
     }
 }
-
-
-
 
 
 @end

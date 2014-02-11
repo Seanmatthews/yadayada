@@ -28,6 +28,7 @@ const double MILES_TO_METERS = 1609.34;
     if (self) {
         location = [Location sharedInstance];
         ud = [UserDetails sharedInstance];
+        chatManager = [ChatroomManagement sharedInstance];
         
         // Get connection object and add this controller's callback
         // method for incoming connections.
@@ -97,7 +98,7 @@ const double MILES_TO_METERS = 1609.34;
 }
 
 
-#pragma mark - Segues + Blurred Snapshot
+#pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -113,41 +114,6 @@ const double MILES_TO_METERS = 1609.34;
     else if ([segue.identifier isEqualToString:@"createChatContainerSegue"]) {
         
     }
-    else if ([segue.identifier isEqualToString:@"unwindToMenu"]) {
-        MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-        vc.image = [self blurredSnapshot];
-    }
-}
-
-- (IBAction)unwindToPreviousView:(id)sender
-{
-    NSLog(@"%@",_unwindSegueName);
-    [self performSegueWithIdentifier:_unwindSegueName sender:self];
-}
-
-- (UIImage*)blurredSnapshot
-{
-    // Create the image context
-    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, YES, self.view.window.screen.scale);
-    
-    // There he is! The new API method
-    [self.view drawViewHierarchyInRect:self.view.frame afterScreenUpdates:NO];
-    
-    // Get the snapshot
-    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
-    //[UIImage imageNamed:@"Default@2x.png"];
-    
-    // Now apply the blur effect using Apple's UIImageEffect category
-    UIImage *blurredSnapshotImage = [snapshotImage applyLightEffect];
-    
-    // Or apply any other effects available in "UIImage+ImageEffects.h"
-    //UIImage *blurredSnapshotImage = [snapshotImage applyDarkEffect];
-    //UIImage *blurredSnapshotImage = [snapshotImage applyExtraLightEffect];
-    
-    // Be nice and clean your mess up
-    UIGraphicsEndImageContext();
-    
-    return blurredSnapshotImage;
 }
 
 
@@ -187,13 +153,25 @@ const double MILES_TO_METERS = 1609.34;
 
 - (void)joinCreatedChatroom
 {
+    // First, leave current chatroom, if any
+    [self leaveCurrentChatroom];
+    
     JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
     msg.userId = ud.userId;
     msg.chatroomId = chatroomId;
     msg.latitude = [location currentLat];
     msg.longitude = [location currentLong];
     [connection sendMessage:msg];
-    
+}
+
+- (void)leaveCurrentChatroom
+{
+    if ([chatManager.joinedChatrooms count] > 0) {
+        LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
+        msg.userId = ud.userId;
+        msg.chatroomId = [[chatManager.joinedChatrooms allKeys][0] longLongValue];
+        [connection sendMessage:msg];
+    }
 }
 
 - (void)messageCallback:(MessageBase*)message

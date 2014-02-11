@@ -16,8 +16,9 @@
     location = [Location sharedInstance];
     [location startService];
     
-    // Load user details
+    // Load global singletons
     ud = [UserDetails sharedInstance];
+    chatManager = [ChatroomManagement sharedInstance];
     
     UIStoryboard *uis = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     self.window = [[UIWindow alloc]
@@ -29,7 +30,11 @@
         uvc = [uis instantiateViewControllerWithIdentifier:@"mainPage"];
     }
     else {
-        uvc = [uis instantiateViewControllerWithIdentifier:@"firstPage"];
+        UIPageControl *pageControl = [UIPageControl appearance];
+        pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
+        pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+        pageControl.backgroundColor = [UIColor whiteColor];
+        uvc = [uis instantiateViewControllerWithIdentifier:@"TutorialStart"];
     }
     self.window.rootViewController = uvc;
     [self.window makeKeyAndVisible];

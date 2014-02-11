@@ -14,6 +14,7 @@
 #import "UITableView+UITableViewCategory.h"
 #import "Messages.h"
 #import "MenuViewController.h"
+#import "ChatroomManagement.h"
 
 @interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
 {
@@ -26,11 +27,10 @@
     NSString* selfMsgCSS;
     NSString* selfHandleCSS;
     
-    
     int swipedCellIndex;
     
-    // TODO: this will be an array of arrays of dicts for multiple chat rooms
-    NSMutableArray* chatQueue;
+//    NSMutableArray* chatQueue;
+    ChatroomManagement* chatManager;
 }
 
 //@property (nonatomic, strong) NSString* userHandle;
@@ -45,6 +45,7 @@
 
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
+- (void)refreshMessages;
 - (void)registerForKeyboardNotifications;
 - (void)keyboardWasShown:(NSNotification*)aNotification;
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
@@ -52,9 +53,8 @@
 - (void)swipedCellLeft:(id)sender;
 - (void)swipedCellRight:(id)sender;
 - (void)tappedCell:(id)sender;
-- (void)receivedMessage:(MessageMessage*) message;
-- (UIImage*)blurredSnapshot;
 - (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
+- (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue;
 
 
 

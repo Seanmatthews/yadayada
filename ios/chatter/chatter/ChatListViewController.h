@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MapKit/MapKit.h>
 #import "Location.h"
 #import "Messages.h"
 #import "Connection.h"
 #import "UserDetails.h"
+#import "ChatroomManagement.h"
 
 
-@interface ChatListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@interface ChatListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, MKMapViewDelegate>
 {
     Location* location;
     Connection* connection;
@@ -22,19 +24,34 @@
     NSMutableArray* globalChatroomList;
     ChatroomMessage *tappedCellInfo;
     BOOL viewIsVisible;
+    ChatroomManagement* chatManager;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;
+@property (nonatomic,retain) IBOutlet MKMapView* mapView;
+@property (nonatomic,retain) IBOutlet UIView* mapParentView;
+@property (nonatomic,retain) IBOutlet UIView* tableParentView;
+
 
 // Navigation property
 @property (nonatomic) BOOL jumpToGlobalChat;
 
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
+- (IBAction)segmentedControlSwitched:(id)sender;
+- (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue;
+- (void)leaveCurrentChatroom;
+
+// Table view
 - (void)refreshTable:(UIRefreshControl*)refreshControl;
 - (void)searchChatrooms;
 - (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom;
-- (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue;
+
+// Map View
+- (void)addChatroomAnnotation:(ChatroomMessage*)message;
+- (void)joinChatroom:(id)sender;
+- (void)deselectAllAnnotations;
+- (IBAction)locateButtonPressed:(id)sender;
 
 
 @end

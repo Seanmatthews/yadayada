@@ -9,11 +9,11 @@
 #import "ViewController.h"
 #import "Messages.h"
 #import "UIImage+ImageEffects.h"
-#import <QuartzCore/QuartzCore.h>
 #import "ChatroomMessageCell.h"
+#import "SettingsViewController.h"
 
 
-const int MESSAGE_NUM_THRESH = 50;
+//const int MESSAGE_NUM_THRESH = 50;
 
 
 @interface ViewController ()
@@ -22,7 +22,6 @@ const int MESSAGE_NUM_THRESH = 50;
 
 @implementation ViewController
 
-//@synthesize userHandle;
 @synthesize userInputTextField;
 @synthesize mTableView;
 @synthesize navBar;
@@ -30,14 +29,12 @@ const int MESSAGE_NUM_THRESH = 50;
 - (void)initCode
 {
     ud = [UserDetails sharedInstance];
-    chatQueue = [[NSMutableArray alloc] init];
+    chatManager = [ChatroomManagement sharedInstance];
     [self registerForKeyboardNotifications];
     
     // Get connection object and add this controller's callback
     // method for incoming connections.
     connection = [Connection sharedInstance];
-    ViewController* __weak weakSelf = self;
-    //[connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
     
     // CSS for table cells
     pageCSS = @"body { margin:0; padding:1; }";
@@ -46,7 +43,12 @@ const int MESSAGE_NUM_THRESH = 50;
     selfMsgCSS = @"div.msg { font:13px/14px baskerville,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0 }";
     selfHandleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#DADADA; text-align:right }";
     
-    [connection performSelector:@selector(addCallbackBlock:fromSender:) withObject:^(MessageBase* m){ [weakSelf messageCallback:m];} withObject:NSStringFromClass([self class])];
+    ViewController* __weak weakSelf = self;
+    [connection performSelector:@selector(addCallbackBlock:fromSender:) withObject:^(MessageBase* m) {
+                dispatch_group_async(connection.parseGroup, connection.parseQueue, ^{
+                    [weakSelf messageCallback:m];
+                });
+          } withObject:NSStringFromClass([self class])];
 }
 
 // This is called whenever the view is loaded through storyboard segues
@@ -90,12 +92,9 @@ const int MESSAGE_NUM_THRESH = 50;
 
 }
 
-
 - (void)viewWillDisappear:(BOOL)animated
 {
-    if ([self isBeingDismissed]) {
-        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
-    }
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -113,7 +112,7 @@ const int MESSAGE_NUM_THRESH = 50;
     UIView* wv = (UIView*)[cell.contentView viewWithTag:3];
 
     // Send upvote
-    MessageMessage* msg = [chatQueue objectAtIndex:swipedCellIndex];
+    MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:swipedCellIndex];
     [self upvote:YES user:msg.senderId becauseOfMessage:msg.messageId];
     
     [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
@@ -136,13 +135,13 @@ const int MESSAGE_NUM_THRESH = 50;
     NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
     
     // Send downvote
-    MessageMessage* msg = [chatQueue objectAtIndex:cellPath.row];
+    MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:cellPath.row];
     [self upvote:NO user:msg.senderId becauseOfMessage:msg.messageId];
     
     // Remove cell
     [mTableView beginUpdates];
     [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:animation];
-    [chatQueue removeObjectAtIndex:cellPath.row];
+    [[chatManager currentChatQueue] removeObjectAtIndex:cellPath.row];
     [mTableView endUpdates];
 }
 
@@ -175,7 +174,6 @@ const int MESSAGE_NUM_THRESH = 50;
 
 #pragma mark - Keyboard Interaction + UITextFieldDelegate
 
-
 - (void)registerForKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
@@ -200,7 +198,6 @@ const int MESSAGE_NUM_THRESH = 50;
 // Called when the UIKeyboardWillHideNotification is sent
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification
 {
-    
     NSDictionary* info = [aNotification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     
@@ -213,7 +210,6 @@ const int MESSAGE_NUM_THRESH = 50;
     [UIView commitAnimations];
 }
 
-
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     NSString* text = [textField text];
@@ -222,9 +218,6 @@ const int MESSAGE_NUM_THRESH = 50;
         sm.userId = ud.userId;
         sm.chatroomId = _chatId;
         sm.message = text;
-        
-//        NSLog(@"%lli, %lli, %@",sm.userId,sm.chatroomId,sm.message);
-        
         [connection sendMessage:sm];
     }
     [textField setText:@""];
@@ -250,27 +243,24 @@ const int MESSAGE_NUM_THRESH = 50;
 
 #pragma mark - incoming and outgoing messages
 
+- (void)refreshMessages
+{
+    [mTableView reloadData];
+    NSIndexPath* ipath = [NSIndexPath indexPathForRow:[[chatManager currentChatQueue] count]-1 inSection:0];
+    [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+}
+
 - (void)messageCallback:(MessageBase*)message
 {
-    NSIndexPath* ipath;
     switch (message.type) {
             
         case Message:
             NSLog(@"Message");
-            [self receivedMessage:(MessageMessage*)message];
-            [mTableView reloadData];
-            ipath = [NSIndexPath indexPathForRow:[chatQueue count]-1 inSection:0];
-            [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+            dispatch_group_notify(connection.parseGroup, connection.parseQueue, ^{
+                [self performSelectorOnMainThread:@selector(refreshMessages) withObject:nil waitUntilDone:NO];
+                // TODO: try making the dispatch queue on the main thread
+            });
             break;
-    }
-}
-
-- (void)receivedMessage:(MessageMessage*) message
-{
-    [chatQueue addObject:message];
-    
-    if ([chatQueue count] > MESSAGE_NUM_THRESH) {
-        [chatQueue removeObjectAtIndex:0];
     }
 }
 
@@ -289,7 +279,8 @@ const int MESSAGE_NUM_THRESH = 50;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MessageMessage* msg = [chatQueue objectAtIndex:indexPath.row];
+    MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
+    NSLog(@"height %f",[ChatroomMessageCell heightForText:msg.message]);
     return [ChatroomMessageCell heightForText:msg.message];
 }
 
@@ -305,16 +296,17 @@ const int MESSAGE_NUM_THRESH = 50;
 {
     // There will only ever be one section for a table.
     // TODO: alter this behavior for multiple chatrooms
-    return [chatQueue count];
+    return [[chatManager currentChatQueue] count];
 }
 
 // This function is for recovering cells, or initializing a new one.
 // It is not for filling in cell data.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"HERE");
     static NSString *CellIdentifier = @"ChatroomMessageCell";
     ChatroomMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    MessageMessage* msg = [chatQueue objectAtIndex:indexPath.row];
+    MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
     
     if (nil == cell) {
         cell = [[ChatroomMessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
@@ -340,42 +332,20 @@ const int MESSAGE_NUM_THRESH = 50;
 }
 
 
-#pragma mark - Blurred Snapshot & Segue
-
-- (UIImage*)blurredSnapshot
-{
-    // Create the image context
-    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, YES, self.view.window.screen.scale);
-    
-    // There he is! The new API method
-    [self.view drawViewHierarchyInRect:self.view.frame afterScreenUpdates:NO];
-    
-    // Get the snapshot
-    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
-    //[UIImage imageNamed:@"Default@2x.png"];
-    
-    // Now apply the blur effect using Apple's UIImageEffect category
-    UIImage *blurredSnapshotImage = [snapshotImage applyLightEffect];
-    
-    // Or apply any other effects available in "UIImage+ImageEffects.h"
-    //UIImage *blurredSnapshotImage = [snapshotImage applyDarkEffect];
-    //UIImage *blurredSnapshotImage = [snapshotImage applyExtraLightEffect];
-    
-    // Be nice and clean your mess up
-    UIGraphicsEndImageContext();
-    
-    return blurredSnapshotImage;
-}
+#pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-    vc.image = [self blurredSnapshot];
-    
-    LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
-    msg.chatroomId = _chatId;
-    msg.userId = ud.userId;
-    [connection sendMessage:msg];
+    if ([segue.identifier isEqualToString:@"chatroom2SettingsSegue"]) {
+        SettingsViewController* svc = (SettingsViewController*)segue.destinationViewController;
+        svc.unwindSegueName = @"unwindToChatroom";
+    }
 }
+
+- (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue
+{
+    
+}
+
 
 @end

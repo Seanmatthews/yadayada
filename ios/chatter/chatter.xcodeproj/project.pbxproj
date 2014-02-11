@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		641C1477182C7B9F001D8959 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C1476182C7B9F001D8959 /* MapViewController.m */; };
+		1444DCA618A35838006014C2 /* TutorialStartController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1444DCA518A35838006014C2 /* TutorialStartController.m */; };
+		14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */; };
+		14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7918A31A560038D149 /* TutorialContentViewController.m */; };
 		641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147A182C7D31001D8959 /* SettingsViewController.m */; };
 		641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147D182C7D6C001D8959 /* ChatListViewController.m */; };
 		641C1480182C7FF8001D8959 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C147F182C7FF8001D8959 /* MapKit.framework */; };
@@ -29,9 +31,6 @@
 		6458F3AE18172E7400AA8E81 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F39018172E7400AA8E81 /* UIKit.framework */; };
 		6458F3B618172E7400AA8E81 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6458F3B418172E7400AA8E81 /* InfoPlist.strings */; };
 		6458F3B818172E7400AA8E81 /* chatterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6458F3B718172E7400AA8E81 /* chatterTests.m */; };
-		64674BD5181761A500922109 /* FirstPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BD4181761A500922109 /* FirstPageViewController.m */; };
-		64674BD8181761C500922109 /* SecondPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BD7181761C500922109 /* SecondPageViewController.m */; };
-		64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64674BDA1817621100922109 /* ThirdPageViewController.m */; };
 		64770586187B880200A97F74 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 64770582187B880200A97F74 /* Default.png */; };
 		64770588187B880200A97F74 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 64770584187B880200A97F74 /* Default@2x.png */; };
 		64770589187B880200A97F74 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 64770585187B880200A97F74 /* Default-568h@2x.png */; };
@@ -40,7 +39,6 @@
 		6488FD101887183E00EA07D3 /* icon60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6488FD0F1887183E00EA07D3 /* icon60@2x.png */; };
 		6488FD131887C8E300EA07D3 /* icon29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6488FD111887C8E300EA07D3 /* icon29@2x.png */; };
 		6488FD141887C8E300EA07D3 /* icon40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6488FD121887C8E300EA07D3 /* icon40@2x.png */; };
-		648A751C189624F300FE686E /* lena.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 648A751B189624F300FE686E /* lena.jpg */; };
 		64A10D3D181964DA00A499B0 /* Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D3C181964DA00A499B0 /* Messages.m */; };
 		64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D441819CE9A00A499B0 /* MessageUtils.m */; };
 		64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D48181A281A00A499B0 /* OrderedDictionary.m */; };
@@ -73,8 +71,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		641C1475182C7B9F001D8959 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
-		641C1476182C7B9F001D8959 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
+		1444DCA418A35838006014C2 /* TutorialStartController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialStartController.h; sourceTree = "<group>"; };
+		1444DCA518A35838006014C2 /* TutorialStartController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialStartController.m; sourceTree = "<group>"; };
+		14D19A7518A1FAAE0038D149 /* ChatroomManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomManagement.h; sourceTree = "<group>"; };
+		14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomManagement.m; sourceTree = "<group>"; };
+		14D19A7818A31A560038D149 /* TutorialContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialContentViewController.h; sourceTree = "<group>"; };
+		14D19A7918A31A560038D149 /* TutorialContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialContentViewController.m; sourceTree = "<group>"; };
 		641C1479182C7D31001D8959 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		641C147A182C7D31001D8959 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		641C147C182C7D6C001D8959 /* ChatListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatListViewController.h; sourceTree = "<group>"; };
@@ -106,12 +108,6 @@
 		6458F3B318172E7400AA8E81 /* chatterTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "chatterTests-Info.plist"; sourceTree = "<group>"; };
 		6458F3B518172E7400AA8E81 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6458F3B718172E7400AA8E81 /* chatterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = chatterTests.m; sourceTree = "<group>"; };
-		64674BD3181761A500922109 /* FirstPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstPageViewController.h; sourceTree = "<group>"; };
-		64674BD4181761A500922109 /* FirstPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstPageViewController.m; sourceTree = "<group>"; };
-		64674BD6181761C500922109 /* SecondPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondPageViewController.h; sourceTree = "<group>"; };
-		64674BD7181761C500922109 /* SecondPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondPageViewController.m; sourceTree = "<group>"; };
-		64674BD91817621100922109 /* ThirdPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThirdPageViewController.h; sourceTree = "<group>"; };
-		64674BDA1817621100922109 /* ThirdPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirdPageViewController.m; sourceTree = "<group>"; };
 		64770582187B880200A97F74 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = media/Default.png; sourceTree = "<group>"; };
 		64770584187B880200A97F74 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "media/Default@2x.png"; sourceTree = "<group>"; };
 		64770585187B880200A97F74 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "media/Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -122,7 +118,6 @@
 		6488FD0F1887183E00EA07D3 /* icon60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon60@2x.png"; path = "media/icon60@2x.png"; sourceTree = "<group>"; };
 		6488FD111887C8E300EA07D3 /* icon29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon29@2x.png"; path = "media/icon29@2x.png"; sourceTree = "<group>"; };
 		6488FD121887C8E300EA07D3 /* icon40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon40@2x.png"; path = "media/icon40@2x.png"; sourceTree = "<group>"; };
-		648A751B189624F300FE686E /* lena.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = lena.jpg; path = ../../../../../Desktop/lena.jpg; sourceTree = "<group>"; };
 		64A10D3B181964DA00A499B0 /* Messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Messages.h; sourceTree = "<group>"; };
 		64A10D3C181964DA00A499B0 /* Messages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Messages.m; sourceTree = "<group>"; };
 		64A10D431819CE9A00A499B0 /* MessageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageUtils.h; sourceTree = "<group>"; };
@@ -194,8 +189,6 @@
 				6458F3A218172E7400AA8E81 /* ViewController.m */,
 				B343A50D18282CF600B36450 /* MenuViewController.h */,
 				B343A50E18282CF600B36450 /* MenuViewController.m */,
-				641C1475182C7B9F001D8959 /* MapViewController.h */,
-				641C1476182C7B9F001D8959 /* MapViewController.m */,
 				641C1479182C7D31001D8959 /* SettingsViewController.h */,
 				641C147A182C7D31001D8959 /* SettingsViewController.m */,
 				641C147C182C7D6C001D8959 /* ChatListViewController.h */,
@@ -211,6 +204,10 @@
 				644510821842FCF9000112D4 /* DragImageController.m */,
 				64E6AB55187F53B100B46504 /* ChatroomMessageCell.h */,
 				64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */,
+				14D19A7818A31A560038D149 /* TutorialContentViewController.h */,
+				14D19A7918A31A560038D149 /* TutorialContentViewController.m */,
+				1444DCA418A35838006014C2 /* TutorialStartController.h */,
+				1444DCA518A35838006014C2 /* TutorialStartController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -254,7 +251,6 @@
 				64A10D46181A280A00A499B0 /* Util */,
 				64A10CEA1818A6AA00A499B0 /* Messages */,
 				B3ADCB65181855A700A25383 /* Media */,
-				64674BD21817617600922109 /* FirstTime */,
 				6458F39B18172E7400AA8E81 /* AppDelegate.h */,
 				6458F39C18172E7400AA8E81 /* AppDelegate.m */,
 				6458F39E18172E7400AA8E81 /* Main.storyboard */,
@@ -265,6 +261,8 @@
 				64A10D50181E1B2300A499B0 /* Connection.m */,
 				64A10DA21824BBDA00A499B0 /* Location.h */,
 				64A10DA31824BBDA00A499B0 /* Location.m */,
+				14D19A7518A1FAAE0038D149 /* ChatroomManagement.h */,
+				14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */,
 				6458F39318172E7400AA8E81 /* Supporting Files */,
 			);
 			path = chatter;
@@ -298,19 +296,6 @@
 				6458F3B418172E7400AA8E81 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		64674BD21817617600922109 /* FirstTime */ = {
-			isa = PBXGroup;
-			children = (
-				64674BD3181761A500922109 /* FirstPageViewController.h */,
-				64674BD4181761A500922109 /* FirstPageViewController.m */,
-				64674BD6181761C500922109 /* SecondPageViewController.h */,
-				64674BD7181761C500922109 /* SecondPageViewController.m */,
-				64674BD91817621100922109 /* ThirdPageViewController.h */,
-				64674BDA1817621100922109 /* ThirdPageViewController.m */,
-			);
-			name = FirstTime;
 			sourceTree = "<group>";
 		};
 		64A10CEA1818A6AA00A499B0 /* Messages */ = {
@@ -363,7 +348,6 @@
 		B3ADCB65181855A700A25383 /* Media */ = {
 			isa = PBXGroup;
 			children = (
-				648A751B189624F300FE686E /* lena.jpg */,
 				6488FD111887C8E300EA07D3 /* icon29@2x.png */,
 				6488FD121887C8E300EA07D3 /* icon40@2x.png */,
 				6488FD0F1887183E00EA07D3 /* icon60@2x.png */,
@@ -464,7 +448,6 @@
 				B3E79A4A1832AF23003227E7 /* ChatroomListCell.xib in Resources */,
 				64770589187B880200A97F74 /* Default-568h@2x.png in Resources */,
 				6458F3A018172E7400AA8E81 /* Main.storyboard in Resources */,
-				648A751C189624F300FE686E /* lena.jpg in Resources */,
 				B33C55C61835598400EF28B7 /* default-icon.png in Resources */,
 				6488FD101887183E00EA07D3 /* icon60@2x.png in Resources */,
 			);
@@ -487,15 +470,12 @@
 			files = (
 				B343A50C1828134F00B36450 /* UIImage+ImageEffects.m in Sources */,
 				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
-				64674BD8181761C500922109 /* SecondPageViewController.m in Sources */,
 				6477058F187C7FAD00A97F74 /* SmartButton.m in Sources */,
-				641C1477182C7B9F001D8959 /* MapViewController.m in Sources */,
 				B343A50F18282CF600B36450 /* MenuViewController.m in Sources */,
 				6477058C187BAD9900A97F74 /* ChatPointAnnotation.m in Sources */,
 				64D60F2D1880C79100108C1F /* CLLocationDispatch.m in Sources */,
 				64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */,
 				64A10D51181E1B2300A499B0 /* Connection.m in Sources */,
-				64674BD5181761A500922109 /* FirstPageViewController.m in Sources */,
 				64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */,
 				64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */,
 				641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */,
@@ -504,15 +484,17 @@
 				64D60F2B1880C79100108C1F /* CLLocation+routeInfo.m in Sources */,
 				64A10DA41824BBDA00A499B0 /* Location.m in Sources */,
 				641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */,
-				64674BDB1817621100922109 /* ThirdPageViewController.m in Sources */,
 				B3E79A481832AE27003227E7 /* ChatroomListCell.m in Sources */,
 				64D60F2C1880C79100108C1F /* CLLocationDeadReckoning.m in Sources */,
 				6445107D183DA911000112D4 /* CreateChatViewController.m in Sources */,
 				64E6AB57187F53B100B46504 /* ChatroomMessageCell.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
 				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,
+				14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */,
+				1444DCA618A35838006014C2 /* TutorialStartController.m in Sources */,
 				64D60F2A1880C79100108C1F /* CLLocation+measuring.m in Sources */,
 				6458F39918172E7400AA8E81 /* main.m in Sources */,
+				14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */,
 				641C148518319F9A001D8959 /* MenuTableViewController.m in Sources */,
 				64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */,
 			);

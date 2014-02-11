@@ -9,10 +9,12 @@
 #import "ChatListViewController.h"
 #import "UIImage+ImageEffects.h"
 #import "MenuViewController.h"
-#import <QuartzCore/QuartzCore.h>
 #import "ViewController.h"
 #import "ChatroomListCell.h"
-#import "CreateChatViewController.h"
+#import "ChatPointAnnotation.h"
+#import "SmartButton.h"
+#import "SettingsViewController.h"
+
 
 @interface ChatListViewController ()
 
@@ -24,6 +26,7 @@
 {
     location = [Location sharedInstance];
     ud = [UserDetails sharedInstance];
+    chatManager = [ChatroomManagement sharedInstance];
     
     localChatroomList = [[NSMutableArray alloc] init];
     globalChatroomList = [[NSMutableArray alloc] init];
@@ -46,14 +49,27 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Give the map view rounded corners
+    
+    // Give the views rounded corners
+    _mapView.layer.cornerRadius = 5;
+    _mapView.layer.masksToBounds = YES;
     _tableView.layer.cornerRadius = 5;
     _tableView.layer.masksToBounds = YES;
+    _tableParentView.layer.cornerRadius = 5;
+    _tableParentView.layer.masksToBounds = YES;
+    _mapParentView.layer.cornerRadius = 5;
+    _mapParentView.layer.masksToBounds = YES;
     
     // Setup the refresh control
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshTable:) forControlEvents:UIControlEventValueChanged];
     [self.tableView addSubview:refreshControl];
+    
+    // Center map on user location
+    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([location currentLocation], 5000., 5000);
+    [_mapView setRegion:region animated:YES];
+    [_mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+    [_mapView setCenterCoordinate:[location currentLocation] animated:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -64,24 +80,12 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-//    if ([self isBeingDismissed]) {
-//        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
-//    }
     viewIsVisible = NO;
 }
 
-//static BOOL onceToChatView = YES;
 - (void)viewDidAppear:(BOOL)animated
 {
-//    if (onceToChatView) {
-//        onceToChatView = NO;
-//        JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
-//        msg.userId = ud.userId;
-//        msg.chatroomId = ud.chatroomId;
-//        msg.latitude = 0;
-//        msg.longitude = 0;
-//        [connection sendMessage:msg];
-//    }
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -89,6 +93,30 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
+#pragma mark - UI Behaviors
+
+- (IBAction)segmentedControlSwitched:(id)sender
+{
+    UISegmentedControl* ctrl = (UISegmentedControl*)sender;
+    if (0 == [ctrl selectedSegmentIndex]) {
+        [_mapParentView setHidden:YES];
+        [_tableParentView setHidden:NO];
+    }
+    else if (1 == [ctrl selectedSegmentIndex]) {
+        [_tableParentView setHidden:YES];
+        [_mapParentView setHidden:NO];
+    }
+}
+
+- (IBAction)locateButtonPressed:(id)sender
+{
+    [_mapView setCenterCoordinate:[location currentLocation] animated:YES];
+}
+
+
+#pragma mark - Convenience functions
 
 - (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom
 {
@@ -128,6 +156,40 @@
     [connection sendMessage:msg];
 }
 
+- (void)joinChatroom:(id)sender
+{
+    NSLog(@"join chatroom");
+    
+    // First, leave our current chatroom, if any
+    [self leaveCurrentChatroom];
+    
+    //    MKPinAnnotationView* mkp = (MKPinAnnotationView*)(((SmartButton*)sender).parent);
+    //    ChatPointAnnotation* cpa = (ChatPointAnnotation*)mkp.annotation;
+    ChatPointAnnotation* cpa = (ChatPointAnnotation*)(((SmartButton*)sender).parent);
+    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
+    
+    msg.chatroomId = cpa.chatroomId;
+    msg.userId = ud.userId;
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
+    NSLog(@"chatid: %lld",msg.chatroomId);
+    NSLog(@"userId: %lld",msg.userId);
+    NSLog(@"%f, %f",[Location fromLongLong:msg.latitude],[Location fromLongLong:msg.longitude]);
+    [connection sendMessage:msg];
+    [_mapView deselectAnnotation:cpa animated:NO];
+    NSLog(@"out of join chatroom");
+}
+
+- (void)leaveCurrentChatroom
+{
+    if ([chatManager.joinedChatrooms count] > 0) {
+        LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
+        msg.userId = ud.userId;
+        msg.chatroomId = [[chatManager.joinedChatrooms allKeys][0] longLongValue];
+        [connection sendMessage:msg];
+    }
+}
+
 
 #pragma mark - incoming and outgoing messages
 
@@ -138,15 +200,24 @@
         switch (message.type) {
             case Chatroom:
                 NSLog(@"chatroom");
-
-                NSLog(@"%f, %f",[Location fromLongLong:((ChatroomMessage*)message).latitude],[Location fromLongLong:((ChatroomMessage*)message).longitude]);
+//                NSLog(@"%f, %f",[Location fromLongLong:((ChatroomMessage*)message).latitude],[Location fromLongLong:((ChatroomMessage*)message).longitude]);
+                
+                // Table
                 [self addChatroom:(ChatroomMessage*)message];
                 [_tableView reloadData];
+                
+                // Map
+                [self addChatroomAnnotation:(ChatroomMessage*)message];
                 break;
                 
             case JoinedChatroom:
                 NSLog(@"Joined Chatroom");
-                [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:nil];
+
+                // Table
+                [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:message];
+
+//                // Map
+//                [self performSegueWithIdentifier:@"ChatAnnotation" sender:message];
                 break;
                 
             case JoinChatroomReject:
@@ -163,47 +234,26 @@
 }
 
 
-#pragma mark - Blurred Snapshot & Segue
-
-- (UIImage*)blurredSnapshot
-{
-    // Create the image context
-    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, YES, self.view.window.screen.scale);
-    
-    // There he is! The new API method
-    [self.view drawViewHierarchyInRect:self.view.frame afterScreenUpdates:NO];
-    
-    // Get the snapshot
-    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
-    //[UIImage imageNamed:@"Default@2x.png"];
-    
-    // Now apply the blur effect using Apple's UIImageEffect category
-    UIImage *blurredSnapshotImage = [snapshotImage applyLightEffect];
-    
-    // Be nice and clean your mess up
-    UIGraphicsEndImageContext();
-    
-    return blurredSnapshotImage;
-}
+#pragma mark - Segue
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     NSLog(@"segue %@",segue.identifier);
     if ([segue.identifier isEqualToString:@"pickedChatroomSegue"]) {
         ViewController* vc = (ViewController*)segue.destinationViewController;
-        vc.chatId = tappedCellInfo.chatroomId;
-        vc.chatTitle = tappedCellInfo.chatroomName;
+        vc.chatId = ((JoinedChatroomMessage*)sender).chatroomId; //tappedCellInfo.chatroomId;
+        vc.chatTitle = ((JoinedChatroomMessage*)sender).chatroomName; //tappedCellInfo.chatroomName;
     }
-    else if ([segue.identifier isEqualToString:@"chatList2CreateChatSegue"]) {
-        CreateChatViewController* ccvc = (CreateChatViewController*)segue.destinationViewController;
-        ccvc.unwindSegueName = @"unwindToChatList";
+    else if ([segue.identifier isEqualToString:@"createChatSegue"]) {
+
     }
-    else { // this is an unwind segue
-        MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-        vc.image = [self blurredSnapshot];
+    else if ([segue.identifier isEqualToString:@"chatList2SettingsSegue"]) {
+        SettingsViewController* svc = (SettingsViewController*)segue.destinationViewController;
+        svc.unwindSegueName = @"unwindToChatList";
     }
 }
 
+// For unwinding to this view.
 - (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue
 {
 
@@ -302,6 +352,7 @@
     return title;
 }
 
+
 #pragma mark - UITableViewDelegate methods
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -336,6 +387,82 @@
     [self searchChatrooms];
     if (refreshControl) {
         [refreshControl endRefreshing];
+    }
+}
+
+
+#pragma mark - MKMapViewDelegate methods
+
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+{
+    [mapView removeAnnotations:mapView.annotations];
+    SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
+    msg.onlyJoinable = YES;
+    msg.metersFromCoords = 1609.34 * 5.; // TODO: change to screen region bounds
+    [connection sendMessage:msg];
+}
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id < MKAnnotation >)annotation
+{
+    MKPinAnnotationView* annotationView = nil;
+    if ([annotation isKindOfClass:[ChatPointAnnotation class]]) {
+        annotationView = (MKPinAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:@"AnnotationView"];
+        if (annotationView) {
+            annotationView.annotation = annotation;
+        }
+        else {
+            annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"AnnotationView"];
+        }
+        annotationView.canShowCallout = YES;
+        SmartButton *disclosureButton = [SmartButton buttonWithType:UIButtonTypeContactAdd];
+        disclosureButton.parent = annotationView.annotation;
+        [disclosureButton addTarget:self action:@selector(joinChatroom:) forControlEvents:UIControlEventTouchUpInside];
+        annotationView.rightCalloutAccessoryView = disclosureButton;
+        return annotationView;
+    }
+    return annotationView;
+}
+
+
+#pragma mark - Annotations
+
+- (void)addChatroomAnnotation:(ChatroomMessage*)message
+{
+    ChatPointAnnotation* mpa = [[ChatPointAnnotation alloc] init];
+    CLLocationCoordinate2D coord;
+    coord = [Location fromLongLongLatitude:message.latitude Longitude:message.longitude];
+    
+    // Need this check because in case of bad lat/long data.
+    // iOS throws a nondescript deallocation error if you try to draw out of bounds lat/long annotations.
+    if (coord.latitude >= -90. && coord.latitude <=90. && coord.longitude >= -180. && coord.longitude <= 180.) {
+        NSNumberFormatter* format = [[NSNumberFormatter alloc] init];
+        [format setNumberStyle:NSNumberFormatterDecimalStyle];
+        [format setMaximumFractionDigits:2];
+        
+        mpa.chatroomId = message.chatroomId;
+        mpa.coordinate = coord;
+        mpa.title = message.chatroomName;
+        CGFloat milesToChat = [location milesToCurrentLocationFrom:mpa.coordinate];
+        mpa.subtitle = [NSString stringWithFormat:@"%@miles  %dusers  %d%%",[format stringFromNumber:[NSNumber numberWithFloat:milesToChat]],message.userCount,message.chatActivity];
+        [_mapView addAnnotation:mpa];
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl*)control
+{
+    NSLog(@"calloutAccessoryControlTapped");
+    [self performSegueWithIdentifier:@"ChatAnnotation" sender:view];
+}
+
+- (void)deselectAllAnnotations
+{
+    NSArray *selectedAnnotations = _mapView.selectedAnnotations;
+    for(id annotationView in selectedAnnotations) {
+        if ([annotationView isSelected]) {
+            [_mapView deselectAnnotation:[annotationView annotation] animated:NO];
+        }
     }
 }
 

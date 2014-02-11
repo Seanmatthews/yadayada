@@ -76,10 +76,7 @@
 - (IBAction)locateButtonPressed:(id)sender
 {
     [_mapView setCenterCoordinate:[location currentLocation] animated:YES];
-    
 }
-
-
 
 
 #pragma mark - Blurred Snapshot
@@ -159,10 +156,6 @@
         vc.chatTitle = jcm.chatroomName;
         //[_mapView deselectAnnotation:mpa animated:NO];
         //[self deselectAllAnnotations];
-    }
-    else { //if ([segue.identifier isEqualToString:@""]) {
-        MenuViewController* vc = (MenuViewController*)segue.destinationViewController;
-        vc.image = [self blurredSnapshot];
     }
 }
 

@@ -23,6 +23,7 @@
 @property (nonatomic,retain) IBOutlet UISegmentedControl* chatroomNotificationControl;
 @property (nonatomic,retain) IBOutlet UISegmentedControl* messageNotificationControl;
 @property (nonatomic,retain) IBOutlet UIScrollView* scrollView;
+@property (nonatomic,strong) NSString* unwindSegueName;
 
 
 - (void)initCode;
@@ -32,5 +33,6 @@
 - (IBAction)chatroomNotificationValueChanged:(id)sender;
 - (IBAction)messageNotificationValueChanged:(id)sender;
 - (IBAction)applySettingsButtonPressed:(id)sender;
+- (IBAction)unwindToPreviousView:(id)sender;
 
 @end

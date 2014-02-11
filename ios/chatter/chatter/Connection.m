@@ -20,6 +20,8 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         _streamReady = NO;
         controllers = [[NSMutableDictionary alloc] init];
         internalBufferLen = 0;
+        _parseQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        _parseGroup = dispatch_group_create();
     }
     return self;
 }
@@ -119,6 +121,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 //        }
 //    }
 //}
+
 
 - (void)parseMessage:(BUFTYPE)buffer withLength:(int)length
 {

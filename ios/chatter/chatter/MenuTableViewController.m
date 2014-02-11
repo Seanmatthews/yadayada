@@ -7,7 +7,7 @@
 //
 
 #import "MenuTableViewController.h"
-#import "CreateChatViewController.h"
+
 
 @interface MenuTableViewController ()
 
@@ -54,8 +54,7 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"createChatroomSegue"]) {
-        CreateChatViewController* ccvc = (CreateChatViewController*)segue.destinationViewController;
-        ccvc.unwindSegueName = @"unwindToMenu";
+        
     }
 }
 
