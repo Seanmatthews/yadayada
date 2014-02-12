@@ -74,8 +74,8 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    viewIsVisible = YES;
-    [self refreshTable:nil];
+//    viewIsVisible = YES;
+//    [self refreshTable:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -85,7 +85,8 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-
+    viewIsVisible = YES;
+    [self refreshTable:nil];
 }
 
 - (void)didReceiveMemoryWarning

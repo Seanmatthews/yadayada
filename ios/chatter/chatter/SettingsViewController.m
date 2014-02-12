@@ -107,10 +107,12 @@
     if (![_handleTextField.text isEqualToString:ud.handle]) {
         [self reregisterHandle];
     }
+    else {
+        [self performSegueWithIdentifier:_unwindSegueName sender:nil];
+    }
+    
     //UIImage* img = iconView.image;
     //[connection uploadImage:[UIImage imageNamed:@"lena.jpg"] forUserId:ud.userId toURL:ud.iconUploadURL];
-    
-    [self performSegueWithIdentifier:_unwindSegueName sender:nil];
 }
 
 
@@ -170,6 +172,7 @@
             case LoginAccept:
                 NSLog(@"[Settings] login accept");
                 ud.handle = [_handleTextField text];
+                [self performSegueWithIdentifier:_unwindSegueName sender:nil];
                 break;
                 
             case LoginReject:
@@ -184,10 +187,12 @@
 
 - (void)leaveCurrentChatroom
 {
-    LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
-    msg.userId = ud.userId;
-    msg.chatroomId = [chatManager currentChatroomId];
-    [connection sendMessage:msg];
+    if ([chatManager currentChatroomId] > 0) {
+        LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
+        msg.userId = ud.userId;
+        msg.chatroomId = [chatManager currentChatroomId];
+        [connection sendMessage:msg];
+    }
 }
 
 - (void)reregisterHandle
