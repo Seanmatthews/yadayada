@@ -21,6 +21,7 @@
 {
     ud = [UserDetails sharedInstance];
     connection = [Connection sharedInstance];
+    chatManager = [ChatroomManagement sharedInstance];
     [self registerForKeyboardNotifications];
     SettingsViewController* __weak weakSelf = self;
     [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
@@ -103,9 +104,13 @@
 
 - (IBAction)applySettingsButtonPressed:(id)sender
 {
-    [self reregisterHandle];
+    if (![_handleTextField.text isEqualToString:ud.handle]) {
+        [self reregisterHandle];
+    }
     //UIImage* img = iconView.image;
     //[connection uploadImage:[UIImage imageNamed:@"lena.jpg"] forUserId:ud.userId toURL:ud.iconUploadURL];
+    
+    [self performSegueWithIdentifier:_unwindSegueName sender:nil];
 }
 
 
@@ -163,10 +168,12 @@
         switch (message.type) {
                 
             case LoginAccept:
+                NSLog(@"[Settings] login accept");
                 ud.handle = [_handleTextField text];
                 break;
                 
             case LoginReject:
+                NSLog(@"[Settings] login reject");
                 [_handleTextField setText:ud.handle];
                 alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:((LoginRejectMessage*)message).reason delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alert show];
@@ -175,11 +182,22 @@
     }
 }
 
+- (void)leaveCurrentChatroom
+{
+    LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
+    msg.userId = ud.userId;
+    msg.chatroomId = [chatManager currentChatroomId];
+    [connection sendMessage:msg];
+}
+
 - (void)reregisterHandle
 {
-    NSLog(@"Logging in with handle: %@",ud.handle);
+    // Leave current chatroom
+    [self leaveCurrentChatroom];
+    
+    NSLog(@"Logging in with handle: %@",_handleTextField.text);
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
-    qlm.handle = ud.handle;
+    qlm.handle = _handleTextField.text;
     qlm.UUID = ud.UUID;
     [connection sendMessage:qlm];
 }

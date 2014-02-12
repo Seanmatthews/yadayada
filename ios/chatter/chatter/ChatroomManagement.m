@@ -27,6 +27,7 @@ const int MESSAGE_NUM_THRESH = 50;
         _chatQueue = [[NSMutableDictionary alloc] init];
         _joinedChatrooms = [[NSMutableDictionary alloc] init];
         ud = [UserDetails sharedInstance];
+        location = [Location sharedInstance];
     }
     return self;
 }
@@ -55,17 +56,40 @@ const int MESSAGE_NUM_THRESH = 50;
 
 - (long long)currentChatroomId
 {
-    return [[_joinedChatrooms allKeys][0] longLongValue];
+    if ([_joinedChatrooms count] > 0) {
+        return [[_joinedChatrooms allKeys][0] longLongValue];
+    }
+    else {
+        return 0;
+    }
 }
 
 - (NSString*)currentChatroomName
 {
-    return [_joinedChatrooms allValues][0];
+    if ([_joinedChatrooms count] > 0) {
+        return [_joinedChatrooms allValues][0];
+    }
+    else {
+        return @"";
+    }
 }
 
 - (NSMutableArray*)currentChatQueue
 {
     return [_chatQueue allValues][0];
+}
+
+
+#pragma mark - Managing chatroom memberships
+
+// Dispatch the sending of the message
+- (void)joinChatroomWithId:(long long)chatId
+{
+    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
+    msg.userId = ud.userId;
+    msg.chatroomId = chatId;
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
 }
 
 

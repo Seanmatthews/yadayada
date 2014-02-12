@@ -9,10 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "Messages.h"
 #import "UserDetails.h"
+#import "Location.h"
 
 @interface ChatroomManagement : NSObject
 {
     UserDetails* ud;
+    Location* location;
 }
 
 - (id)init;

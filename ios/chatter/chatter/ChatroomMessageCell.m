@@ -33,7 +33,7 @@ const int MESSAGE_CHAR_LIMIT = 200;
         self.accessoryType = UITableViewCellAccessoryNone;
         self.userInteractionEnabled = YES;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
-        self.layer.cornerRadius = 5;
+        self.layer.cornerRadius = 10;
         self.layer.masksToBounds = YES;
         
         _userIcon = nil;
@@ -61,10 +61,10 @@ const int MESSAGE_CHAR_LIMIT = 200;
         
         // CSS for table cells
         pageCSS = @"body { margin:0; padding:1; }";
-        cellMsgCSS = @"div.msg { font:13px/14px helveticaneue,serif; color:#004C3D; text-align:left; vertical-align:text-top; margin:0; padding:0; word-wrap:break-word }";
-        handleCSS = @"div.handle { font:12px/13px helveticaneue,serif; color:#666666 }";
-        selfMsgCSS = @"div.msg { font:13px/14px helveticaneue,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0; word-wrap:break-word }";
-        selfHandleCSS = @"div.handle { font:12px/13px helveticaneue,serif; color:#666666; text-align:right }";
+        cellMsgCSS = @"div.msg { font:13px/14px helveticaneue,serif; color:#666666; text-align:left; vertical-align:text-top; margin:0; padding:0; word-wrap:break-word }";
+        handleCSS = @"div.handle { font:12px/13px helveticaneue,serif; font-weight:bold; color:#004C3D }";
+        selfMsgCSS = @"div.msg { font:13px/14px helveticaneue,serif; color:#666666; text-align:right; vertical-align:text-top; margin:0; padding:0; word-wrap:break-word }";
+        selfHandleCSS = @"div.handle { font:12px/13px helveticaneue,serif; font-weight:bold; color:#004C3D; text-align:right }";
     }
     return self;
 }

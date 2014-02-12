@@ -30,11 +30,6 @@
                                                 <segue destination="w3R-cb-9I3" kind="unwind" unwindAction="unwindToChatList:" id="am4-Rd-Ypi"/>
                                             </connections>
                                         </barButtonItem>
-                                        <barButtonItem key="rightBarButtonItem" title="Settings" id="cUo-UQ-9FW">
-                                            <connections>
-                                                <segue destination="Jyv-o4-cVp" kind="modal" identifier="chatroom2SettingsSegue" modalTransitionStyle="crossDissolve" id="ZAw-Lu-IZW"/>
-                                            </connections>
-                                        </barButtonItem>
                                     </navigationItem>
                                 </items>
                             </navigationBar>
@@ -117,7 +112,7 @@
                                     </navigationItem>
                                 </items>
                             </navigationBar>
-                            <view autoresizesSubviews="NO" opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A5k-C2-uJh">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A5k-C2-uJh">
                                 <rect key="frame" x="9" y="65" width="300" height="492"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
@@ -190,7 +185,7 @@
                                         </connections>
                                     </segmentedControl>
                                 </subviews>
-                                <color key="backgroundColor" red="0.80000007152557373" green="0.86666673421859741" blue="0.82352948188781738" alpha="1" colorSpace="deviceRGB"/>
+                                <color key="backgroundColor" red="0.75686274509803919" green="0.96470588235294119" blue="0.86274509803921573" alpha="1" colorSpace="deviceRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="hFC-wF-w9v" secondAttribute="bottom" constant="14" id="kLW-Z5-L1L"/>
                                     <constraint firstAttribute="centerX" secondItem="hFC-wF-w9v" secondAttribute="centerX" id="zWL-1U-VYy"/>
@@ -338,7 +333,6 @@
                         <outlet property="chatroomNotificationControl" destination="wNf-NU-7p4" id="Jek-q3-pLm"/>
                         <outlet property="handleTextField" destination="KuT-qE-xkr" id="cFa-fF-Bai"/>
                         <outlet property="messageNotificationControl" destination="TE0-65-cxT" id="O8s-fs-Mi2"/>
-                        <segue destination="bAX-j0-2oJ" kind="unwind" identifier="unwindToChatroom" unwindAction="unwindToChatroom:" id="LtY-ZX-43l"/>
                         <segue destination="bAX-j0-2oJ" kind="unwind" identifier="unwindToChatList" unwindAction="unwindToChatList:" id="r5E-9B-9Na"/>
                     </connections>
                 </viewController>
@@ -705,7 +699,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="t6j-Ha-H7P"/>
-        <segue reference="ZAw-Lu-IZW"/>
+        <segue reference="rc4-gC-yT0"/>
     </inferredMetricsTieBreakers>
 </document>

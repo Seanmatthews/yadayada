@@ -49,7 +49,8 @@
 
 // Map View
 - (void)addChatroomAnnotation:(ChatroomMessage*)message;
-- (void)joinChatroom:(id)sender;
+- (void)joinChatroomFromMap:(id)sender;
+- (void)joinChatroomWithId:(long long)chatId;
 - (void)deselectAllAnnotations;
 - (IBAction)locateButtonPressed:(id)sender;
 

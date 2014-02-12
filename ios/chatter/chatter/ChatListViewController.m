@@ -156,28 +156,40 @@
     [connection sendMessage:msg];
 }
 
-- (void)joinChatroom:(id)sender
+- (void)joinChatroomFromMap:(id)sender
 {
-    NSLog(@"join chatroom");
-    
-    // First, leave our current chatroom, if any
-    [self leaveCurrentChatroom];
-    
     //    MKPinAnnotationView* mkp = (MKPinAnnotationView*)(((SmartButton*)sender).parent);
     //    ChatPointAnnotation* cpa = (ChatPointAnnotation*)mkp.annotation;
     ChatPointAnnotation* cpa = (ChatPointAnnotation*)(((SmartButton*)sender).parent);
-    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
-    
-    msg.chatroomId = cpa.chatroomId;
-    msg.userId = ud.userId;
-    msg.latitude = [location currentLat];
-    msg.longitude = [location currentLong];
-    NSLog(@"chatid: %lld",msg.chatroomId);
-    NSLog(@"userId: %lld",msg.userId);
-    NSLog(@"%f, %f",[Location fromLongLong:msg.latitude],[Location fromLongLong:msg.longitude]);
-    [connection sendMessage:msg];
+    [self joinChatroomWithId:cpa.chatroomId];
     [_mapView deselectAnnotation:cpa animated:NO];
-    NSLog(@"out of join chatroom");
+}
+
+- (void)joinChatroomWithId:(long long)chatId
+{
+    if ([chatManager currentChatroomId] == chatId) {
+        
+        // This is a bad solution.
+        // TODO: make this better
+        
+        JoinedChatroomMessage* msg = [[JoinedChatroomMessage alloc] init];
+        msg.chatroomId = [chatManager currentChatroomId];
+        msg.chatroomName = [chatManager currentChatroomName];
+        msg.userId = ud.userId;
+        msg.userHandle = ud.handle;
+        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:msg];
+    }
+    else {
+        // First, leave our current chatroom, if any
+        [self leaveCurrentChatroom];
+        
+        JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
+        msg.chatroomId = chatId;
+        msg.userId = ud.userId;
+        msg.latitude = [location currentLat];
+        msg.longitude = [location currentLong];
+        [connection sendMessage:msg];
+    }
 }
 
 - (void)leaveCurrentChatroom
@@ -185,7 +197,8 @@
     if ([chatManager.joinedChatrooms count] > 0) {
         LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
         msg.userId = ud.userId;
-        msg.chatroomId = [[chatManager.joinedChatrooms allKeys][0] longLongValue];
+        msg.chatroomId = [chatManager currentChatroomId];
+        NSLog(@"Leaving chatroom %lld",msg.chatroomId);
         [connection sendMessage:msg];
     }
 }
@@ -200,7 +213,6 @@
         switch (message.type) {
             case Chatroom:
                 NSLog(@"chatroom");
-//                NSLog(@"%f, %f",[Location fromLongLong:((ChatroomMessage*)message).latitude],[Location fromLongLong:((ChatroomMessage*)message).longitude]);
                 
                 // Table
                 [self addChatroom:(ChatroomMessage*)message];
@@ -212,12 +224,9 @@
                 
             case JoinedChatroom:
                 NSLog(@"Joined Chatroom");
-
-                // Table
-                [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:message];
-
-//                // Map
-//                [self performSegueWithIdentifier:@"ChatAnnotation" sender:message];
+                if (((JoinedChatroomMessage*)message).userId == ud.userId) {
+                    [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:message];
+                }
                 break;
                 
             case JoinChatroomReject:
@@ -313,10 +322,6 @@
         chatroom = [localChatroomList objectAtIndex:indexPath.row];
         CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
         CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
-//        NSLog(@"dist: %f",distance);
-//        NSLog(@"current loc: %f, %f",[location currentLocation].latitude, [location currentLocation].longitude);
-//        NSLog(@"chat loc: %f, %f",[Location fromLongLong:chatroom.latitude],[Location fromLongLong:chatroom.longitude]);
-//        NSLog(@"chat activity: %d",chatroom.chatActivity);
         distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
     }
     else if (indexPath.section == 1) {
@@ -368,12 +373,7 @@
         tappedCellInfo = (ChatroomMessage*)[globalChatroomList objectAtIndex:indexPath.row];
     }
 
-    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
-    msg.chatroomId = tappedCellInfo.chatroomId;
-    msg.userId = ud.userId;
-    msg.latitude = [location currentLat];
-    msg.longitude = [location currentLong];
-    [connection sendMessage:msg];
+    [self joinChatroomWithId:tappedCellInfo.chatroomId];
 }
 
 
@@ -418,7 +418,7 @@
         annotationView.canShowCallout = YES;
         SmartButton *disclosureButton = [SmartButton buttonWithType:UIButtonTypeContactAdd];
         disclosureButton.parent = annotationView.annotation;
-        [disclosureButton addTarget:self action:@selector(joinChatroom:) forControlEvents:UIControlEventTouchUpInside];
+        [disclosureButton addTarget:self action:@selector(joinChatroomFromMap:) forControlEvents:UIControlEventTouchUpInside];
         annotationView.rightCalloutAccessoryView = disclosureButton;
         return annotationView;
     }
@@ -426,7 +426,7 @@
 }
 
 
-#pragma mark - Annotations
+#pragma mark - Map Annotations
 
 - (void)addChatroomAnnotation:(ChatroomMessage*)message
 {

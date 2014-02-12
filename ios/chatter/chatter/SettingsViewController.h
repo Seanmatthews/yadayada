@@ -10,6 +10,7 @@
 #import "Connection.h"
 #import "UserDetails.h"
 #import "DragImageController.h"
+#import "ChatroomManagement.h"
 
 @interface SettingsViewController : UIViewController <UITextFieldDelegate>
 {
@@ -17,6 +18,7 @@
     UserDetails* ud;
     BOOL viewIsVisible;
     UIImageView* iconView;
+    ChatroomManagement* chatManager;
 }
 
 @property (nonatomic,retain) IBOutlet UITextField* handleTextField;
@@ -34,5 +36,6 @@
 - (IBAction)messageNotificationValueChanged:(id)sender;
 - (IBAction)applySettingsButtonPressed:(id)sender;
 - (IBAction)unwindToPreviousView:(id)sender;
+- (void)leaveCurrentChatroom;
 
 @end
