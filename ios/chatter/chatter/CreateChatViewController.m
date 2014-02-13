@@ -187,7 +187,9 @@ const double MILES_TO_METERS = 1609.34;
                 
             case JoinedChatroom:
                 NSLog(@"Joined Chatroom");
-                [self performSegueWithIdentifier:@"create2ChatSegue" sender:nil];
+                if (((JoinedChatroomMessage*)message).userId ==  ud.userId) {
+                    [self performSegueWithIdentifier:@"create2ChatSegue" sender:nil];
+                }
                 break;
                 
             case JoinChatroomReject:

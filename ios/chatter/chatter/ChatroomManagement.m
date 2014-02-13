@@ -132,9 +132,8 @@ const int MESSAGE_NUM_THRESH = 50;
 
 - (void)receivedJoinedChatroom:(JoinedChatroomMessage*)message
 {
-    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
-    
     if (message.userId == ud.userId) {
+        NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
         NSMutableArray* msgList = [[NSMutableArray alloc] init];
         [_chatQueue setObject:msgList forKey:cid];
         [_joinedChatrooms setObject:message.chatroomName forKey:cid];
