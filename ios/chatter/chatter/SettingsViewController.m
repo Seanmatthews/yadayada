@@ -70,22 +70,23 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"settingsEmbedSegue"]) {
-        DragImageController* dic = (DragImageController*)segue.destinationViewController;
-        if (ud.userIcon) {
-            dic.imageView.image = ud.userIcon;
-        }
-        
-        // ARC is enabled, but is this being retained?
-        iconView = dic.imageView;
-    }
+//    if ([segue.identifier isEqualToString:@"settingsEmbedSegue"]) {
+//        DragImageController* dic = (DragImageController*)segue.destinationViewController;
+//        if (ud.userIcon) {
+//            dic.imageView.image = ud.userIcon;
+//        }
+//        
+//        // ARC is enabled, but is this being retained?
+//        iconView = dic.imageView;
+//    }
+    
 }
 
-- (IBAction)unwindToPreviousView:(id)sender
-{
-    NSLog(@"%@",_unwindSegueName);
-    [self performSegueWithIdentifier:_unwindSegueName sender:self];
-}
+//- (IBAction)unwindToPreviousView:(id)sender
+//{
+//    NSLog(@"%@",_unwindSegueName);
+//    [self performSegueWithIdentifier:_unwindSegueName sender:self];
+//}
 
 
 #pragma mark - UI elements
@@ -108,7 +109,7 @@
         [self reregisterHandle];
     }
     else {
-        [self performSegueWithIdentifier:_unwindSegueName sender:nil];
+        [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
     }
     
     //UIImage* img = iconView.image;
@@ -172,7 +173,8 @@
             case LoginAccept:
                 NSLog(@"[Settings] login accept");
                 ud.handle = [_handleTextField text];
-                [self performSegueWithIdentifier:_unwindSegueName sender:nil];
+                ud.userId = ((LoginAcceptMessage*)message).userId;
+                [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
                 break;
                 
             case LoginReject:

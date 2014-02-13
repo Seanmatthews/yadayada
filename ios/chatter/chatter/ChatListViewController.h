@@ -20,6 +20,7 @@
     Location* location;
     Connection* connection;
     UserDetails* ud;
+    NSMutableArray* recentChatroomList;
     NSMutableArray* localChatroomList;
     NSMutableArray* globalChatroomList;
     ChatroomMessage *tappedCellInfo;
@@ -46,6 +47,7 @@
 - (void)refreshTable:(UIRefreshControl*)refreshControl;
 - (void)searchChatrooms;
 - (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom;
+- (void)addRecentChatroom:(ChatroomMessage*)chatroom;
 
 // Map View
 - (void)addChatroomAnnotation:(ChatroomMessage*)message;

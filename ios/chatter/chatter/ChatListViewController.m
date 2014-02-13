@@ -22,12 +22,15 @@
 
 @implementation ChatListViewController
 
+const int MAX_RECENT_CHATS = 5;
+
 - (void)initCode
 {
     location = [Location sharedInstance];
     ud = [UserDetails sharedInstance];
     chatManager = [ChatroomManagement sharedInstance];
     
+    recentChatroomList = [[NSMutableArray alloc] init];
     localChatroomList = [[NSMutableArray alloc] init];
     globalChatroomList = [[NSMutableArray alloc] init];
     
@@ -74,19 +77,13 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-//    viewIsVisible = YES;
-//    [self refreshTable:nil];
+    viewIsVisible = YES;
+    [self refreshTable:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     viewIsVisible = NO;
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    viewIsVisible = YES;
-    [self refreshTable:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -147,6 +144,61 @@
     [_tableView reloadData];
 }
 
+- (void)addRecentChatroom:(ChatroomMessage*)chatroom
+{
+    // Check if this chatroom already exists in the list
+    for (int i=0; i<[recentChatroomList count]; ++i) {
+        ChatroomMessage* room  = [recentChatroomList objectAtIndex:i];
+        if (room.chatroomId == chatroom.chatroomId) {
+            // if it exists, move it to the front of the list
+            [recentChatroomList removeObjectAtIndex:i];
+        }
+    }
+    
+    [recentChatroomList insertObject:chatroom atIndex:0];
+    
+    if (MAX_RECENT_CHATS < [recentChatroomList count]) {
+        [recentChatroomList removeObjectAtIndex:MAX_RECENT_CHATS];
+    }
+        
+}
+
+
+#pragma mark - incoming and outgoing messages
+
+- (void)messageCallback:(MessageBase*)message
+{
+    if (viewIsVisible) {
+        UIAlertView *alert;
+        switch (message.type) {
+            case Chatroom:
+                NSLog(@"chatroom");
+                
+                // Table
+                [self addChatroom:(ChatroomMessage*)message];
+                [_tableView reloadData];
+                
+                // Map
+                [self addChatroomAnnotation:(ChatroomMessage*)message];
+                break;
+                
+            case JoinedChatroom:
+                NSLog(@"Joined Chatroom");
+                if (((JoinedChatroomMessage*)message).userId == ud.userId) {
+                    [self addRecentChatroom:tappedCellInfo];
+                    [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:message];
+                }
+                break;
+                
+            case JoinChatroomReject:
+                NSLog(@"Could not join chatroom");
+                alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+                break;
+        }
+    }
+}
+
 - (void)searchChatrooms
 {
     SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
@@ -205,45 +257,6 @@
 }
 
 
-#pragma mark - incoming and outgoing messages
-
-- (void)messageCallback:(MessageBase*)message
-{
-    if (viewIsVisible) {
-        UIAlertView *alert;
-        switch (message.type) {
-            case Chatroom:
-                NSLog(@"chatroom");
-                
-                // Table
-                [self addChatroom:(ChatroomMessage*)message];
-                [_tableView reloadData];
-                
-                // Map
-                [self addChatroomAnnotation:(ChatroomMessage*)message];
-                break;
-                
-            case JoinedChatroom:
-                NSLog(@"Joined Chatroom");
-                if (((JoinedChatroomMessage*)message).userId == ud.userId) {
-                    [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:message];
-                }
-                break;
-                
-            case JoinChatroomReject:
-                NSLog(@"Could not join chatroom");
-                alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                [alert show];
-                break;
-                
-            case LeftChatroom:
-                NSLog(@"Left Chatroom");
-                break;
-        }
-    }
-}
-
-
 #pragma mark - Segue
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -257,10 +270,10 @@
     else if ([segue.identifier isEqualToString:@"createChatSegue"]) {
 
     }
-    else if ([segue.identifier isEqualToString:@"chatList2SettingsSegue"]) {
-        SettingsViewController* svc = (SettingsViewController*)segue.destinationViewController;
-        svc.unwindSegueName = @"unwindToChatList";
-    }
+//    else if ([segue.identifier isEqualToString:@"chatList2SettingsSegue"]) {
+//        SettingsViewController* svc = (SettingsViewController*)segue.destinationViewController;
+//        svc.unwindSegueName = @"unwindToChatList";
+//    }
 }
 
 // For unwinding to this view.
@@ -274,17 +287,20 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Globals and Locals
-    return 2;
+    // Recents, Locals, Globals
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     int count = 0;
     if (section == 0) {
-        count = [localChatroomList count];
+        count = [recentChatroomList count];
     }
     else if (section == 1) {
+        count = [localChatroomList count];
+    }
+    else if (section == 2) {
         count = [globalChatroomList count];
     }
     return count;
@@ -319,16 +335,31 @@
     ChatroomMessage *chatroom;
     NSString* distanceStr = @"";
     
-    if (indexPath.section == 0) { // Local chats
+    if (indexPath.section == 0) {
+        chatroom = [recentChatroomList objectAtIndex:indexPath.row];
+        
+        // TODO: put global check in a better place
+        if (chatroom.latitude == 0 || chatroom.longitude == 0 || chatroom.radius == 0) {
+//            CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
+//            CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
+//            distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
+        }
+    }
+    if (indexPath.section == 1) { // Local chats
         chatroom = [localChatroomList objectAtIndex:indexPath.row];
-        CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
-        CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
-        distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
+//        CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
+//        CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
+//        distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
     }
-    else if (indexPath.section == 1) {
+    else if (indexPath.section == 2) {
         chatroom = [globalChatroomList objectAtIndex:indexPath.row];
-        distanceStr = @"na";
+//        distanceStr = @"na";
     }
+    
+    // Calculate distance from chat, even global
+    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
+    CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
+    distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
     
     if (chatroom.chatActivity > 100) {
         chatroom.chatActivity = 0;
@@ -350,10 +381,13 @@
 {
     NSString* title = @"Woops";
     if (section == 0) {
-        title = @"Local Chats";
+        title = @"Recent";
     }
     else if (section == 1) {
-        title = @"Global Chats";
+        title = @"Local";
+    }
+    else if (section == 2) {
+        title = @"Global";
     }
     return title;
 }
@@ -368,9 +402,12 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 0) {
-        tappedCellInfo = (ChatroomMessage*)[localChatroomList objectAtIndex:indexPath.row];
+        tappedCellInfo = (ChatroomMessage*)[recentChatroomList objectAtIndex:indexPath.row];
     }
     else if (indexPath.section == 1) {
+        tappedCellInfo = (ChatroomMessage*)[localChatroomList objectAtIndex:indexPath.row];
+    }
+    else if (indexPath.section == 2) {
         tappedCellInfo = (ChatroomMessage*)[globalChatroomList objectAtIndex:indexPath.row];
     }
 

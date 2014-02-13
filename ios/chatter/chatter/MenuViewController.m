@@ -8,7 +8,6 @@
 
 #import "MenuViewController.h"
 #import "ViewController.h"
-#import "MenuTableViewController.h"
 
 @interface MenuViewController ()
 
@@ -66,16 +65,10 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    
-}
-
 - (void)viewWillDisappear:(BOOL)animated
 {
-    if ([self isBeingDismissed]) {
-        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
-    }
+    // Since there's no longer a menu, per se, this will only happen once
+    [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
 }
 
 - (void)waitForLocation

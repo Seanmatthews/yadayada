@@ -292,7 +292,7 @@
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <action selector="applySettingsButtonPressed:" destination="Jyv-o4-cVp" eventType="touchUpInside" id="GuP-cA-HmN"/>
+                                            <action selector="applySettingsButtonPressed:" destination="Jyv-o4-cVp" eventType="touchUpInside" id="Ky1-HV-uMC"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -313,7 +313,7 @@
                                     <navigationItem title="Settings" id="iEe-nZ-sff">
                                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="0tD-8i-Bwv">
                                             <connections>
-                                                <action selector="unwindToPreviousView:" destination="Jyv-o4-cVp" id="XyO-Bw-HCT"/>
+                                                <segue destination="bAX-j0-2oJ" kind="unwind" unwindAction="unwindToChatList:" id="bOJ-4o-mDB"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -519,7 +519,6 @@
                             <constraint firstItem="dz7-4r-Bgr" firstAttribute="top" secondItem="vXd-kx-9HD" secondAttribute="top" id="g4m-kA-6EX"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="ara-XM-H9e"/>
                     <connections>
                         <segue destination="dcJ-iO-ylN" kind="modal" identifier="chatListSegue" modalTransitionStyle="crossDissolve" id="fW2-sl-Ou5"/>
                     </connections>
@@ -699,6 +698,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="rc4-gC-yT0"/>
+        <segue reference="t6j-Ha-H7P"/>
     </inferredMetricsTieBreakers>
 </document>
