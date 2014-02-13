@@ -360,6 +360,9 @@
                                     <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="GQe-pq-hBa">
                                         <rect key="frame" x="10" y="10" width="300" height="444"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="dcJ-iO-ylN" id="MLb-6E-Ght"/>
+                                        </connections>
                                     </mapView>
                                     <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="33W-Jt-3RZ">
                                         <rect key="frame" x="0.0" y="465" width="320" height="44"/>

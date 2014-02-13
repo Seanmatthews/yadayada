@@ -36,6 +36,7 @@ const int MAX_RECENT_CHATS = 5;
     recentChatroomList = [[NSMutableArray alloc] init];
     localChatroomList = [[NSMutableArray alloc] init];
     globalChatroomList = [[NSMutableArray alloc] init];
+    [_mapParentView setHidden:YES];
     
     // Get connection object and add this controller's callback
     // method for incoming connections.
@@ -109,6 +110,7 @@ const int MAX_RECENT_CHATS = 5;
         [_tableParentView setHidden:YES];
         [_mapParentView setHidden:NO];
     }
+    [self refreshTable:nil];
 }
 
 - (IBAction)locateButtonPressed:(id)sender
@@ -163,7 +165,6 @@ const int MAX_RECENT_CHATS = 5;
     if (MAX_RECENT_CHATS < [recentChatroomList count]) {
         [recentChatroomList removeObjectAtIndex:MAX_RECENT_CHATS];
     }
-        
 }
 
 
@@ -175,12 +176,14 @@ const int MAX_RECENT_CHATS = 5;
         UIAlertView *alert;
         switch (message.type) {
             case Chatroom:
-                // Table
-                [self addChatroom:(ChatroomMessage*)message];
-                [_tableView reloadData];
+                if (!_tableParentView.isHidden) {
+                    [self addChatroom:(ChatroomMessage*)message];
+                    [_tableView reloadData];
+                }
                 
-                // Map
-                [self addChatroomAnnotation:(ChatroomMessage*)message];
+                if (!_mapParentView.isHidden) {
+                    [self addChatroomAnnotation:(ChatroomMessage*)message];
+                }
                 break;
                 
             case JoinedChatroom:
@@ -306,15 +309,8 @@ const int MAX_RECENT_CHATS = 5;
     return count;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    
-//    if (indexPath.section == 0 && indexPath.row > [localChatroomList count]-1) {
-//        return nil;
-//    }
-//    if (indexPath.section == 1 && indexPath.row > [globalChatroomList count]-1) {
-//        return nil;
-//    }
-    
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     static NSString *CellIdentifier = @"ChatroomListCell";
     ChatroomListCell *cell = (ChatroomListCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
@@ -337,23 +333,12 @@ const int MAX_RECENT_CHATS = 5;
     
     if (indexPath.section == 0) {
         chatroom = [recentChatroomList objectAtIndex:indexPath.row];
-        
-        // TODO: put global check in a better place
-        if (chatroom.latitude == 0 || chatroom.longitude == 0 || chatroom.radius == 0) {
-//            CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
-//            CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
-//            distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
-        }
     }
-    if (indexPath.section == 1) { // Local chats
+    else if (indexPath.section == 1) {
         chatroom = [localChatroomList objectAtIndex:indexPath.row];
-//        CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
-//        CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
-//        distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
     }
     else if (indexPath.section == 2) {
         chatroom = [globalChatroomList objectAtIndex:indexPath.row];
-//        distanceStr = @"na";
     }
     
     // Calculate distance from chat, even global
@@ -395,7 +380,8 @@ const int MAX_RECENT_CHATS = 5;
 
 #pragma mark - UITableViewDelegate methods
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return 55.0;
 }
 
@@ -433,13 +419,16 @@ const int MAX_RECENT_CHATS = 5;
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
-    [mapView removeAnnotations:mapView.annotations];
-    SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
-    msg.latitude = [location currentLat];
-    msg.longitude = [location currentLong];
-    msg.onlyJoinable = YES;
-    msg.metersFromCoords = 1609.34 * 5.; // TODO: change to screen region bounds
-    [connection sendMessage:msg];
+    if (!_mapParentView.isHidden) {
+        NSLog(@"region changed");
+        [mapView removeAnnotations:mapView.annotations];
+        SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
+        msg.latitude = [location currentLat];
+        msg.longitude = [location currentLong];
+        msg.onlyJoinable = YES;
+        msg.metersFromCoords = 1609.34 * 5.; // TODO: change to screen region bounds
+        [connection sendMessage:msg];
+    }
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id < MKAnnotation >)annotation
