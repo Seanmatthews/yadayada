@@ -19,6 +19,9 @@
 
 @implementation CreateChatViewController
 
+// Pointer to list in ChatListViewController
+@synthesize recentChatroomList;
+
 const double MILES_TO_METERS = 1609.34;
 
 
@@ -111,9 +114,6 @@ const double MILES_TO_METERS = 1609.34;
     else if ([segue.identifier isEqualToString:@"unwindToChatList"]) {
         
     }
-    else if ([segue.identifier isEqualToString:@"createChatContainerSegue"]) {
-        
-    }
 }
 
 
@@ -182,6 +182,7 @@ const double MILES_TO_METERS = 1609.34;
             case Chatroom:
                 NSLog(@"Chatroom %@",((ChatroomMessage*)message).chatroomName);
                 chatroomId = ((ChatroomMessage*)message).chatroomId;
+                [recentChatroomList insertObject:message atIndex:0];
                 [self joinCreatedChatroom];
                 break;
                 

@@ -28,6 +28,7 @@
 @property (nonatomic, retain) IBOutlet UIImageView* iconView;
 @property (nonatomic, retain) IBOutlet UISlider* radiusSlider;
 @property (nonatomic, retain) IBOutlet UISegmentedControl* globalChatSelect;
+@property (atomic, retain) NSMutableArray* recentChatroomList;
 
 - (void)messageCallback:(MessageBase*)message;
 - (void)joinCreatedChatroom;

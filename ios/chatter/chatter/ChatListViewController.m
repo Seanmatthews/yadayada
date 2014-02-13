@@ -14,6 +14,7 @@
 #import "ChatPointAnnotation.h"
 #import "SmartButton.h"
 #import "SettingsViewController.h"
+#import "CreateChatViewController.h"
 
 
 @interface ChatListViewController ()
@@ -21,6 +22,8 @@
 @end
 
 @implementation ChatListViewController
+
+@synthesize recentChatroomList;
 
 const int MAX_RECENT_CHATS = 5;
 
@@ -172,8 +175,6 @@ const int MAX_RECENT_CHATS = 5;
         UIAlertView *alert;
         switch (message.type) {
             case Chatroom:
-                NSLog(@"chatroom");
-                
                 // Table
                 [self addChatroom:(ChatroomMessage*)message];
                 [_tableView reloadData];
@@ -183,7 +184,6 @@ const int MAX_RECENT_CHATS = 5;
                 break;
                 
             case JoinedChatroom:
-                NSLog(@"Joined Chatroom");
                 if (((JoinedChatroomMessage*)message).userId == ud.userId) {
                     [self addRecentChatroom:tappedCellInfo];
                     [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:message];
@@ -191,7 +191,6 @@ const int MAX_RECENT_CHATS = 5;
                 break;
                 
             case JoinChatroomReject:
-                NSLog(@"Could not join chatroom");
                 alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alert show];
                 break;
@@ -268,7 +267,8 @@ const int MAX_RECENT_CHATS = 5;
         vc.chatTitle = ((JoinedChatroomMessage*)sender).chatroomName; //tappedCellInfo.chatroomName;
     }
     else if ([segue.identifier isEqualToString:@"createChatSegue"]) {
-
+        CreateChatViewController* ccvc = (CreateChatViewController*)segue.destinationViewController;
+        ccvc.recentChatroomList = self.recentChatroomList;
     }
 //    else if ([segue.identifier isEqualToString:@"chatList2SettingsSegue"]) {
 //        SettingsViewController* svc = (SettingsViewController*)segue.destinationViewController;

@@ -20,7 +20,7 @@
     Location* location;
     Connection* connection;
     UserDetails* ud;
-    NSMutableArray* recentChatroomList;
+//    NSMutableArray* recentChatroomList;
     NSMutableArray* localChatroomList;
     NSMutableArray* globalChatroomList;
     ChatroomMessage *tappedCellInfo;
@@ -32,6 +32,7 @@
 @property (nonatomic,retain) IBOutlet MKMapView* mapView;
 @property (nonatomic,retain) IBOutlet UIView* mapParentView;
 @property (nonatomic,retain) IBOutlet UIView* tableParentView;
+@property (atomic, retain) NSMutableArray* recentChatroomList;
 
 
 // Navigation property
