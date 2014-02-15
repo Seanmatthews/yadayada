@@ -149,7 +149,7 @@ const int MAX_RECENT_CHATS = 5;
     [_tableView reloadData];
 }
 
-- (void)addRecentChatroom:(ChatroomMessage*)chatroom
+- (void)addRecentChatroom:(JoinedChatroomMessage*)chatroom
 {
     // Check if this chatroom already exists in the list
     for (int i=0; i<[recentChatroomList count]; ++i) {
@@ -160,7 +160,17 @@ const int MAX_RECENT_CHATS = 5;
         }
     }
     
-    [recentChatroomList insertObject:chatroom atIndex:0];
+    ChatroomMessage* addChat = [[ChatroomMessage alloc] init];
+    addChat.chatroomId = chatroom.chatroomId;
+    addChat.chatroomName = chatroom.chatroomName;
+    addChat.chatroomOwnerHandle = chatroom.chatroomOwnerHandle;
+    addChat.chatroomOwnerId = chatroom.chatroomOwnerId;
+    addChat.chatActivity = chatroom.chatActivity;
+    addChat.latitude = chatroom.latitude;
+    addChat.longitude = chatroom.longitude;
+    addChat.radius = chatroom.radius;
+    addChat.userCount = chatroom.userCount;
+    [recentChatroomList insertObject:addChat atIndex:0];
     
     if (MAX_RECENT_CHATS < [recentChatroomList count]) {
         [recentChatroomList removeObjectAtIndex:MAX_RECENT_CHATS];
@@ -188,8 +198,10 @@ const int MAX_RECENT_CHATS = 5;
                 
             case JoinedChatroom:
                 if (((JoinedChatroomMessage*)message).userId == ud.userId) {
-                    [self addRecentChatroom:tappedCellInfo];
+//                    if (!_tableParentView.isHidden) {
+                    [self addRecentChatroom:(JoinedChatroomMessage*)message];
                     [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:message];
+//                    }
                 }
                 break;
                 
@@ -216,8 +228,8 @@ const int MAX_RECENT_CHATS = 5;
     //    MKPinAnnotationView* mkp = (MKPinAnnotationView*)(((SmartButton*)sender).parent);
     //    ChatPointAnnotation* cpa = (ChatPointAnnotation*)mkp.annotation;
     ChatPointAnnotation* cpa = (ChatPointAnnotation*)(((SmartButton*)sender).parent);
-    [self joinChatroomWithId:cpa.chatroomId];
     [_mapView deselectAnnotation:cpa animated:NO];
+    [self joinChatroomWithId:cpa.chatroomId];
 }
 
 - (void)joinChatroomWithId:(long long)chatId

@@ -20,6 +20,7 @@ public class Chatroom {
     private final long longitude;
     private final long radius;
     private final long creationTime;
+    private final short chatActivity;
 
     // back-reference for easy access
     private final ChatroomRepository repo;
@@ -35,6 +36,7 @@ public class Chatroom {
         this.radius = radius;
         this.clusterStrategy = new MPSClusteringStrategy(this, 0.33, 2.0);
         this.creationTime = System.currentTimeMillis() / 1000L;
+        this.chatActivity = 0;
     }
 
     public long getId() {
@@ -110,6 +112,8 @@ public class Chatroom {
     public long getLatitude() {
         return latitude;
     }
+
+    public short getChatActivity() { return chatActivity; }
 
     public boolean global() { return 0 >= radius; }
 }

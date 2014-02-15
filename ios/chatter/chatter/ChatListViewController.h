@@ -43,12 +43,12 @@
 - (IBAction)segmentedControlSwitched:(id)sender;
 - (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue;
 - (void)leaveCurrentChatroom;
+- (void)addRecentChatroom:(JoinedChatroomMessage*)chatroom;
 
 // Table view
 - (void)refreshTable:(UIRefreshControl*)refreshControl;
 - (void)searchChatrooms;
 - (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom;
-- (void)addRecentChatroom:(ChatroomMessage*)chatroom;
 
 // Map View
 - (void)addChatroomAnnotation:(ChatroomMessage*)message;

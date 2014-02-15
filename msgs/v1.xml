@@ -117,10 +117,17 @@
     </msg>
 
     <msg name="JoinedChatroom" val="37" origin="server">
-        <field name="chatroomId" type="long" />
-        <field name="chatroomName" type="String" />
         <field name="userId" type="long" />
         <field name="userHandle" type="String" />
+        <field name="chatroomId" type="long" />
+        <field name="chatroomOwnerId" type="long" />
+        <field name="chatroomName" type="String" />
+        <field name="chatroomOwnerHandle" type="String" />
+        <field name="latitude" type="long" />
+        <field name="longitude" type="long" />
+        <field name="radius" type="long" />
+        <field name="userCount" type="int" />
+        <field name="chatActivity" type="short" />
     </msg>
 
     <msg name="LeftChatroom" val="38" origin="server">
