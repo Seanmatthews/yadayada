@@ -115,6 +115,10 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[VoteMessage alloc] init];
         break;
 
+        case InviteUser:
+        mb = [[InviteUserMessage alloc] init];
+        break;
+
     }
     return mb;
 }

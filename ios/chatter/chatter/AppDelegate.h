@@ -10,12 +10,14 @@
 #import "Location.h"
 #import "UserDetails.h"
 #import "ChatroomManagement.h"
+#import "Contacts.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 {
     Location* location;
     UserDetails* ud;
     ChatroomManagement* chatManager;
+    Contacts* contacts;
 }
 
 @property (strong, nonatomic) UIWindow *window;

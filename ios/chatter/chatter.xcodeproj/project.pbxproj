@@ -10,6 +10,8 @@
 		1444DCA618A35838006014C2 /* TutorialStartController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1444DCA518A35838006014C2 /* TutorialStartController.m */; };
 		14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */; };
 		14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7918A31A560038D149 /* TutorialContentViewController.m */; };
+		14E010E718B1B27B00F45EDD /* Contacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 14E010E618B1B27B00F45EDD /* Contacts.m */; };
+		14E010E918B1D5C900F45EDD /* DialingCodes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 14E010E818B1D5C900F45EDD /* DialingCodes.plist */; };
 		641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147A182C7D31001D8959 /* SettingsViewController.m */; };
 		641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147D182C7D6C001D8959 /* ChatListViewController.m */; };
 		641C1480182C7FF8001D8959 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C147F182C7FF8001D8959 /* MapKit.framework */; };
@@ -76,6 +78,9 @@
 		14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomManagement.m; sourceTree = "<group>"; };
 		14D19A7818A31A560038D149 /* TutorialContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialContentViewController.h; sourceTree = "<group>"; };
 		14D19A7918A31A560038D149 /* TutorialContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialContentViewController.m; sourceTree = "<group>"; };
+		14E010E518B1B27B00F45EDD /* Contacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contacts.h; sourceTree = "<group>"; };
+		14E010E618B1B27B00F45EDD /* Contacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contacts.m; sourceTree = "<group>"; };
+		14E010E818B1D5C900F45EDD /* DialingCodes.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = DialingCodes.plist; sourceTree = "<group>"; };
 		641C1479182C7D31001D8959 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		641C147A182C7D31001D8959 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		641C147C182C7D6C001D8959 /* ChatListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatListViewController.h; sourceTree = "<group>"; };
@@ -258,6 +263,8 @@
 				64A10DA31824BBDA00A499B0 /* Location.m */,
 				14D19A7518A1FAAE0038D149 /* ChatroomManagement.h */,
 				14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */,
+				14E010E518B1B27B00F45EDD /* Contacts.h */,
+				14E010E618B1B27B00F45EDD /* Contacts.m */,
 				6458F39318172E7400AA8E81 /* Supporting Files */,
 			);
 			path = chatter;
@@ -266,6 +273,7 @@
 		6458F39318172E7400AA8E81 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				14E010E818B1D5C900F45EDD /* DialingCodes.plist */,
 				64A10D4D181DFDEF00A499B0 /* v1.xml */,
 				6458F39418172E7400AA8E81 /* chatter-Info.plist */,
 				6458F39518172E7400AA8E81 /* InfoPlist.strings */,
@@ -442,6 +450,7 @@
 				64A10D4E181DFDEF00A499B0 /* v1.xml in Resources */,
 				B3E79A4A1832AF23003227E7 /* ChatroomListCell.xib in Resources */,
 				64770589187B880200A97F74 /* Default-568h@2x.png in Resources */,
+				14E010E918B1D5C900F45EDD /* DialingCodes.plist in Resources */,
 				6458F3A018172E7400AA8E81 /* Main.storyboard in Resources */,
 				B33C55C61835598400EF28B7 /* default-icon.png in Resources */,
 				6488FD101887183E00EA07D3 /* icon60@2x.png in Resources */,
@@ -466,6 +475,7 @@
 				B343A50C1828134F00B36450 /* UIImage+ImageEffects.m in Sources */,
 				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
 				6477058F187C7FAD00A97F74 /* SmartButton.m in Sources */,
+				14E010E718B1B27B00F45EDD /* Contacts.m in Sources */,
 				B343A50F18282CF600B36450 /* MenuViewController.m in Sources */,
 				6477058C187BAD9900A97F74 /* ChatPointAnnotation.m in Sources */,
 				64D60F2D1880C79100108C1F /* CLLocationDispatch.m in Sources */,
@@ -616,14 +626,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: sean matthews (Z72KQMSYAP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: sean matthews (Z72KQMSYAP)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "chatter/chatter-Prefix.pch";
 				INFOPLIST_FILE = "chatter/chatter-Info.plist";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "902DF367-700C-4C9F-8C6A-CFD9BFA92303";
+				PROVISIONING_PROFILE = "BE3B2162-C76C-412F-8349-3790C4AA6474";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -632,14 +642,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: sean matthews (Z72KQMSYAP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: sean matthews (Z72KQMSYAP)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "chatter/chatter-Prefix.pch";
 				INFOPLIST_FILE = "chatter/chatter-Info.plist";
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "902DF367-700C-4C9F-8C6A-CFD9BFA92303";
+				PROVISIONING_PROFILE = "BE3B2162-C76C-412F-8349-3790C4AA6474";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

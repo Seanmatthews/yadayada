@@ -7,15 +7,18 @@ import com.chat.util.buffer.ReadWriteBuffer;
 public class QuickLoginMessage implements Message {
     private final String handle;
     private final String UUID;
+    private final long phoneNumber;
 
     public QuickLoginMessage(ReadBuffer stream) {
         this.handle = stream.readString();
         this.UUID = stream.readString();
+        this.phoneNumber = stream.readLong();
     }
 
-    public QuickLoginMessage(String handle, String UUID) {
+    public QuickLoginMessage(String handle, String UUID, long phoneNumber) {
         this.handle = handle;
         this.UUID = UUID;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getHandle() {
@@ -24,6 +27,10 @@ public class QuickLoginMessage implements Message {
 
     public String getUUID() {
         return UUID;
+    }
+
+    public long getPhoneNumber() {
+        return phoneNumber;
     }
 
     @Override
@@ -35,6 +42,7 @@ public class QuickLoginMessage implements Message {
         stream.writeByte(MessageTypes.QuickLogin.getValue());
         stream.writeString(getHandle());
         stream.writeString(getUUID());
+        stream.writeLong(getPhoneNumber());
 
         // write out length of message
         stream.writeShort(position, stream.position() - position - 2);
@@ -46,6 +54,7 @@ public class QuickLoginMessage implements Message {
         builder.append("Msg=QuickLogin");
         builder.append(",Handle=").append(getHandle());
         builder.append(",UUID=").append(getUUID());
+        builder.append(",PhoneNumber=").append(getPhoneNumber());
         return builder.toString();        
     }
 } 

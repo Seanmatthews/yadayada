@@ -30,6 +30,7 @@
     <msg name="QuickLogin" val="14" origin="client">
         <field name="handle" type="String" />
         <field name="UUID" type="String" />
+        <field name="phoneNumber" type="long" />
     </msg>
 
     <msg name="Connect" val="16" origin="client">
@@ -146,6 +147,12 @@
         <field name="msgId" type="long" />
         <field name="chatroomId" type="long" />
         <field name="upvote" type="byte" />
+    </msg>
+
+    <msg name="InviteUser" val="50" origin="client">
+        <field name="senderId" type="long" />
+        <field name="recipientId" type="long" />
+        <field name="chatroomId" type="long" />
     </msg>
 
 </schema>

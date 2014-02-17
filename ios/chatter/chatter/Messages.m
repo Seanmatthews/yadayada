@@ -283,3 +283,14 @@
 }
 
 @end
+
+@implementation InviteUserMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 50;
+    return self;
+}
+
+@end

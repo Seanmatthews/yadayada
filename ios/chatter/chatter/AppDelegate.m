@@ -19,6 +19,10 @@
     // Load global singletons
     ud = [UserDetails sharedInstance];
     chatManager = [ChatroomManagement sharedInstance];
+    contacts = [Contacts sharedInstance];
+    
+    // Do this here?
+    [contacts getAddressBookPermissions];
     
     UIStoryboard *uis = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     self.window = [[UIWindow alloc]

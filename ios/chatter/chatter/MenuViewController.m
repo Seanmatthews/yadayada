@@ -21,6 +21,7 @@
 {
     location = [Location sharedInstance];
     ud = [UserDetails sharedInstance];
+    contacts = [Contacts sharedInstance];
     
     // Get connection object and add this controller's callback
     // method for incoming connections.
@@ -100,6 +101,7 @@
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
     qlm.handle = ud.handle;
     qlm.UUID = ud.UUID;
+    qlm.phoneNumber = [[contacts getMyPhoneNumber] longLongValue];
     [connection sendMessage:qlm];
 }
 
@@ -124,8 +126,6 @@
             ud.iconDownloadURL = ((ConnectAcceptMessage*)message).imageDownloadUrl;
             ud.iconUploadURL = ((ConnectAcceptMessage*)message).imageUploadUrl;
             NSLog(@"global chatroom id: %llx",ud.chatroomId);
-            NSLog(@"img DL: %@",ud.iconDownloadURL);
-            NSLog(@"img UL: %@",ud.iconUploadURL);
             [self loginMessage];
             break;
             

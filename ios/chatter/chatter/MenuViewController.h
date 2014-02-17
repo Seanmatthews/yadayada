@@ -11,12 +11,14 @@
 #import "Messages.h"
 #import "Connection.h"
 #import "Location.h"
+#import "Contacts.h"
 
 @interface MenuViewController : UIViewController 
 {
     UserDetails* ud;
     Connection* connection;
     Location* location;
+    Contacts* contacts;
 }
 
 //@property (nonatomic, strong) NSString* userHandle;
