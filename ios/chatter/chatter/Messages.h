@@ -58,6 +58,7 @@ typedef enum {
 @property NSString* password;
 @property NSString* handle;
 @property NSString* UUID;
+@property long long phoneNumber;
 
 @end
 

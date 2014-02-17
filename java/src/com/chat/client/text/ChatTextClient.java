@@ -28,17 +28,19 @@ public class ChatTextClient implements ChatClient {
 
     private final String username;
     private final String password;
+    private final long phoneNumber;
 
     private Chatroom subscribedChatroom;
     private User user;
 
-    public ChatTextClient(String host, int port, String user, String pass) throws IOException, InterruptedException, ValidationError {
+    public ChatTextClient(String host, int port, String user, String pass, Long phone) throws IOException, InterruptedException, ValidationError {
         EventService eventService = new EventServiceImpl();
 
         ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         userRepo = new InMemoryUserRepository();
         username = user;
         password = pass;
+        phoneNumber = phone;
         ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
 
         connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher);
@@ -51,7 +53,7 @@ public class ChatTextClient implements ChatClient {
 
     @Override
     public void onConnectAccept(int apiVersion, long globalChatId) {
-        connection.sendMessage(new QuickLoginMessage(username, username));
+        connection.sendMessage(new QuickLoginMessage(username, username, 12155551212L));
     }
 
     @Override
@@ -62,7 +64,7 @@ public class ChatTextClient implements ChatClient {
 
     @Override
     public void onLoginAccept(long userId) {
-        user = new User(userId, username, userRepo);
+        user = new User(userId, username, phoneNumber, userRepo);
         userRepo.addUser(user);
 
         connection.sendMessage(new SearchChatroomsMessage(0L, 0L, (byte)0, 0L));
@@ -121,6 +123,7 @@ public class ChatTextClient implements ChatClient {
 
     public static void main(String[] args) throws IOException, InterruptedException, ValidationError {
         int port = Integer.parseInt(args[1]);
-        new ChatTextClient(args[0], port, args[2], args[3]);
+        long phone = Long.parseLong(args[4]);
+        new ChatTextClient(args[0], port, args[2], args[3], phone);
     }
 }

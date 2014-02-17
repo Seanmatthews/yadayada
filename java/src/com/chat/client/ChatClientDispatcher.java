@@ -80,7 +80,8 @@ public class ChatClientDispatcher {
                 case JoinedChatroom:
                     JoinedChatroomMessage jcMsg = new JoinedChatroomMessage(buffer);
                     logMsg(jcMsg);
-                    User jcUser = getOrCreateUser(jcMsg.getUserId(), jcMsg.getUserHandle());
+                    // Don't send user phone number with this message
+                    User jcUser = getOrCreateUser(jcMsg.getUserId(), jcMsg.getUserHandle(), 0L);
                     Chatroom jcChatroom = getOrCreateChatroom(jcMsg.getChatroomId(), "Global", jcUser);
                     client.onJoinedChatroom(jcChatroom, jcUser);
                     break;
@@ -102,7 +103,8 @@ public class ChatClientDispatcher {
                 case Chatroom:
                     ChatroomMessage cMsg = new ChatroomMessage(buffer);
                     logMsg(cMsg);
-                    User owner = getOrCreateUser(cMsg.getChatroomOwnerId(), cMsg.getChatroomOwnerHandle());
+                    // Don't send user phone number with this message
+                    User owner = getOrCreateUser(cMsg.getChatroomOwnerId(), cMsg.getChatroomOwnerHandle(), 0L);
                     Chatroom chatroom = getOrCreateChatroom(cMsg.getChatroomId(), cMsg.getChatroomName(), owner);
                     client.onChatroom(chatroom);
                     break;
@@ -110,7 +112,8 @@ public class ChatClientDispatcher {
                 case Message:
                     MessageMessage msg = new MessageMessage(buffer);
                     logMsg(msg);
-                    User sender = getOrCreateUser(msg.getSenderId(), msg.getSenderHandle());
+                    // Don't send user phone number with every message
+                    User sender = getOrCreateUser(msg.getSenderId(), msg.getSenderHandle(), 0L);
                     Chatroom chat = chatroomRepo.get(msg.getChatroomId());
                     ChatMessage theMsg = new ChatMessage(msg.getMessageId(), chat, sender, msg.getMessage(), msg.getMessageTimestamp());
                     client.onMessage(theMsg);
@@ -146,12 +149,12 @@ public class ChatClientDispatcher {
         return chatroom;
     }
 
-    private User getOrCreateUser(long userId, String userName) throws ExecutionException, InterruptedException, InvalidObjectException {
+    private User getOrCreateUser(long userId, String userName, long phoneNumber) throws ExecutionException, InterruptedException, InvalidObjectException {
         User owner;
         synchronized (userRepo) {
             owner = userRepo.get(userId, null).get().getUser();
             if (owner == null) {
-                owner = new User(userId, userName, "", userName, userRepo);
+                owner = new User(userId, userName, "", userName, phoneNumber, userRepo);
                 userRepo.addUser(owner);
             }
         }

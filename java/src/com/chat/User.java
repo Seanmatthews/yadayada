@@ -14,17 +14,19 @@ public class User {
     private final String login;
     private final String password;
     private final String handle;
+    private final long phoneNumber;
     private final UserRepository repo;
 
-    public User(long id, String handle, UserRepository repo) {
-        this(id, "QR", "QR", handle, repo);
+    public User(long id, String handle, long phoneNumber, UserRepository repo) {
+        this(id, "QR", "QR", handle, phoneNumber, repo);
     }
 
-    public User(long id, String login, String password, String handle, UserRepository repo) {
+    public User(long id, String login, String password, String handle, long phoneNumber, UserRepository repo) {
         this.id = id;
         this.login = login;
         this.password = password;
         this.handle = handle;
+        this.phoneNumber = phoneNumber;
         this.repo = repo;
     }
 
@@ -43,6 +45,8 @@ public class User {
     public String getHandle() {
         return handle;
     }
+
+    public Long getPhoneNumber() { return phoneNumber; }
 
     public void addToChatroom(Chatroom chatroom) {
         repo.addToChatroom(this, chatroom);

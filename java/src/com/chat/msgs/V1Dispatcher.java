@@ -81,7 +81,7 @@ public class V1Dispatcher implements MessageDispatcher {
             case Register:
                 RegisterMessage rMsg = new RegisterMessage(buffer);
                 logMsg(rMsg);
-                server.registerUser(stream, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle(), rMsg.getUUID());
+                server.registerUser(stream, rMsg.getUserName(), rMsg.getPassword(), rMsg.getHandle(), rMsg.getUUID(), rMsg.getPhoneNumber());
                 break;
 
             case Login:
@@ -93,7 +93,7 @@ public class V1Dispatcher implements MessageDispatcher {
             case QuickLogin:
                 QuickLoginMessage qlMsg = new QuickLoginMessage(buffer);
                 logMsg(qlMsg);
-                server.quickLogin(stream, qlMsg.getHandle(), qlMsg.getUUID());
+                server.quickLogin(stream, qlMsg.getHandle(), qlMsg.getUUID(), qlMsg.getPhoneNumber());
                 break;
 
             case SubmitMessage:

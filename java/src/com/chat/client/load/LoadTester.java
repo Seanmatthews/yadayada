@@ -42,7 +42,7 @@ public class LoadTester {
                 System.out.println("- Starting client " + i + " - " + userNum);
             }
 
-            clients.add(new LoadTesterClient(eventService, host, port, "Load" + userNum, "Pass" + userNum, chatroomRepo, userRepo));
+            clients.add(new LoadTesterClient(eventService, host, port, "Load" + userNum, "Pass" + userNum, 12155551212L + userNum, chatroomRepo, userRepo));
         }
 
         boolean allReady = false;

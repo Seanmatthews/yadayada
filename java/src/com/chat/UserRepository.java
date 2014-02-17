@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
  * To change this template use File | Settings | File Templates.
  */
 public interface UserRepository {
-    Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, UserRepositoryCompletionHandler completionHandler);
+    Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, long phoneNumber, UserRepositoryCompletionHandler completionHandler);
     Future<UserRepositoryActionResult> login(String login, String password, UserRepositoryCompletionHandler completionHandler);
     Future<UserRepositoryActionResult> get(long id, UserRepositoryCompletionHandler completionHandler);
     void addToChatroom(User user, Chatroom chatroom);

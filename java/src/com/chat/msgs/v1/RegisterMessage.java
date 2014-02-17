@@ -9,19 +9,22 @@ public class RegisterMessage implements Message {
     private final String password;
     private final String handle;
     private final String UUID;
+    private final long phoneNumber;
 
     public RegisterMessage(ReadBuffer stream) {
         this.userName = stream.readString();
         this.password = stream.readString();
         this.handle = stream.readString();
         this.UUID = stream.readString();
+        this.phoneNumber = stream.readLong();
     }
 
-    public RegisterMessage(String userName, String password, String handle, String UUID) {
+    public RegisterMessage(String userName, String password, String handle, String UUID, long phoneNumber) {
         this.userName = userName;
         this.password = password;
         this.handle = handle;
         this.UUID = UUID;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getUserName() {
@@ -40,6 +43,10 @@ public class RegisterMessage implements Message {
         return UUID;
     }
 
+    public long getPhoneNumber() {
+        return phoneNumber;
+    }
+
     @Override
     public void write(ReadWriteBuffer stream) {
         int position = stream.position();
@@ -51,6 +58,7 @@ public class RegisterMessage implements Message {
         stream.writeString(getPassword());
         stream.writeString(getHandle());
         stream.writeString(getUUID());
+        stream.writeLong(getPhoneNumber());
 
         // write out length of message
         stream.writeShort(position, stream.position() - position - 2);
@@ -64,6 +72,7 @@ public class RegisterMessage implements Message {
         builder.append(",Password=").append(getPassword());
         builder.append(",Handle=").append(getHandle());
         builder.append(",UUID=").append(getUUID());
+        builder.append(",PhoneNumber=").append(getPhoneNumber());
         return builder.toString();        
     }
 } 

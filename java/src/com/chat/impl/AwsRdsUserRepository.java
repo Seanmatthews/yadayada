@@ -32,7 +32,7 @@ public class AwsRdsUserRepository implements UserRepository {
     }
 
     @Override
-    public Future<UserRepositoryActionResult> registerUser(final String login, final String password, final String handle, final String UUID, final UserRepositoryCompletionHandler completionHandler) {
+    public Future<UserRepositoryActionResult> registerUser(final String login, final String password, final String handle, final String UUID, final long phoneNumber, final UserRepositoryCompletionHandler completionHandler) {
         final UserFuture future = new UserFuture(completionHandler);
 
         // submit a new thread to contact the database and let us know when we've inserted
@@ -83,7 +83,7 @@ public class AwsRdsUserRepository implements UserRepository {
 
                         if (generatedKeys.next()) {
                             long id = generatedKeys.getLong("GENERATED_KEY");
-                            User user = new User(id, login, password, handle, AwsRdsUserRepository.this);
+                            User user = new User(id, login, password, handle, phoneNumber, AwsRdsUserRepository.this);
                             idToUserMap.put(id, user);
 
                             future.setResult(new UserRepositoryActionResult(user, true));
@@ -124,7 +124,8 @@ public class AwsRdsUserRepository implements UserRepository {
                     if (results.next()) {
                         long id = results.getLong("UserId");
                         String handle = results.getString("Handle");
-                        User user = new User(id, login, password, handle, AwsRdsUserRepository.this);
+                        long phoneNumber = results.getLong("PhoneNumber");
+                        User user = new User(id, login, password, handle, phoneNumber, AwsRdsUserRepository.this);
                         addUser(user);
 
                         future.setResult(new UserRepositoryActionResult(user, true));
@@ -165,7 +166,7 @@ public class AwsRdsUserRepository implements UserRepository {
                 PreparedStatement findStatement = null;
 
                 try {
-                    findStatement = connect.prepareStatement("select Login, Handle from userdb.User where UserId = ?");
+                    findStatement = connect.prepareStatement("select Login, Handle, PhoneNumber from userdb.User where UserId = ?");
                     future.addStatement(findStatement);
 
                     findStatement.setLong(1, id);
@@ -174,7 +175,8 @@ public class AwsRdsUserRepository implements UserRepository {
                     if (results.next()) {
                         String login = results.getString("Login");
                         String handle = results.getString("Handle");
-                        User user2 = new User(id, login, "<BLANK>", handle, AwsRdsUserRepository.this);
+                        long phoneNumber = results.getLong("PhoneNumber");
+                        User user2 = new User(id, login, "<BLANK>", handle, phoneNumber, AwsRdsUserRepository.this);
                         addUser(user2);
 
                         future.setResult(new UserRepositoryActionResult(user2, true));

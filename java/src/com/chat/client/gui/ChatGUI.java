@@ -30,6 +30,7 @@ import java.util.Map;
  */
 public class ChatGUI implements ChatClient {
     private final String userName;
+    private final long phoneNumber;
     private final InMemoryUserRepository userRepo;
 
     private JButton createButton;
@@ -52,7 +53,7 @@ public class ChatGUI implements ChatClient {
 
     private User user;
 
-    public ChatGUI(String host, int port, String userName, String password) throws IOException, ValidationError {
+    public ChatGUI(String host, int port, String userName, String password, long phoneNumber) throws IOException, ValidationError {
         EventService eventService = new EventServiceImpl();
 
         ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
@@ -61,6 +62,7 @@ public class ChatGUI implements ChatClient {
 
         connection = new ChatClientConnection("CLIENT", eventService, host, port, dispatcher);
 
+        this.phoneNumber = phoneNumber;
         this.userName = userName;
         this.userRepo = userRepo;
 
@@ -133,7 +135,7 @@ public class ChatGUI implements ChatClient {
 
     @Override
     public void onLoginAccept(long userId) {
-        user = new User(userId, userName, userRepo);
+        user = new User(userId, userName, phoneNumber, userRepo);
         userRepo.addUser(user);
     }
 
@@ -157,9 +159,10 @@ public class ChatGUI implements ChatClient {
         int port = Integer.parseInt(args[1]);
         String username = args[2];
         String password = args[3];
+        long phoneNumber = Long.parseLong(args[4]);
 
         JFrame frame = new JFrame("Chatter");
-        ChatGUI chatGUI = new ChatGUI(host, port, username, password);
+        ChatGUI chatGUI = new ChatGUI(host, port, username, password, phoneNumber);
         chatGUI.panel1.setPreferredSize(new Dimension(600, 400));
         chatGUI.tabbedPane1.setPreferredSize(new Dimension(400, 400));
 

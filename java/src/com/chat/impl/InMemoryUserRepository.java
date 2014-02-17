@@ -21,9 +21,10 @@ public class InMemoryUserRepository implements UserRepository {
 
     private final Map<Long, User> idToUserMap = new HashMap<>();
     private final Map<String, User> loginToUserMap = new HashMap<>();
+    private final Map<Long, User> phoneToUserMap = new HashMap<>();
     private final Map<User, Set<Chatroom>> userChatroomMap = new HashMap<>();
 
-    public Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, UserRepositoryCompletionHandler handler) {
+    public Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, long phoneNumber, UserRepositoryCompletionHandler handler) {
         User user = loginToUserMap.get(login);
 
         // already registered
@@ -32,7 +33,7 @@ public class InMemoryUserRepository implements UserRepository {
             return new UserFuture(result, handler);
         }
 
-        user = new User(nextUserId++, login, password, handle, this);
+        user = new User(nextUserId++, login, password, handle, phoneNumber, this);
 
         addUser(user);
 
@@ -63,6 +64,7 @@ public class InMemoryUserRepository implements UserRepository {
     public void addUser(User user) {
         loginToUserMap.put(user.getLogin(), user);
         idToUserMap.put(user.getId(), user);
+        phoneToUserMap.put(user.getPhoneNumber(), user);
         userChatroomMap.put(user, Collections.newSetFromMap(new HashMap<Chatroom, Boolean>()));
     }
 

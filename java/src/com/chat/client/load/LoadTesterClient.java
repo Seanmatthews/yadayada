@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LoadTesterClient implements ChatClient {
     private final String username;
     private final String password;
+    private final long phoneNumber;
     private final ChatClientConnection connection;
 
     private long chatroomId = 1;
@@ -38,9 +39,10 @@ public class LoadTesterClient implements ChatClient {
     private int messagesRecv = 0;
     private int sentMessages = 0;
 
-    public LoadTesterClient(EventService eventService, String host, int port, String user, String password, ChatroomRepository chatroomRepo, InMemoryUserRepository userRepo) throws IOException {
+    public LoadTesterClient(EventService eventService, String host, int port, String user, String password, long phoneNumber, ChatroomRepository chatroomRepo, InMemoryUserRepository userRepo) throws IOException {
         this.username = user;
         this.password = password;
+        this.phoneNumber = phoneNumber;
 
         ChatClientDispatcher dispatcher = new ChatClientDispatcher(this, chatroomRepo, userRepo);
         connection = new ChatClientConnection(user, eventService, host, port, dispatcher);
@@ -64,7 +66,7 @@ public class LoadTesterClient implements ChatClient {
     @Override
     public void onConnectAccept(int apiVersion, long globalChatId) {
         state = LoginState.ConnectAccept;
-        connection.sendMessage(new RegisterMessage(username, password, username, username));
+        connection.sendMessage(new RegisterMessage(username, password, username, username, phoneNumber));
     }
 
     @Override

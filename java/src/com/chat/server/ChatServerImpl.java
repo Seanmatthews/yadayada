@@ -119,7 +119,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void registerUser(final ClientConnection senderConnection, final String login, String password, String handle, String UUID) {
+    public void registerUser(final ClientConnection senderConnection, final String login, String password, String handle, String UUID, long phoneNumber) {
         log.debug("Registering user {}", login);
 
         if (login.length() == 0) {
@@ -135,7 +135,7 @@ public class ChatServerImpl implements ChatServer {
             return;
         }
 
-        userRepo.registerUser(login, password, handle, UUID, new UserRepositoryCompletionHandler() {
+        userRepo.registerUser(login, password, handle, UUID, phoneNumber, new UserRepositoryCompletionHandler() {
             @Override
             public void onCompletion(final UserRepositoryActionResult result) {
                 Runnable complete = new Runnable() {
@@ -212,7 +212,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void quickLogin(final ClientConnection senderConnection, String handle, String UUID) {
+    public void quickLogin(final ClientConnection senderConnection, String handle, String UUID, long phoneNumber) {
         log.debug("Quick login user {}", handle);
 
         if (handle.length() == 0) {
@@ -225,7 +225,7 @@ public class ChatServerImpl implements ChatServer {
             return;
         }
 
-        userRepo.registerUser(handle, handle, handle, UUID, new UserRepositoryCompletionHandler() {
+        userRepo.registerUser(handle, handle, handle, UUID, phoneNumber, new UserRepositoryCompletionHandler() {
                 @Override
                 public void onCompletion(final UserRepositoryActionResult result) {
                     Runnable complete = new Runnable() {

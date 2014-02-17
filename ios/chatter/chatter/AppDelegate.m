@@ -22,7 +22,7 @@
     contacts = [Contacts sharedInstance];
     
     // Do this here?
-    [contacts getAddressBookPermissions];
+//    [contacts getAddressBookPermissions];
     
     UIStoryboard *uis = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     self.window = [[UIWindow alloc]
