@@ -304,5 +304,6 @@ typedef enum {
 @property long long senderId;
 @property long long recipientId;
 @property long long chatroomId;
+@property long long recipientPhoneNumber;
 
 @end

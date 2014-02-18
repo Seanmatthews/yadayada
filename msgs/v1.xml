@@ -154,6 +154,7 @@
         <field name="senderId" type="long" />
         <field name="recipientId" type="long" />
         <field name="chatroomId" type="long" />
+        <field name="recipientPhoneNumber" type="long" />
     </msg>
 
 </schema>

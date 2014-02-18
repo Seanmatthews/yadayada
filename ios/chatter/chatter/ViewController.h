@@ -15,11 +15,14 @@
 #import "Messages.h"
 #import "MenuViewController.h"
 #import "ChatroomManagement.h"
+#import "Contacts.h"
+#import <AddressBookUI/AddressBookUI.h>
 
-@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate>
 {
     UserDetails* ud;
     Connection* connection;
+    Contacts* contacts;
     NSThread* connectionThread;
     NSString* cellMsgCSS;
     NSString* handleCSS;
@@ -55,6 +58,7 @@
 - (void)tappedCell:(id)sender;
 - (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue;
+- (IBAction)inviteUser:(id)sender;
 
 
 

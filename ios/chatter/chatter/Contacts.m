@@ -82,5 +82,32 @@
     return phoneNum;
 }
 
+- (NSNumber*)iPhoneNumberForRecord:(ABRecordRef)record
+{
+    NSNumber* phoneNum = nil;
+    CFErrorRef *error = nil;
+    NSLocale *locale = [NSLocale currentLocale];
+    NSString* countryCode = [phonePrefixDict objectForKey:[[locale objectForKey:NSLocaleCountryCode] lowercaseString]];
+    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
+    ABRecordRef me = ABAddressBookGetPersonWithRecordID(addressBook, 1);
+    ABMultiValueRef multiPhones = ABRecordCopyValue(me, kABPersonPhoneProperty);
+    
+    // Get iphone number
+    for (int i=0; i<ABMultiValueGetCount(multiPhones); ++i) {
+        NSString* label = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(multiPhones, i);
+        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
+            CFStringRef phoneNumberRef = ABMultiValueCopyValueAtIndex(multiPhones, 0);
+            NSString* phone = (__bridge NSString *) phoneNumberRef;
+            NSString* fullPhone = [NSString stringWithFormat:@"%@%@",countryCode,phone];
+            
+            // Remove parens and dashes
+            NSCharacterSet *charactersToRemove = [[ NSCharacterSet alphanumericCharacterSet ] invertedSet ];
+            NSString *trimmed = [[fullPhone componentsSeparatedByCharactersInSet:charactersToRemove ] componentsJoinedByString:@"" ];
+            phoneNum = [NSNumber numberWithLongLong:[trimmed longLongValue]];
+        }
+    }
+    return phoneNum;
+}
+
 
 @end

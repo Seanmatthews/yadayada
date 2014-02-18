@@ -19,5 +19,6 @@
 + (id)sharedInstance;
 - (void)getAddressBookPermissions;
 - (NSNumber*)getMyPhoneNumber;
+- (NSNumber*)iPhoneNumberForRecord:(ABRecordRef)record;
 
 @end

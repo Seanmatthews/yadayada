@@ -29,6 +29,7 @@
 - (void)initCode
 {
     ud = [UserDetails sharedInstance];
+    contacts = [Contacts sharedInstance];
     chatManager = [ChatroomManagement sharedInstance];
     [self registerForKeyboardNotifications];
     
@@ -104,6 +105,14 @@
 }
 
 #pragma mark - Other UI behaviors
+
+- (IBAction)inviteUser:(id)sender
+{
+    ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
+    picker.peoplePickerDelegate = self;
+    
+    [self presentViewController:picker animated:YES completion:nil];
+}
 
 - (void)tappedCell:(id)sender
 {
@@ -345,6 +354,44 @@
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue
 {
     
+}
+
+
+#pragma mark - ABPeoplePickerNavigationControllerDelegate
+
+- (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
+{
+    // Do nothing
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+    if (person) {
+        InviteUserMessage* ium = [[InviteUserMessage alloc] init];
+        ium.chatroomId = [chatManager currentChatroomId];
+        ium.senderId = ud.userId;
+        ium.recipientId = 0;
+        ium.recipientPhoneNumber = [[contacts iPhoneNumberForRecord:person] longLongValue];
+        
+        if (!ium.recipientPhoneNumber) {
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:@"Contact does not have iPhone" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+        }
+        else {
+            [connection sendMessage:ium];
+        }
+    }
+    return NO;
+}
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
+      shouldContinueAfterSelectingPerson:(ABRecordRef)person
+                                property:(ABPropertyID)property
+                              identifier:(ABMultiValueIdentifier)identifier
+{
+    return NO;
 }
 
 

@@ -30,6 +30,11 @@
                                                 <segue destination="w3R-cb-9I3" kind="unwind" unwindAction="unwindToChatList:" id="am4-Rd-Ypi"/>
                                             </connections>
                                         </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="VfN-6V-EOF">
+                                            <connections>
+                                                <action selector="inviteUser:" destination="vXZ-lx-hvc" id="6rP-Bz-xEZ"/>
+                                            </connections>
+                                        </barButtonItem>
                                     </navigationItem>
                                 </items>
                             </navigationBar>
