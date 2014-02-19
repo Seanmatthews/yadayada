@@ -61,6 +61,17 @@ public class InMemoryUserRepository implements UserRepository {
         return new UserFuture(new UserRepositoryActionResult(user, false), handler);
     }
 
+    public Future<UserRepositoryActionResult> getFromPhone(long phoneNumber, UserRepositoryCompletionHandler handler) {
+        User user = phoneToUserMap.get(phoneNumber);
+
+        if (user == null) {
+            return new UserFuture(new UserRepositoryActionResult(UserRepositoryActionResultCode.InvalidUserId, "Unknown user phone number " + phoneNumber, false), handler);
+        }
+
+        return new UserFuture(new UserRepositoryActionResult(user, false), handler);
+    }
+
+
     public void addUser(User user) {
         loginToUserMap.put(user.getLogin(), user);
         idToUserMap.put(user.getId(), user);

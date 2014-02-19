@@ -263,6 +263,18 @@
 {
     switch (message.type) {
             
+        case InviteUser:
+            // TODO: You have been invited to a another chatroom
+            break;
+            
+        case InviteUserSuccess:
+            // TODO: add message in the midst of chat messages
+            break;
+            
+        case InviteUserReject:
+            // TODO: add message in the midst of chat messages
+            break;
+            
         case Message:
             NSLog(@"Message");
             dispatch_group_notify(connection.parseGroup, connection.parseQueue, ^{

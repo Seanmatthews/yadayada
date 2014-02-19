@@ -119,6 +119,14 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[InviteUserMessage alloc] init];
         break;
 
+        case InviteUserReject:
+        mb = [[InviteUserRejectMessage alloc] init];
+        break;
+
+        case InviteUserSuccess:
+        mb = [[InviteUserSuccessMessage alloc] init];
+        break;
+
     }
     return mb;
 }

@@ -294,3 +294,25 @@
 }
 
 @end
+
+@implementation InviteUserRejectMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 51;
+    return self;
+}
+
+@end
+
+@implementation InviteUserSuccessMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 52;
+    return self;
+}
+
+@end

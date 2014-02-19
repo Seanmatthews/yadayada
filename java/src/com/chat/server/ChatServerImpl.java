@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import static com.chat.UserRepository.UserRepositoryActionResult;
 import static com.chat.UserRepository.UserRepositoryCompletionHandler;
@@ -334,4 +335,31 @@ public class ChatServerImpl implements ChatServer {
                 chatMemberSender.sendMessage(meLeaving);
         }
     }
+
+    @Override
+    public void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone, long senderId) throws ExecutionException, InterruptedException {
+        log.debug("Inviting user {} to chatroom {}", recipientPhone, chatroomId);
+
+        // Does the recipient exist in the system?
+        User user;
+        synchronized (userRepo) {
+            user = userRepo.getFromPhone(recipientPhone, null).get().getUser();
+        }
+
+        if (user == null) {
+            sender.sendMessage(new InviteUserRejectMessage("User does not exist"));
+        }
+        else {
+            // Send response to sender
+            String chatroomName = chatroomRepo.get(chatroomId).getName();
+            sender.sendMessage(new InviteUserSuccessMessage(user.getId(), user.getHandle(), chatroomName));
+
+            // Send invite to recipient
+            ClientConnection recipientConnection = userConnectionMap.get(user.getId());
+            if (recipientConnection != null) {
+                recipientConnection.sendMessage(new InviteUserMessage(senderId, user.getId(), chatroomId, user.getPhoneNumber()));
+            }
+        }
+    }
+
 }

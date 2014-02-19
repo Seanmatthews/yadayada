@@ -34,6 +34,8 @@ typedef enum {
     CreateChatroomReject = 39,
     Vote = 44,
     InviteUser = 50,
+    InviteUserReject = 51,
+    InviteUserSuccess = 52,
 } MessageTypes;
 
 @interface MessageBase : NSObject
@@ -305,5 +307,23 @@ typedef enum {
 @property long long recipientId;
 @property long long chatroomId;
 @property long long recipientPhoneNumber;
+
+@end
+
+@interface InviteUserRejectMessage : MessageBase
+
+- (id)init;
+
+@property NSString* reason;
+
+@end
+
+@interface InviteUserSuccessMessage : MessageBase
+
+- (id)init;
+
+@property long long inviteeUserId;
+@property NSString* inviteeHandle;
+@property NSString* chatroomName;
 
 @end

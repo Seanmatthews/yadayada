@@ -15,6 +15,7 @@ public interface UserRepository {
     Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID, long phoneNumber, UserRepositoryCompletionHandler completionHandler);
     Future<UserRepositoryActionResult> login(String login, String password, UserRepositoryCompletionHandler completionHandler);
     Future<UserRepositoryActionResult> get(long id, UserRepositoryCompletionHandler completionHandler);
+    Future<UserRepositoryActionResult> getFromPhone(long phoneNumber, UserRepositoryCompletionHandler handler);
     void addToChatroom(User user, Chatroom chatroom);
     void removeFromChatroom(User user, Chatroom chatroom);
     Iterator<Chatroom> getChatrooms(User user);

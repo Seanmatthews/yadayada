@@ -110,6 +110,12 @@ public class V1Dispatcher implements MessageDispatcher {
                 // TODO
                 break;
 
+            case InviteUser:
+                InviteUserMessage iuMsg = new InviteUserMessage(buffer);
+                logMsg(iuMsg);
+                server.inviteUser(stream, iuMsg.getChatroomId(), iuMsg.getRecipientId(), iuMsg.getRecipientPhoneNumber(), iuMsg.getSenderId());
+                break;
+
             default:
                 throw new ValidationError("Unhandled message: " + type);
         }

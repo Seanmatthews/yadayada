@@ -29,6 +29,8 @@ public enum MessageTypes {
     CreateChatroomReject((byte)39),
     Vote((byte)44),
     InviteUser((byte)50),
+    InviteUserReject((byte)51),
+    InviteUserSuccess((byte)52),
     ;
 
     private final byte value;

@@ -4,6 +4,8 @@ import com.chat.ClientConnection;
 import com.chat.Chatroom;
 import com.chat.User;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -26,4 +28,5 @@ public interface ChatServer {
     void searchChatrooms(ClientConnection sender, long latitude, long longitude, long metersFromCoords, byte onlyJoinable);
     void joinChatroom(ClientConnection sender, User user, Chatroom chatroom);
     void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom);
+    void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone, long senderId) throws ExecutionException, InterruptedException;
 }

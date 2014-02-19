@@ -156,5 +156,15 @@
         <field name="chatroomId" type="long" />
         <field name="recipientPhoneNumber" type="long" />
     </msg>
+    
+    <msg name="InviteUserReject" val="51" origin="server">
+        <field name="reason" type="String" />
+    </msg>
+    
+    <msg name="InviteUserSuccess" val="52" origin="server">
+        <field name="inviteeUserId" type="long" />
+        <field name="inviteeHandle" type="String" />
+        <field name="chatroomName" type="String" />
+    </msg>
 
 </schema>
