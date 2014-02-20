@@ -70,6 +70,9 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    if ([segue.identifier isEqualToString:@"unwindToChatList"]) {
+
+    }
 //    if ([segue.identifier isEqualToString:@"settingsEmbedSegue"]) {
 //        DragImageController* dic = (DragImageController*)segue.destinationViewController;
 //        if (ud.userIcon) {
@@ -79,14 +82,13 @@
 //        // ARC is enabled, but is this being retained?
 //        iconView = dic.imageView;
 //    }
-    
 }
 
-//- (IBAction)unwindToPreviousView:(id)sender
-//{
-//    NSLog(@"%@",_unwindSegueName);
-//    [self performSegueWithIdentifier:_unwindSegueName sender:self];
-//}
+- (void)joinChatroom:(InviteUserMessage*)ium
+{
+    [chatManager setGoingToJoin:ium];
+    [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
+}
 
 
 #pragma mark - UI elements

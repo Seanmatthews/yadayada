@@ -36,6 +36,7 @@
 - (IBAction)sliderChanged:(id)sender;
 - (IBAction)createChatroom:(id)sender;
 - (IBAction)globalChatSelection:(id)sender;
+- (void)joinChatroom:(InviteUserMessage*)ium;
 
 
 @end

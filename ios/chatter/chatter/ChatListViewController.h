@@ -34,16 +34,13 @@
 @property (nonatomic,retain) IBOutlet UIView* tableParentView;
 @property (atomic, retain) NSMutableArray* recentChatroomList;
 
-
-// Navigation property
-@property (nonatomic) BOOL jumpToGlobalChat;
-
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
 - (IBAction)segmentedControlSwitched:(id)sender;
 - (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue;
 - (void)leaveCurrentChatroom;
 - (void)addRecentChatroom:(JoinedChatroomMessage*)chatroom;
+- (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius;
 
 // Table view
 - (void)refreshTable:(UIRefreshControl*)refreshControl;

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1444DCA618A35838006014C2 /* TutorialStartController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1444DCA518A35838006014C2 /* TutorialStartController.m */; };
+		146BA4BE18B5727600FBF620 /* UIAlertView+InviteAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 146BA4BD18B5727600FBF620 /* UIAlertView+InviteAlertView.m */; };
 		14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */; };
 		14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7918A31A560038D149 /* TutorialContentViewController.m */; };
 		14E010E718B1B27B00F45EDD /* Contacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 14E010E618B1B27B00F45EDD /* Contacts.m */; };
@@ -17,7 +18,6 @@
 		641C1480182C7FF8001D8959 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C147F182C7FF8001D8959 /* MapKit.framework */; };
 		641C1482182C7FFF001D8959 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C1481182C7FFF001D8959 /* CoreLocation.framework */; };
 		6445107D183DA911000112D4 /* CreateChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6445107C183DA911000112D4 /* CreateChatViewController.m */; };
-		644510831842FCF9000112D4 /* DragImageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 644510821842FCF9000112D4 /* DragImageController.m */; };
 		6458F38D18172E7400AA8E81 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F38C18172E7400AA8E81 /* Foundation.framework */; };
 		6458F38F18172E7400AA8E81 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F38E18172E7400AA8E81 /* CoreGraphics.framework */; };
 		6458F39118172E7400AA8E81 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6458F39018172E7400AA8E81 /* UIKit.framework */; };
@@ -74,6 +74,8 @@
 /* Begin PBXFileReference section */
 		1444DCA418A35838006014C2 /* TutorialStartController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialStartController.h; sourceTree = "<group>"; };
 		1444DCA518A35838006014C2 /* TutorialStartController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialStartController.m; sourceTree = "<group>"; };
+		146BA4BC18B5727600FBF620 /* UIAlertView+InviteAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+InviteAlertView.h"; sourceTree = "<group>"; };
+		146BA4BD18B5727600FBF620 /* UIAlertView+InviteAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+InviteAlertView.m"; sourceTree = "<group>"; };
 		14D19A7518A1FAAE0038D149 /* ChatroomManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomManagement.h; sourceTree = "<group>"; };
 		14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomManagement.m; sourceTree = "<group>"; };
 		14D19A7818A31A560038D149 /* TutorialContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialContentViewController.h; sourceTree = "<group>"; };
@@ -89,8 +91,6 @@
 		641C1481182C7FFF001D8959 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		6445107B183DA911000112D4 /* CreateChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateChatViewController.h; sourceTree = "<group>"; };
 		6445107C183DA911000112D4 /* CreateChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateChatViewController.m; sourceTree = "<group>"; };
-		644510811842FCF9000112D4 /* DragImageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragImageController.h; sourceTree = "<group>"; };
-		644510821842FCF9000112D4 /* DragImageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DragImageController.m; sourceTree = "<group>"; };
 		6458F38918172E7400AA8E81 /* chatter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chatter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6458F38C18172E7400AA8E81 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6458F38E18172E7400AA8E81 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -200,8 +200,6 @@
 				B3E79A491832AF23003227E7 /* ChatroomListCell.xib */,
 				6445107B183DA911000112D4 /* CreateChatViewController.h */,
 				6445107C183DA911000112D4 /* CreateChatViewController.m */,
-				644510811842FCF9000112D4 /* DragImageController.h */,
-				644510821842FCF9000112D4 /* DragImageController.m */,
 				64E6AB55187F53B100B46504 /* ChatroomMessageCell.h */,
 				64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */,
 				14D19A7818A31A560038D149 /* TutorialContentViewController.h */,
@@ -328,6 +326,8 @@
 				6477058B187BAD9900A97F74 /* ChatPointAnnotation.m */,
 				6477058D187C7FAD00A97F74 /* SmartButton.h */,
 				6477058E187C7FAD00A97F74 /* SmartButton.m */,
+				146BA4BC18B5727600FBF620 /* UIAlertView+InviteAlertView.h */,
+				146BA4BD18B5727600FBF620 /* UIAlertView+InviteAlertView.m */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -474,6 +474,7 @@
 			files = (
 				B343A50C1828134F00B36450 /* UIImage+ImageEffects.m in Sources */,
 				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
+				146BA4BE18B5727600FBF620 /* UIAlertView+InviteAlertView.m in Sources */,
 				6477058F187C7FAD00A97F74 /* SmartButton.m in Sources */,
 				14E010E718B1B27B00F45EDD /* Contacts.m in Sources */,
 				B343A50F18282CF600B36450 /* MenuViewController.m in Sources */,
@@ -485,7 +486,6 @@
 				64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */,
 				641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */,
 				6458F3A318172E7400AA8E81 /* ViewController.m in Sources */,
-				644510831842FCF9000112D4 /* DragImageController.m in Sources */,
 				64D60F2B1880C79100108C1F /* CLLocation+routeInfo.m in Sources */,
 				64A10DA41824BBDA00A499B0 /* Location.m in Sources */,
 				641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */,

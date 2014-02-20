@@ -14,6 +14,7 @@
 
 #import "ChatroomManagement.h"
 #import "Connection.h"
+#import "UIAlertView+InviteAlertView.h"
 
 @implementation ChatroomManagement
 
@@ -28,6 +29,7 @@ const int MESSAGE_NUM_THRESH = 50;
         _joinedChatrooms = [[NSMutableDictionary alloc] init];
         ud = [UserDetails sharedInstance];
         location = [Location sharedInstance];
+        inviteAlerts = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -83,7 +85,7 @@ const int MESSAGE_NUM_THRESH = 50;
 #pragma mark - Managing chatroom memberships
 
 // Dispatch the sending of the message
-- (void)joinChatroomWithId:(long long)chatId
+- (void)joinChatroomWithId:(long long)chatId latitude:(long long)lat longitude:(long long)lng
 {
     JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
     msg.userId = ud.userId;
@@ -113,6 +115,17 @@ const int MESSAGE_NUM_THRESH = 50;
             NSLog(@"[ChatroomManagement] LeftChatroom");
             [self receivedLeftChatroom:(LeftChatroomMessage*)message];
             break;
+            
+        case InviteUser:
+        {
+            InviteUserMessage* ium = (InviteUserMessage*)message;
+            NSString* alertMsg = [NSString stringWithFormat:@"%@ has invite you to chatroom %@",ium.senderHandle,ium.chatroomName];
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Invitation!" message:alertMsg delegate:self cancelButtonTitle:nil otherButtonTitles:@"Join",@"Decline",nil];
+            alert.inviteMessage = ium;
+            [inviteAlerts addObject:alert];
+            [alert show];
+            break;
+        }
     }
 }
 
@@ -149,6 +162,28 @@ const int MESSAGE_NUM_THRESH = 50;
         [_chatQueue removeObjectForKey:cid];
     }
 }
+
+
+#pragma mark - UIAlertViewDelegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    // 0 == JOIN
+    if (0 == buttonIndex) {
+        [self setGoingToJoin:alertView.inviteMessage];
+        [self dismissAllInviteAlerts];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"InviteNotification" object:self];
+    }
+}
+
+- (void)dismissAllInviteAlerts
+{
+    for (UIAlertView* alert in inviteAlerts) {
+        [alert dismissWithClickedButtonIndex:1 animated:YES];
+    }
+}
+
+
 
 
 @end

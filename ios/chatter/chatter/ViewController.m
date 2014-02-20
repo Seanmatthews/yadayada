@@ -8,7 +8,6 @@
 
 #import "ViewController.h"
 #import "Messages.h"
-#import "UIImage+ImageEffects.h"
 #import "ChatroomMessageCell.h"
 #import "SettingsViewController.h"
 
@@ -50,6 +49,12 @@
                     [weakSelf messageCallback:m];
                 });
           } withObject:NSStringFromClass([self class])];
+    
+    // Add us to the invite notification
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(invitedToChatroom:)
+                                                 name:@"InviteNotification"
+                                               object:nil];
 }
 
 // This is called whenever the view is loaded through storyboard segues
@@ -263,10 +268,6 @@
 {
     switch (message.type) {
             
-        case InviteUser:
-            // TODO: You have been invited to a another chatroom
-            break;
-            
         case InviteUserSuccess:
             // TODO: add message in the midst of chat messages
             break;
@@ -324,7 +325,6 @@
 // It is not for filling in cell data.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"HERE");
     static NSString *CellIdentifier = @"ChatroomMessageCell";
     ChatroomMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
@@ -357,15 +357,19 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"chatroom2SettingsSegue"]) {
-        SettingsViewController* svc = (SettingsViewController*)segue.destinationViewController;
-        svc.unwindSegueName = @"unwindToChatroom";
+    if ([segue.identifier isEqualToString:@"unwindToChatList"]) {
+        
     }
 }
 
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue
 {
     
+}
+
+- (void)invitedToChatroom:(NSNotification*)notification
+{
+    [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
 }
 
 
@@ -405,6 +409,10 @@
 {
     return NO;
 }
+
+
+
+
 
 
 @end

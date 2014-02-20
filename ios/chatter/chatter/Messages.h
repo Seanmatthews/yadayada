@@ -304,8 +304,13 @@ typedef enum {
 - (id)init;
 
 @property long long senderId;
+@property NSString* senderHandle;
 @property long long recipientId;
 @property long long chatroomId;
+@property NSString* chatroomName;
+@property long long chatroomLat;
+@property long long chatroomLong;
+@property long long chatroomRadius;
 @property long long recipientPhoneNumber;
 
 @end

@@ -152,8 +152,13 @@
 
     <msg name="InviteUser" val="50" origin="client">
         <field name="senderId" type="long" />
+        <field name="senderHandle" type="String" />
         <field name="recipientId" type="long" />
         <field name="chatroomId" type="long" />
+        <field name="chatroomName" type="String" />
+        <field name="chatroomLat" type="long" />
+        <field name="chatroomLong" type="long" />
+        <field name="chatroomRadius" type="long" />
         <field name="recipientPhoneNumber" type="long" />
     </msg>
     

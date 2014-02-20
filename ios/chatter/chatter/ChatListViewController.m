@@ -121,17 +121,22 @@ const int MAX_RECENT_CHATS = 5;
 
 #pragma mark - Convenience functions
 
-- (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom
+- (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius
 {
-    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
-    NSUInteger distance = [location metersToCurrentLocationFrom:chatroomOrigin];
+    NSUInteger distance = [location metersToCurrentLocationFrom:coord];
     
     // Only display local chatrooms that the user is able to join
-    if (distance - chatroom.radius > 0) {
+    if (distance - radius > 0) {
         NSLog(@"Chatroom is too far away");
         return NO;
     }
     return YES;
+}
+
+- (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom
+{
+    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
+    return [self canJoinChatroomWithCoord:chatroomOrigin andRadius:chatroom.radius];
 }
 
 - (void)addChatroom:(ChatroomMessage*)chatroom
@@ -294,7 +299,16 @@ const int MAX_RECENT_CHATS = 5;
 // For unwinding to this view.
 - (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue
 {
-
+    // This property is set in another view controller before it unwinds to this view controller's view
+    if ([chatManager goingToJoin]) {
+        CLLocationCoordinate2D chatCoord =
+            CLLocationCoordinate2DMake([Location fromLongLong:[chatManager goingToJoin].chatroomLat],
+                                       [Location fromLongLong:[chatManager goingToJoin].chatroomLong]);
+        if ([self canJoinChatroomWithCoord:chatCoord andRadius:[chatManager goingToJoin].chatroomRadius]) {
+            [self joinChatroomWithId:[chatManager goingToJoin].chatroomId];
+            [chatManager setGoingToJoin:nil];
+        }
+    }
 }
 
 

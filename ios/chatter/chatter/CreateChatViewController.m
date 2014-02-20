@@ -112,8 +112,14 @@ const double MILES_TO_METERS = 1609.34;
         vc.chatTitle = _chatroomNameTextField.text;
     }
     else if ([segue.identifier isEqualToString:@"unwindToChatList"]) {
-        
+
     }
+}
+
+- (void)joinChatroom:(InviteUserMessage*)ium
+{
+    [chatManager setGoingToJoin:ium];
+    [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
 }
 
 

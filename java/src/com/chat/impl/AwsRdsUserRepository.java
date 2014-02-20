@@ -196,6 +196,11 @@ public class AwsRdsUserRepository implements UserRepository {
         return future;
     }
 
+    public Future<UserRepositoryActionResult> getFromPhone(long phoneNumber, UserRepositoryCompletionHandler handler) {
+        // Stubbed. We don't use this class currently.
+        return null;
+    }
+
     @Override
     public void addToChatroom(User user, Chatroom chatroom) {
         userChatroomMap.get(user).add(chatroom);

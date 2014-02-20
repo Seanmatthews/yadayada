@@ -13,7 +13,6 @@
 #import "UITableViewCell+UITableViewCellCategory.h"
 #import "UITableView+UITableViewCategory.h"
 #import "Messages.h"
-#import "MenuViewController.h"
 #import "ChatroomManagement.h"
 #import "Contacts.h"
 #import <AddressBookUI/AddressBookUI.h>
@@ -29,7 +28,6 @@
     NSString* pageCSS;
     NSString* selfMsgCSS;
     NSString* selfHandleCSS;
-    
     int swipedCellIndex;
     
 //    NSMutableArray* chatQueue;
@@ -59,6 +57,7 @@
 - (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue;
 - (IBAction)inviteUser:(id)sender;
+- (void)invitedToChatroom:(NSNotification*)notification;
 
 
 

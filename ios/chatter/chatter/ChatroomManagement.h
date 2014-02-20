@@ -11,10 +11,11 @@
 #import "UserDetails.h"
 #import "Location.h"
 
-@interface ChatroomManagement : NSObject
+@interface ChatroomManagement : NSObject <UIAlertViewDelegate>
 {
     UserDetails* ud;
     Location* location;
+    NSMutableArray* inviteAlerts;
 }
 
 - (id)init;
@@ -23,6 +24,7 @@
 - (void)receivedMessage:(MessageMessage*) message;
 - (void)receivedJoinedChatroom:(JoinedChatroomMessage*)message;
 - (void)receivedLeftChatroom:(LeftChatroomMessage*)message;
+- (void)dismissAllInviteAlerts;
 
 // To be deprecated
 - (long long)currentChatroomId;
@@ -31,6 +33,7 @@
 
 @property (atomic, retain) NSMutableDictionary* chatQueue;
 @property (atomic, retain) NSMutableDictionary* joinedChatrooms;
+@property (atomic, retain) InviteUserMessage* goingToJoin;
 
 // Not yet used
 @property (atomic, retain) NSMutableDictionary* peopleInChat;

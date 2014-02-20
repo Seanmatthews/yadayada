@@ -8,12 +8,15 @@
 
 #import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
+#import "Messages.h"
+
 
 @interface Contacts : NSObject
 {
     BOOL accessGranted;
     NSDictionary* phonePrefixDict;
 }
+
 
 - (id)init;
 + (id)sharedInstance;
