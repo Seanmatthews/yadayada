@@ -11,6 +11,7 @@
 #import "UserDetails.h"
 #import "ChatroomManagement.h"
 #import "Contacts.h"
+#import "Connection.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 {
@@ -18,6 +19,7 @@
     UserDetails* ud;
     ChatroomManagement* chatManager;
     Contacts* contacts;
+    Connection* connection;
 }
 
 @property (strong, nonatomic) UIWindow *window;

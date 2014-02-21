@@ -31,6 +31,7 @@
 + (id)sharedInstance;
 - (id)init;
 - (void)connect;
+- (void)reconnect;
 - (void)connectToImageServer;
 - (void)sendMessage:(MessageBase*)message;
 - (void)uploadImage:(UIImage*)image forUserId:(long long)userId toURL:(NSString*)url;

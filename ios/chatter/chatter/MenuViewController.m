@@ -26,7 +26,7 @@
     // Get connection object and add this controller's callback
     // method for incoming connections.
     connection = [Connection sharedInstance];
-    [connection connect];
+    //[connection connect];
     MenuViewController* __weak weakSelf = self;
     [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
     

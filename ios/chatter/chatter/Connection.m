@@ -48,6 +48,10 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     CFWriteStreamRef writeStream;
     CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"ec2-54-198-228-23.compute-1.amazonaws.com", 5000, &readStream, &writeStream);
     //CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.1.108", 5001, &readStream, &writeStream);
+    
+//    CFReadStreamSetProperty(readStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanFalse);
+//    CFWriteStreamSetProperty(writeStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanFalse);
+    
     is = (__bridge NSInputStream*)readStream;
     os = (__bridge NSOutputStream*)writeStream;
     
@@ -59,6 +63,19 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     
     [is open];
     [os open];
+}
+
+
+- (void)reconnect
+{
+    NSLog(@"in reconnect, status: %d", [os streamStatus]);
+    if ([is streamStatus] == NSStreamStatusNotOpen ||
+        [is streamStatus] == NSStreamStatusClosed ||
+        [is streamStatus] == NSStreamStatusError) {
+
+        [self connect];
+        NSLog(@"reopen both");
+    }
 }
 
 - (void)connectToImageServer
@@ -189,6 +206,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
             
         case NSStreamEventErrorOccurred:
             NSLog(@"Cannot connect to the host");
+            [self reconnect];
             break;
             
         case NSStreamEventEndEncountered:
