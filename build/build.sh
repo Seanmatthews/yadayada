@@ -1,3 +1,13 @@
+echo "Do you really want to replace the production server?"
+echo "(If not, use 'dev-build.sh' instead.)"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) break;;
+        No ) exit;;
+    esac
+done
+
+
 server=ec2-user@ec2-54-198-228-23.compute-1.amazonaws.com:/tmp
 
 
