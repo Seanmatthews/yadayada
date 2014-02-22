@@ -140,7 +140,7 @@ const int MESSAGE_CHAR_LIMIT = 200;
                                                options:NSStringDrawingUsesLineFragmentOrigin
                                                context:nil];
 
-    NSLog(@"height %f",rect.size.height);
+//    NSLog(@"height %f",rect.size.height);
     return ceilf(rect.size.height)+(2*BORDER_WIDTH)+PADDING;
     
 //    return MAX(DEFAULT_CELL_HEIGHT, HEIGHT_PER_LINE * ( ceilf((CGFloat)_message.length / (CGFloat)CHARS_PER_LINE) + 1.)); // 1 extra for the handle line
