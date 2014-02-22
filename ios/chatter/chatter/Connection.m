@@ -46,7 +46,17 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 {
     CFReadStreamRef readStream;
     CFWriteStreamRef writeStream;
-    CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"ec2-54-198-228-23.compute-1.amazonaws.com", 5000, &readStream, &writeStream);
+    NSString* server;
+    
+#ifdef DEBUG
+    server = @"ec2-184-73-141-125.compute-1.amazonaws.com";
+#else
+    server = @"ec2-54-198-228-23.compute-1.amazonaws.com";
+#endif
+    
+    CFStreamCreatePairWithSocketToHost(NULL, (__bridge CFStringRef)server, 5000, &readStream, &writeStream);
+    
+    // Local testing -- change IP for you
     //CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.1.108", 5001, &readStream, &writeStream);
     
 //    CFReadStreamSetProperty(readStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanFalse);
