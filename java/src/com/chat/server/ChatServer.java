@@ -28,5 +28,5 @@ public interface ChatServer {
     void searchChatrooms(ClientConnection sender, long latitude, long longitude, long metersFromCoords, byte onlyJoinable);
     void joinChatroom(ClientConnection sender, User user, Chatroom chatroom);
     void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom);
-    void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone, long senderId) throws ExecutionException, InterruptedException;
+    void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone) throws ExecutionException, InterruptedException;
 }

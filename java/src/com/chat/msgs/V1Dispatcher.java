@@ -114,7 +114,7 @@ public class V1Dispatcher implements MessageDispatcher {
                 InviteUserMessage iuMsg = new InviteUserMessage(buffer);
                 logMsg(iuMsg);
                 try {
-                    server.inviteUser(stream, iuMsg.getChatroomId(), iuMsg.getRecipientId(), iuMsg.getRecipientPhoneNumber(), iuMsg.getSenderId());
+                    server.inviteUser(stream, iuMsg.getChatroomId(), iuMsg.getRecipientId(), iuMsg.getRecipientPhoneNumber());
                 }
                 catch(Exception e) {
                     // TODO: handle these properly

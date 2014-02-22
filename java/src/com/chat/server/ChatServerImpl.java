@@ -337,7 +337,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone, long senderId) throws ExecutionException, InterruptedException {
+    public void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone) throws ExecutionException, InterruptedException {
         log.debug("Inviting user {} to chatroom {}", recipientPhone, chatroomId);
 
         // Does the recipient exist in the system?
@@ -351,13 +351,21 @@ public class ChatServerImpl implements ChatServer {
         }
         else {
             // Send response to sender
-            String chatroomName = chatroomRepo.get(chatroomId).getName();
-            sender.sendMessage(new InviteUserSuccessMessage(user.getId(), user.getHandle(), chatroomName));
+            Chatroom chat = chatroomRepo.get(chatroomId);
+            sender.sendMessage(new InviteUserSuccessMessage(user.getId(), user.getHandle(), chat.getName()));
 
             // Send invite to recipient
-            ClientConnection recipientConnection = userConnectionMap.get(user.getId());
+            ClientConnection recipientConnection = userConnectionMap.get(user);
             if (recipientConnection != null) {
-                recipientConnection.sendMessage(new InviteUserMessage(senderId, user.getId(), chatroomId, user.getPhoneNumber()));
+                recipientConnection.sendMessage(new InviteUserMessage(sender.getUser().getId(),
+                                                                      sender.getUser().getHandle(),
+                                                                      user.getId(),
+                                                                      chatroomId,
+                                                                      chat.getName(),
+                                                                      chat.getLatitude(),
+                                                                      chat.getLongitude(),
+                                                                      chat.getRadius(),
+                                                                      user.getPhoneNumber()));
             }
         }
     }
