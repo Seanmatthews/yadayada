@@ -111,13 +111,13 @@
 
 #pragma mark - Other UI behaviors
 
-- (IBAction)inviteUser:(id)sender
-{
-    ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
-    picker.peoplePickerDelegate = self;
-    
-    [self presentViewController:picker animated:YES completion:nil];
-}
+//- (IBAction)inviteUser:(id)sender
+//{
+//    ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
+//    picker.peoplePickerDelegate = self;
+//    
+//    [self presentViewController:picker animated:YES completion:nil];
+//}
 
 - (void)tappedCell:(id)sender
 {

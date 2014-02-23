@@ -60,6 +60,12 @@
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [contacts getAddressBookPermissions];
+    [contacts getAllContacts];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -101,7 +107,8 @@
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
     qlm.handle = ud.handle;
     qlm.UUID = ud.UUID;
-    qlm.phoneNumber = [[contacts getMyPhoneNumber] longLongValue];
+    qlm.phoneNumber = [[contacts myPhoneNumber] longLongValue];
+    NSLog(@"phone: %lld",qlm.phoneNumber);
     [connection sendMessage:qlm];
 }
 

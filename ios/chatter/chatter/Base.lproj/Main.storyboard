@@ -32,7 +32,7 @@
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="VfN-6V-EOF">
                                             <connections>
-                                                <action selector="inviteUser:" destination="vXZ-lx-hvc" id="6rP-Bz-xEZ"/>
+                                                <segue destination="VFK-PU-iIe" kind="modal" identifier="inviteContactSegue" modalTransitionStyle="crossDissolve" animates="NO" id="U3K-xC-1m2"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -90,6 +90,38 @@
                 <exit id="w3R-cb-9I3" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="854" y="1287"/>
+        </scene>
+        <!--Contacts List View Controller-->
+        <scene sceneID="w3j-lm-PLe">
+            <objects>
+                <viewController id="VFK-PU-iIe" customClass="ContactsListViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="PMS-FB-qGe"/>
+                        <viewControllerLayoutGuide type="bottom" id="UOr-Uh-rP9"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="evB-FE-qNo">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="yt8-9n-ah0">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="VFK-PU-iIe" id="Ojc-AI-xOL"/>
+                                    <outlet property="delegate" destination="VFK-PU-iIe" id="M4l-Rf-jTR"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="yt8-9n-ah0" id="LLQ-UL-GAs"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TmW-eK-d7L" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1348" y="1287"/>
         </scene>
         <!--Create Chat View Controller-->
         <scene sceneID="7NA-pW-LDU">

@@ -14,14 +14,17 @@
 @interface Contacts : NSObject
 {
     BOOL accessGranted;
+//    NSMutableArray* contactsList;
     NSDictionary* phonePrefixDict;
 }
 
+@property (atomic, retain) NSNumber* myPhoneNumber;
+@property (nonatomic, retain) NSMutableArray* contactsList;
 
 - (id)init;
 + (id)sharedInstance;
+- (void)getAllContacts;
 - (void)getAddressBookPermissions;
-- (NSNumber*)getMyPhoneNumber;
 - (NSNumber*)iPhoneNumberForRecord:(ABRecordRef)record;
 
 @end

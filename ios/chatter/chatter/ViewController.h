@@ -56,7 +56,7 @@
 - (void)tappedCell:(id)sender;
 - (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue;
-- (IBAction)inviteUser:(id)sender;
+//- (IBAction)inviteUser:(id)sender;
 - (void)invitedToChatroom:(NSNotification*)notification;
 
 
