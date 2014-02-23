@@ -120,10 +120,11 @@ const int MESSAGE_NUM_THRESH = 50;
         {
             InviteUserMessage* ium = (InviteUserMessage*)message;
             NSString* alertMsg = [NSString stringWithFormat:@"%@ has invite you to chatroom %@",ium.senderHandle,ium.chatroomName];
-            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Invitation!" message:alertMsg delegate:self cancelButtonTitle:nil otherButtonTitles:@"Join",@"Decline",nil];
-            alert.inviteMessage = ium;
-            [inviteAlerts addObject:alert];
-            [alert show];
+            NSLog(@"%@",alertMsg);
+//            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Invitation!" message:alertMsg delegate:self cancelButtonTitle:nil otherButtonTitles:@"Join",@"Decline",nil];
+//            alert.inviteMessage = ium;
+//            [inviteAlerts addObject:alert];
+//            [alert show];
             break;
         }
     }

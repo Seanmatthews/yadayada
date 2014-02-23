@@ -104,7 +104,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="yt8-9n-ah0">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="10" y="60" width="300" height="500"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
@@ -117,9 +117,11 @@
                     </view>
                     <connections>
                         <outlet property="tableView" destination="yt8-9n-ah0" id="LLQ-UL-GAs"/>
+                        <segue destination="AUB-UC-0kn" kind="unwind" identifier="unwindToChatroom" unwindAction="unwindToChatroom:" id="eLH-xR-lyb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TmW-eK-d7L" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="AUB-UC-0kn" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1348" y="1287"/>
         </scene>

@@ -8,6 +8,33 @@
 
 #import "Contacts.h"
 
+@implementation Person
+
+- (id)initWithFirstName:(NSString*)fName lastName:(NSString*)lName phoneNumber:(NSNumber*)phoneNum
+{
+    if (self = [super init]) {
+        dict = [[NSDictionary alloc] initWithObjectsAndKeys:fName,@"fName",lName,@"lName",phoneNum,@"iPhone",nil];
+    }
+    return self;
+}
+
+
+- (NSString*)getFirstName
+{
+    return [dict objectForKey:@"fName"];
+}
+
+- (NSString*)getLastName
+{
+    return [dict objectForKey:@"lName"];
+}
+
+- (NSNumber*)getPhoneNumber
+{
+    return [dict objectForKey:@"iPhone"];
+}
+
+@end
 
 @implementation Contacts
 
@@ -38,10 +65,21 @@
 - (void)getAddressBookPermissions
 {
     CFErrorRef *error = nil;
-    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
-    ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
-        accessGranted = granted;
-    });
+    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, error);
+    
+    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+            accessGranted = granted;
+        });
+    }
+    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+        // The user has previously given access, add the contact
+        accessGranted = YES;
+    }
+    else {
+        accessGranted = NO;
+    }
+    NSLog(@"%d",accessGranted);
 }
 
 - (NSNumber*)iPhoneNumberForRecord:(ABRecordRef)record
@@ -54,7 +92,8 @@
     // Get iphone number
     for (int i=0; i<ABMultiValueGetCount(multiPhones); ++i) {
         NSString* label = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(multiPhones, i);
-        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
+//        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
+        if ([label isEqualToString:(NSString*)kABPersonPhoneMobileLabel]) {
             CFStringRef phoneNumberRef = ABMultiValueCopyValueAtIndex(multiPhones, 0);
             NSString* phone = (__bridge NSString *) phoneNumberRef;
             NSString* fullPhone = [NSString stringWithFormat:@"%@%@",countryCode,phone];
@@ -90,6 +129,9 @@
             if (!fName && !lName) {
                 continue;
             }
+            else if (!iPhone) {
+                continue;
+            }
             else if (!fName) {
                 fName = @"";
             }
@@ -97,7 +139,7 @@
                 lName = @"";
             }
             
-            NSDictionary* personDict = [[NSDictionary alloc] initWithObjectsAndKeys:fName,@"fName",lName,@"lName",iPhone,@"iPhone",nil];
+            Person* personDict = [[Person alloc] initWithFirstName:fName lastName:lName phoneNumber:iPhone];
             [_contactsList addObject:personDict];
         }
     }

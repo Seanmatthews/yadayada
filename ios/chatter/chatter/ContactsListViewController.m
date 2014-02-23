@@ -50,6 +50,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    NSLog(@"%d",[contacts.contactsList count]);
     return [contacts.contactsList count];
 }
 
@@ -62,8 +63,8 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     
-    NSString* fName = [[contacts contactsList][indexPath.row] objectForKey:@"fName"];
-    NSString* lName = [[contacts contactsList][indexPath.row] objectForKey:@"lName"];
+    NSString* fName = [[contacts contactsList][indexPath.row] getFirstName];
+    NSString* lName = [[contacts contactsList][indexPath.row] getLastName];
     [cell.textLabel setText:[NSString stringWithFormat:@"%@ %@",fName,lName]];
 
     return cell;
@@ -72,15 +73,6 @@
 //- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 //{
 //    NSString* title = @"Woops";
-//    if (section == 0) {
-//        title = @"Recent";
-//    }
-//    else if (section == 1) {
-//        title = @"Local";
-//    }
-//    else if (section == 2) {
-//        title = @"Global";
-//    }
 //    return title;
 //}
 
@@ -94,7 +86,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
+    [contacts setInvitedContact:[contacts.contactsList objectAtIndex:indexPath.row]];
+    [self performSegueWithIdentifier:@"unwindToChatroom" sender:nil];
 }
 
 

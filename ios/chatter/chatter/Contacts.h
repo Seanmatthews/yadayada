@@ -11,6 +11,19 @@
 #import "Messages.h"
 
 
+@interface Person : NSObject
+{
+    NSDictionary* dict;
+}
+
+- (id)initWithFirstName:(NSString*)fName lastName:(NSString*)lName phoneNumber:(NSNumber*)phoneNum;
+- (NSString*)getFirstName;
+- (NSString*)getLastName;
+- (NSNumber*)getPhoneNumber;
+
+@end
+
+
 @interface Contacts : NSObject
 {
     BOOL accessGranted;
@@ -20,6 +33,7 @@
 
 @property (atomic, retain) NSNumber* myPhoneNumber;
 @property (nonatomic, retain) NSMutableArray* contactsList;
+@property Person* invitedContact;
 
 - (id)init;
 + (id)sharedInstance;

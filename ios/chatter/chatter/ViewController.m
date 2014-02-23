@@ -364,7 +364,18 @@
 
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue
 {
-    
+    if ([contacts invitedContact]) {
+        InviteUserMessage* ium = [[InviteUserMessage alloc] init];
+        ium.senderId = ud.userId;
+        ium.senderHandle = ud.handle;
+        ium.chatroomId = _chatId;
+        ium.recipientId = 0;
+        ium.recipientPhoneNumber = [[[contacts invitedContact] getPhoneNumber] longLongValue];
+        ium.chatroomName = @"NA";
+        [connection sendMessage:ium];
+        
+        NSLog(@"phone: %lld",ium.recipientPhoneNumber);
+    }
 }
 
 - (void)invitedToChatroom:(NSNotification*)notification
