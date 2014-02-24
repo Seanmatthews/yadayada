@@ -48,7 +48,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     CFWriteStreamRef writeStream;
     NSString* server;
     
-#ifdef DEBUG
+#if DEBUG
     server = @"ec2-54-198-228-23.compute-1.amazonaws.com";
 #else
     server = @"ec2-184-73-141-125.compute-1.amazonaws.com";

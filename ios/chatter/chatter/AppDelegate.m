@@ -12,6 +12,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#if DEBUG
+    NSLog(@"Debug Mode");
+#else
+    NSLog(@"Release Mode");
+#endif
+    
     // start location service
     location = [Location sharedInstance];
     [location startService];

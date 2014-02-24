@@ -632,14 +632,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: sean matthews (A2XP5DNQQP)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: sean matthews (A2XP5DNQQP)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: sean matthews (Z72KQMSYAP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: sean matthews (Z72KQMSYAP)";
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "chatter/chatter-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=0";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "$(inherited)";
 				INFOPLIST_FILE = "chatter/chatter-Info.plist";
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "65D8ADF8-B3F9-41A3-9B71-CBE93755A2E2";
+				PROVISIONING_PROFILE = "BE3B2162-C76C-412F-8349-3790C4AA6474";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -648,14 +653,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: sean matthews (A2XP5DNQQP)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: sean matthews (A2XP5DNQQP)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: sean matthews (Z72KQMSYAP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: sean matthews (Z72KQMSYAP)";
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "chatter/chatter-Prefix.pch";
 				INFOPLIST_FILE = "chatter/chatter-Info.plist";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "65D8ADF8-B3F9-41A3-9B71-CBE93755A2E2";
+				PROVISIONING_PROFILE = "BE3B2162-C76C-412F-8349-3790C4AA6474";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
