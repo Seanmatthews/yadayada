@@ -18,13 +18,14 @@
 
 @implementation ChatroomManagement
 
-const int MESSAGE_NUM_THRESH = 50;
+//const int MESSAGE_NUM_THRESH = 20;
 
 - (id)init
 {
     self = [super init];
     
     if (self) {
+        _MESSAGE_NUM_THRESH = 50;
         _chatQueue = [[NSMutableDictionary alloc] init];
         _joinedChatrooms = [[NSMutableDictionary alloc] init];
         ud = [UserDetails sharedInstance];
@@ -138,7 +139,7 @@ const int MESSAGE_NUM_THRESH = 50;
     if (msgList) {
         [msgList addObject:message];
         
-        if ([msgList count] > MESSAGE_NUM_THRESH) {
+        if ([msgList count] > _MESSAGE_NUM_THRESH) {
             [msgList removeObjectAtIndex:0];
         }
     }

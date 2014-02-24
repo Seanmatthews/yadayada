@@ -109,15 +109,8 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Other UI behaviors
 
-//- (IBAction)inviteUser:(id)sender
-//{
-//    ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
-//    picker.peoplePickerDelegate = self;
-//    
-//    [self presentViewController:picker animated:YES completion:nil];
-//}
+#pragma mark - Other UI behaviors
 
 - (void)tappedCell:(id)sender
 {
@@ -259,9 +252,21 @@
 
 - (void)refreshMessages
 {
-    [mTableView reloadData];
+//    [mTableView reloadData];
+    NSUInteger numMessages = [[chatManager currentChatQueue] count];
     NSIndexPath* ipath = [NSIndexPath indexPathForRow:[[chatManager currentChatQueue] count]-1 inSection:0];
-    [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    
+    // Only reload the newest cell
+    [mTableView beginUpdates];
+    if (numMessages == chatManager.MESSAGE_NUM_THRESH &&
+        [mTableView numberOfRowsInSection:0] == chatManager.MESSAGE_NUM_THRESH) {
+        
+        NSIndexPath* delPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        [mTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:delPath] withRowAnimation:NO];
+    }
+    [mTableView insertRowsAtIndexPaths:[NSArray arrayWithObject:ipath] withRowAnimation:UITableViewRowAnimationNone];
+    [mTableView endUpdates];
+    [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
 }
 
 - (void)messageCallback:(MessageBase*)message
@@ -278,10 +283,12 @@
             
         case Message:
             NSLog(@"Message");
-            dispatch_group_notify(connection.parseGroup, connection.parseQueue, ^{
-                [self performSelectorOnMainThread:@selector(refreshMessages) withObject:nil waitUntilDone:NO];
-                // TODO: try making the dispatch queue on the main thread
-            });
+            if (((MessageMessage*)message).chatroomId == _chatId) {
+                dispatch_group_notify(connection.parseGroup, connection.parseQueue, ^{
+                    [self performSelectorOnMainThread:@selector(refreshMessages) withObject:nil waitUntilDone:NO];
+                    // TODO: try making the dispatch queue on the main thread
+                });
+            }
             break;
     }
 }
@@ -302,7 +309,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
-    NSLog(@"height %f",[ChatroomMessageCell heightForText:msg.message]);
+//    NSLog(@"height %f",[ChatroomMessageCell heightForText:msg.message]);
     return [ChatroomMessageCell heightForText:msg.message];
 }
 
@@ -325,7 +332,7 @@
 // It is not for filling in cell data.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"ChatroomMessageCell";
+    NSString *CellIdentifier = [NSString stringWithFormat:@"%ld_%ld",(long)indexPath.section,(long)indexPath.row];
     ChatroomMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
     

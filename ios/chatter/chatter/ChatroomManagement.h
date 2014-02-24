@@ -34,6 +34,7 @@
 @property (atomic, retain) NSMutableDictionary* chatQueue;
 @property (atomic, retain) NSMutableDictionary* joinedChatrooms;
 @property (atomic, retain) InviteUserMessage* goingToJoin;
+@property int MESSAGE_NUM_THRESH;
 
 // Not yet used
 @property (atomic, retain) NSMutableDictionary* peopleInChat;
