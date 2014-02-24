@@ -1,15 +1,15 @@
 //
-//  UIAlertView+InviteAlertView.h
+//  UIInviteAlertView.h
 //  chatter
 //
-//  Created by sean matthews on 2/19/14.
+//  Created by sean matthews on 2/24/14.
 //  Copyright (c) 2014 rowboat entertainment. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 #import "Messages.h"
 
-@interface UIAlertView (InviteAlertView)
+@interface UIInviteAlertView : UIAlertView
 
 @property (nonatomic, retain) InviteUserMessage* inviteMessage;
 

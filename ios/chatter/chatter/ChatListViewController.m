@@ -322,7 +322,7 @@ const int MAX_RECENT_CHATS = 5;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    int count = 0;
+    NSUInteger count = 0;
     if (section == 0) {
         count = [recentChatroomList count];
     }

@@ -31,6 +31,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _tableView.layer.cornerRadius = 5;
+    _tableView.layer.masksToBounds = YES;
 	[_tableView reloadData];
 }
 
@@ -50,7 +52,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"%d",[contacts.contactsList count]);
     return [contacts.contactsList count];
 }
 

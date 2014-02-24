@@ -14,7 +14,7 @@
 
 #import "ChatroomManagement.h"
 #import "Connection.h"
-#import "UIAlertView+InviteAlertView.h"
+#import "UIInviteAlertView.h"
 
 @implementation ChatroomManagement
 
@@ -82,6 +82,24 @@
     return [_chatQueue allValues][0];
 }
 
+- (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius
+{
+    NSUInteger distance = [location metersToCurrentLocationFrom:coord];
+    
+    // Only display local chatrooms that the user is able to join
+    if (distance - radius > 0) {
+        NSLog(@"Chatroom is too far away");
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom
+{
+    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
+    return [self canJoinChatroomWithCoord:chatroomOrigin andRadius:chatroom.radius];
+}
+
 
 #pragma mark - Managing chatroom memberships
 
@@ -120,15 +138,25 @@
         case InviteUser:
         {
             InviteUserMessage* ium = (InviteUserMessage*)message;
-            NSString* alertMsg = [NSString stringWithFormat:@"%@ has invite you to chatroom %@",ium.senderHandle,ium.chatroomName];
-            NSLog(@"%@",alertMsg);
-//            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Invitation!" message:alertMsg delegate:self cancelButtonTitle:nil otherButtonTitles:@"Join",@"Decline",nil];
-//            alert.inviteMessage = ium;
-//            [inviteAlerts addObject:alert];
-//            [alert show];
+            if ([self canJoinChatroomWithCoord:CLLocationCoordinate2DMake(ium.chatroomLat, ium.chatroomLong) andRadius:ium.chatroomRadius]) {
+                [self performSelectorOnMainThread:@selector(showInviteAlert:) withObject:ium waitUntilDone:NO];
+            }
+            else {
+                NSLog(@"got invite, but chatroom is too far away");
+            }
             break;
         }
     }
+}
+
+- (void)showInviteAlert:(InviteUserMessage*)ium
+{
+        NSString* alertMsg = [NSString stringWithFormat:@"%@ has invite you to chatroom %@",ium.senderHandle,ium.chatroomName];
+    NSLog(@"%@",alertMsg);
+    UIInviteAlertView* alert = [[UIInviteAlertView alloc] initWithTitle:@"Invitation!" message:alertMsg delegate:self cancelButtonTitle:nil otherButtonTitles:@"Join",@"Decline",nil];
+    alert.inviteMessage = ium;
+    [inviteAlerts addObject:alert];
+    [alert show];
 }
 
 - (void)receivedMessage:(MessageMessage*) message
@@ -172,7 +200,7 @@
 {
     // 0 == JOIN
     if (0 == buttonIndex) {
-        [self setGoingToJoin:alertView.inviteMessage];
+        [self setGoingToJoin:((UIInviteAlertView*)alertView).inviteMessage];
         [self dismissAllInviteAlerts];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"InviteNotification" object:self];
     }

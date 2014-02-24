@@ -31,7 +31,7 @@
     NSDictionary* phonePrefixDict;
 }
 
-@property (atomic, retain) NSNumber* myPhoneNumber;
+//@property (atomic, retain) NSNumber* myPhoneNumber;
 @property (nonatomic, retain) NSMutableArray* contactsList;
 @property Person* invitedContact;
 
@@ -40,5 +40,6 @@
 - (void)getAllContacts;
 - (void)getAddressBookPermissions;
 - (NSNumber*)iPhoneNumberForRecord:(ABRecordRef)record;
+- (NSNumber*)getMyPhoneNumber;
 
 @end

@@ -10,6 +10,7 @@
 #import "Messages.h"
 #import "ChatroomMessageCell.h"
 #import "SettingsViewController.h"
+#import "UIInviteAlertView.h"
 
 
 //const int MESSAGE_NUM_THRESH = 50;
@@ -380,13 +381,14 @@
         ium.recipientPhoneNumber = [[[contacts invitedContact] getPhoneNumber] longLongValue];
         ium.chatroomName = @"NA";
         [connection sendMessage:ium];
-        
+        [contacts setInvitedContact:nil];
         NSLog(@"phone: %lld",ium.recipientPhoneNumber);
     }
 }
 
 - (void)invitedToChatroom:(NSNotification*)notification
 {
+    NSLog(@"invited to chatroom, going");
     [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
 }
 

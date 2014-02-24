@@ -107,7 +107,7 @@
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
     qlm.handle = ud.handle;
     qlm.UUID = ud.UUID;
-    qlm.phoneNumber = [[contacts myPhoneNumber] longLongValue];
+    qlm.phoneNumber = [[contacts getMyPhoneNumber] longLongValue];
     NSLog(@"phone: %lld",qlm.phoneNumber);
     [connection sendMessage:qlm];
 }

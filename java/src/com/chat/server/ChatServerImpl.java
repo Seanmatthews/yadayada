@@ -347,6 +347,7 @@ public class ChatServerImpl implements ChatServer {
         }
 
         if (user == null) {
+            log.debug("Invited user doesn't exist");
             sender.sendMessage(new InviteUserRejectMessage("User does not exist"));
         }
         else {
@@ -357,6 +358,7 @@ public class ChatServerImpl implements ChatServer {
             // Send invite to recipient
             ClientConnection recipientConnection = userConnectionMap.get(user);
             if (recipientConnection != null) {
+                log.debug("Sending invite");
                 recipientConnection.sendMessage(new InviteUserMessage(sender.getUser().getId(),
                                                                       sender.getUser().getHandle(),
                                                                       user.getId(),

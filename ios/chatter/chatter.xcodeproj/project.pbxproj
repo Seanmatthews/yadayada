@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		1432C74E18B9AB3300690009 /* ContactsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1432C74D18B9AB3300690009 /* ContactsListViewController.m */; };
 		1444DCA618A35838006014C2 /* TutorialStartController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1444DCA518A35838006014C2 /* TutorialStartController.m */; };
-		146BA4BE18B5727600FBF620 /* UIAlertView+InviteAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 146BA4BD18B5727600FBF620 /* UIAlertView+InviteAlertView.m */; };
+		144718CF18BBDA990045B668 /* UIInviteAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 144718CE18BBDA990045B668 /* UIInviteAlertView.m */; };
 		14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */; };
 		14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7918A31A560038D149 /* TutorialContentViewController.m */; };
 		14E010E718B1B27B00F45EDD /* Contacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 14E010E618B1B27B00F45EDD /* Contacts.m */; };
@@ -77,8 +77,8 @@
 		1432C74D18B9AB3300690009 /* ContactsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsListViewController.m; sourceTree = "<group>"; };
 		1444DCA418A35838006014C2 /* TutorialStartController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialStartController.h; sourceTree = "<group>"; };
 		1444DCA518A35838006014C2 /* TutorialStartController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialStartController.m; sourceTree = "<group>"; };
-		146BA4BC18B5727600FBF620 /* UIAlertView+InviteAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+InviteAlertView.h"; sourceTree = "<group>"; };
-		146BA4BD18B5727600FBF620 /* UIAlertView+InviteAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+InviteAlertView.m"; sourceTree = "<group>"; };
+		144718CD18BBDA990045B668 /* UIInviteAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIInviteAlertView.h; sourceTree = "<group>"; };
+		144718CE18BBDA990045B668 /* UIInviteAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIInviteAlertView.m; sourceTree = "<group>"; };
 		14D19A7518A1FAAE0038D149 /* ChatroomManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomManagement.h; sourceTree = "<group>"; };
 		14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomManagement.m; sourceTree = "<group>"; };
 		14D19A7818A31A560038D149 /* TutorialContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialContentViewController.h; sourceTree = "<group>"; };
@@ -331,8 +331,8 @@
 				6477058B187BAD9900A97F74 /* ChatPointAnnotation.m */,
 				6477058D187C7FAD00A97F74 /* SmartButton.h */,
 				6477058E187C7FAD00A97F74 /* SmartButton.m */,
-				146BA4BC18B5727600FBF620 /* UIAlertView+InviteAlertView.h */,
-				146BA4BD18B5727600FBF620 /* UIAlertView+InviteAlertView.m */,
+				144718CD18BBDA990045B668 /* UIInviteAlertView.h */,
+				144718CE18BBDA990045B668 /* UIInviteAlertView.m */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -479,7 +479,6 @@
 			files = (
 				B343A50C1828134F00B36450 /* UIImage+ImageEffects.m in Sources */,
 				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
-				146BA4BE18B5727600FBF620 /* UIAlertView+InviteAlertView.m in Sources */,
 				6477058F187C7FAD00A97F74 /* SmartButton.m in Sources */,
 				14E010E718B1B27B00F45EDD /* Contacts.m in Sources */,
 				B343A50F18282CF600B36450 /* MenuViewController.m in Sources */,
@@ -501,6 +500,7 @@
 				64E6AB57187F53B100B46504 /* ChatroomMessageCell.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
 				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,
+				144718CF18BBDA990045B668 /* UIInviteAlertView.m in Sources */,
 				14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */,
 				1444DCA618A35838006014C2 /* TutorialStartController.m in Sources */,
 				64D60F2A1880C79100108C1F /* CLLocation+measuring.m in Sources */,

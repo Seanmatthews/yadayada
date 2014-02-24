@@ -25,6 +25,9 @@
 - (void)receivedJoinedChatroom:(JoinedChatroomMessage*)message;
 - (void)receivedLeftChatroom:(LeftChatroomMessage*)message;
 - (void)dismissAllInviteAlerts;
+- (void)showInviteAlert:(InviteUserMessage*)ium;
+- (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom;
+- (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius;
 
 // To be deprecated
 - (long long)currentChatroomId;

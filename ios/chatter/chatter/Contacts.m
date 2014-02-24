@@ -82,6 +82,33 @@
     NSLog(@"%d",accessGranted);
 }
 
+- (NSNumber*)getMyPhoneNumber
+{
+    NSNumber* phoneNum = nil;
+    NSLocale *locale = [NSLocale currentLocale];
+    NSString* countryCode = [phonePrefixDict objectForKey:[[locale objectForKey:NSLocaleCountryCode] lowercaseString]];
+    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+    ABRecordRef me = ABAddressBookGetPersonWithRecordID(addressBookRef, 1);
+    ABMultiValueRef multiPhones = ABRecordCopyValue(me, kABPersonPhoneProperty);
+    
+    // Get iphone number
+    for (int i=0; i<ABMultiValueGetCount(multiPhones); ++i) {
+        NSString* label = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(multiPhones, i);
+        //        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
+        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
+            CFStringRef phoneNumberRef = ABMultiValueCopyValueAtIndex(multiPhones, 0);
+            NSString* phone = (__bridge NSString *) phoneNumberRef;
+            NSString* fullPhone = [NSString stringWithFormat:@"%@%@",countryCode,phone];
+            
+            // Remove parens and dashes
+            NSCharacterSet *charactersToRemove = [[ NSCharacterSet alphanumericCharacterSet ] invertedSet ];
+            NSString *trimmed = [[fullPhone componentsSeparatedByCharactersInSet:charactersToRemove ] componentsJoinedByString:@"" ];
+            phoneNum = [NSNumber numberWithLongLong:[trimmed longLongValue]];
+        }
+    }
+    return phoneNum;
+}
+
 - (NSNumber*)iPhoneNumberForRecord:(ABRecordRef)record
 {
     NSNumber* phoneNum = nil;
@@ -114,11 +141,13 @@
         ABRecordRef me = ABAddressBookGetPersonWithRecordID(addressBook, 1);
         NSArray *thePeople = (__bridge NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
 
+//        [self setMyPhoneNumber:[self iPhoneNumberForRecord:me]];
+        
         for (id record in thePeople) {
             
             ABRecordRef person = (__bridge ABRecordRef)record;
             if (person == me) {
-                [self setMyPhoneNumber:[self iPhoneNumberForRecord:me]];
+                
                 continue;
             }
             
