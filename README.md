@@ -5,19 +5,19 @@ Not used
 ***
 ### RegisterAccept
 Not used
----
+***
 ### RegisterReject
 Not used
----
+***
 ### Login
 Not used
----
+***
 ### LoginAccept
 Not used
----
+***
 ### LoginReject
 Not used
----
+***
 ### QuickLogin
 The primary method of logging into the server.
 
@@ -29,7 +29,7 @@ A UUID obtained from the user’s mobile device.
 
 ##### phoneNumber (long)
 The user’s phone number. This is used so contacts may invite each other to chatrooms. The field is optional, but preferred.
----
+***
 ### Connect
 The first message a client sends to the server.
 
@@ -38,7 +38,7 @@ The message version that the client is using.
 
 ##### UUID (String)
 A UUID obtained from the user’s mobile device.
----
+***
 ### ConnectAccept 
 Sent from the server on a successful client connection.
 
@@ -53,16 +53,16 @@ Not used
 
 ##### imageDownloadUrl (String)
 Not used
----
+***
 ### ConnectReject
 Sent from the server if a connection request from the user failed.
 
 ##### reason (String)
 The error message related to the connection request failure.
----
+***
 ### Heartbeat
 Not used
----
+***
 ### SubmitMessage 
 Submit a message to a chatroom.
 
@@ -74,7 +74,7 @@ The destination chatroom id
 
 ##### message (String)
 The message to send
----
+***
 ### Message (String)
 A chat message received from the server
 
@@ -95,7 +95,7 @@ The displayed name of the message sender
 
 ##### message (String)
 The received chat message
----
+***
 ### SubmitMessageReject
 Sent from the server if a submitted message is rejected
 
@@ -107,7 +107,7 @@ The chatroom id of the chatroom the user tried to join
 
 ##### reason (String)
 An explanation of the message rejection
----
+***
 ### SearchChatrooms
 Search over chatrooms on server
 
@@ -122,7 +122,7 @@ If 1, return only chatrooms joinable from the supplied lat-long. If 0, return al
 
 ##### metersFromCoords (long)
 If onlyJoinable is 1, the search will return chatrooms that are joinable from any coordinates within a radius from the supplied lat-long.
----
+***
 ### Chatroom
 All information for one chatroom, sent from the server in response to a user’s chatroom query.
 
@@ -152,7 +152,7 @@ The number of users in the chatroom
 
 ##### chatActivity (short)
 Not used
----
+***
 ### JoinChatroom
 A request from a user to join a chatroom. A user cannot join a chatroom of which he is already a member.
 
@@ -167,7 +167,7 @@ The user’s lat coord ( (value + 400) * 1000000 )
 
 ##### longitude (long)
 The user’s long coord ( (value + 400) * 1000000 )
----
+***
 ### LeaveChatroom
 Sent from the user to actively leave a chatroom
 
@@ -176,7 +176,7 @@ The user’s id who wants to leave the chatroom
 
 ##### chatroomId (long)
 The id of the chatroom to leave
----
+***
 ### CreateChatroom 
 Sent by a user to create a chatroom 
 
@@ -194,7 +194,7 @@ The user’s long coord ( (value + 400) * 1000000 )
 
 ##### radius (long)
 Proposed chatroom radius size in meters
----
+***
 ### JoinChatroomReject
 A message sent to a user who failed to join a chatroom
 
@@ -203,7 +203,7 @@ The id of chatroom that the user failed to join
 
 ##### reason (String)
 An explanation of the message rejection
----
+***
 ### JoinedChatroom
 The message sent to all users in a chatroom when a new user joins, including the user who just joined.
 
@@ -239,7 +239,7 @@ The number of users in the chatroom
 
 ##### chatActivity (short)
 Not used
----
+***
 ### LeftChatroom
 The message sent to all users in a chatroom when a user leaves the chatroom, including the user who left.
 
@@ -248,7 +248,7 @@ The id of chatroom left
 
 ##### userId (long)
 The id of the user who left the chatroom
----
+***
 ### CreateChatroomReject
 A message sent to a user when the server rejects an attempt to create a chatroom
 
@@ -257,7 +257,7 @@ The name of the failed chatroom
 
 ##### reason (String)
 An explanation of the message rejection
----
+***
 ### Vote
 A message used to vote on a chat message in a chatroom
 
@@ -275,7 +275,7 @@ The id of the chatroom where the message was sent
 
 ##### upvote (byte)
 If 1, the it’s an up vote. If 0, it’s a downvote.
----
+***
 ### InviteUser
 This message travels client-to-server and server-to-client. A user sends this message to invite another user to a chatroom.
 
@@ -306,13 +306,13 @@ The radius of the chatroom to which the user is being invited, in meters
 ##### recipientPhoneNumber (long)
 ** This will change soon
 The phone number (country code + area code + number) of the invitee
----
+***
 ### InviteUserReject
 A message sent to a user who invited a user who could not be invited. This does not mean that the user rejected the invitation.
 
 ##### reason (String)
 An explanation for why the user could not be invited to the chatroom
----
+***
 ### InviteUserSuccess
 A message sent to a user who successfully invited another user. This does not mean that the user accepted the invitation.
 
@@ -324,4 +324,4 @@ The displayed name of the invitee
 
 ##### chatroomName (String)
 The name of the chatroom to which the user was invited
----
+***
