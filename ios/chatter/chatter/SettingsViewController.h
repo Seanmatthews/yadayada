@@ -25,6 +25,7 @@
 @property (nonatomic,retain) IBOutlet UISegmentedControl* chatroomNotificationControl;
 @property (nonatomic,retain) IBOutlet UISegmentedControl* messageNotificationControl;
 @property (nonatomic,retain) IBOutlet UIScrollView* scrollView;
+@property (nonatomic,retain) IBOutlet UISegmentedControl* inviteNotificationControl;
 @property (nonatomic,strong) NSString* unwindSegueName;
 
 

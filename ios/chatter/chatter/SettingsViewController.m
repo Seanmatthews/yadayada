@@ -44,6 +44,7 @@
 	_handleTextField.returnKeyType = UIReturnKeyDone;
     [_chatroomNotificationControl setSelectedSegmentIndex:(ud.receiveChatroomNotifications ? 0 : 1)];
     [_messageNotificationControl setSelectedSegmentIndex:(ud.receiveMessageNotifications ? 0 : 1)];
+    [_inviteNotificationControl setSelectedSegmentIndex:(ud.receiveInviteNotifications ? 0 : 1)];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -105,14 +106,24 @@
     ud.receiveMessageNotifications = sc.selectedSegmentIndex == 0;
 }
 
+- (IBAction)inviteNotificationValueChanged:(id)sender
+{
+    UISegmentedControl* sc = (UISegmentedControl*)sender;
+    ud.receiveInviteNotifications = sc.selectedSegmentIndex == 0;
+}
+
 - (IBAction)applySettingsButtonPressed:(id)sender
 {
+    
+    
     if (![_handleTextField.text isEqualToString:ud.handle]) {
         [self reregisterHandle];
     }
     else {
         [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
     }
+    
+    
     
     //UIImage* img = iconView.image;
     //[connection uploadImage:[UIImage imageNamed:@"lena.jpg"] forUserId:ud.userId toURL:ud.iconUploadURL];

@@ -14,6 +14,7 @@
 		14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7918A31A560038D149 /* TutorialContentViewController.m */; };
 		14E010E718B1B27B00F45EDD /* Contacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 14E010E618B1B27B00F45EDD /* Contacts.m */; };
 		14E010E918B1D5C900F45EDD /* DialingCodes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 14E010E818B1D5C900F45EDD /* DialingCodes.plist */; };
+		14F9568318C3E5DD001A00F0 /* v1.2.1.xml in Resources */ = {isa = PBXBuildFile; fileRef = 14F9568218C3E5DD001A00F0 /* v1.2.1.xml */; };
 		641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147A182C7D31001D8959 /* SettingsViewController.m */; };
 		641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147D182C7D6C001D8959 /* ChatListViewController.m */; };
 		641C1480182C7FF8001D8959 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 641C147F182C7FF8001D8959 /* MapKit.framework */; };
@@ -86,6 +87,7 @@
 		14E010E518B1B27B00F45EDD /* Contacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contacts.h; sourceTree = "<group>"; };
 		14E010E618B1B27B00F45EDD /* Contacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contacts.m; sourceTree = "<group>"; };
 		14E010E818B1D5C900F45EDD /* DialingCodes.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = DialingCodes.plist; sourceTree = "<group>"; };
+		14F9568218C3E5DD001A00F0 /* v1.2.1.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = v1.2.1.xml; sourceTree = "<group>"; };
 		641C1479182C7D31001D8959 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		641C147A182C7D31001D8959 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		641C147C182C7D6C001D8959 /* ChatListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatListViewController.h; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 		6458F39318172E7400AA8E81 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				14F9568218C3E5DD001A00F0 /* v1.2.1.xml */,
 				14E010E818B1D5C900F45EDD /* DialingCodes.plist */,
 				64A10D4D181DFDEF00A499B0 /* v1.xml */,
 				6458F39418172E7400AA8E81 /* chatter-Info.plist */,
@@ -449,6 +452,7 @@
 				64770588187B880200A97F74 /* Default@2x.png in Resources */,
 				6458F3A518172E7400AA8E81 /* Images.xcassets in Resources */,
 				6488FD141887C8E300EA07D3 /* icon40@2x.png in Resources */,
+				14F9568318C3E5DD001A00F0 /* v1.2.1.xml in Resources */,
 				6458F39718172E7400AA8E81 /* InfoPlist.strings in Resources */,
 				64770586187B880200A97F74 /* Default.png in Resources */,
 				6488FD131887C8E300EA07D3 /* icon29@2x.png in Resources */,
@@ -632,8 +636,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: sean matthews (Z72KQMSYAP)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: sean matthews (Z72KQMSYAP)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: sean matthews (A2XP5DNQQP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: sean matthews (A2XP5DNQQP)";
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -644,7 +648,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "BE3B2162-C76C-412F-8349-3790C4AA6474";
+				PROVISIONING_PROFILE = "65D8ADF8-B3F9-41A3-9B71-CBE93755A2E2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -653,8 +657,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: sean matthews (Z72KQMSYAP)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: sean matthews (Z72KQMSYAP)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: sean matthews (A2XP5DNQQP)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: sean matthews (A2XP5DNQQP)";
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -663,7 +667,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "BE3B2162-C76C-412F-8349-3790C4AA6474";
+				PROVISIONING_PROFILE = "65D8ADF8-B3F9-41A3-9B71-CBE93755A2E2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -21,6 +21,7 @@
 @property BOOL registeredHandle;
 @property BOOL receiveChatroomNotifications;
 @property BOOL receiveMessageNotifications;
+@property BOOL receiveInviteNotifications;
 @property UIImage* userIcon;
 
 // This is not a user detail, but rather an app global

@@ -122,11 +122,22 @@
 //        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
         if ([label isEqualToString:(NSString*)kABPersonPhoneMobileLabel]) {
             CFStringRef phoneNumberRef = ABMultiValueCopyValueAtIndex(multiPhones, 0);
-            NSString* phone = (__bridge NSString *) phoneNumberRef;
-            NSString* fullPhone = [NSString stringWithFormat:@"%@%@",countryCode,phone];
             
-            // Remove parens and dashes
             NSCharacterSet *charactersToRemove = [[ NSCharacterSet alphanumericCharacterSet ] invertedSet ];
+            
+            NSString* phone = (__bridge NSString *) phoneNumberRef;
+            NSString* phoneTrimmed = [[phone componentsSeparatedByCharactersInSet:charactersToRemove] componentsJoinedByString:@""];
+            
+            // Only add country code if listed phone number is below the standard 1-215-555-1212.
+            // This is a kludge, but I don't know a better way.
+            NSString* fullPhone;
+            if ([phoneTrimmed length] < 11) {
+                fullPhone = [NSString stringWithFormat:@"%@%@",countryCode,phone];
+            }
+            else {
+                fullPhone = phoneTrimmed;
+            }
+            
             NSString *trimmed = [[fullPhone componentsSeparatedByCharactersInSet:charactersToRemove ] componentsJoinedByString:@"" ];
             phoneNum = [NSNumber numberWithLongLong:[trimmed longLongValue]];
         }
