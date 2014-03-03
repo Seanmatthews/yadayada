@@ -137,12 +137,14 @@
             
         case InviteUser:
         {
-            InviteUserMessage* ium = (InviteUserMessage*)message;
-            if ([self canJoinChatroomWithCoord:CLLocationCoordinate2DMake(ium.chatroomLat, ium.chatroomLong) andRadius:ium.chatroomRadius]) {
-                [self performSelectorOnMainThread:@selector(showInviteAlert:) withObject:ium waitUntilDone:NO];
-            }
-            else {
-                NSLog(@"got invite, but chatroom is too far away");
+            if (ud.receiveInviteNotifications) {
+                InviteUserMessage* ium = (InviteUserMessage*)message;
+                if ([self canJoinChatroomWithCoord:CLLocationCoordinate2DMake(ium.chatroomLat, ium.chatroomLong) andRadius:ium.chatroomRadius]) {
+                    [self performSelectorOnMainThread:@selector(showInviteAlert:) withObject:ium waitUntilDone:NO];
+                }
+                else {
+                    NSLog(@"got invite, but chatroom is too far away");
+                }
             }
             break;
         }
