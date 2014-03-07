@@ -11,6 +11,7 @@
 		1444DCA618A35838006014C2 /* TutorialStartController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1444DCA518A35838006014C2 /* TutorialStartController.m */; };
 		144718CF18BBDA990045B668 /* UIInviteAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 144718CE18BBDA990045B668 /* UIInviteAlertView.m */; };
 		147445BF18CA3ACB00EE5D49 /* v1_3_0.xml in Resources */ = {isa = PBXBuildFile; fileRef = 147445BE18CA3ACB00EE5D49 /* v1_3_0.xml */; };
+		147445C218CA8A7100EE5D49 /* Chatroom.m in Sources */ = {isa = PBXBuildFile; fileRef = 147445C118CA8A7100EE5D49 /* Chatroom.m */; };
 		14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */; };
 		14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7918A31A560038D149 /* TutorialContentViewController.m */; };
 		14E010E718B1B27B00F45EDD /* Contacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 14E010E618B1B27B00F45EDD /* Contacts.m */; };
@@ -82,6 +83,8 @@
 		144718CD18BBDA990045B668 /* UIInviteAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIInviteAlertView.h; sourceTree = "<group>"; };
 		144718CE18BBDA990045B668 /* UIInviteAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIInviteAlertView.m; sourceTree = "<group>"; };
 		147445BE18CA3ACB00EE5D49 /* v1_3_0.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = v1_3_0.xml; path = ../../../msgs/v1_3_0.xml; sourceTree = "<group>"; };
+		147445C018CA8A7100EE5D49 /* Chatroom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chatroom.h; sourceTree = "<group>"; };
+		147445C118CA8A7100EE5D49 /* Chatroom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Chatroom.m; sourceTree = "<group>"; };
 		14D19A7518A1FAAE0038D149 /* ChatroomManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomManagement.h; sourceTree = "<group>"; };
 		14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomManagement.m; sourceTree = "<group>"; };
 		14D19A7818A31A560038D149 /* TutorialContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialContentViewController.h; sourceTree = "<group>"; };
@@ -273,6 +276,8 @@
 				14E010E518B1B27B00F45EDD /* Contacts.h */,
 				14E010E618B1B27B00F45EDD /* Contacts.m */,
 				6458F39318172E7400AA8E81 /* Supporting Files */,
+				147445C018CA8A7100EE5D49 /* Chatroom.h */,
+				147445C118CA8A7100EE5D49 /* Chatroom.m */,
 			);
 			path = chatter;
 			sourceTree = "<group>";
@@ -490,6 +495,7 @@
 				6477058F187C7FAD00A97F74 /* SmartButton.m in Sources */,
 				14E010E718B1B27B00F45EDD /* Contacts.m in Sources */,
 				B343A50F18282CF600B36450 /* MenuViewController.m in Sources */,
+				147445C218CA8A7100EE5D49 /* Chatroom.m in Sources */,
 				6477058C187BAD9900A97F74 /* ChatPointAnnotation.m in Sources */,
 				1432C74E18B9AB3300690009 /* ContactsListViewController.m in Sources */,
 				64D60F2D1880C79100108C1F /* CLLocationDispatch.m in Sources */,
