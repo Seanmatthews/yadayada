@@ -22,8 +22,8 @@ public class STChatroomRepository implements ChatroomRepository {
     private final Map<Chatroom, Set<User>> chatroomUserMap = new HashMap<>();
 
     @Override
-    public Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius) {
-        Chatroom chatroom = new Chatroom(nextChatroomId++, name, owner, this, latitude, longitude, radius);
+    public Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius, boolean isPrivate) {
+        Chatroom chatroom = new Chatroom(nextChatroomId++, name, owner, this, latitude, longitude, radius, false);
         addChatroom(chatroom);
         return chatroom;
     }

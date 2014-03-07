@@ -77,7 +77,7 @@ public class Main {
         MessageRepository messageRepo = new STMessageRepository();
         //ChatroomRepository chatroomRepo = new STChatroomRepository();
         ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-        chatroomRepo.createChatroom(admin, "Global", 0, 0, 0);
+        chatroomRepo.createChatroom(admin, "Global", 0, 0, 0, false);
 
         new ServerListener(new EventServiceImpl(), port, userRepo, chatroomRepo, messageRepo);
     }

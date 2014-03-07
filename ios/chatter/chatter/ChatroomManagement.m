@@ -16,6 +16,18 @@
 #import "Connection.h"
 #import "UIInviteAlertView.h"
 
+@interface ChatroomManagement()
+
+- (void)addMessage:(MessageBase*)message toChatroom:(NSNumber*)chatroomId;
+- (void)dismissAllInviteAlerts;
+- (void)receivedMessage:(MessageMessage*) message;
+- (void)receivedJoinedChatroom:(JoinedChatroomMessage*)message;
+- (void)receivedLeftChatroom:(LeftChatroomMessage*)message;
+- (void)showInviteAlert:(InviteUserMessage*)ium;
+
+@end
+
+
 @implementation ChatroomManagement
 
 //const int MESSAGE_NUM_THRESH = 20;

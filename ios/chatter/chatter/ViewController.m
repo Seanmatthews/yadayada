@@ -333,10 +333,10 @@
 // It is not for filling in cell data.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MessageBase* rootMsg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
+    id rootMsg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
     NSString *CellIdentifier = [NSString stringWithFormat:@"%ld_%ld",(long)indexPath.section,(long)indexPath.row];
     
-    if (rootMsg.type == Message) {
+    if ([rootMsg isMemberOfClass:[MessageMessage class]]) {
     
         MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
 //        NSString *CellIdentifier = [NSString stringWithFormat:@"%ld_%ld",(long)indexPath.section,(long)indexPath.row];
@@ -370,11 +370,11 @@
         cell.textLabel.font = [UIFont fontWithName:@"System" size:13.];
         cell.textLabel.textColor = [UIColor lightTextColor];
         
-        if (rootMsg.type == JoinedChatroom) {
+        if ([rootMsg isMemberOfClass:[JoinedChatroomMessage class]]) {
             NSString* userHandle = [(JoinedChatroomMessage*)rootMsg userHandle];
             cell.textLabel.text = [NSString stringWithFormat:@"%@ joined.",userHandle];
         }
-        else if (rootMsg.type == LeftChatroom) {
+        else if ([rootMsg isMemberOfClass:[LeftChatroomMessage class]]) {
             NSString* userHandle = [(LeftChatroomMessage*)rootMsg userHandle];
             cell.textLabel.text = [NSString stringWithFormat:@"%@ left.",userHandle];
         }

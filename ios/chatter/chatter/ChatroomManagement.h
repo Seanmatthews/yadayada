@@ -21,11 +21,6 @@
 - (id)init;
 + (id)sharedInstance;
 - (void)messageCallback:(MessageBase*)message;
-- (void)receivedMessage:(MessageMessage*) message;
-- (void)receivedJoinedChatroom:(JoinedChatroomMessage*)message;
-- (void)receivedLeftChatroom:(LeftChatroomMessage*)message;
-- (void)dismissAllInviteAlerts;
-- (void)showInviteAlert:(InviteUserMessage*)ium;
 - (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom;
 - (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius;
 
