@@ -165,7 +165,7 @@
 
 - (void)showInviteAlert:(InviteUserMessage*)ium
 {
-        NSString* alertMsg = [NSString stringWithFormat:@"%@ has invite you to chatroom %@",ium.senderHandle,ium.chatroomName];
+    NSString* alertMsg = [NSString stringWithFormat:@"%@ has invite you to chatroom %@",ium.senderHandle,ium.chatroomName];
     NSLog(@"%@",alertMsg);
     UIInviteAlertView* alert = [[UIInviteAlertView alloc] initWithTitle:@"Invitation!" message:alertMsg delegate:self cancelButtonTitle:nil otherButtonTitles:@"Join",@"Decline",nil];
     alert.inviteMessage = ium;
@@ -175,7 +175,7 @@
 
 - (void)addMessage:(MessageBase*)message toChatroom:(NSNumber*)chatroomId
 {
-    NSMutableArray* msgList = (NSMutableArray*)[_chatQueue objectForKey:chatroomId];
+    NSMutableArray* msgList = [_chatQueue objectForKey:chatroomId];
     
     if (msgList) {
         [msgList addObject:message];

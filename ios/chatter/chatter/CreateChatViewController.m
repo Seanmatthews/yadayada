@@ -155,7 +155,7 @@ const double MILES_TO_METERS = 1609.34;
     msg.ownerId = ud.userId;
     msg.latitude = [location currentLat];
     msg.longitude = [location currentLong];
-    msg.private = _inviteOnlyControl.selectedSegmentIndex == 0;
+    msg.isPrivate = _inviteOnlyControl.selectedSegmentIndex == 0;
     [connection sendMessage:msg];
 }
 

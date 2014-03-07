@@ -120,21 +120,24 @@
     UIView* wv = (UIView*)[cell.contentView viewWithTag:3];
 
     // Send upvote
-    MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:swipedCellIndex];
-    [self upvote:YES user:msg.senderId becauseOfMessage:msg.messageId];
-    
-    [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
-    {
-        [cell setHighlighted:YES animated:YES];
-        [wv setBackgroundColor:[UIColor blueColor]];
-    } completion:^(BOOL finished)
-    {
+    id aMsg = [[chatManager currentChatQueue] objectAtIndex:swipedCellIndex];
+    if ([aMsg isMemberOfClass:[MessageMessage class]]) {
+        MessageMessage* msg = aMsg;
+        [self upvote:YES user:msg.senderId becauseOfMessage:msg.messageId];
+        
         [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
-         {
-             [cell setHighlighted:NO animated:NO];
-             [wv setBackgroundColor:[UIColor clearColor]];
-         } completion: NULL];
-    }];
+        {
+            [cell setHighlighted:YES animated:YES];
+            [wv setBackgroundColor:[UIColor blueColor]];
+        } completion:^(BOOL finished)
+        {
+            [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
+             {
+                 [cell setHighlighted:NO animated:NO];
+                 [wv setBackgroundColor:[UIColor clearColor]];
+             } completion: NULL];
+        }];
+    }
 }
 
 - (void)swipeCell:(UITableViewRowAnimation)animation
@@ -272,6 +275,7 @@
 
 - (void)messageCallback:(MessageBase*)message
 {
+    id aMsg = message;
     switch (message.type) {
             
         case InviteUserSuccess:
@@ -282,12 +286,25 @@
             // TODO: add message in the midst of chat messages
             break;
             
+        case JoinedChatroom:
+        case LeftChatroom:
+
+            // Ensure that all messages that will arrive here have a chatroomId and userId properties
+            if ([aMsg chatroomId] == _chatId) {
+                if ( !([aMsg userId] == ud.userId) || ![aMsg isMemberOfClass:[LeftChatroomMessage class]] ) {
+                    dispatch_group_notify(connection.parseGroup, connection.parseQueue, ^{
+                        [self performSelectorOnMainThread:@selector(refreshMessages) withObject:nil waitUntilDone:NO];
+                    });
+                }
+            }
+            break;
+            
         case Message:
-            NSLog(@"Message");
-            if (((MessageMessage*)message).chatroomId == _chatId) {
+            
+            NSLog(@"[viewcontroller] Message, JoinedChatroom, LeftChatroom");
+            if ([aMsg chatroomId] == _chatId) {
                 dispatch_group_notify(connection.parseGroup, connection.parseQueue, ^{
                     [self performSelectorOnMainThread:@selector(refreshMessages) withObject:nil waitUntilDone:NO];
-                    // TODO: try making the dispatch queue on the main thread
                 });
             }
             break;
@@ -309,9 +326,16 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
-//    NSLog(@"height %f",[ChatroomMessageCell heightForText:msg.message]);
-    return [ChatroomMessageCell heightForText:msg.message];
+    id msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
+    
+    if ([msg isMemberOfClass:[MessageMessage class]]) {
+//        NSLog(@"height %f",[ChatroomMessageCell heightForText:msg.message]);
+//        return [ChatroomMessageCell heightForText:((MessageMessage*)msg).message];
+        return [ChatroomMessageCell heightForText:[msg message]];
+    }
+    else { // Assume JoinedChatroom or LeftChatroom
+        return 30.;
+    }
 }
 
 
@@ -326,6 +350,7 @@
 {
     // There will only ever be one section for a table.
     // TODO: alter this behavior for multiple chatrooms
+    NSLog(@"[viewcontroller] count %lu",(unsigned long)[[chatManager currentChatQueue] count]);
     return [[chatManager currentChatQueue] count];
 }
 
@@ -367,15 +392,15 @@
     else {
         UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.backgroundColor = [UIColor clearColor];
-        cell.textLabel.font = [UIFont fontWithName:@"System" size:13.];
-        cell.textLabel.textColor = [UIColor lightTextColor];
+        cell.textLabel.font = [UIFont fontWithName:@"System" size:12.];
+        cell.textLabel.textColor = [UIColor grayColor];
         
         if ([rootMsg isMemberOfClass:[JoinedChatroomMessage class]]) {
-            NSString* userHandle = [(JoinedChatroomMessage*)rootMsg userHandle];
+            NSString* userHandle = ((JoinedChatroomMessage*)rootMsg).userHandle;
             cell.textLabel.text = [NSString stringWithFormat:@"%@ joined.",userHandle];
         }
         else if ([rootMsg isMemberOfClass:[LeftChatroomMessage class]]) {
-            NSString* userHandle = [(LeftChatroomMessage*)rootMsg userHandle];
+            NSString* userHandle = ((LeftChatroomMessage*)rootMsg).userHandle;
             cell.textLabel.text = [NSString stringWithFormat:@"%@ left.",userHandle];
         }
         return cell;
