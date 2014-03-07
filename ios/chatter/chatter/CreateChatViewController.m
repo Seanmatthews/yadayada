@@ -90,7 +90,6 @@ const double MILES_TO_METERS = 1609.34;
 }
 
 
-
 #pragma mark - Keyboard Interaction
 
 
@@ -137,6 +136,7 @@ const double MILES_TO_METERS = 1609.34;
         return;
     }
     
+    // Handle check
     if ([ud.handle isEqualToString:@""]) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:@"Cannot join a chatroom with no handle" delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
@@ -154,6 +154,7 @@ const double MILES_TO_METERS = 1609.34;
     msg.ownerId = ud.userId;
     msg.latitude = [location currentLat];
     msg.longitude = [location currentLong];
+    msg.private = _inviteOnlyControl.selectedSegmentIndex == 0;
     [connection sendMessage:msg];
 }
 

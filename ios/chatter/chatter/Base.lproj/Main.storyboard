@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13B3116" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="mTE-8Y-ifs">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="mTE-8Y-ifs">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
@@ -239,7 +239,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="GYU-zA-EYj">
-                                        <rect key="frame" x="126" y="217" width="81" height="29"/>
+                                        <rect key="frame" x="204" y="217" width="81" height="29"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <segments>
                                             <segment title="YES"/>
@@ -249,6 +249,21 @@
                                             <action selector="globalChatSelection:" destination="h9l-oE-6Ie" eventType="valueChanged" id="eKI-yP-Uv9"/>
                                         </connections>
                                     </segmentedControl>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="t0A-Rf-Imy">
+                                        <rect key="frame" x="204" y="260" width="81" height="29"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <segments>
+                                            <segment title="YES"/>
+                                            <segment title="NO"/>
+                                        </segments>
+                                    </segmentedControl>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Invite Only?" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wwv-g9-NmT">
+                                        <rect key="frame" x="20" y="263" width="91" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" red="0.75686274509803919" green="0.96470588235294119" blue="0.86274509803921573" alpha="1" colorSpace="deviceRGB"/>
                                 <constraints>
@@ -270,6 +285,7 @@
                         <outlet property="chatroomNameTextField" destination="g70-YX-Vsd" id="NN5-Rm-lQr"/>
                         <outlet property="chatroomRadiusLabel" destination="cfe-E7-mva" id="4N4-j3-TmY"/>
                         <outlet property="globalChatSelect" destination="GYU-zA-EYj" id="wOK-hR-ls2"/>
+                        <outlet property="inviteOnlyControl" destination="t0A-Rf-Imy" id="jqX-jq-k21"/>
                         <outlet property="radiusSlider" destination="mVg-TW-DLh" id="KXk-rU-Ygx"/>
                         <segue destination="vXZ-lx-hvc" kind="modal" identifier="create2ChatSegue" modalTransitionStyle="crossDissolve" id="rc4-gC-yT0"/>
                     </connections>
@@ -752,6 +768,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="t6j-Ha-H7P"/>
+        <segue reference="rc4-gC-yT0"/>
     </inferredMetricsTieBreakers>
 </document>

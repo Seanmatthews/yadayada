@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 from Cheetah.Template import Template
 
-versionNum = 1
+versionNum = '1.3.0'
 version = 'v' + str(versionNum);
 package = 'com.chat.msgs.' + version
 serverPath = "../java/src/com/chat/msgs/" + version

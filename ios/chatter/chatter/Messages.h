@@ -239,6 +239,7 @@ typedef enum {
 @property long long latitude;
 @property long long longitude;
 @property long long radius;
+@property Byte private;
 
 @end
 
