@@ -21,12 +21,14 @@ public class Chatroom {
     private final long radius;
     private final long creationTime;
     private final short chatActivity;
+    private final boolean isPrivate;
 
     // back-reference for easy access
     private final ChatroomRepository repo;
     private final MPSClusteringStrategy clusterStrategy;
 
-    public Chatroom(long id, String name, User owner, ChatroomRepository inMemoryChatroomRepository, long latitude, long longitude, long radius) {
+    public Chatroom(long id, String name, User owner, ChatroomRepository inMemoryChatroomRepository, long latitude,
+                    long longitude, long radius, boolean isPrivate) {
         this.id = id;
         this.name = name;
         this.owner = owner;
@@ -37,6 +39,7 @@ public class Chatroom {
         this.clusterStrategy = new MPSClusteringStrategy(this, 0.33, 2.0);
         this.creationTime = System.currentTimeMillis() / 1000L;
         this.chatActivity = 0;
+        this.isPrivate = isPrivate;
     }
 
     public long getId() {
@@ -116,4 +119,6 @@ public class Chatroom {
     public short getChatActivity() { return chatActivity; }
 
     public boolean global() { return 0 >= radius; }
+
+    public boolean isPrivate() { return isPrivate; }
 }

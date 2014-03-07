@@ -11,7 +11,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface ChatroomRepository {
-    Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius);
+    Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius, boolean isPrivate);
     Iterator<Chatroom> search(ChatroomSearchCriteria search);
     Chatroom get(long chatroomId);
     void addChatroom(Chatroom chatroom);

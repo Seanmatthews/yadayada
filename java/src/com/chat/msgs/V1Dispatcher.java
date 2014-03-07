@@ -57,7 +57,10 @@ public class V1Dispatcher implements MessageDispatcher {
                 CreateChatroomMessage ccMsg = new CreateChatroomMessage(buffer);
                 logMsg(ccMsg);
                 User ccUser = getAndValidateUser(ccMsg.getOwnerId());
-                server.createChatroom(stream, ccUser, ccMsg.getChatroomName(), ccMsg.getLatitude(), ccMsg.getLongitude(), ccMsg.getRadius());
+
+                // Chatrooms created with messaging prior to v1.3.0 are never private
+                server.createChatroom(stream, ccUser, ccMsg.getChatroomName(), ccMsg.getLatitude(),
+                        ccMsg.getLongitude(), ccMsg.getRadius(), false);
                 break;
 
             case JoinChatroom:

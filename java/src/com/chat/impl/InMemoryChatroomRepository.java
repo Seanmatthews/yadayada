@@ -26,8 +26,8 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
     private final Map<Chatroom, Set<User>> chatroomUserMap = new ConcurrentHashMap<>();
 
     @Override
-    public Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius) {
-        Chatroom chatroom = new Chatroom(nextChatroomId.getAndIncrement(), name, owner, this, latitude, longitude, radius);
+    public Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius, boolean isPrivate) {
+        Chatroom chatroom = new Chatroom(nextChatroomId.getAndIncrement(), name, owner, this, latitude, longitude, radius, isPrivate);
         addChatroom(chatroom);
         return chatroom;
     }

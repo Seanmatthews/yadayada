@@ -1,7 +1,7 @@
 package com.chat.server;
 
 import com.chat.*;
-import com.chat.msgs.v1.*;
+import com.chat.msgs.v1_3_0.*;
 import com.chat.select.EventService;
 import com.chat.server.cluster.ChatroomCluster;
 import org.apache.logging.log4j.LogManager;
@@ -108,15 +108,28 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void createChatroom(ClientConnection senderConnection, User sender, String name, long latitude, long longitude, long radius) {
+    public void createChatroom(ClientConnection senderConnection, User sender, String name, long latitude,
+                               long longitude, long radius, boolean isPrivate) {
         log.debug("Creating chatroom {} by {}", name, sender);
 
-        Chatroom chatroom = chatroomRepo.createChatroom(sender, name, latitude, longitude, radius);
+        Chatroom chatroom = chatroomRepo.createChatroom(sender, name, latitude, longitude, radius, isPrivate);
         sendChatroom(senderConnection, chatroom);
     }
 
     private void sendChatroom(ClientConnection senderConnection, Chatroom chatroom) {
-        senderConnection.sendMessage(new ChatroomMessage(chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(), chatroom.getLatitude(), chatroom.getLongitude(), chatroom.getRadius(), chatroom.getUserCount(), (short)0));
+
+        senderConnection.sendMessage(
+                new ChatroomMessage(
+                chatroom.getId(),
+                chatroom.getOwner().getId(),
+                chatroom.getName(),
+                chatroom.getOwner().getHandle(),
+                chatroom.getLatitude(),
+                chatroom.getLongitude(),
+                chatroom.getRadius(),
+                chatroom.getUserCount(),
+                chatroom.getChatActivity(),
+                chatroom.isPrivate() ? (byte)1 : (byte)0));
     }
 
     @Override
@@ -264,7 +277,10 @@ public class ChatServerImpl implements ChatServer {
         Iterator<Chatroom> chatrooms = chatroomRepo.search(new ChatroomSearchCriteria(latitude, longitude, metersFromCoords, onlyJoinable));
 
         while(chatrooms.hasNext()) {
-            sendChatroom(sender, chatrooms.next());
+            Chatroom c = chatrooms.next();
+            if (!c.isPrivate()) {
+                sendChatroom(sender, c);
+            }
         }
     }
 
@@ -322,7 +338,7 @@ public class ChatServerImpl implements ChatServer {
     public void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom) {
         log.debug("Removing {} from {}", sender, chatroom);
 
-        LeftChatroomMessage meLeaving = new LeftChatroomMessage(chatroom.getId(), sender.getId());
+        LeftChatroomMessage meLeaving = new LeftChatroomMessage(chatroom.getId(), sender.getId(), sender.getHandle());
 
         Iterator<User> users = chatroom.getUsers();
         while(users.hasNext()) {

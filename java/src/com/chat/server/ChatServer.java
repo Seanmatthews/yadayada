@@ -17,16 +17,23 @@ public interface ChatServer {
     void connect(ClientConnection sender, int apiVersion, String uuid);
     void disconnect(ClientConnection sender);
 
-    void registerUser(ClientConnection sender, String login, String password, String handle, String UUID, long phoneNumber);
+    void registerUser(ClientConnection sender, String login, String password, String handle, String UUID,
+                      long phoneNumber);
+
     void login(ClientConnection sender, String login, String password);
 
     void quickLogin(ClientConnection sender, String handle, String UUID, long phoneNumber);
 
-    void createChatroom(ClientConnection sender, User user, String name, long latitude, long longitude, long radius);
+    void createChatroom(ClientConnection sender, User user, String name, long latitude, long longitude, long radius,
+                        boolean isPrivate);
+
     void newMessage(ClientConnection sender, User senderUser, Chatroom chatroom, String message);
 
-    void searchChatrooms(ClientConnection sender, long latitude, long longitude, long metersFromCoords, byte onlyJoinable);
+    void searchChatrooms(ClientConnection sender, long latitude, long longitude, long metersFromCoords,
+                         byte onlyJoinable);
+
     void joinChatroom(ClientConnection sender, User user, Chatroom chatroom);
     void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom);
-    void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone) throws ExecutionException, InterruptedException;
+    void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone)
+            throws ExecutionException, InterruptedException;
 }

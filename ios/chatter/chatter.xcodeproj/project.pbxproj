@@ -10,7 +10,7 @@
 		1432C74E18B9AB3300690009 /* ContactsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1432C74D18B9AB3300690009 /* ContactsListViewController.m */; };
 		1444DCA618A35838006014C2 /* TutorialStartController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1444DCA518A35838006014C2 /* TutorialStartController.m */; };
 		144718CF18BBDA990045B668 /* UIInviteAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 144718CE18BBDA990045B668 /* UIInviteAlertView.m */; };
-		147445BD18C955A000EE5D49 /* v1.3.0.xml in Resources */ = {isa = PBXBuildFile; fileRef = 147445BC18C955A000EE5D49 /* v1.3.0.xml */; };
+		147445BF18CA3ACB00EE5D49 /* v1_3_0.xml in Resources */ = {isa = PBXBuildFile; fileRef = 147445BE18CA3ACB00EE5D49 /* v1_3_0.xml */; };
 		14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */; };
 		14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7918A31A560038D149 /* TutorialContentViewController.m */; };
 		14E010E718B1B27B00F45EDD /* Contacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 14E010E618B1B27B00F45EDD /* Contacts.m */; };
@@ -81,7 +81,7 @@
 		1444DCA518A35838006014C2 /* TutorialStartController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialStartController.m; sourceTree = "<group>"; };
 		144718CD18BBDA990045B668 /* UIInviteAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIInviteAlertView.h; sourceTree = "<group>"; };
 		144718CE18BBDA990045B668 /* UIInviteAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIInviteAlertView.m; sourceTree = "<group>"; };
-		147445BC18C955A000EE5D49 /* v1.3.0.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = v1.3.0.xml; path = ../../../msgs/v1.3.0.xml; sourceTree = "<group>"; };
+		147445BE18CA3ACB00EE5D49 /* v1_3_0.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = v1_3_0.xml; path = ../../../msgs/v1_3_0.xml; sourceTree = "<group>"; };
 		14D19A7518A1FAAE0038D149 /* ChatroomManagement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomManagement.h; sourceTree = "<group>"; };
 		14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomManagement.m; sourceTree = "<group>"; };
 		14D19A7818A31A560038D149 /* TutorialContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialContentViewController.h; sourceTree = "<group>"; };
@@ -280,7 +280,7 @@
 		6458F39318172E7400AA8E81 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				147445BC18C955A000EE5D49 /* v1.3.0.xml */,
+				147445BE18CA3ACB00EE5D49 /* v1_3_0.xml */,
 				14F9568218C3E5DD001A00F0 /* v1.2.1.xml */,
 				14E010E818B1D5C900F45EDD /* DialingCodes.plist */,
 				64A10D4D181DFDEF00A499B0 /* v1.xml */,
@@ -455,7 +455,6 @@
 				64770588187B880200A97F74 /* Default@2x.png in Resources */,
 				6458F3A518172E7400AA8E81 /* Images.xcassets in Resources */,
 				6488FD141887C8E300EA07D3 /* icon40@2x.png in Resources */,
-				147445BD18C955A000EE5D49 /* v1.3.0.xml in Resources */,
 				14F9568318C3E5DD001A00F0 /* v1.2.1.xml in Resources */,
 				6458F39718172E7400AA8E81 /* InfoPlist.strings in Resources */,
 				64770586187B880200A97F74 /* Default.png in Resources */,
@@ -463,6 +462,7 @@
 				64A10D4E181DFDEF00A499B0 /* v1.xml in Resources */,
 				B3E79A4A1832AF23003227E7 /* ChatroomListCell.xib in Resources */,
 				64770589187B880200A97F74 /* Default-568h@2x.png in Resources */,
+				147445BF18CA3ACB00EE5D49 /* v1_3_0.xml in Resources */,
 				14E010E918B1D5C900F45EDD /* DialingCodes.plist in Resources */,
 				6458F3A018172E7400AA8E81 /* Main.storyboard in Resources */,
 				B33C55C61835598400EF28B7 /* default-icon.png in Resources */,

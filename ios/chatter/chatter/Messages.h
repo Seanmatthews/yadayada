@@ -207,6 +207,7 @@ typedef enum {
 @property long long radius;
 @property int userCount;
 @property short chatActivity;
+@property Byte isPrivate;
 
 @end
 
@@ -239,7 +240,7 @@ typedef enum {
 @property long long latitude;
 @property long long longitude;
 @property long long radius;
-@property Byte private;
+@property Byte isPrivate;
 
 @end
 
@@ -276,6 +277,7 @@ typedef enum {
 
 @property long long chatroomId;
 @property long long userId;
+@property NSString* userHandle;
 
 @end
 

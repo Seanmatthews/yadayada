@@ -333,31 +333,53 @@
 // It is not for filling in cell data.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    MessageBase* rootMsg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
     NSString *CellIdentifier = [NSString stringWithFormat:@"%ld_%ld",(long)indexPath.section,(long)indexPath.row];
-    ChatroomMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
     
-    if (nil == cell) {
-        cell = [[ChatroomMessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    if (rootMsg.type == Message) {
+    
+        MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
+//        NSString *CellIdentifier = [NSString stringWithFormat:@"%ld_%ld",(long)indexPath.section,(long)indexPath.row];
+        ChatroomMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
-        // Add voting gestures to the cell
-        UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
-        tapped.numberOfTapsRequired = 2;
-        [cell addGestureRecognizer:tapped];
-        UISwipeGestureRecognizer* swipedLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellLeft:)];
-        swipedLeft.direction = UISwipeGestureRecognizerDirectionLeft;
-        [cell addGestureRecognizer:swipedLeft];
-        UISwipeGestureRecognizer* swipedRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellRight:)];
-        swipedRight.direction = UISwipeGestureRecognizerDirectionRight;
-        [cell addGestureRecognizer:swipedRight];
+        if (nil == cell) {
+            cell = [[ChatroomMessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            
+            // Add voting gestures to the cell
+            UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
+            tapped.numberOfTapsRequired = 2;
+            [cell addGestureRecognizer:tapped];
+            UISwipeGestureRecognizer* swipedLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellLeft:)];
+            swipedLeft.direction = UISwipeGestureRecognizerDirectionLeft;
+            [cell addGestureRecognizer:swipedLeft];
+            UISwipeGestureRecognizer* swipedRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellRight:)];
+            swipedRight.direction = UISwipeGestureRecognizerDirectionRight;
+            [cell addGestureRecognizer:swipedRight];
+        }
+        [cell setUserHandle:msg.senderHandle];
+        [cell setMessage:msg.message];
+        [cell setUserIcon:nil];
+        [cell setSelfMessage:(msg.senderId == ud.userId ? YES : NO)];
+        [cell arrangeElements];
+        
+        return cell;
     }
-    [cell setUserHandle:msg.senderHandle];
-    [cell setMessage:msg.message];
-    [cell setUserIcon:nil];
-    [cell setSelfMessage:(msg.senderId == ud.userId ? YES : NO)];
-    [cell arrangeElements];
-    
-    return cell;
+    else {
+        UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.backgroundColor = [UIColor clearColor];
+        cell.textLabel.font = [UIFont fontWithName:@"System" size:13.];
+        cell.textLabel.textColor = [UIColor lightTextColor];
+        
+        if (rootMsg.type == JoinedChatroom) {
+            NSString* userHandle = [(JoinedChatroomMessage*)rootMsg userHandle];
+            cell.textLabel.text = [NSString stringWithFormat:@"%@ joined.",userHandle];
+        }
+        else if (rootMsg.type == LeftChatroom) {
+            NSString* userHandle = [(LeftChatroomMessage*)rootMsg userHandle];
+            cell.textLabel.text = [NSString stringWithFormat:@"%@ left.",userHandle];
+        }
+        return cell;
+    }
 }
 
 

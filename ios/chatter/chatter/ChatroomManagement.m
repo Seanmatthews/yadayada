@@ -161,11 +161,10 @@
     [alert show];
 }
 
-- (void)receivedMessage:(MessageMessage*) message
+- (void)addMessage:(MessageBase*)message toChatroom:(NSNumber*)chatroomId
 {
-    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
-    NSMutableArray* msgList = (NSMutableArray*)[_chatQueue objectForKey:cid];
-
+    NSMutableArray* msgList = (NSMutableArray*)[_chatQueue objectForKey:chatroomId];
+    
     if (msgList) {
         [msgList addObject:message];
         
@@ -175,13 +174,22 @@
     }
 }
 
+- (void)receivedMessage:(MessageMessage*) message
+{
+    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
+    [self addMessage:message toChatroom:cid];
+}
+
 - (void)receivedJoinedChatroom:(JoinedChatroomMessage*)message
 {
+    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
     if (message.userId == ud.userId) {
-        NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
         NSMutableArray* msgList = [[NSMutableArray alloc] init];
         [_chatQueue setObject:msgList forKey:cid];
         [_joinedChatrooms setObject:message.chatroomName forKey:cid];
+    }
+    else {
+        [self addMessage:message toChatroom:cid];
     }
 }
 
@@ -192,6 +200,9 @@
     if (message.userId == ud.userId) {
         [_joinedChatrooms removeObjectForKey:cid];
         [_chatQueue removeObjectForKey:cid];
+    }
+    else {
+        [self addMessage:message toChatroom:cid];
     }
 }
 

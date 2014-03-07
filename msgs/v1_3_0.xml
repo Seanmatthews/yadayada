@@ -91,6 +91,7 @@
         <field name="radius" type="long" />
         <field name="userCount" type="int" />
         <field name="chatActivity" type="short" />
+        <field name="isPrivate" type="byte" />
     </msg>
 
     <msg name="JoinChatroom" val="33" origin="client">
@@ -111,7 +112,7 @@
         <field name="latitude" type="long" />
         <field name="longitude" type="long" />
         <field name="radius" type="long" />
-        <field name="private" type="byte" />
+        <field name="isPrivate" type="byte" />
     </msg>
 
     <msg name="JoinChatroomReject" val="36" origin="server">
@@ -136,6 +137,7 @@
     <msg name="LeftChatroom" val="38" origin="server">
         <field name="chatroomId" type="long" />
         <field name="userId" type="long" />
+        <field name="userHandle" type="String" />
     </msg>
 
     <msg name="CreateChatroomReject" val="39" origin="server">
