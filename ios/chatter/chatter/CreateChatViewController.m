@@ -73,7 +73,8 @@ const double MILES_TO_METERS = 1609.34;
     UISlider* slider = (UISlider*)sender;
     NSNumberFormatter* format = [[NSNumberFormatter alloc] init];
     [format setNumberStyle:NSNumberFormatterDecimalStyle];
-    [format setMaximumFractionDigits:2];
+    [format setMaximumFractionDigits:1];
+    [format setRoundingIncrement:[NSNumber numberWithFloat:0.1]];
     NSString* str = [format stringFromNumber:[NSNumber numberWithFloat:slider.value]];
     [_chatroomRadiusLabel setText:str];
 }
