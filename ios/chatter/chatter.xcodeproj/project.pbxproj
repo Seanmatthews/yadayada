@@ -275,9 +275,9 @@
 				14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */,
 				14E010E518B1B27B00F45EDD /* Contacts.h */,
 				14E010E618B1B27B00F45EDD /* Contacts.m */,
-				6458F39318172E7400AA8E81 /* Supporting Files */,
 				147445C018CA8A7100EE5D49 /* Chatroom.h */,
 				147445C118CA8A7100EE5D49 /* Chatroom.m */,
+				6458F39318172E7400AA8E81 /* Supporting Files */,
 			);
 			path = chatter;
 			sourceTree = "<group>";

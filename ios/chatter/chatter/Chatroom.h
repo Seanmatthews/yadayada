@@ -10,12 +10,11 @@
 @import CoreLocation;
 
 @interface Chatroom : NSObject
-{
-    long long chatId;
-}
 
-@property (atomic, strong) NSMutableArray* chatQueue;
+
 @property (nonatomic) long long chatroomId;
+@property (nonatomic, strong) NSString* chatroomName;
+@property (atomic, strong) NSMutableArray* chatQueue;
 @property (nonatomic, strong) NSMutableDictionary* members;
 @property (nonatomic) CLLocationCoordinate2D origin;
 @property (nonatomic) long long radius;

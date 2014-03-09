@@ -163,8 +163,11 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         }
         
         MessageBase* m = [MessageUtils deserializeMessage:internalBuffer+2 withLength:msgLen];
-        for (NSString* sender in tmpControllers) {
-            ((void (^)(MessageBase*))[tmpControllers objectForKey:sender])(m);
+        
+        if (m) {
+            for (NSString* sender in tmpControllers) {
+                ((void (^)(MessageBase*))[tmpControllers objectForKey:sender])(m);
+            }
         }
 
         // move unused bytes to the beginning of the buffer

@@ -16,7 +16,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 + (MessageBase*)messageWithType:(MessageTypes)type
 {
-    MessageBase* mb;
+    MessageBase* mb = nil;
 
     switch (type) {
         case Register:
@@ -139,7 +139,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     // NOTE: This will only get properties for the subclass passed to the function
     OrderedDictionary* props = [self classPropsFor:[message class]];
     
-    // going to replace this
+    // going to replace this below
     [data appendBytes:&msgLen length:2];
     Byte b = message.type;
     [data appendBytes:&b length:1];
@@ -201,6 +201,10 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     Byte type = *(Byte*)&data[idx];
     idx++;
     mb = [self messageWithType:type];
+    
+    if (!mb) {
+        return nil;
+    }
     
     // NOTE: This will only get properties for the subclass passed to the function
     OrderedDictionary* props = [self classPropsFor:[mb class]];
