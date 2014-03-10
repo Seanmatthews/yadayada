@@ -10,6 +10,10 @@
 
 @implementation AppDelegate
 
+const NSTimeInterval LOCATE_INTERVAL = 30.;
+const NSTimeInterval LOCATE_DURATION = 3.;
+
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 #if DEBUG
@@ -20,7 +24,7 @@
     
     // start location service
     location = [Location sharedInstance];
-    [location startService];
+    [location startServiceWithInterval:LOCATE_INTERVAL andDuration:LOCATE_DURATION];
     
     // Load global singletons
     ud = [UserDetails sharedInstance];

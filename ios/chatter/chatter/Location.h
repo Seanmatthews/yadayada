@@ -6,34 +6,27 @@
 //  Copyright (c) 2013 rowboat entertainment. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <CoreLocation/CoreLocation.h>
+@import Foundation;
+@import CoreLocation;
+
 
 @interface Location : NSObject <CLLocationManagerDelegate>
-{
-    CLLocationManager *locationManager;
-    NSMutableArray *locationMeasurements;
-    CLLocation *bestEffortAtLocation;
-    dispatch_queue_t backgroundQueue;
-    dispatch_source_t timerSource;
-}
 
-@property long long currentLat;
-@property long long currentLong;
-@property CLLocationCoordinate2D currentLocation;
-@property int sleepBetweenUpdateSec;
-@property BOOL didUpdateFirstLocation;
+@property (atomic) long long currentLat;
+@property (atomic) long long currentLong;
+@property (atomic) CLLocationCoordinate2D currentLocation;
 
 - (id)init;
+- (void)startServiceWithInterval:(NSTimeInterval)interval andDuration:(NSTimeInterval)duration;
+- (void)stopService;
+- (CGFloat)milesToCurrentLocationFrom:(CLLocationCoordinate2D)coords;
+- (NSUInteger)metersToCurrentLocationFrom:(CLLocationCoordinate2D)coords;
+
 + (id)sharedInstance;
-- (void)startService;
-- (void)updateLocation;
 + (double)fromLongLong:(long long)storedCoord;
 + (CLLocationCoordinate2D)fromLongLongLatitude:(long long)latitude Longitude:(long long)longitude;
 + (long long)toLongLong:(double)coord;
 + (CGFloat)milesBetweenSource:(CLLocationCoordinate2D)firstCoords andDestination:(CLLocationCoordinate2D)secondCoords;
-- (CGFloat)milesToCurrentLocationFrom:(CLLocationCoordinate2D)coords;
-- (NSUInteger)metersToCurrentLocationFrom:(CLLocationCoordinate2D)coords;
 + (long long)metersFromMiles:(CGFloat)miles;
 
 @end

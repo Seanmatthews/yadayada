@@ -11,6 +11,8 @@
 
 @interface MenuViewController ()
 
+- (void)receivedFirstLocation;
+
 @end
 
 @implementation MenuViewController
@@ -32,9 +34,10 @@
     
     //[connection connectToImageServer];
     
-    // We need this because the run loops of connection don't work until
-    // the view is completely loaded.
-    [self performSelector:@selector(connectMessage) withObject:nil afterDelay:1.0];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receivedFirstLocation)
+                                                 name:@"LocationUpdateNotification"
+                                               object:nil];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -78,12 +81,11 @@
     [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
 }
 
-- (void)waitForLocation
+- (void)receivedFirstLocation
 {
-    while (![location didUpdateFirstLocation]) {
-        //NSLog(@"waiting");
-        usleep(50000);
-    }
+    NSLog(@"lat: %f, long: %f",[location currentLocation].latitude, [location currentLocation].longitude);
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"LocationUpdateNotification" object:nil];
+    [self connectMessage];
 }
 
 
@@ -91,7 +93,6 @@
 
 - (void)connectMessage
 {
-    [self waitForLocation];
     NSLog(@"Going to try to connect now");
     
     ConnectMessage* cm = [[ConnectMessage alloc] init];

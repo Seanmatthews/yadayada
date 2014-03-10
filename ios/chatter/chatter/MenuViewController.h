@@ -27,7 +27,6 @@
 - (void)connectMessage;
 - (void)loginMessage;
 - (void)messageCallback:(MessageBase*)message;
-- (void)waitForLocation;
 
 
 @end
