@@ -10,6 +10,9 @@
 
 
 @implementation Person
+{
+    NSDictionary* dict;
+}
 
 - (id)initWithFirstName:(NSString*)fName lastName:(NSString*)lName phoneNumber:(NSNumber*)phoneNum
 {
@@ -18,7 +21,6 @@
     }
     return self;
 }
-
 
 - (NSString*)getFirstName
 {
@@ -38,14 +40,15 @@
 @end
 
 
+
 @interface Contacts()
 @property (nonatomic) BOOL haveContactsAccess;
 @end
 
 @implementation Contacts
-
-
-
+{
+    NSDictionary* phonePrefixDict;
+}
 
 - (id)init
 {
@@ -73,22 +76,12 @@
 - (void)getAddressBookPermissions
 {
     ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(nil, nil);
-    
-//    __block BOOL accessGranted = NO;
-    
     if (ABAddressBookRequestAccessWithCompletion != NULL) { // we're on iOS 6
-//        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         
         ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
-//            accessGranted = granted;
-//            dispatch_semaphore_signal(sema);
             [self setHaveContactsAccess:granted];
         });
-        
-//        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     }
-//    NSLog(@"%d",accessGranted);
-//    _haveContactsAccess = accessGranted;
 }
 
 - (NSNumber*)getMyPhoneNumber
@@ -104,7 +97,6 @@
         // Get iphone number
         for (int i=0; i<ABMultiValueGetCount(multiPhones); ++i) {
             NSString* label = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(multiPhones, i);
-            //        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
             if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
                 CFStringRef phoneNumberRef = ABMultiValueCopyValueAtIndex(multiPhones, 0);
                 NSString* phone = (__bridge NSString *) phoneNumberRef;
@@ -130,7 +122,6 @@
     // Get iphone number
     for (int i=0; i<ABMultiValueGetCount(multiPhones); ++i) {
         NSString* label = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(multiPhones, i);
-//        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
         if ([label isEqualToString:(NSString*)kABPersonPhoneMobileLabel]) {
             CFStringRef phoneNumberRef = ABMultiValueCopyValueAtIndex(multiPhones, 0);
             
@@ -163,8 +154,6 @@
         ABRecordRef me = ABAddressBookGetPersonWithRecordID(addressBook, 1);
         NSArray *thePeople = (__bridge NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
 
-//        [self setMyPhoneNumber:[self iPhoneNumberForRecord:me]];
-        
         for (id record in thePeople) {
             
             ABRecordRef person = (__bridge ABRecordRef)record;
@@ -195,14 +184,6 @@
         }
     }
 }
-
-
-
-
-
-
-
-
 
 
 @end

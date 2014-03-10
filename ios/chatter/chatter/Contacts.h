@@ -6,15 +6,12 @@
 //  Copyright (c) 2014 rowboat entertainment. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <AddressBook/AddressBook.h>
+@import Foundation;
+@import AddressBook;
 #import "Messages.h"
 
 
 @interface Person : NSObject
-{
-    NSDictionary* dict;
-}
 
 - (id)initWithFirstName:(NSString*)fName lastName:(NSString*)lName phoneNumber:(NSNumber*)phoneNum;
 - (NSString*)getFirstName;
@@ -25,12 +22,7 @@
 
 
 @interface Contacts : NSObject
-{
-//    NSMutableArray* contactsList;
-    NSDictionary* phonePrefixDict;
-}
 
-//@property (atomic, retain) NSNumber* myPhoneNumber;
 @property (nonatomic, retain) NSMutableArray* contactsList;
 @property Person* invitedContact;
 
