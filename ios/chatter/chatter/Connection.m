@@ -8,7 +8,20 @@
 
 #import "Connection.h"
 
+@interface Connection()
+- (void)parseMessage:(BUFTYPE)buffer withLength:(NSInteger)length;
+@end
+
 @implementation Connection
+{
+    NSInputStream* is;
+    NSOutputStream* os;
+    NSInputStream* imgIs;
+    NSOutputStream* imgOs;
+    NSMutableDictionary* controllers;
+    BUFDECLTYPE internalBuffer[8096];
+    int internalBufferLen;
+}
 
 const int IMAGE_SERVER_PORT = 5001;
 const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
@@ -78,7 +91,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 - (void)reconnect
 {
-    NSLog(@"in reconnect, status: %d", [os streamStatus]);
+    NSLog(@"in reconnect, status: %lu", [os streamStatus]);
     if ([is streamStatus] == NSStreamStatusNotOpen ||
         [is streamStatus] == NSStreamStatusClosed ||
         [is streamStatus] == NSStreamStatusError) {
@@ -150,7 +163,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 //}
 
 
-- (void)parseMessage:(BUFTYPE)buffer withLength:(int)length
+- (void)parseMessage:(BUFTYPE)buffer withLength:(NSInteger)length
 {
     NSDictionary* tmpControllers = [[NSDictionary alloc] initWithDictionary:controllers copyItems:YES];
     memcpy(internalBuffer+internalBufferLen, buffer, length);
@@ -196,7 +209,6 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
-    
     switch (eventCode) {
         case NSStreamEventOpenCompleted:
             NSLog(@"Stream opened");
@@ -206,7 +218,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         case NSStreamEventHasBytesAvailable:
             if (aStream == is) {
                 BUFDECLTYPE buffer[1024];
-                int len;
+                NSInteger len;
                 
                 while ([is hasBytesAvailable]) {
                     len = [is read:buffer maxLength:1024];
@@ -237,5 +249,6 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
             NSLog(@"unknown event");
     }
 }
+
 
 @end
