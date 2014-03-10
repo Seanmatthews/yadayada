@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 rowboat entertainment. All rights reserved.
 //
 
+@import QuartzCore;
 #import "ChatListViewController.h"
 #import "UIImage+ImageEffects.h"
 #import "MenuViewController.h"
@@ -18,12 +19,23 @@
 
 
 @interface ChatListViewController ()
-
+- (void)scheduledToJoin;
 @end
 
 @implementation ChatListViewController
+{
+    Location* location;
+    Connection* connection;
+    UserDetails* ud;
+    //    NSMutableArray* recentChatroomList;
+    NSMutableArray* localChatroomList;
+    NSMutableArray* globalChatroomList;
+    NSMutableArray* recentChatroomList;
+    ChatroomMessage *tappedCellInfo;
+    BOOL viewIsVisible;
+    ChatroomManagement* chatManager;
+}
 
-@synthesize recentChatroomList;
 
 const int MAX_RECENT_CHATS = 5;
 
@@ -43,6 +55,11 @@ const int MAX_RECENT_CHATS = 5;
     connection = [Connection sharedInstance];
     ChatListViewController* __weak weakSelf = self;
     [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                          selector:@selector(scheduledToJoin)
+                                          name:@"ChatListLoaded"
+                                          object:nil];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -60,12 +77,15 @@ const int MAX_RECENT_CHATS = 5;
     // Give the views rounded corners
     _mapView.layer.cornerRadius = 5;
     _mapView.layer.masksToBounds = YES;
-    _tableView.layer.cornerRadius = 5;
-    _tableView.layer.masksToBounds = YES;
+//    _tableView.layer.cornerRadius = 5;
+//    _tableView.layer.masksToBounds = YES;
+    _tableView.allowsSelection = YES;
     _tableParentView.layer.cornerRadius = 5;
     _tableParentView.layer.masksToBounds = YES;
     _mapParentView.layer.cornerRadius = 5;
     _mapParentView.layer.masksToBounds = YES;
+    
+
     
     // Setup the refresh control
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
@@ -83,6 +103,11 @@ const int MAX_RECENT_CHATS = 5;
 {
     viewIsVisible = YES;
     [self refreshTable:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ChatListLoaded" object:self];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -116,6 +141,10 @@ const int MAX_RECENT_CHATS = 5;
 - (IBAction)locateButtonPressed:(id)sender
 {
     [_mapView setCenterCoordinate:[location currentLocation] animated:YES];
+}
+
+-(UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
+    return UIBarPositionTopAttached;
 }
 
 
@@ -191,6 +220,7 @@ const int MAX_RECENT_CHATS = 5;
         UIAlertView *alert;
         switch (message.type) {
             case Chatroom:
+                NSLog(@"[chatlistview] CHATROOM");
                 if (!_tableParentView.isHidden) {
                     [self addChatroom:(ChatroomMessage*)message];
                     [_tableView reloadData];
@@ -286,29 +316,33 @@ const int MAX_RECENT_CHATS = 5;
         vc.chatId = ((JoinedChatroomMessage*)sender).chatroomId; //tappedCellInfo.chatroomId;
         vc.chatTitle = ((JoinedChatroomMessage*)sender).chatroomName; //tappedCellInfo.chatroomName;
     }
-    else if ([segue.identifier isEqualToString:@"createChatSegue"]) {
-        CreateChatViewController* ccvc = (CreateChatViewController*)segue.destinationViewController;
-        ccvc.recentChatroomList = self.recentChatroomList;
-    }
-//    else if ([segue.identifier isEqualToString:@"chatList2SettingsSegue"]) {
-//        SettingsViewController* svc = (SettingsViewController*)segue.destinationViewController;
-//        svc.unwindSegueName = @"unwindToChatList";
-//    }
 }
 
-// For unwinding to this view.
-- (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue
+- (void)scheduledToJoin
 {
     // This property is set in another view controller before it unwinds to this view controller's view
     if ([chatManager goingToJoin]) {
         CLLocationCoordinate2D chatCoord =
-            CLLocationCoordinate2DMake([Location fromLongLong:[chatManager goingToJoin].chatroomLat],
-                                       [Location fromLongLong:[chatManager goingToJoin].chatroomLong]);
+        CLLocationCoordinate2DMake([Location fromLongLong:[chatManager goingToJoin].chatroomLat],
+                                   [Location fromLongLong:[chatManager goingToJoin].chatroomLong]);
         if ([self canJoinChatroomWithCoord:chatCoord andRadius:[chatManager goingToJoin].chatroomRadius]) {
             [self joinChatroomWithId:[chatManager goingToJoin].chatroomId];
             [chatManager setGoingToJoin:nil];
         }
     }
+    else if ([chatManager createdToJoin]) {
+        NSLog(@"[chat list] created to join");
+        CLLocationCoordinate2DMake([Location fromLongLong:[chatManager createdToJoin].latitude],
+                                   [Location fromLongLong:[chatManager createdToJoin].longitude]);
+        [self joinChatroomWithId:[chatManager createdToJoin].chatroomId];
+        [chatManager setCreatedToJoin:nil];
+    }
+}
+
+// For unwinding to this view.
+- (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue
+{
+
 }
 
 
@@ -338,16 +372,22 @@ const int MAX_RECENT_CHATS = 5;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"ChatroomListCell";
-    ChatroomListCell *cell = (ChatroomListCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+//    ChatroomListCell *cell = (ChatroomListCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
-        NSArray* topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ChatroomListCell" owner:self options:nil];
-        for (id currentObject in topLevelObjects) {
-            if ([currentObject isKindOfClass:[UITableViewCell class]]) {
-                cell = (ChatroomListCell*)currentObject;
-                break;
-            }
-        }
+//        NSArray* topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ChatroomListCell" owner:self options:nil];
+//        for (id currentObject in topLevelObjects) {
+//            if ([currentObject isKindOfClass:[UITableViewCell class]]) {
+//                cell = (ChatroomListCell*)currentObject;
+//                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+//                break;
+//            }
+//        }
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleGray;
+//        cell.layer.borderWidth = 1.;
+//        cell.layer.borderColor = [UIColor lightGrayColor].CGColor;
     }
     
     // Configure the cell based on whether chatroom is global or local
@@ -377,14 +417,16 @@ const int MAX_RECENT_CHATS = 5;
     }
     
     // TODO: get an image
-    cell.chatroomImage.image = [[UIImage alloc] init];
-    cell.chatroomName.text = chatroom.chatroomName;
-    cell.milesFromOrigin.text = [NSString stringWithFormat:@"%@ miles away",distanceStr];
+//    cell.chatroomImage.image = [[UIImage alloc] init];
+//    cell.chatroomName.text = chatroom.chatroomName;
+//    cell.milesFromOrigin.text = [NSString stringWithFormat:@"%@ miles away",distanceStr];
     NSString* activityStr = [format stringFromNumber:[NSNumber numberWithShort:chatroom.chatActivity]];
-    cell.percentActive.text = [NSString stringWithFormat:@"%@%% active",activityStr];
+//    cell.percentActive.text = [NSString stringWithFormat:@"%@%% active",activityStr];
     NSString* userStr = [format stringFromNumber:[NSNumber numberWithInt:chatroom.userCount]];
-    cell.numberOfUsers.text = [NSString stringWithFormat:@"%@ users",userStr];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//    cell.numberOfUsers.text = [NSString stringWithFormat:@"%@ users",userStr];
+//    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ miles away  %@%% active  %@ users", distanceStr, activityStr, userStr];
+    cell.textLabel.text = chatroom.chatroomName;
     return cell;
 }
 
@@ -406,6 +448,33 @@ const int MAX_RECENT_CHATS = 5;
 
 #pragma mark - UITableViewDelegate methods
 
+-(UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+//    _tableView.clipsToBounds = NO;
+//    _tableView.layer.masksToBounds = NO;
+//    [_tableView.layer setShadowColor:[[UIColor lightGrayColor] CGColor]];
+//    [_tableView.layer setShadowOffset:CGSizeMake(0, 0)];
+//    [_tableView.layer setShadowRadius:5.0];
+//    [_tableView.layer setShadowOpacity:1];
+    
+    UILabel *label = [[UILabel alloc] init];
+    label.text = [self tableView:tableView titleForHeaderInSection:section];
+    label.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.];
+    label.textAlignment = NSTextAlignmentLeft;
+    label.textColor = [UIColor grayColor];
+//    [label.layer setShadowColor:[[UIColor grayColor] CGColor]];
+//    [label.layer setShadowOffset:CGSizeMake(0, 0)];
+//    [label.layer setShadowRadius:3.0];
+//    [label.layer setShadowOpacity:1];
+    
+    return label;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 25;
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 55.0;
@@ -422,7 +491,7 @@ const int MAX_RECENT_CHATS = 5;
     else if (indexPath.section == 2) {
         tappedCellInfo = (ChatroomMessage*)[globalChatroomList objectAtIndex:indexPath.row];
     }
-
+    
     [self joinChatroomWithId:tappedCellInfo.chatroomId];
 }
 

@@ -14,13 +14,18 @@
 
 
 @interface CreateChatViewController ()
-
+- (void)joinChatroom:(InviteUserMessage*)ium;
 @end
 
 @implementation CreateChatViewController
-
-// Pointer to list in ChatListViewController
-@synthesize recentChatroomList;
+{
+    Connection* connection;
+    Location* location;
+    UserDetails* ud;
+    long long chatroomId;
+    BOOL viewIsVisible;
+    ChatroomManagement* chatManager;
+}
 
 const double MILES_TO_METERS = 1609.34;
 
@@ -65,6 +70,10 @@ const double MILES_TO_METERS = 1609.34;
     // Dispose of any resources that can be recreated.
 }
 
+-(UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
+    return UIBarPositionTopAttached;
+}
+
 
 #pragma  mark - UI Actions
 
@@ -105,20 +114,18 @@ const double MILES_TO_METERS = 1609.34;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    NSLog(@"segue %@",segue.identifier);
-    if ([segue.identifier isEqualToString:@"create2ChatSegue"]) {
-        ViewController* vc = (ViewController*)segue.destinationViewController;
-        vc.chatId = chatroomId;
-        vc.chatTitle = _chatroomNameTextField.text;
-    }
-    else if ([segue.identifier isEqualToString:@"unwindToChatList"]) {
 
-    }
 }
 
-- (void)joinChatroom:(InviteUserMessage*)ium
+- (void)joinChatroom:(MessageBase*)msg
 {
-    [chatManager setGoingToJoin:ium];
+    if ([msg isMemberOfClass:[InviteUserMessage class]]) {
+        [chatManager setGoingToJoin:(InviteUserMessage*)msg];
+    }
+    else if ([msg isMemberOfClass:[ChatroomMessage class]]) {
+        NSLog(@"[create chat] chatroom class");
+        [chatManager setCreatedToJoin:(ChatroomMessage*)msg];
+    }
     [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
 }
 
@@ -159,29 +166,6 @@ const double MILES_TO_METERS = 1609.34;
     [connection sendMessage:msg];
 }
 
-- (void)joinCreatedChatroom
-{
-    // First, leave current chatroom, if any
-    [self leaveCurrentChatroom];
-    
-    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
-    msg.userId = ud.userId;
-    msg.chatroomId = chatroomId;
-    msg.latitude = [location currentLat];
-    msg.longitude = [location currentLong];
-    [connection sendMessage:msg];
-}
-
-- (void)leaveCurrentChatroom
-{
-    if ([chatManager.joinedChatrooms count] > 0) {
-        LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
-        msg.userId = ud.userId;
-        msg.chatroomId = [[chatManager.joinedChatrooms allKeys][0] longLongValue];
-        [connection sendMessage:msg];
-    }
-}
-
 - (void)messageCallback:(MessageBase*)message
 {
     if (viewIsVisible) {
@@ -189,22 +173,7 @@ const double MILES_TO_METERS = 1609.34;
         switch (message.type) {
             case Chatroom:
                 NSLog(@"Chatroom %@",((ChatroomMessage*)message).chatroomName);
-                chatroomId = ((ChatroomMessage*)message).chatroomId;
-                [recentChatroomList insertObject:message atIndex:0];
-                [self joinCreatedChatroom];
-                break;
-                
-            case JoinedChatroom:
-                NSLog(@"Joined Chatroom");
-                if (((JoinedChatroomMessage*)message).userId ==  ud.userId) {
-                    [self performSegueWithIdentifier:@"create2ChatSegue" sender:nil];
-                }
-                break;
-                
-            case JoinChatroomReject:
-                NSLog(@"Could not join chatroom");
-                alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((JoinChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                [alert show];
+                [self performSelectorOnMainThread:@selector(joinChatroom:) withObject:message waitUntilDone:NO];
                 break;
                 
             case CreateChatroomReject:
@@ -213,9 +182,6 @@ const double MILES_TO_METERS = 1609.34;
                 [alert show];
                 break;
                 
-            case LeftChatroom:
-                NSLog(@"Left Chatroom");
-                break;
         }
     }
 }

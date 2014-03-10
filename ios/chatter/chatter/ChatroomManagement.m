@@ -29,6 +29,11 @@
 
 
 @implementation ChatroomManagement
+{
+    UserDetails* ud;
+    Location* location;
+    NSMutableArray* inviteAlerts;
+}
 
 //const int MESSAGE_NUM_THRESH = 20;
 
@@ -43,6 +48,8 @@
         ud = [UserDetails sharedInstance];
         location = [Location sharedInstance];
         inviteAlerts = [[NSMutableArray alloc] init];
+        _goingToJoin = nil;
+        _createdToJoin = nil;
     }
     return self;
 }

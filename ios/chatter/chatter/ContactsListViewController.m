@@ -31,10 +31,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _tableView.layer.cornerRadius = 5;
-    _tableView.layer.masksToBounds = YES;
+//    _tableView.layer.cornerRadius = 5;
+//    _tableView.layer.masksToBounds = YES;
     [contacts getAllContacts];
 	[_tableView reloadData];
+    
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -43,6 +45,9 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
+    return UIBarPositionTopAttached;
+}
 
 #pragma mark - UITableViewDataSource methods
 

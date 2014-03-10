@@ -12,7 +12,7 @@
 #import "DragImageController.h"
 #import "ChatroomManagement.h"
 
-@interface SettingsViewController : UIViewController <UITextFieldDelegate>
+@interface SettingsViewController : UIViewController <UITextFieldDelegate, UIBarPositioningDelegate>
 {
     Connection* connection;
     UserDetails* ud;

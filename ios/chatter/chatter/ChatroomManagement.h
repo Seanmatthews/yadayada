@@ -6,17 +6,13 @@
 //  Copyright (c) 2014 rowboat entertainment. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "Messages.h"
 #import "UserDetails.h"
 #import "Location.h"
 
 @interface ChatroomManagement : NSObject <UIAlertViewDelegate>
-{
-    UserDetails* ud;
-    Location* location;
-    NSMutableArray* inviteAlerts;
-}
+
 
 - (id)init;
 + (id)sharedInstance;
@@ -31,7 +27,11 @@
 
 @property (atomic, retain) NSMutableDictionary* chatQueue;
 @property (atomic, retain) NSMutableDictionary* joinedChatrooms;
+
+// Combine these two
 @property (atomic, retain) InviteUserMessage* goingToJoin;
+@property (atomic, retain) ChatroomMessage* createdToJoin;
+
 @property int MESSAGE_NUM_THRESH;
 
 // Not yet used

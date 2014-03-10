@@ -17,10 +17,25 @@
 
 
 @interface ViewController ()
-
+- (void)registerForKeyboardNotifications;
+- (void)keyboardWasShown:(NSNotification*)aNotification;
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification;
 @end
 
 @implementation ViewController
+{
+    UserDetails* ud;
+    Connection* connection;
+    Contacts* contacts;
+    NSThread* connectionThread;
+    NSString* cellMsgCSS;
+    NSString* handleCSS;
+    NSString* pageCSS;
+    NSString* selfMsgCSS;
+    NSString* selfHandleCSS;
+    int swipedCellIndex;
+    ChatroomManagement* chatManager;
+}
 
 @synthesize userInputTextField;
 @synthesize mTableView;
@@ -108,6 +123,10 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
+    return UIBarPositionTopAttached;
 }
 
 

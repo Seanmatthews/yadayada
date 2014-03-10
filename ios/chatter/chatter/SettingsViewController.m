@@ -45,6 +45,7 @@
     [_chatroomNotificationControl setSelectedSegmentIndex:(ud.receiveChatroomNotifications ? 0 : 1)];
     [_messageNotificationControl setSelectedSegmentIndex:(ud.receiveMessageNotifications ? 0 : 1)];
     [_inviteNotificationControl setSelectedSegmentIndex:(ud.receiveInviteNotifications ? 0 : 1)];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -64,6 +65,10 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
+    return UIBarPositionTopAttached;
 }
 
 

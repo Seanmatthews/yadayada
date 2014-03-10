@@ -194,6 +194,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		14123E3818CD71D900968D7F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				64A10D4A181DFC1400A499B0 /* UserDetails.h */,
+				64A10D4B181DFC1400A499B0 /* UserDetails.m */,
+				64A10D4F181E1B2300A499B0 /* Connection.h */,
+				64A10D50181E1B2300A499B0 /* Connection.m */,
+				64A10DA21824BBDA00A499B0 /* Location.h */,
+				64A10DA31824BBDA00A499B0 /* Location.m */,
+				14D19A7518A1FAAE0038D149 /* ChatroomManagement.h */,
+				14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */,
+				14E010E518B1B27B00F45EDD /* Contacts.h */,
+				14E010E618B1B27B00F45EDD /* Contacts.m */,
+				147445C018CA8A7100EE5D49 /* Chatroom.h */,
+				147445C118CA8A7100EE5D49 /* Chatroom.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		641C1478182C7BA8001D8959 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -257,6 +276,7 @@
 		6458F39218172E7400AA8E81 /* chatter */ = {
 			isa = PBXGroup;
 			children = (
+				14123E3818CD71D900968D7F /* Model */,
 				641C1478182C7BA8001D8959 /* ViewControllers */,
 				64A10D46181A280A00A499B0 /* Util */,
 				64A10CEA1818A6AA00A499B0 /* Messages */,
@@ -265,18 +285,6 @@
 				6458F39C18172E7400AA8E81 /* AppDelegate.m */,
 				6458F39E18172E7400AA8E81 /* Main.storyboard */,
 				6458F3A418172E7400AA8E81 /* Images.xcassets */,
-				64A10D4A181DFC1400A499B0 /* UserDetails.h */,
-				64A10D4B181DFC1400A499B0 /* UserDetails.m */,
-				64A10D4F181E1B2300A499B0 /* Connection.h */,
-				64A10D50181E1B2300A499B0 /* Connection.m */,
-				64A10DA21824BBDA00A499B0 /* Location.h */,
-				64A10DA31824BBDA00A499B0 /* Location.m */,
-				14D19A7518A1FAAE0038D149 /* ChatroomManagement.h */,
-				14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */,
-				14E010E518B1B27B00F45EDD /* Contacts.h */,
-				14E010E618B1B27B00F45EDD /* Contacts.m */,
-				147445C018CA8A7100EE5D49 /* Chatroom.h */,
-				147445C118CA8A7100EE5D49 /* Chatroom.m */,
 				6458F39318172E7400AA8E81 /* Supporting Files */,
 			);
 			path = chatter;
@@ -652,7 +660,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "chatter/chatter-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=0";
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "$(inherited)";
 				INFOPLIST_FILE = "chatter/chatter-Info.plist";
 				ONLY_ACTIVE_ARCH = NO;

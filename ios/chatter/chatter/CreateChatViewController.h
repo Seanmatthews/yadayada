@@ -12,15 +12,8 @@
 #import "UserDetails.h"
 #import "ChatroomManagement.h"
 
-@interface CreateChatViewController : UIViewController <UITextFieldDelegate>
-{
-    Connection* connection;
-    Location* location;
-    UserDetails* ud;
-    long long chatroomId;
-    BOOL viewIsVisible;
-    ChatroomManagement* chatManager;
-}
+@interface CreateChatViewController : UIViewController <UITextFieldDelegate, UIBarPositioningDelegate>
+
 
 @property (nonatomic, retain) IBOutlet UITextField* chatroomNameTextField;
 @property (nonatomic, retain) IBOutlet UIButton* chatroomIconButton;
@@ -29,15 +22,12 @@
 @property (nonatomic, retain) IBOutlet UISlider* radiusSlider;
 @property (nonatomic, retain) IBOutlet UISegmentedControl* globalChatSelect;
 @property (nonatomic, retain) IBOutlet UISegmentedControl* inviteOnlyControl;
-@property (atomic, retain) NSMutableArray* recentChatroomList;
 
 - (void)messageCallback:(MessageBase*)message;
-- (void)joinCreatedChatroom;
-- (void)leaveCurrentChatroom;
 - (IBAction)sliderChanged:(id)sender;
 - (IBAction)createChatroom:(id)sender;
 - (IBAction)globalChatSelection:(id)sender;
-- (void)joinChatroom:(InviteUserMessage*)ium;
+
 
 
 @end

@@ -29,4 +29,19 @@
     // Configure the view for the selected state
 }
 
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated
+{
+    [super setHighlighted:highlighted animated:animated];
+}
+
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self.contentView setBackgroundColor:[UIColor blueColor]];
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self.contentView setBackgroundColor:[UIColor clearColor]];
+}
+
 @end

@@ -9,12 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "Contacts.h"
 
-@interface ContactsListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@interface ContactsListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIBarPositioningDelegate>
 {
     Contacts* contacts;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;
+
 
 - (void)initCode;
 

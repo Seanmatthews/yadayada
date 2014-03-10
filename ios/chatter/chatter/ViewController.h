@@ -17,22 +17,8 @@
 #import "Contacts.h"
 #import <AddressBookUI/AddressBookUI.h>
 
-@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate>
-{
-    UserDetails* ud;
-    Connection* connection;
-    Contacts* contacts;
-    NSThread* connectionThread;
-    NSString* cellMsgCSS;
-    NSString* handleCSS;
-    NSString* pageCSS;
-    NSString* selfMsgCSS;
-    NSString* selfHandleCSS;
-    int swipedCellIndex;
-    
-//    NSMutableArray* chatQueue;
-    ChatroomManagement* chatManager;
-}
+@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate, UIBarPositioningDelegate>
+
 
 //@property (nonatomic, strong) NSString* userHandle;
 @property (nonatomic, retain) IBOutlet UITextField* userInputTextField;
@@ -47,9 +33,7 @@
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;
 - (void)refreshMessages;
-- (void)registerForKeyboardNotifications;
-- (void)keyboardWasShown:(NSNotification*)aNotification;
-- (void)keyboardWillBeHidden:(NSNotification*)aNotification;
+
 - (void)swipeCell:(UITableViewRowAnimation)animation;
 - (void)swipedCellLeft:(id)sender;
 - (void)swipedCellRight:(id)sender;

@@ -15,24 +15,13 @@
 #import "ChatroomManagement.h"
 
 
-@interface ChatListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, MKMapViewDelegate>
-{
-    Location* location;
-    Connection* connection;
-    UserDetails* ud;
-//    NSMutableArray* recentChatroomList;
-    NSMutableArray* localChatroomList;
-    NSMutableArray* globalChatroomList;
-    ChatroomMessage *tappedCellInfo;
-    BOOL viewIsVisible;
-    ChatroomManagement* chatManager;
-}
+@interface ChatListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, MKMapViewDelegate, UIBarPositioningDelegate>
+
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;
 @property (nonatomic,retain) IBOutlet MKMapView* mapView;
 @property (nonatomic,retain) IBOutlet UIView* mapParentView;
 @property (nonatomic,retain) IBOutlet UIView* tableParentView;
-@property (atomic, retain) NSMutableArray* recentChatroomList;
 
 - (void)initCode;
 - (void)messageCallback:(MessageBase*)message;

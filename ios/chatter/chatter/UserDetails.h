@@ -6,12 +6,9 @@
 //  Copyright (c) 2013 rowboat entertainment. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @interface UserDetails : NSObject
-{
-    
-}
 
 @property BOOL finishedTutorial;
 @property (readwrite, nonatomic) NSString* handle;
@@ -28,7 +25,6 @@
 @property NSString* iconUploadURL;
 @property NSString* iconDownloadURL;
 
-
 // TODO: The type of this property will change ot accommodate
 // being joined to several chats at once.
 @property long long chatroomId;
@@ -36,7 +32,7 @@
 + (id)sharedInstance;
 + (void)save;
 - (id)init;
-- (id) initWithHandle:(NSString*)handle;
+- (id)initWithHandle:(NSString*)handle;
 - (void)setHandle:(NSString *)handle;
 
 @end
