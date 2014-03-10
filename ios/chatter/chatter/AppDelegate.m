@@ -35,7 +35,7 @@ const NSTimeInterval LOCATE_DURATION = 3.;
     [connection connect];
     
     // Do this here?
-//    [contacts getAddressBookPermissions];
+    [contacts getAddressBookPermissions];
     
     UIStoryboard *uis = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     self.window = [[UIWindow alloc]

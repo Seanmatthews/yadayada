@@ -350,7 +350,7 @@
 {
     // There will only ever be one section for a table.
     // TODO: alter this behavior for multiple chatrooms
-    NSLog(@"[viewcontroller] count %lu",(unsigned long)[[chatManager currentChatQueue] count]);
+//    NSLog(@"[viewcontroller] count %lu",(unsigned long)[[chatManager currentChatQueue] count]);
     return [[chatManager currentChatQueue] count];
 }
 

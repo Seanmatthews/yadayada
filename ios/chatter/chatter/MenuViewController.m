@@ -65,8 +65,8 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [contacts getAddressBookPermissions];
-    [contacts getAllContacts];
+//    [contacts getAddressBookPermissions];
+//    [contacts getAllContacts];
 }
 
 - (void)didReceiveMemoryWarning
@@ -104,6 +104,8 @@
 
 - (void)loginMessage
 {
+//    [contacts getAddressBookPermissions];
+    
     NSLog(@"Logging in with handle: %@",ud.handle);
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
     qlm.handle = ud.handle;

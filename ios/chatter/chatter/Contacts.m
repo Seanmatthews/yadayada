@@ -8,6 +8,7 @@
 
 #import "Contacts.h"
 
+
 @implementation Person
 
 - (id)initWithFirstName:(NSString*)fName lastName:(NSString*)lName phoneNumber:(NSNumber*)phoneNum
@@ -36,14 +37,21 @@
 
 @end
 
+
+@interface Contacts()
+@property (nonatomic) BOOL haveContactsAccess;
+@end
+
 @implementation Contacts
+
+
 
 
 - (id)init
 {
     self = [super init];
     if (self) {
-        accessGranted = NO;
+        _haveContactsAccess = NO;
         NSString * plistPath = [[NSBundle mainBundle] pathForResource:@"DialingCodes" ofType:@"plist"];
         phonePrefixDict = [NSDictionary dictionaryWithContentsOfFile:plistPath];
         _contactsList = [[NSMutableArray alloc] init];
@@ -64,46 +72,49 @@
 
 - (void)getAddressBookPermissions
 {
-    CFErrorRef *error = nil;
-    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, error);
+    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(nil, nil);
     
-    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-            accessGranted = granted;
+//    __block BOOL accessGranted = NO;
+    
+    if (ABAddressBookRequestAccessWithCompletion != NULL) { // we're on iOS 6
+//        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        
+        ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
+//            accessGranted = granted;
+//            dispatch_semaphore_signal(sema);
+            [self setHaveContactsAccess:granted];
         });
+        
+//        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     }
-    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-        // The user has previously given access, add the contact
-        accessGranted = YES;
-    }
-    else {
-        accessGranted = NO;
-    }
-    NSLog(@"%d",accessGranted);
+//    NSLog(@"%d",accessGranted);
+//    _haveContactsAccess = accessGranted;
 }
 
 - (NSNumber*)getMyPhoneNumber
 {
     NSNumber* phoneNum = nil;
-    NSLocale *locale = [NSLocale currentLocale];
-    NSString* countryCode = [phonePrefixDict objectForKey:[[locale objectForKey:NSLocaleCountryCode] lowercaseString]];
-    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-    ABRecordRef me = ABAddressBookGetPersonWithRecordID(addressBookRef, 1);
-    ABMultiValueRef multiPhones = ABRecordCopyValue(me, kABPersonPhoneProperty);
-    
-    // Get iphone number
-    for (int i=0; i<ABMultiValueGetCount(multiPhones); ++i) {
-        NSString* label = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(multiPhones, i);
-        //        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
-        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
-            CFStringRef phoneNumberRef = ABMultiValueCopyValueAtIndex(multiPhones, 0);
-            NSString* phone = (__bridge NSString *) phoneNumberRef;
-            NSString* fullPhone = [NSString stringWithFormat:@"%@%@",countryCode,phone];
-            
-            // Remove parens and dashes
-            NSCharacterSet *charactersToRemove = [[ NSCharacterSet alphanumericCharacterSet ] invertedSet ];
-            NSString *trimmed = [[fullPhone componentsSeparatedByCharactersInSet:charactersToRemove ] componentsJoinedByString:@"" ];
-            phoneNum = [NSNumber numberWithLongLong:[trimmed longLongValue]];
+    if (_haveContactsAccess) {
+        NSLocale *locale = [NSLocale currentLocale];
+        NSString* countryCode = [phonePrefixDict objectForKey:[[locale objectForKey:NSLocaleCountryCode] lowercaseString]];
+        ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+        ABRecordRef me = ABAddressBookGetPersonWithRecordID(addressBookRef, 1);
+        ABMultiValueRef multiPhones = ABRecordCopyValue(me, kABPersonPhoneProperty);
+        
+        // Get iphone number
+        for (int i=0; i<ABMultiValueGetCount(multiPhones); ++i) {
+            NSString* label = (__bridge NSString*)ABMultiValueCopyLabelAtIndex(multiPhones, i);
+            //        if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
+            if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
+                CFStringRef phoneNumberRef = ABMultiValueCopyValueAtIndex(multiPhones, 0);
+                NSString* phone = (__bridge NSString *) phoneNumberRef;
+                NSString* fullPhone = [NSString stringWithFormat:@"%@%@",countryCode,phone];
+                
+                // Remove parens and dashes
+                NSCharacterSet *charactersToRemove = [[ NSCharacterSet alphanumericCharacterSet ] invertedSet ];
+                NSString *trimmed = [[fullPhone componentsSeparatedByCharactersInSet:charactersToRemove ] componentsJoinedByString:@"" ];
+                phoneNum = [NSNumber numberWithLongLong:[trimmed longLongValue]];
+            }
         }
     }
     return phoneNum;
@@ -147,7 +158,7 @@
 
 - (void)getAllContacts
 {
-    if (accessGranted) {
+    if (_haveContactsAccess) {
         ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
         ABRecordRef me = ABAddressBookGetPersonWithRecordID(addressBook, 1);
         NSArray *thePeople = (__bridge NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);

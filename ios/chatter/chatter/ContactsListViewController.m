@@ -33,6 +33,7 @@
     [super viewDidLoad];
     _tableView.layer.cornerRadius = 5;
     _tableView.layer.masksToBounds = YES;
+    [contacts getAllContacts];
 	[_tableView reloadData];
 }
 

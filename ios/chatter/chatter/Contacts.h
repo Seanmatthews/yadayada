@@ -26,7 +26,6 @@
 
 @interface Contacts : NSObject
 {
-    BOOL accessGranted;
 //    NSMutableArray* contactsList;
     NSDictionary* phonePrefixDict;
 }
