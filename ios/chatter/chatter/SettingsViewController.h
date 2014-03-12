@@ -37,6 +37,5 @@
 - (IBAction)messageNotificationValueChanged:(id)sender;
 - (IBAction)applySettingsButtonPressed:(id)sender;
 - (void)leaveCurrentChatroom;
-- (void)joinChatroom:(InviteUserMessage*)ium;
 
 @end

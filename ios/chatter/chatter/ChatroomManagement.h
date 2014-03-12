@@ -12,17 +12,17 @@
 #import "Location.h"
 #import "Chatroom.h"
 
-@interface ChatroomManagement : NSObject <UIAlertViewDelegate>
+@interface ChatroomManagement : NSObject
 
-@property (atomic,strong) NSMutableDictionary* joinedChatrooms;
 @property (atomic,strong) NSMutableDictionary* chatrooms;
 @property (atomic,strong) NSMutableArray* globalChatrooms;
 @property (atomic,strong) NSMutableArray* localChatrooms;
+@property (atomic,strong) NSMutableArray* joinedChatrooms;
 
 // Combine these two
-@property (atomic, retain) InviteUserMessage* goingToJoin;
-@property (atomic, retain) ChatroomMessage* createdToJoin;
-@property (nonatomic) int MESSAGE_NUM_THRESH;
+@property (atomic, retain) Chatroom* goingToJoin;
+@property (atomic, retain) Chatroom* createdToJoin;
+
 
 + (id)sharedInstance;
 - (BOOL)canJoinChatroom:(Chatroom*)chatroom;

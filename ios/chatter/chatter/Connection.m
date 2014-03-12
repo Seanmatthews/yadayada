@@ -93,7 +93,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 - (void)reconnect
 {
-    NSLog(@"in reconnect, status: %lu", [os streamStatus]);
+    NSLog(@"in reconnect, status: %lu", (unsigned long)[os streamStatus]);
     if ([is streamStatus] == NSStreamStatusNotOpen ||
         [is streamStatus] == NSStreamStatusClosed ||
         [is streamStatus] == NSStreamStatusError) {

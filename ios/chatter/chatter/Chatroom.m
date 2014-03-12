@@ -15,37 +15,18 @@
 {
     self = [super init];
     if (self) {
+        _MESSAGE_NUM_THRESH = 50;
         _chatQueue = [[NSMutableArray alloc] init];
         _members = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
 
-//- (id)initWithJoinedChatroomMessage:(JoinedChatroomMessage*)message
-//{
-//    self = [super init];
-//    if (self) {
-//        _chatroomId = [NSNumber numberWithLongLong:message.chatroomId];
-//        _chatroomName = message.chatroomName;
-//        _chatQueue = [[NSMutableArray alloc] init];
-//        _members = [[NSMutableDictionary alloc] init];
-//        _origin = CLLocationCoordinate2DMake([Location fromLongLong:message.latitude],
-//                                             [Location fromLongLong:message.longitude]);
-//        _radius = [NSNumber numberWithLongLong:message.radius];
-//        _chatroomOwnerId = [NSNumber numberWithLongLong:message.chatroomOwnerId];
-//        _chatroomOwnerHandle = message.chatroomOwnerHandle;
-//        _userCount = [NSNumber numberWithInt:message.userCount];
-//        _chatActivity = [NSNumber numberWithShort:message.chatActivity];
-//        _global = message.radius <= 0;
-////        _exclusive = message.isPrivate > 0;
-//    }
-//    return self;
-//}
-
 - (id)initWithChatroomMessage:(ChatroomMessage *)message
 {
     self = [super init];
     if (self) {
+        _MESSAGE_NUM_THRESH = 50;
         _cid = [NSNumber numberWithLongLong:message.chatroomId];
         _chatroomName = message.chatroomName;
         _chatQueue = [[NSMutableArray alloc] init];
@@ -68,10 +49,23 @@
     return [[Chatroom alloc] initWithChatroomMessage:message];
 }
 
-//+ (Chatroom*)chatroomWithJoinedChatroomMessage:(JoinedChatroomMessage*)message
+//- (void)insertObject:(id)message inChatQueueAtIndex:(NSUInteger)index
 //{
-//    return [[Chatroom alloc] initWithJoinedChatroomMessage:message];
+//    [self.chatQueue insertObject:message atIndex:index];
+//    return;
 //}
+//
+//- (void)removeObjectFromChatQueueAtIndex:(NSUInteger)index
+//{
+//    [self.chatQueue removeObjectAtIndex:index];
+//}
+//
+//- (void)replaceObjectInChatQueueAtIndex:(NSUInteger)index withObject:(id)anObject
+//{
+//    
+//    [self.chatQueue replaceObjectAtIndex:index withObject:anObject];
+//}
+
 
 
 @end

@@ -26,20 +26,8 @@
 - (void)initCode;
 - (IBAction)segmentedControlSwitched:(id)sender;
 - (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue;
-- (void)leaveCurrentChatroom;
-- (void)addRecentChatroom:(JoinedChatroomMessage*)chatroom;
-- (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius;
-
-// Table view
-- (void)refreshTable:(UIRefreshControl*)refreshControl;
-- (void)searchChatrooms;
-- (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom;
 
 // Map View
-- (void)addChatroomAnnotation:(ChatroomMessage*)message;
-- (void)joinChatroomFromMap:(id)sender;
-- (void)joinChatroomWithId:(long long)chatId;
-- (void)deselectAllAnnotations;
 - (IBAction)locateButtonPressed:(id)sender;
 
 

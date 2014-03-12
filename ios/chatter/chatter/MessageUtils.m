@@ -166,7 +166,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             msgLen += 2;
         }
         else if ([typename isEqualToString:@"i"]) {
-            int i = CFSwapInt32HostToBig([[message valueForKey:key] integerValue]);
+            int i = CFSwapInt32HostToBig([[message valueForKey:key] intValue]);
             [data appendBytes:&i length:4];
             msgLen += 4;
         }

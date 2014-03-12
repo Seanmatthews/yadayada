@@ -8,7 +8,6 @@
 
 @import QuartzCore;
 #import "ChatListViewController.h"
-#import "UIImage+ImageEffects.h"
 #import "MenuViewController.h"
 #import "ViewController.h"
 #import "ChatroomListCell.h"
@@ -19,13 +18,26 @@
 
 
 @interface ChatListViewController ()
+
 - (void)scheduledToJoin;
+- (void)joinChatroom:(Chatroom*)chatroom;
+- (void)joinChatroomWithId:(long long)chatId;
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
 - (void)receivedChatroom:(NSNotification*)notification;
 - (void)receivedJoinedChatroom:(NSNotification*)notification;
 - (void)receivedJoinChatroomReject:(NSNotification*)notification;
+- (void)receivedInviteUser:(NSNotification*)notification;
+- (BOOL)canJoinChatroom:(Chatroom*)chatroom;
+- (void)refreshTable:(UIRefreshControl*)refreshControl;
+- (void)searchChatrooms;
+
+// Map view
+- (void)addChatroomAnnotation:(ChatroomMessage*)message;
+- (void)joinChatroomFromMap:(id)sender;
+- (void)deselectAllAnnotations;
 - (void)reloadMapAnnotations;
+
 @end
 
 @implementation ChatListViewController
@@ -33,9 +45,6 @@
     Location* location;
     Connection* connection;
     UserDetails* ud;
-//    NSMutableArray* localChatroomList;
-//    NSMutableArray* globalChatroomList;
-    NSMutableArray* recentChatroomList;
     Chatroom *tappedCellInfo;
     ChatroomManagement* chatManager;
 }
@@ -48,10 +57,6 @@ const int MAX_RECENT_CHATS = 5;
     location = [Location sharedInstance];
     ud = [UserDetails sharedInstance];
     chatManager = [ChatroomManagement sharedInstance];
-    
-    recentChatroomList = [[NSMutableArray alloc] init];
-//    localChatroomList = [[NSMutableArray alloc] init];
-//    globalChatroomList = [[NSMutableArray alloc] init];
     [_mapParentView setHidden:YES];
     connection = [Connection sharedInstance];
 }
@@ -71,7 +76,7 @@ const int MAX_RECENT_CHATS = 5;
                                                  name:@"ChatListLoaded"
                                                object:nil];
     
-    for (NSString* notificationName in @[@"Chatroom", @"JoinedChatroom", @"JoinChatroomReject"]) {
+    for (NSString* notificationName in @[@"Chatroom", @"JoinedChatroom", @"JoinChatroomReject", @"InviteUser"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:NSSelectorFromString(selectorName)
@@ -168,52 +173,17 @@ const int MAX_RECENT_CHATS = 5;
 
 #pragma mark - Convenience functions
 
-- (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius
+
+- (BOOL)canJoinChatroom:(Chatroom*)chatroom
 {
-    NSUInteger distance = [location metersToCurrentLocationFrom:coord];
+    NSUInteger distance = [location metersToCurrentLocationFrom:chatroom.origin];
     
     // Only display local chatrooms that the user is able to join
-    if (distance - radius > 0) {
+    if (distance - [chatroom.radius longLongValue] > 0) {
         NSLog(@"Chatroom is too far away");
         return NO;
     }
     return YES;
-}
-
-- (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom
-{
-    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
-    return [self canJoinChatroomWithCoord:chatroomOrigin andRadius:chatroom.radius];
-}
-
-
-
-- (void)addRecentChatroom:(JoinedChatroomMessage*)chatroom
-{
-    // Check if this chatroom already exists in the list
-    for (int i=0; i<[recentChatroomList count]; ++i) {
-        ChatroomMessage* room  = [recentChatroomList objectAtIndex:i];
-        if (room.chatroomId == chatroom.chatroomId) {
-            // if it exists, move it to the front of the list
-            [recentChatroomList removeObjectAtIndex:i];
-        }
-    }
-    
-    ChatroomMessage* addChat = [[ChatroomMessage alloc] init];
-    addChat.chatroomId = chatroom.chatroomId;
-    addChat.chatroomName = chatroom.chatroomName;
-    addChat.chatroomOwnerHandle = chatroom.chatroomOwnerHandle;
-    addChat.chatroomOwnerId = chatroom.chatroomOwnerId;
-    addChat.chatActivity = chatroom.chatActivity;
-    addChat.latitude = chatroom.latitude;
-    addChat.longitude = chatroom.longitude;
-    addChat.radius = chatroom.radius;
-    addChat.userCount = chatroom.userCount;
-    [recentChatroomList insertObject:addChat atIndex:0];
-    
-    if (MAX_RECENT_CHATS < [recentChatroomList count]) {
-        [recentChatroomList removeObjectAtIndex:MAX_RECENT_CHATS];
-    }
 }
 
 
@@ -234,8 +204,8 @@ const int MAX_RECENT_CHATS = 5;
 - (void)receivedJoinedChatroom:(NSNotification*)notification
 {
     if ([notification.object userId] == ud.userId) {
-    //    [self addRecentChatroom:(JoinedChatroomMessage*)message];
-        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:notification.object];
+        Chatroom* c = [chatManager.chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]];
+        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:c];
     }
 }
 
@@ -248,6 +218,14 @@ const int MAX_RECENT_CHATS = 5;
                                           otherButtonTitles:nil];
     [alert show];
 }
+
+- (void)receivedInviteUser:(NSNotification*)notification
+{
+    // TODO: show alert view to see if they want to join the chat
+}
+
+
+#pragma mark - Convenience Methods
 
 - (void)searchChatrooms
 {
@@ -266,6 +244,21 @@ const int MAX_RECENT_CHATS = 5;
     ChatPointAnnotation* cpa = (ChatPointAnnotation*)(((SmartButton*)sender).parent);
     [_mapView deselectAnnotation:cpa animated:NO];
     [self joinChatroomWithId:cpa.chatroomId];
+}
+
+- (void)joinChatroom:(Chatroom*)chatroom
+{
+    if ([chatManager.joinedChatrooms containsObject:chatroom]) {
+        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:chatroom];
+    }
+    else {
+        JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
+        msg.chatroomId = [chatroom.cid longLongValue];
+        msg.userId = ud.userId;
+        msg.latitude = [location currentLat];
+        msg.longitude = [location currentLong];
+        [connection sendMessage:msg];
+    }
 }
 
 - (void)joinChatroomWithId:(long long)chatId
@@ -316,8 +309,7 @@ const int MAX_RECENT_CHATS = 5;
     NSLog(@"segue %@",segue.identifier);
     if ([segue.identifier isEqualToString:@"pickedChatroomSegue"]) {
         ViewController* vc = (ViewController*)segue.destinationViewController;
-        vc.chatId = ((JoinedChatroomMessage*)sender).chatroomId; //tappedCellInfo.chatroomId;
-        vc.chatTitle = ((JoinedChatroomMessage*)sender).chatroomName; //tappedCellInfo.chatroomName;
+        vc.chatroom = sender;
     }
 }
 
@@ -325,19 +317,14 @@ const int MAX_RECENT_CHATS = 5;
 {
     // This property is set in another view controller before it unwinds to this view controller's view
     if ([chatManager goingToJoin]) {
-        CLLocationCoordinate2D chatCoord =
-        CLLocationCoordinate2DMake([Location fromLongLong:[chatManager goingToJoin].chatroomLat],
-                                   [Location fromLongLong:[chatManager goingToJoin].chatroomLong]);
-        if ([self canJoinChatroomWithCoord:chatCoord andRadius:[chatManager goingToJoin].chatroomRadius]) {
-            [self joinChatroomWithId:[chatManager goingToJoin].chatroomId];
+        if ([self canJoinChatroom:chatManager.goingToJoin]) {
+            [self joinChatroom:chatManager.goingToJoin];
             [chatManager setGoingToJoin:nil];
         }
     }
     else if ([chatManager createdToJoin]) {
         NSLog(@"[chat list] created to join");
-        CLLocationCoordinate2DMake([Location fromLongLong:[chatManager createdToJoin].latitude],
-                                   [Location fromLongLong:[chatManager createdToJoin].longitude]);
-        [self joinChatroomWithId:[chatManager createdToJoin].chatroomId];
+        [self joinChatroom:chatManager.createdToJoin];
         [chatManager setCreatedToJoin:nil];
     }
 }
@@ -361,7 +348,7 @@ const int MAX_RECENT_CHATS = 5;
 {
     NSUInteger count = 0;
     if (section == 0) {
-        count = [recentChatroomList count];
+        count = [chatManager.joinedChatrooms count];
     }
     else if (section == 1) {
         count = [chatManager.localChatrooms count];
@@ -369,7 +356,6 @@ const int MAX_RECENT_CHATS = 5;
     else if (section == 2) {
         count = [chatManager.globalChatrooms count];
     }
-    NSLog(@"count %d",count);
     return count;
 }
 
@@ -402,7 +388,7 @@ const int MAX_RECENT_CHATS = 5;
     NSString* distanceStr = @"";
     
     if (indexPath.section == 0) {
-        chatroom = [recentChatroomList objectAtIndex:indexPath.row];
+        chatroom = [[chatManager joinedChatrooms] objectAtIndex:indexPath.row];
     }
     else if (indexPath.section == 1) {
         chatroom = [[chatManager localChatrooms] objectAtIndex:indexPath.row];
@@ -412,9 +398,7 @@ const int MAX_RECENT_CHATS = 5;
     }
     
     // Calculate distance from chat, even global
-    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.origin.latitude],
-                                                                       [Location fromLongLong:chatroom.origin.longitude]);
-    CGFloat distance = [location milesToCurrentLocationFrom:chatroomOrigin];
+    CGFloat distance = [location milesToCurrentLocationFrom:chatroom.origin];
     distanceStr = [format stringFromNumber:[NSNumber numberWithFloat:distance]];
     
     if ([chatroom.chatActivity shortValue] > 100) {
@@ -488,7 +472,7 @@ const int MAX_RECENT_CHATS = 5;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 0) {
-//        tappedCellInfo = (ChatroomMessage*)[recentChatroomList objectAtIndex:indexPath.row];
+        tappedCellInfo = (Chatroom*)[[chatManager joinedChatrooms] objectAtIndex:indexPath.row];
     }
     else if (indexPath.section == 1) {
         tappedCellInfo = (Chatroom*)[[chatManager localChatrooms] objectAtIndex:indexPath.row];
@@ -497,7 +481,7 @@ const int MAX_RECENT_CHATS = 5;
         tappedCellInfo = (Chatroom*)[[chatManager globalChatrooms] objectAtIndex:indexPath.row];
     }
     
-    [self joinChatroomWithId:[tappedCellInfo.cid longLongValue]];
+    [self joinChatroom:tappedCellInfo];
 }
 
 

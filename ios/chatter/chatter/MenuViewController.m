@@ -18,6 +18,7 @@
 - (void)receivedConnectReject:(NSNotification*)notification;
 - (void)receivedLoginAccept:(NSNotification*)notification;
 - (void)receivedLoginReject:(NSNotification*)notification;
+- (void)receivedInviteUser:(NSNotification*)notification;
 
 @end
 
@@ -42,7 +43,7 @@
                                                object:nil];
     
     for (NSString* notificationName in @[@"ConnectAccept", @"LoginReject",
-                                         @"ConnectReject", @"LoginAccept"]) {
+                                         @"ConnectReject", @"LoginAccept", @"InviteUser"]) {
         
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -127,6 +128,8 @@
 {
     NSLog(@"Connect Reject");
     NSLog(@"%@",[notification.object reason]);
+    
+    // TODO: uialertview with try again button
 }
 
 - (void)receivedLoginAccept:(NSNotification*)notification
@@ -139,6 +142,14 @@
 {
     NSLog(@"Login Reject");
     NSLog(@"%@",[notification.object reason]);
+    
+    // TODO: uialrtview-- need to give user a chance to change their handle..
+    // that's the only reason they would be rejected from logging in.
+}
+
+- (void)receivedInviteUser:(NSNotification*)notification
+{
+    // TODO: show alert view to see if they want to join the chat
 }
 
 @end

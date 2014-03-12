@@ -14,10 +14,12 @@
 #import "UITableViewCell+UITableViewCellCategory.h"
 #import "UITableView+UITableViewCategory.h"
 #import "Messages.h"
-#import "ChatroomManagement.h"
+#import "Chatroom.h"
 #import "Contacts.h"
 
-@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate, UIBarPositioningDelegate>
+@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource,
+                                              ABPeoplePickerNavigationControllerDelegate, UIBarPositioningDelegate,
+                                              UIAlertViewDelegate>
 
 
 //@property (nonatomic, strong) NSString* userHandle;
@@ -26,20 +28,16 @@
 @property (nonatomic, retain) IBOutlet UINavigationBar* navBar;
 
 // Passed from chat list view
-@property (nonatomic, strong) NSString* chatTitle;
-@property (nonatomic) long long chatId;
+@property (nonatomic, strong) Chatroom* chatroom;
 
 
 - (void)initCode;
-- (void)refreshMessages;
-
 - (void)swipeCell:(UITableViewRowAnimation)animation;
 - (void)swipedCellLeft:(id)sender;
 - (void)swipedCellRight:(id)sender;
 - (void)tappedCell:(id)sender;
 - (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue;
-- (void)invitedToChatroom:(NSNotification*)notification;
 
 
 @end

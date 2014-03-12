@@ -60,6 +60,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="go"/>
                                 <connections>
+                                    <action selector="textFieldDidBeginEditing:" destination="vXZ-lx-hvc" eventType="editingDidBegin" id="8Ud-iJ-vrW"/>
+                                    <action selector="textFieldEditingChanged:" destination="vXZ-lx-hvc" eventType="editingChanged" id="rbs-wc-LyV"/>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="yw5-Oe-4Rk"/>
                                 </connections>
                             </textField>

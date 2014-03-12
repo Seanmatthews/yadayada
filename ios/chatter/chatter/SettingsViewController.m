@@ -7,7 +7,6 @@
 //
 
 #import "SettingsViewController.h"
-#import "UIImage+ImageEffects.h"
 #import "Messages.h"
 
 
@@ -17,6 +16,7 @@
 - (void)unregisterForNotifications;
 - (void)receivedLoginAccept:(NSNotification*)notification;
 - (void)receivedLoginReject:(NSNotification*)notification;
+- (void)receivedInviteUser:(NSNotification*)notification;
 
 @end
 
@@ -41,7 +41,7 @@
 
 - (void)registerForNotifications
 {
-    for (NSString* notificationName in @[@"LoginAccept", @"LoginAccept"]) {
+    for (NSString* notificationName in @[@"LoginAccept", @"LoginAccept", @"InviteUser"]) {
         
     }
 }
@@ -103,12 +103,6 @@
 //        // ARC is enabled, but is this being retained?
 //        iconView = dic.imageView;
 //    }
-}
-
-- (void)joinChatroom:(InviteUserMessage*)ium
-{
-    [chatManager setGoingToJoin:ium];
-    [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
 }
 
 
@@ -223,12 +217,25 @@
 
 - (void)receivedLoginAccept:(NSNotification*)notification
 {
-    
+    ud.handle = [_handleTextField text];
+    ud.userId = [notification.object userId];
+    [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
 }
 
 - (void)receivedLoginReject:(NSNotification*)notification
 {
-    
+    [_handleTextField setText:ud.handle];
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Woops!"
+                                                    message:[notification.object reason]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
+- (void)receivedInviteUser:(NSNotification*)notification
+{
+    // TODO: show alert view to see if they want to join the chat
 }
 
 - (void)leaveCurrentChatroom

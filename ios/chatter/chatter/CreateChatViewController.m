@@ -8,13 +8,16 @@
 
 #import "CreateChatViewController.h"
 #import <QuartzCore/QuartzCore.h>
-#import "UIImage+ImageEffects.h"
 #import "Messages.h"
 #import "ViewController.h"
 
 
 @interface CreateChatViewController ()
-- (void)joinChatroom:(InviteUserMessage*)ium;
+- (void)registerForNotifications;
+- (void)unregisterForNotifications;
+- (void)receivedInviteUser:(NSNotification*)notification;
+- (void)receivedChatroom:(NSNotification*)notification;
+- (void)receivedCreateChatroomReject:(NSNotification*)notification;
 @end
 
 @implementation CreateChatViewController
@@ -22,8 +25,6 @@
     Connection* connection;
     Location* location;
     UserDetails* ud;
-    long long chatroomId;
-    BOOL viewIsVisible;
     ChatroomManagement* chatManager;
 }
 
@@ -37,14 +38,25 @@ const double MILES_TO_METERS = 1609.34;
         location = [Location sharedInstance];
         ud = [UserDetails sharedInstance];
         chatManager = [ChatroomManagement sharedInstance];
-        
-        // Get connection object and add this controller's callback
-        // method for incoming connections.
         connection = [Connection sharedInstance];
-        CreateChatViewController* __weak weakSelf = self;
-        [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
     }
     return self;
+}
+
+- (void)registerForNotifications
+{
+    for (NSString* notificationName in @[@"Chatroom", @"CreateChatroomReject", @"InviteUser"]) {
+        NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:NSSelectorFromString(selectorName)
+                                                     name:[NSString stringWithFormat:@"%@Message",notificationName]
+                                                   object:nil];
+    }
+}
+
+- (void)unregisterForNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad
@@ -56,12 +68,14 @@ const double MILES_TO_METERS = 1609.34;
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    viewIsVisible = YES;
+    [super viewWillAppear:animated];
+    [self registerForNotifications];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    viewIsVisible = NO;
+    [super viewWillDisappear:animated];
+    [self unregisterForNotifications];
 }
 
 - (void)didReceiveMemoryWarning
@@ -99,39 +113,6 @@ const double MILES_TO_METERS = 1609.34;
     }
 }
 
-
-#pragma mark - Keyboard Interaction
-
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    [textField resignFirstResponder];
-    return YES;
-}
-
-
-#pragma mark - Segues
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-
-}
-
-- (void)joinChatroom:(MessageBase*)msg
-{
-    if ([msg isMemberOfClass:[InviteUserMessage class]]) {
-        [chatManager setGoingToJoin:(InviteUserMessage*)msg];
-    }
-    else if ([msg isMemberOfClass:[ChatroomMessage class]]) {
-        NSLog(@"[create chat] chatroom class");
-        [chatManager setCreatedToJoin:(ChatroomMessage*)msg];
-    }
-    [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
-}
-
-
-#pragma mark - I/O
-
 - (IBAction)createChatroom:(id)sender
 {
     // Check for valid chatroom name
@@ -139,14 +120,22 @@ const double MILES_TO_METERS = 1609.34;
     // from the server, also causing an alert message. But I
     // want to catch errors before they go to the server when possible.
     if ([_chatroomNameTextField.text isEqualToString:@""]) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:@"Invalid chatroom name" delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Woops!"
+                                                        message:@"Invalid chatroom name"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
         [alert show];
         return;
     }
     
     // Handle check
     if ([ud.handle isEqualToString:@""]) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:@"Cannot join a chatroom with no handle" delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Woops!"
+                                                        message:@"Cannot join a chatroom with no handle"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
         [alert show];
         return;
     }
@@ -166,24 +155,47 @@ const double MILES_TO_METERS = 1609.34;
     [connection sendMessage:msg];
 }
 
-- (void)messageCallback:(MessageBase*)message
+
+#pragma mark - Keyboard Interaction
+
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-//    if (viewIsVisible) {
-//        UIAlertView *alert;
-//        switch (message.type) {
-//            case Chatroom:
-//                NSLog(@"Chatroom %@",((ChatroomMessage*)message).chatroomName);
-//                [self performSelectorOnMainThread:@selector(joinChatroom:) withObject:message waitUntilDone:NO];
-//                break;
-//                
-//            case CreateChatroomReject:
-//                NSLog(@"Could not create chatroom");
-//                alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((CreateChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//                [alert show];
-//                break;
-//                
-//        }
-//    }
+    [textField resignFirstResponder];
+    return YES;
 }
+
+
+#pragma mark - Segues
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+
+}
+
+
+#pragma mark - I/O
+
+- (void)receivedInviteUser:(NSNotification*)notification
+{
+    // TODO: show alert view to see if they want to join the chat
+}
+
+- (void)receivedChatroom:(NSNotification*)notification
+{
+    // TODO: set going to join? (in chatmanager) and join chatroom
+    // NOTE: maybe don't do the unwind thing before we join-- it looks hokey
+}
+
+- (void)receivedCreateChatroomReject:(NSNotification*)notification
+{
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Woops!"
+                                                    message:[notification.object reason]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
 
 @end

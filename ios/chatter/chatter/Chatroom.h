@@ -30,11 +30,16 @@
 @property (nonatomic,strong) NSNumber* chatActivity;
 @property (nonatomic,getter=isPrivate,setter=setPrivate:) BOOL exclusive;
 @property (nonatomic,getter=isGlobal) BOOL global;
+@property (nonatomic) int MESSAGE_NUM_THRESH;
 
 - (id)init;
 - (id)initWithChatroomMessage:(ChatroomMessage*)message;
 //- (id)initWithJoinedChatroomMessage:(JoinedChatroomMessage*)message;
 + (Chatroom*)chatroomWithChatroomMessage:(ChatroomMessage*)message;
 //+ (Chatroom*)chatroomWithJoinedChatroomMessage:(JoinedChatroomMessage*)message;
+
+//- (void)insertObject:(NSObject *)message inChatQueueAtIndex:(NSUInteger)index;
+//- (void)removeObjectFromChatQueueAtIndex:(NSUInteger)index;
+//- (void)replaceObjectInChatQueueAtIndex:(NSUInteger)index withObject:(id)anObject;
 
 @end

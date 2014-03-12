@@ -23,7 +23,6 @@
 @property (nonatomic, retain) IBOutlet UISegmentedControl* globalChatSelect;
 @property (nonatomic, retain) IBOutlet UISegmentedControl* inviteOnlyControl;
 
-- (void)messageCallback:(MessageBase*)message;
 - (IBAction)sliderChanged:(id)sender;
 - (IBAction)createChatroom:(id)sender;
 - (IBAction)globalChatSelection:(id)sender;

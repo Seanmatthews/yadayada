@@ -54,13 +54,8 @@
 		64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D56181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m */; };
 		64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */; };
 		64A10DA41824BBDA00A499B0 /* Location.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10DA31824BBDA00A499B0 /* Location.m */; };
-		64D60F2A1880C79100108C1F /* CLLocation+measuring.m in Sources */ = {isa = PBXBuildFile; fileRef = 64D60F221880C79000108C1F /* CLLocation+measuring.m */; };
-		64D60F2B1880C79100108C1F /* CLLocation+routeInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 64D60F241880C79100108C1F /* CLLocation+routeInfo.m */; };
-		64D60F2C1880C79100108C1F /* CLLocationDeadReckoning.m in Sources */ = {isa = PBXBuildFile; fileRef = 64D60F261880C79100108C1F /* CLLocationDeadReckoning.m */; };
-		64D60F2D1880C79100108C1F /* CLLocationDispatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 64D60F281880C79100108C1F /* CLLocationDispatch.m */; };
 		64E6AB57187F53B100B46504 /* ChatroomMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */; };
 		B33C55C61835598400EF28B7 /* default-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B33C55C51835598400EF28B7 /* default-icon.png */; };
-		B343A50C1828134F00B36450 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = B343A50B1828134F00B36450 /* UIImage+ImageEffects.m */; };
 		B343A50F18282CF600B36450 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B343A50E18282CF600B36450 /* MenuViewController.m */; };
 		B3E79A481832AE27003227E7 /* ChatroomListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E79A471832AE27003227E7 /* ChatroomListCell.m */; };
 		B3E79A4A1832AF23003227E7 /* ChatroomListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3E79A491832AF23003227E7 /* ChatroomListCell.xib */; };
@@ -149,20 +144,9 @@
 		64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableView+UITableViewCategory.m"; sourceTree = "<group>"; };
 		64A10DA21824BBDA00A499B0 /* Location.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Location.h; sourceTree = "<group>"; };
 		64A10DA31824BBDA00A499B0 /* Location.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Location.m; sourceTree = "<group>"; };
-		64D60F211880C79000108C1F /* CLLocation+measuring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLLocation+measuring.h"; sourceTree = "<group>"; };
-		64D60F221880C79000108C1F /* CLLocation+measuring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CLLocation+measuring.m"; sourceTree = "<group>"; };
-		64D60F231880C79100108C1F /* CLLocation+routeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLLocation+routeInfo.h"; sourceTree = "<group>"; };
-		64D60F241880C79100108C1F /* CLLocation+routeInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CLLocation+routeInfo.m"; sourceTree = "<group>"; };
-		64D60F251880C79100108C1F /* CLLocationDeadReckoning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLLocationDeadReckoning.h; sourceTree = "<group>"; };
-		64D60F261880C79100108C1F /* CLLocationDeadReckoning.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLLocationDeadReckoning.m; sourceTree = "<group>"; };
-		64D60F271880C79100108C1F /* CLLocationDispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLLocationDispatch.h; sourceTree = "<group>"; };
-		64D60F281880C79100108C1F /* CLLocationDispatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLLocationDispatch.m; sourceTree = "<group>"; };
-		64D60F291880C79100108C1F /* CLUtilsDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLUtilsDefines.h; sourceTree = "<group>"; };
 		64E6AB55187F53B100B46504 /* ChatroomMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomMessageCell.h; sourceTree = "<group>"; };
 		64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomMessageCell.m; sourceTree = "<group>"; };
 		B33C55C51835598400EF28B7 /* default-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-icon.png"; sourceTree = "<group>"; };
-		B343A50A1828134F00B36450 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
-		B343A50B1828134F00B36450 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		B343A50D18282CF600B36450 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		B343A50E18282CF600B36450 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		B3E79A461832AE27003227E7 /* ChatroomListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomListCell.h; sourceTree = "<group>"; };
@@ -340,9 +324,6 @@
 		64A10D46181A280A00A499B0 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				64D60F201880C74E00108C1F /* CoreLocationUtils */,
-				B343A50A1828134F00B36450 /* UIImage+ImageEffects.h */,
-				B343A50B1828134F00B36450 /* UIImage+ImageEffects.m */,
 				64A10D47181A281A00A499B0 /* OrderedDictionary.h */,
 				64A10D48181A281A00A499B0 /* OrderedDictionary.m */,
 				64A10D55181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.h */,
@@ -357,22 +338,6 @@
 				144718CE18BBDA990045B668 /* UIInviteAlertView.m */,
 			);
 			name = Util;
-			sourceTree = "<group>";
-		};
-		64D60F201880C74E00108C1F /* CoreLocationUtils */ = {
-			isa = PBXGroup;
-			children = (
-				64D60F211880C79000108C1F /* CLLocation+measuring.h */,
-				64D60F221880C79000108C1F /* CLLocation+measuring.m */,
-				64D60F231880C79100108C1F /* CLLocation+routeInfo.h */,
-				64D60F241880C79100108C1F /* CLLocation+routeInfo.m */,
-				64D60F251880C79100108C1F /* CLLocationDeadReckoning.h */,
-				64D60F261880C79100108C1F /* CLLocationDeadReckoning.m */,
-				64D60F271880C79100108C1F /* CLLocationDispatch.h */,
-				64D60F281880C79100108C1F /* CLLocationDispatch.m */,
-				64D60F291880C79100108C1F /* CLUtilsDefines.h */,
-			);
-			name = CoreLocationUtils;
 			sourceTree = "<group>";
 		};
 		B3ADCB65181855A700A25383 /* Media */ = {
@@ -502,7 +467,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B343A50C1828134F00B36450 /* UIImage+ImageEffects.m in Sources */,
 				64A10D49181A281A00A499B0 /* OrderedDictionary.m in Sources */,
 				6477058F187C7FAD00A97F74 /* SmartButton.m in Sources */,
 				14E010E718B1B27B00F45EDD /* Contacts.m in Sources */,
@@ -510,18 +474,15 @@
 				147445C218CA8A7100EE5D49 /* Chatroom.m in Sources */,
 				6477058C187BAD9900A97F74 /* ChatPointAnnotation.m in Sources */,
 				1432C74E18B9AB3300690009 /* ContactsListViewController.m in Sources */,
-				64D60F2D1880C79100108C1F /* CLLocationDispatch.m in Sources */,
 				64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */,
 				64A10D51181E1B2300A499B0 /* Connection.m in Sources */,
 				64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */,
 				64A10D4C181DFC1400A499B0 /* UserDetails.m in Sources */,
 				641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */,
 				6458F3A318172E7400AA8E81 /* ViewController.m in Sources */,
-				64D60F2B1880C79100108C1F /* CLLocation+routeInfo.m in Sources */,
 				64A10DA41824BBDA00A499B0 /* Location.m in Sources */,
 				641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */,
 				B3E79A481832AE27003227E7 /* ChatroomListCell.m in Sources */,
-				64D60F2C1880C79100108C1F /* CLLocationDeadReckoning.m in Sources */,
 				6445107D183DA911000112D4 /* CreateChatViewController.m in Sources */,
 				64E6AB57187F53B100B46504 /* ChatroomMessageCell.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
@@ -529,7 +490,6 @@
 				144718CF18BBDA990045B668 /* UIInviteAlertView.m in Sources */,
 				14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */,
 				1444DCA618A35838006014C2 /* TutorialStartController.m in Sources */,
-				64D60F2A1880C79100108C1F /* CLLocation+measuring.m in Sources */,
 				6458F39918172E7400AA8E81 /* main.m in Sources */,
 				14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */,
 				64A10D451819CE9A00A499B0 /* MessageUtils.m in Sources */,
