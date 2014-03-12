@@ -18,12 +18,16 @@
 
 @interface ChatroomManagement()
 
-- (void)addMessage:(MessageBase*)message toChatroom:(NSNumber*)chatroomId;
+- (id)init;
 - (void)dismissAllInviteAlerts;
-- (void)receivedMessage:(MessageMessage*) message;
-- (void)receivedJoinedChatroom:(JoinedChatroomMessage*)message;
-- (void)receivedLeftChatroom:(LeftChatroomMessage*)message;
 - (void)showInviteAlert:(InviteUserMessage*)ium;
+- (void)receivedMessage:(NSNotification*)notification;
+- (void)receivedChatroom:(NSNotification*)notification;
+- (void)receivedJoinedChatroom:(NSNotification*)notification;
+- (void)receivedLeftChatroom:(NSNotification*)notification;
+- (void)receivedInviteUser:(NSNotification*)notification;
+- (void)registerForNotifications;
+- (void)unregisterForNotifications;
 
 @end
 
@@ -43,13 +47,16 @@
     
     if (self) {
         _MESSAGE_NUM_THRESH = 50;
-        _chatQueue = [[NSMutableDictionary alloc] init];
         _joinedChatrooms = [[NSMutableDictionary alloc] init];
+        _chatrooms = [[NSMutableDictionary alloc] init];
+        _globalChatrooms = [[NSMutableArray alloc] init];
+        _localChatrooms = [[NSMutableArray alloc] init];
         ud = [UserDetails sharedInstance];
         location = [Location sharedInstance];
         inviteAlerts = [[NSMutableArray alloc] init];
         _goingToJoin = nil;
         _createdToJoin = nil;
+        [self registerForNotifications];
     }
     return self;
 }
@@ -61,44 +68,39 @@
     dispatch_once(&pred, ^{
         _sharedObject = [[self alloc] init];
         // Additional initialization can go here
-        
-        ChatroomManagement* __weak weakSelf = _sharedObject;
-        [[Connection sharedInstance] addCallbackBlock:^(MessageBase* m){
-            Connection* c = [Connection sharedInstance];
-            dispatch_group_async(c.parseGroup, c.parseQueue, ^{
-                [weakSelf messageCallback:m];
-            });
-        } fromSender:NSStringFromClass([self class])];
     });
     return _sharedObject;
+}
+
+- (void)dealloc
+{
+    [self unregisterForNotifications];
+}
+
+- (void)registerForNotifications
+{
+    for (NSString* notificationName in @[@"Message", @"JoinedChatroom",
+                                         @"LeftChatroom", @"InviteUser", @"Chatroom"]) {
+        NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:NSSelectorFromString(selectorName)
+                                                     name:[NSString stringWithFormat:@"%@Message",notificationName]
+                                                   object:nil];
+    }
+}
+
+- (void)unregisterForNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 
 #pragma mark - Convenience
 
-- (long long)currentChatroomId
+// NOTE: Assumes one joined chatroom
+- (Chatroom*)currentChatroom
 {
-    if ([_joinedChatrooms count] > 0) {
-        return [[_joinedChatrooms allKeys][0] longLongValue];
-    }
-    else {
-        return 0;
-    }
-}
-
-- (NSString*)currentChatroomName
-{
-    if ([_joinedChatrooms count] > 0) {
-        return [_joinedChatrooms allValues][0];
-    }
-    else {
-        return @"";
-    }
-}
-
-- (NSMutableArray*)currentChatQueue
-{
-    return [_chatQueue allValues][0];
+    return[[_joinedChatrooms objectEnumerator] nextObject];
 }
 
 - (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius
@@ -113,62 +115,106 @@
     return YES;
 }
 
-- (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom
+- (BOOL)canJoinChatroom:(Chatroom*)chatroom
 {
-    CLLocationCoordinate2D chatroomOrigin = CLLocationCoordinate2DMake([Location fromLongLong:chatroom.latitude], [Location fromLongLong:chatroom.longitude]);
-    return [self canJoinChatroomWithCoord:chatroomOrigin andRadius:chatroom.radius];
+    if (chatroom.isGlobal) {
+        return YES;
+    }
+    else {
+        return [self canJoinChatroomWithCoord:chatroom.origin andRadius:[chatroom.radius longLongValue]];
+
+    }
 }
 
 
 #pragma mark - Managing chatroom memberships
 
 // Dispatch the sending of the message
-- (void)joinChatroomWithId:(long long)chatId latitude:(long long)lat longitude:(long long)lng
-{
-    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
-    msg.userId = ud.userId;
-    msg.chatroomId = chatId;
-    msg.latitude = [location currentLat];
-    msg.longitude = [location currentLong];
-}
+//- (void)joinChatroomWithId:(long long)chatId latitude:(long long)lat longitude:(long long)lng
+//{
+//    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
+//    msg.userId = ud.userId;
+//    msg.chatroomId = chatId;
+//    msg.latitude = [location currentLat];
+//    msg.longitude = [location currentLong];
+//}
 
 
 #pragma mark - Messages
 
-- (void)messageCallback:(MessageBase*)message
+- (void)receivedMessage:(NSNotification*)notification
 {
-    switch (message.type) {
-            
-        case Message:
-            NSLog(@"[ChatroomManagement] Message");
-            [self receivedMessage:(MessageMessage*)message];
-            break;
-            
-        case JoinedChatroom:
-            NSLog(@"[ChatroomManagement] JoinedChatroom");
-            [self receivedJoinedChatroom:(JoinedChatroomMessage*)message];
-            break;
-            
-        case LeftChatroom:
-            NSLog(@"[ChatroomManagement] LeftChatroom");
-            [self receivedLeftChatroom:(LeftChatroomMessage*)message];
-            break;
-            
-        case InviteUser:
-        {
-            if (ud.receiveInviteNotifications) {
-                InviteUserMessage* ium = (InviteUserMessage*)message;
-                if ([self canJoinChatroomWithCoord:CLLocationCoordinate2DMake(ium.chatroomLat, ium.chatroomLong) andRadius:ium.chatroomRadius]) {
-                    [self performSelectorOnMainThread:@selector(showInviteAlert:) withObject:ium waitUntilDone:NO];
-                }
-                else {
-                    NSLog(@"got invite, but chatroom is too far away");
-                }
+    MessageMessage* message = notification.object;
+    Chatroom* c;
+    if ((c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]])) {
+        [c.chatQueue addObject:message];
+    }
+}
+
+// NOTE: We don't need to worry about receiving duplicates because
+// duplicates will be overwritten in the Dictionary.
+- (void)receivedChatroom:(NSNotification*)notification
+{
+    NSLog(@"CHATROOM");
+    ChatroomMessage* message = notification.object;
+    Chatroom* c = [Chatroom chatroomWithChatroomMessage:message];
+    if ([self canJoinChatroom:c]) {
+        if (![_chatrooms objectForKey:c.cid]) {
+            if (c.isGlobal) {
+                NSLog(@"GLOBAL");
+                [_globalChatrooms addObject:c];
+                NSLog(@"GLOBAL count %d",[_globalChatrooms count]);
             }
-            break;
+            else {
+                [_localChatrooms addObject:c];
+            }
+            [_chatrooms setObject:c forKey:c.cid];
         }
     }
 }
+
+- (void)receivedJoinedChatroom:(NSNotification*)notification
+{
+    JoinedChatroomMessage* message = notification.object;
+    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
+    if (message.userId == ud.userId) {
+        Chatroom* c = [_chatrooms objectForKey:cid];
+        [_joinedChatrooms setObject:c forKey:cid];
+    }
+    else {
+        Chatroom* c = [_chatrooms objectForKey:cid];
+        [c.chatQueue addObject:message];
+    }
+}
+
+- (void)receivedLeftChatroom:(NSNotification*)notification
+{
+    LeftChatroomMessage* message = notification.object;
+    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
+    if (message.userId == ud.userId) {
+        [_joinedChatrooms removeObjectForKey:cid];
+    }
+    else {
+        Chatroom* c = [_chatrooms objectForKey:cid];
+        [c.chatQueue addObject:message];
+    }
+}
+
+- (void)receivedInviteUser:(NSNotification*)notification
+{
+    if (ud.receiveInviteNotifications) {
+        InviteUserMessage* ium = notification.object;
+        if ([self canJoinChatroomWithCoord:CLLocationCoordinate2DMake(ium.chatroomLat, ium.chatroomLong) andRadius:ium.chatroomRadius]) {
+            [self performSelectorOnMainThread:@selector(showInviteAlert:) withObject:ium waitUntilDone:NO];
+        }
+        else {
+            NSLog(@"got invite, but chatroom is too far away");
+        }
+    }
+}
+
+
+#pragma mark - Alerts & UIAlertViewDelegate
 
 - (void)showInviteAlert:(InviteUserMessage*)ium
 {
@@ -179,54 +225,6 @@
     [inviteAlerts addObject:alert];
     [alert show];
 }
-
-- (void)addMessage:(MessageBase*)message toChatroom:(NSNumber*)chatroomId
-{
-    NSMutableArray* msgList = [_chatQueue objectForKey:chatroomId];
-    
-    if (msgList) {
-        [msgList addObject:message];
-        
-        if ([msgList count] > _MESSAGE_NUM_THRESH) {
-            [msgList removeObjectAtIndex:0];
-        }
-    }
-}
-
-- (void)receivedMessage:(MessageMessage*) message
-{
-    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
-    [self addMessage:message toChatroom:cid];
-}
-
-- (void)receivedJoinedChatroom:(JoinedChatroomMessage*)message
-{
-    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
-    if (message.userId == ud.userId) {
-        NSMutableArray* msgList = [[NSMutableArray alloc] init];
-        [_chatQueue setObject:msgList forKey:cid];
-        [_joinedChatrooms setObject:message.chatroomName forKey:cid];
-    }
-    else {
-        [self addMessage:message toChatroom:cid];
-    }
-}
-
-- (void)receivedLeftChatroom:(LeftChatroomMessage*)message
-{
-    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
-    
-    if (message.userId == ud.userId) {
-        [_joinedChatrooms removeObjectForKey:cid];
-        [_chatQueue removeObjectForKey:cid];
-    }
-    else {
-        [self addMessage:message toChatroom:cid];
-    }
-}
-
-
-#pragma mark - UIAlertViewDelegate
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -244,8 +242,6 @@
         [alert dismissWithClickedButtonIndex:1 animated:YES];
     }
 }
-
-
 
 
 @end

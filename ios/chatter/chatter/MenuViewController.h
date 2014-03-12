@@ -21,12 +21,6 @@
     Contacts* contacts;
 }
 
-//@property (nonatomic, strong) NSString* userHandle;
-
 - (void)initCode;
-- (void)connectMessage;
-- (void)loginMessage;
-- (void)messageCallback:(MessageBase*)message;
-
 
 @end

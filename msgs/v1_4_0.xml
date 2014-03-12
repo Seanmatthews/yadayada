@@ -1,0 +1,178 @@
+<schema>
+    <msg name="Register" val="1" origin="client">
+        <field name="userName" type="String" />
+        <field name="password" type="String" />
+        <field name="handle" type="String" />
+        <field name="UUID" type="String" />
+        <field name="phoneNumber" type="long" />
+    </msg>
+
+    <msg name="RegisterAccept" val="2" origin="server">
+        <field name="userId" type="long" />
+    </msg>
+
+    <msg name="RegisterReject" val="3" origin="server">
+        <field name="reason" type="String" />
+    </msg>
+
+    <msg name="Login" val="11" origin="client">
+        <field name="userName" type="String" />
+        <field name="password" type="String" />
+    </msg>
+
+    <msg name="LoginAccept" val="12" origin="server">
+        <field name="userId" type="long" />
+    </msg>
+
+    <msg name="LoginReject" val="13" origin="server">
+        <field name="reason" type="String" />
+    </msg>
+
+    <msg name="QuickLogin" val="14" origin="client">
+        <field name="handle" type="String" />
+        <field name="UUID" type="String" />
+        <field name="phoneNumber" type="long" />
+    </msg>
+
+    <msg name="Connect" val="16" origin="client">
+        <field name="APIVersion" type="int" />
+        <field name="UUID" type="String" />
+    </msg>
+
+    <msg name="ConnectAccept" val="17" origin="server">
+        <field name="APIVersion" type="int" />
+        <field name="globalChatId" type="long" />
+        <field name="imageUploadUrl" type="String" />
+        <field name="imageDownloadUrl" type="String" />
+    </msg>
+
+    <msg name="ConnectReject" val="18" origin="server">
+        <field name="reason" type="String" />
+    </msg>
+
+    <msg name="Heartbeat" val="19" origin="server,client">
+    </msg>
+
+    <msg name="SubmitMessage" val="21" origin="client">
+        <field name="userId" type="long" />
+        <field name="chatroomId" type="long" />
+        <field name="message" type="String" />
+    </msg>
+
+    <msg name="Message" val="22" origin="server">
+        <field name="messageId" type="long" />
+        <field name="messageTimestamp" type="long" />
+        <field name="senderId" type="long" />
+        <field name="chatroomId" type="long" />
+        <field name="senderHandle" type="String" />
+        <field name="message" type="String" />
+    </msg>
+
+    <msg name="SubmitMessageReject" val="23" origin="server">
+        <field name="userId" type="long" />
+        <field name="chatroomId" type="long" />
+        <field name="reason" type="String" />
+    </msg>
+
+    <msg name="SearchChatrooms" val="31" origin="client">
+        <field name="latitude" type="long" />
+        <field name="longitude" type="long" />
+        <field name="onlyJoinable" type="byte" />
+        <field name="metersFromCoords" type="long" />
+    </msg>
+
+    <msg name="Chatroom" val="32" origin="server">
+        <field name="chatroomId" type="long" />
+        <field name="chatroomOwnerId" type="long" />
+        <field name="chatroomName" type="String" />
+        <field name="chatroomOwnerHandle" type="String" />
+        <field name="latitude" type="long" />
+        <field name="longitude" type="long" />
+        <field name="radius" type="long" />
+        <field name="userCount" type="int" />
+        <field name="chatActivity" type="short" />
+        <field name="isPrivate" type="byte" />
+    </msg>
+
+    <msg name="JoinChatroom" val="33" origin="client">
+        <field name="userId" type="long" />
+        <field name="chatroomId" type="long" />
+        <field name="latitude" type="long" />
+        <field name="longitude" type="long" />
+    </msg>
+
+    <msg name="LeaveChatroom" val="34" origin="client">
+        <field name="userId" type="long" />
+        <field name="chatroomId" type="long" />
+    </msg>
+
+    <msg name="CreateChatroom" val="35" origin="client">
+        <field name="ownerId" type="long" />
+        <field name="chatroomName" type="String" />
+        <field name="latitude" type="long" />
+        <field name="longitude" type="long" />
+        <field name="radius" type="long" />
+        <field name="isPrivate" type="byte" />
+    </msg>
+
+    <msg name="JoinChatroomReject" val="36" origin="server">
+        <field name="chatroomId" type="long" />
+        <field name="reason" type="String" />
+    </msg>
+
+    <msg name="JoinedChatroom" val="37" origin="server">
+        <field name="userId" type="long" />
+        <field name="userHandle" type="String" />
+        <field name="chatroomId" type="long" />
+        <field name="chatroomOwnerId" type="long" />
+        <field name="chatroomName" type="String" />
+        <field name="chatroomOwnerHandle" type="String" />
+        <field name="latitude" type="long" />
+        <field name="longitude" type="long" />
+        <field name="radius" type="long" />
+        <field name="userCount" type="int" />
+        <field name="chatActivity" type="short" />
+    </msg>
+
+    <msg name="LeftChatroom" val="38" origin="server">
+        <field name="chatroomId" type="long" />
+        <field name="userId" type="long" />
+        <field name="userHandle" type="String" />
+    </msg>
+
+    <msg name="CreateChatroomReject" val="39" origin="server">
+        <field name="chatroomName" type="String" />
+        <field name="reason" type="String" />
+    </msg>
+
+    <msg name="Vote" val="44" origin="client">
+        <field name="voterId" type="long" />
+        <field name="votedId" type="long" />
+        <field name="msgId" type="long" />
+        <field name="chatroomId" type="long" />
+        <field name="upvote" type="byte" />
+    </msg>
+
+    <msg name="InviteUser" val="50" origin="client">
+        <field name="senderId" type="long" />
+        <field name="senderHandle" type="String" />
+        <field name="recipientId" type="long" />
+        <field name="chatroomId" type="long" />
+        <field name="chatroomName" type="String" />
+        <field name="chatroomLat" type="long" />
+        <field name="chatroomLong" type="long" />
+        <field name="chatroomRadius" type="long" />
+        <field name="recipientPhoneNumber" type="long" />
+    </msg>
+    
+    <msg name="InviteUserReject" val="51" origin="server">
+        <field name="reason" type="String" />
+    </msg>
+    
+    <msg name="InviteUserSuccess" val="52" origin="server">
+        <field name="inviteeUserId" type="long" />
+        <field name="inviteeHandle" type="String" />
+        <field name="chatroomName" type="String" />
+    </msg>
+
+</schema>

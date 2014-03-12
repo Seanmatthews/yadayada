@@ -10,31 +10,25 @@
 #import "Messages.h"
 #import "UserDetails.h"
 #import "Location.h"
+#import "Chatroom.h"
 
 @interface ChatroomManagement : NSObject <UIAlertViewDelegate>
 
-
-- (id)init;
-+ (id)sharedInstance;
-- (void)messageCallback:(MessageBase*)message;
-- (BOOL)canJoinChatroom:(ChatroomMessage*)chatroom;
-- (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius;
-
-// To be deprecated
-- (long long)currentChatroomId;
-- (NSString*)currentChatroomName;
-- (NSMutableArray*)currentChatQueue;
-
-@property (atomic, retain) NSMutableDictionary* chatQueue;
-@property (atomic, retain) NSMutableDictionary* joinedChatrooms;
+@property (atomic,strong) NSMutableDictionary* joinedChatrooms;
+@property (atomic,strong) NSMutableDictionary* chatrooms;
+@property (atomic,strong) NSMutableArray* globalChatrooms;
+@property (atomic,strong) NSMutableArray* localChatrooms;
 
 // Combine these two
 @property (atomic, retain) InviteUserMessage* goingToJoin;
 @property (atomic, retain) ChatroomMessage* createdToJoin;
+@property (nonatomic) int MESSAGE_NUM_THRESH;
 
-@property int MESSAGE_NUM_THRESH;
++ (id)sharedInstance;
+- (BOOL)canJoinChatroom:(Chatroom*)chatroom;
+- (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius;
 
-// Not yet used
-@property (atomic, retain) NSMutableDictionary* peopleInChat;
+// TO BE DEPRECATED
+- (Chatroom*)currentChatroom; // NOTE: Assumes one joined chatroom
 
 @end

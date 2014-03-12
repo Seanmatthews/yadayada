@@ -13,6 +13,11 @@
 
 @interface SettingsViewController ()
 
+- (void)registerForNotifications;
+- (void)unregisterForNotifications;
+- (void)receivedLoginAccept:(NSNotification*)notification;
+- (void)receivedLoginReject:(NSNotification*)notification;
+
 @end
 
 @implementation SettingsViewController
@@ -23,8 +28,7 @@
     connection = [Connection sharedInstance];
     chatManager = [ChatroomManagement sharedInstance];
     [self registerForKeyboardNotifications];
-    SettingsViewController* __weak weakSelf = self;
-    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
+    
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -33,6 +37,18 @@
         [self initCode];
     }
     return self;
+}
+
+- (void)registerForNotifications
+{
+    for (NSString* notificationName in @[@"LoginAccept", @"LoginAccept"]) {
+        
+    }
+}
+
+- (void)unregisterForNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad
@@ -50,15 +66,14 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    viewIsVisible = YES;
+    [super viewWillAppear:animated];
+    [self registerForNotifications];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    if ([self isBeingDismissed]) {
-        [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
-    }
-    viewIsVisible = NO;
+    [super viewWillDisappear:animated];
+    [self unregisterForNotifications];
 }
 
 - (void)didReceiveMemoryWarning
@@ -184,33 +199,45 @@
 
 - (void)messageCallback:(MessageBase*)message
 {
-    if (viewIsVisible) {
-        UIAlertView* alert;
-        switch (message.type) {
-                
-            case LoginAccept:
-                NSLog(@"[Settings] login accept");
-                ud.handle = [_handleTextField text];
-                ud.userId = ((LoginAcceptMessage*)message).userId;
-                [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
-                break;
-                
-            case LoginReject:
-                NSLog(@"[Settings] login reject");
-                [_handleTextField setText:ud.handle];
-                alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:((LoginRejectMessage*)message).reason delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                [alert show];
-                break;
-        }
-    }
+//    if (viewIsVisible) {
+//        UIAlertView* alert;
+//        switch (message.type) {
+//                
+//            case LoginAccept:
+//                NSLog(@"[Settings] login accept");
+//                ud.handle = [_handleTextField text];
+//                ud.userId = ((LoginAcceptMessage*)message).userId;
+//                [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
+//                break;
+//                
+//            case LoginReject:
+//                NSLog(@"[Settings] login reject");
+//                [_handleTextField setText:ud.handle];
+//                alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:((LoginRejectMessage*)message).reason delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//                [alert show];
+//                break;
+//        }
+//    }
+}
+
+
+- (void)receivedLoginAccept:(NSNotification*)notification
+{
+    
+}
+
+- (void)receivedLoginReject:(NSNotification*)notification
+{
+    
 }
 
 - (void)leaveCurrentChatroom
 {
-    if ([chatManager currentChatroomId] > 0) {
+    Chatroom* c = [chatManager currentChatroom];
+    if (c) {
         LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
         msg.userId = ud.userId;
-        msg.chatroomId = [chatManager currentChatroomId];
+        msg.chatroomId = [c.cid longLongValue];
         [connection sendMessage:msg];
     }
 }

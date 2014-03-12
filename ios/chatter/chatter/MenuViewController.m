@@ -11,33 +11,51 @@
 
 @interface MenuViewController ()
 
+- (void)registerForNotifications;
+- (void)unregisterForNotifications;
 - (void)receivedFirstLocation;
+- (void)receivedConnectAccept:(NSNotification*)notification;
+- (void)receivedConnectReject:(NSNotification*)notification;
+- (void)receivedLoginAccept:(NSNotification*)notification;
+- (void)receivedLoginReject:(NSNotification*)notification;
 
 @end
 
+
 @implementation MenuViewController
 
-//@synthesize userHandle;
 
 - (void)initCode
 {
     location = [Location sharedInstance];
     ud = [UserDetails sharedInstance];
     contacts = [Contacts sharedInstance];
-    
-    // Get connection object and add this controller's callback
-    // method for incoming connections.
     connection = [Connection sharedInstance];
-    //[connection connect];
-    MenuViewController* __weak weakSelf = self;
-    [connection addCallbackBlock:^(MessageBase* m){ [weakSelf messageCallback:m];} fromSender:NSStringFromClass([self class])];
-    
-    //[connection connectToImageServer];
-    
+    [self registerForNotifications];
+}
+
+- (void)registerForNotifications
+{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(receivedFirstLocation)
                                                  name:@"LocationUpdateNotification"
                                                object:nil];
+    
+    for (NSString* notificationName in @[@"ConnectAccept", @"LoginReject",
+                                         @"ConnectReject", @"LoginAccept"]) {
+        
+        NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:NSSelectorFromString(selectorName)
+                                                     name:[NSString stringWithFormat:@"%@Message",notificationName]
+                                                   object:nil];
+    }
+}
+
+- (void)unregisterForNotifications
+{
+    // We will always remove ourselves from seeing all notifications in this view.
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -63,12 +81,6 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-//    [contacts getAddressBookPermissions];
-//    [contacts getAllContacts];
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -77,24 +89,19 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    // Since there's no longer a menu, per se, this will only happen once
-    [connection removeCallbackBlockFromSender:NSStringFromClass([self class])];
-}
-
-- (void)receivedFirstLocation
-{
-    NSLog(@"lat: %f, long: %f",[location currentLocation].latitude, [location currentLocation].longitude);
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"LocationUpdateNotification" object:nil];
-    [self connectMessage];
+    [super viewWillDisappear:animated];
+    [self unregisterForNotifications];
 }
 
 
 #pragma mark - incoming and outgoing messages
 
-- (void)connectMessage
+- (void)receivedFirstLocation
 {
-    NSLog(@"Going to try to connect now");
+    NSLog(@"lat: %f, long: %f",[location currentLocation].latitude, [location currentLocation].longitude);
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"LocationUpdateNotification" object:nil];
     
+    NSLog(@"Going to try to connect now");
     ConnectMessage* cm = [[ConnectMessage alloc] init];
     // TODO: get api version programatically
     cm.APIVersion = 1;
@@ -102,59 +109,36 @@
     [connection sendMessage:cm];
 }
 
-- (void)loginMessage
+- (void)receivedConnectAccept:(NSNotification*)notification
 {
-//    [contacts getAddressBookPermissions];
+    NSLog(@"Connected!");
+    ud.chatroomId = [notification.object globalChatId];
+    ud.iconDownloadURL = [notification.object imageDownloadUrl];
+    ud.iconUploadURL = [notification.object imageUploadUrl];
     
-    NSLog(@"Logging in with handle: %@",ud.handle);
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
     qlm.handle = ud.handle;
     qlm.UUID = ud.UUID;
     qlm.phoneNumber = [[contacts getMyPhoneNumber] longLongValue];
-    NSLog(@"phone: %lld",qlm.phoneNumber);
     [connection sendMessage:qlm];
 }
 
-- (void)messageCallback:(MessageBase*)message
+- (void)receivedConnectReject:(NSNotification*)notification
 {
-    switch (message.type) {
-            
-        case RegisterAccept:
-            NSLog(@"Register Accept");
-            ud.userId = ((RegisterAcceptMessage*)message).userId;
-            [self loginMessage];
-            break;
-            
-        case RegisterReject:
-            NSLog(@"Register Reject");
-            NSLog(@"%@",((RegisterRejectMessage*)message).reason);
-            break;
-            
-        case ConnectAccept:
-            NSLog(@"Connect Accept");
-            ud.chatroomId = ((ConnectAcceptMessage*)message).globalChatId;
-            ud.iconDownloadURL = ((ConnectAcceptMessage*)message).imageDownloadUrl;
-            ud.iconUploadURL = ((ConnectAcceptMessage*)message).imageUploadUrl;
-            NSLog(@"global chatroom id: %llx",ud.chatroomId);
-            [self loginMessage];
-            break;
-            
-        case ConnectReject:
-            NSLog(@"Connect Reject");
-            break;
-            
-        case LoginAccept:
-            NSLog(@"Login Accept");
-            ud.userId = ((RegisterAcceptMessage*)message).userId;
-            [self performSegueWithIdentifier:@"chatListSegue" sender:nil];
-            break;
-            
-        case LoginReject:
-            NSLog(@"Login Reject");
-            NSLog(@"%@",((LoginRejectMessage*)message).reason);
-            break;
-    }
+    NSLog(@"Connect Reject");
+    NSLog(@"%@",[notification.object reason]);
 }
 
+- (void)receivedLoginAccept:(NSNotification*)notification
+{
+    ud.userId = [notification.object userId];
+    [self performSegueWithIdentifier:@"chatListSegue" sender:nil];
+}
+
+- (void)receivedLoginReject:(NSNotification*)notification
+{
+    NSLog(@"Login Reject");
+    NSLog(@"%@",[notification.object reason]);
+}
 
 @end

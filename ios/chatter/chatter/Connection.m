@@ -21,6 +21,7 @@
     NSMutableDictionary* controllers;
     BUFDECLTYPE internalBuffer[8096];
     int internalBufferLen;
+    NSNotificationQueue* notificationQueue;
 }
 
 const int IMAGE_SERVER_PORT = 5001;
@@ -35,6 +36,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         internalBufferLen = 0;
         _parseQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         _parseGroup = dispatch_group_create();
+        notificationQueue = [NSNotificationQueue defaultQueue];
     }
     return self;
 }
@@ -165,7 +167,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 - (void)parseMessage:(BUFTYPE)buffer withLength:(NSInteger)length
 {
-    NSDictionary* tmpControllers = [[NSDictionary alloc] initWithDictionary:controllers copyItems:YES];
+//    NSDictionary* tmpControllers = [[NSDictionary alloc] initWithDictionary:controllers copyItems:YES];
     memcpy(internalBuffer+internalBufferLen, buffer, length);
     internalBufferLen += length;
 
@@ -176,13 +178,20 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         }
         
         MessageBase* m = [MessageUtils deserializeMessage:internalBuffer+2 withLength:msgLen];
+//        if (m) {
+//            for (NSString* sender in tmpControllers) {
+//                ((void (^)(MessageBase*))[tmpControllers objectForKey:sender])(m);
+//            }
+//        }
         
+        // Post message as a notification to all observers for that message
         if (m) {
-            for (NSString* sender in tmpControllers) {
-                ((void (^)(MessageBase*))[tmpControllers objectForKey:sender])(m);
-            }
+            [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
+                                                                     notificationWithName:NSStringFromClass([m class])
+                                                                     object:m]
+                                                       postingStyle:NSPostNow];
         }
-
+        
         // move unused bytes to the beginning of the buffer
         internalBufferLen -= (msgLen+2);
         if (internalBufferLen > 0) {

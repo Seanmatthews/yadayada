@@ -6,7 +6,8 @@
 //  Copyright (c) 2013 rowboat entertainment. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
+@import AddressBookUI;
 #import "UserDetails.h"
 #import "MessageUtils.h"
 #import "Connection.h"
@@ -15,7 +16,6 @@
 #import "Messages.h"
 #import "ChatroomManagement.h"
 #import "Contacts.h"
-#import <AddressBookUI/AddressBookUI.h>
 
 @interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate, UIBarPositioningDelegate>
 
@@ -31,7 +31,6 @@
 
 
 - (void)initCode;
-- (void)messageCallback:(MessageBase*)message;
 - (void)refreshMessages;
 
 - (void)swipeCell:(UITableViewRowAnimation)animation;
@@ -40,10 +39,7 @@
 - (void)tappedCell:(id)sender;
 - (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue;
-//- (IBAction)inviteUser:(id)sender;
 - (void)invitedToChatroom:(NSNotification*)notification;
-
-
 
 
 @end

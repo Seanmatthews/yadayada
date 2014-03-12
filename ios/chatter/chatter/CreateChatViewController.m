@@ -168,22 +168,22 @@ const double MILES_TO_METERS = 1609.34;
 
 - (void)messageCallback:(MessageBase*)message
 {
-    if (viewIsVisible) {
-        UIAlertView *alert;
-        switch (message.type) {
-            case Chatroom:
-                NSLog(@"Chatroom %@",((ChatroomMessage*)message).chatroomName);
-                [self performSelectorOnMainThread:@selector(joinChatroom:) withObject:message waitUntilDone:NO];
-                break;
-                
-            case CreateChatroomReject:
-                NSLog(@"Could not create chatroom");
-                alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((CreateChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                [alert show];
-                break;
-                
-        }
-    }
+//    if (viewIsVisible) {
+//        UIAlertView *alert;
+//        switch (message.type) {
+//            case Chatroom:
+//                NSLog(@"Chatroom %@",((ChatroomMessage*)message).chatroomName);
+//                [self performSelectorOnMainThread:@selector(joinChatroom:) withObject:message waitUntilDone:NO];
+//                break;
+//                
+//            case CreateChatroomReject:
+//                NSLog(@"Could not create chatroom");
+//                alert = [[UIAlertView alloc] initWithTitle: @"Woops!" message:((CreateChatroomRejectMessage*)message).reason delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//                [alert show];
+//                break;
+//                
+//        }
+//    }
 }
 
 @end

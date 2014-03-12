@@ -24,7 +24,6 @@
 @property (nonatomic,retain) IBOutlet UIView* tableParentView;
 
 - (void)initCode;
-- (void)messageCallback:(MessageBase*)message;
 - (IBAction)segmentedControlSwitched:(id)sender;
 - (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue;
 - (void)leaveCurrentChatroom;

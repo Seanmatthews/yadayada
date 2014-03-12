@@ -17,9 +17,15 @@
 
 
 @interface ViewController ()
-- (void)registerForKeyboardNotifications;
 - (void)keyboardWasShown:(NSNotification*)aNotification;
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
+- (void)receivedInviteUserSuccess:(NSNotification*)notification;
+- (void)receivedInviteUserReject:(NSNotification*)notification;
+- (void)receivedJoinedChatroom:(NSNotification*)notification;
+- (void)receivedLeftChatroom:(NSNotification*)notification;
+- (void)receivedMessage:(NSNotification*)notification;
+- (void)registerForNotifications;
+- (void)unregisterForNotifications;
 @end
 
 @implementation ViewController
@@ -33,7 +39,7 @@
     NSString* pageCSS;
     NSString* selfMsgCSS;
     NSString* selfHandleCSS;
-    int swipedCellIndex;
+    NSInteger swipedCellIndex;
     ChatroomManagement* chatManager;
 }
 
@@ -46,10 +52,6 @@
     ud = [UserDetails sharedInstance];
     contacts = [Contacts sharedInstance];
     chatManager = [ChatroomManagement sharedInstance];
-    [self registerForKeyboardNotifications];
-    
-    // Get connection object and add this controller's callback
-    // method for incoming connections.
     connection = [Connection sharedInstance];
     
     // CSS for table cells
@@ -58,19 +60,6 @@
     handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#DADADA }";
     selfMsgCSS = @"div.msg { font:13px/14px baskerville,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0 }";
     selfHandleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#DADADA; text-align:right }";
-    
-    ViewController* __weak weakSelf = self;
-    [connection performSelector:@selector(addCallbackBlock:fromSender:) withObject:^(MessageBase* m) {
-                dispatch_group_async(connection.parseGroup, connection.parseQueue, ^{
-                    [weakSelf messageCallback:m];
-                });
-          } withObject:NSStringFromClass([self class])];
-    
-    // Add us to the invite notification
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(invitedToChatroom:)
-                                                 name:@"InviteNotification"
-                                               object:nil];
 }
 
 // This is called whenever the view is loaded through storyboard segues
@@ -80,6 +69,42 @@
         [self initCode];
     }
     return self;
+}
+
+- (void)registerForNotifications
+{
+    // TODO: get rid of JoinedChatroom, LeftChatroom, and Message, then
+    // subscribe to notifications coming from the chatroom, which will post
+    // new messages to its descriptor name.
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWasShown:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillBeHidden:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(invitedToChatroom:)
+                                                 name:@"InviteNotification"
+                                               object:nil];
+    
+    for (NSString* notificationName in @[@"InviteUserSuccess", @"InviteUserReject",
+                                         @"JoinedChatroom", @"LeftChatroom", @"Message"]) {
+        NSString* selectorName = [NSString stringWithFormat:@"received%@",notificationName];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:NSSelectorFromString(selectorName)
+                                                     name:[NSString stringWithFormat:@"%@Message",notificationName]
+                                                   object:nil];
+    }
+}
+
+- (void)unregisterForNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad
@@ -106,17 +131,25 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     navBar.topItem.title = _chatTitle;
-}
-
--(void)viewDidAppear:(BOOL)animated
-{
-
+    [self registerForNotifications];
+    
+    // Get our chatroom
+    
+    // TODO: Load all messages from from the chatmanager queue when we come into view
+    [mTableView reloadData];
+    
+    // setup KVO with chatqueue
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-
+    [super viewWillDisappear:animated];
+    [self unregisterForNotifications];
+    
+    // Remove KVO
+//    [self remo]
 }
 
 - (void)didReceiveMemoryWarning
@@ -139,7 +172,8 @@
     UIView* wv = (UIView*)[cell.contentView viewWithTag:3];
 
     // Send upvote
-    id aMsg = [[chatManager currentChatQueue] objectAtIndex:swipedCellIndex];
+    Chatroom* c = [chatManager currentChatroom];
+    id aMsg = [[c chatQueue] objectAtIndex:swipedCellIndex];
     if ([aMsg isMemberOfClass:[MessageMessage class]]) {
         MessageMessage* msg = aMsg;
         [self upvote:YES user:msg.senderId becauseOfMessage:msg.messageId];
@@ -165,13 +199,14 @@
     NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
     
     // Send downvote
-    MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:cellPath.row];
+    Chatroom* c = [chatManager currentChatroom];
+    MessageMessage* msg = [[c chatQueue] objectAtIndex:cellPath.row];
     [self upvote:NO user:msg.senderId becauseOfMessage:msg.messageId];
     
     // Remove cell
     [mTableView beginUpdates];
     [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:animation];
-    [[chatManager currentChatQueue] removeObjectAtIndex:cellPath.row];
+    [[c chatQueue] removeObjectAtIndex:cellPath.row];
     [mTableView endUpdates];
 }
 
@@ -203,12 +238,6 @@
 
 
 #pragma mark - Keyboard Interaction + UITextFieldDelegate
-
-- (void)registerForKeyboardNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
-}
 
 // Called when the UIKeyboardDidShowNotification is sent.
 - (void)keyboardWasShown:(NSNotification*)aNotification
@@ -276,8 +305,12 @@
 - (void)refreshMessages
 {
 //    [mTableView reloadData];
-    NSUInteger numMessages = [[chatManager currentChatQueue] count];
-    NSIndexPath* ipath = [NSIndexPath indexPathForRow:[[chatManager currentChatQueue] count]-1 inSection:0];
+    Chatroom* c = [chatManager currentChatroom];
+    NSUInteger numMessages = [[c chatQueue] count];
+    if (numMessages <= 0) {
+        return;
+    }
+    NSIndexPath* ipath = [NSIndexPath indexPathForRow:[[c chatQueue] count]-1 inSection:0];
     
     // Only reload the newest cell
     [mTableView beginUpdates];
@@ -292,41 +325,34 @@
     [mTableView scrollToRowAtIndexPath:ipath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
 }
 
-- (void)messageCallback:(MessageBase*)message
+- (void)receivedInviteUserSuccess:(NSNotification*)notification
 {
-    id aMsg = message;
-    switch (message.type) {
-            
-        case InviteUserSuccess:
-            // TODO: add message in the midst of chat messages
-            break;
-            
-        case InviteUserReject:
-            // TODO: add message in the midst of chat messages
-            break;
-            
-        case JoinedChatroom:
-        case LeftChatroom:
+    // TODO: add message in the midst of chat messages
+}
 
-            // Ensure that all messages that will arrive here have a chatroomId and userId properties
-            if ([aMsg chatroomId] == _chatId) {
-                if ( !([aMsg userId] == ud.userId) || ![aMsg isMemberOfClass:[LeftChatroomMessage class]] ) {
-                    dispatch_group_notify(connection.parseGroup, connection.parseQueue, ^{
-                        [self performSelectorOnMainThread:@selector(refreshMessages) withObject:nil waitUntilDone:NO];
-                    });
-                }
-            }
-            break;
-            
-        case Message:
-            
-            NSLog(@"[viewcontroller] Message, JoinedChatroom, LeftChatroom");
-            if ([aMsg chatroomId] == _chatId) {
-                dispatch_group_notify(connection.parseGroup, connection.parseQueue, ^{
-                    [self performSelectorOnMainThread:@selector(refreshMessages) withObject:nil waitUntilDone:NO];
-                });
-            }
-            break;
+- (void)receivedInviteUserReject:(NSNotification*)notification
+{
+    // TODO: add message in the midst of chat messages
+}
+
+- (void)receivedJoinedChatroom:(NSNotification*)notification
+{
+    if ([notification.object chatroomId] == _chatId && [notification.object userId] != ud.userId) {
+        [self refreshMessages];
+    }
+}
+
+- (void)receivedLeftChatroom:(NSNotification*)notification
+{
+    if ([notification.object chatroomId] == _chatId && [notification.object userId] != ud.userId) {
+        [self refreshMessages];
+    }
+}
+
+- (void)receivedMessage:(NSNotification*)notification
+{
+    if ([notification.object chatroomId] == _chatId) {
+        [self refreshMessages];
     }
 }
 
@@ -345,7 +371,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
+    Chatroom* c = [chatManager currentChatroom];
+    id msg = [[c chatQueue] objectAtIndex:indexPath.row];
     
     if ([msg isMemberOfClass:[MessageMessage class]]) {
 //        NSLog(@"height %f",[ChatroomMessageCell heightForText:msg.message]);
@@ -370,19 +397,21 @@
     // There will only ever be one section for a table.
     // TODO: alter this behavior for multiple chatrooms
 //    NSLog(@"[viewcontroller] count %lu",(unsigned long)[[chatManager currentChatQueue] count]);
-    return [[chatManager currentChatQueue] count];
+    Chatroom* c = [chatManager currentChatroom];
+    return [[c chatQueue] count];
 }
 
 // This function is for recovering cells, or initializing a new one.
 // It is not for filling in cell data.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id rootMsg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
+    Chatroom* c = [chatManager currentChatroom];
+    id rootMsg = [[c chatQueue] objectAtIndex:indexPath.row];
     NSString *CellIdentifier = [NSString stringWithFormat:@"%ld_%ld",(long)indexPath.section,(long)indexPath.row];
     
     if ([rootMsg isMemberOfClass:[MessageMessage class]]) {
     
-        MessageMessage* msg = [[chatManager currentChatQueue] objectAtIndex:indexPath.row];
+        MessageMessage* msg = [[c chatQueue] objectAtIndex:indexPath.row];
 //        NSString *CellIdentifier = [NSString stringWithFormat:@"%ld_%ld",(long)indexPath.section,(long)indexPath.row];
         ChatroomMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
@@ -471,8 +500,9 @@
 {
     [self dismissViewControllerAnimated:YES completion:nil];
     if (person) {
+        Chatroom* c = [chatManager currentChatroom];
         InviteUserMessage* ium = [[InviteUserMessage alloc] init];
-        ium.chatroomId = [chatManager currentChatroomId];
+        ium.chatroomId = [c.cid longLongValue];
         ium.senderId = ud.userId;
         ium.recipientId = 0;
         ium.recipientPhoneNumber = [[contacts iPhoneNumberForRecord:person] longLongValue];

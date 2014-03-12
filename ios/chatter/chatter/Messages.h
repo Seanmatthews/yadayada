@@ -24,7 +24,7 @@ typedef enum {
     Message = 22,
     SubmitMessageReject = 23,
     SearchChatrooms = 31,
-    Chatroom = 32,
+    mChatroom = 32,
     JoinChatroom = 33,
     LeaveChatroom = 34,
     CreateChatroom = 35,
