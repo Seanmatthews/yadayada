@@ -28,6 +28,7 @@
 - (BOOL)canJoinChatroom:(Chatroom*)chatroom;
 - (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius;
 
+
 // TO BE DEPRECATED
 - (Chatroom*)currentChatroom; // NOTE: Assumes one joined chatroom
 

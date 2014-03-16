@@ -20,7 +20,7 @@
 
 - (id)init;
 
-
+- (void)addChatroom:(Chatroom*)chatroom;
 - (void)receivedMessage:(NSNotification*)notification;
 - (void)receivedChatroom:(NSNotification*)notification;
 - (void)receivedJoinedChatroom:(NSNotification*)notification;
@@ -28,6 +28,8 @@
 - (void)receivedInviteUser:(NSNotification*)notification;
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
+- (void)displayInvite:(InviteUserMessage*)message toChatroom:(Chatroom*)chatroom;
+- (void)dismissAllInviteAlerts;
 
 @end
 
@@ -36,7 +38,7 @@
 {
     UserDetails* ud;
     Location* location;
-    
+    NSMutableArray* inviteAlerts;
 }
 
 //const int MESSAGE_NUM_THRESH = 20;
@@ -50,6 +52,7 @@
         _globalChatrooms = [[NSMutableArray alloc] init];
         _localChatrooms = [[NSMutableArray alloc] init];
         _joinedChatrooms = [[NSMutableArray alloc] init];
+        inviteAlerts = [[NSMutableArray alloc] init];
         ud = [UserDetails sharedInstance];
         location = [Location sharedInstance];
         _goingToJoin = nil;
@@ -107,7 +110,7 @@
     
     // Only display local chatrooms that the user is able to join
     if (distance - radius > 0) {
-        NSLog(@"Chatroom is too far away");
+        NSLog(@"[chat management] Chatroom is too far away");
         return NO;
     }
     return YES;
@@ -124,18 +127,24 @@
     }
 }
 
+- (void)addChatroom:(Chatroom*)chatroom
+{
+    if ([self canJoinChatroom:chatroom]) {
+        if (![_chatrooms objectForKey:chatroom.cid]) {
+            if (chatroom.isGlobal) {
+                [_globalChatrooms addObject:chatroom];
+            }
+            else {
+                [_localChatrooms addObject:chatroom];
+            }
+            [_chatrooms setObject:chatroom forKey:chatroom.cid];
+        }
+    }
+}
+
 
 #pragma mark - Managing chatroom memberships
 
-// Dispatch the sending of the message
-//- (void)joinChatroomWithId:(long long)chatId latitude:(long long)lat longitude:(long long)lng
-//{
-//    JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
-//    msg.userId = ud.userId;
-//    msg.chatroomId = chatId;
-//    msg.latitude = [location currentLat];
-//    msg.longitude = [location currentLong];
-//}
 
 
 #pragma mark - Messages
@@ -145,10 +154,10 @@
     MessageMessage* message = notification.object;
     Chatroom* c;
     if ((c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]])) {
-        NSLog(@"message got");
         [[c mutableArrayValueForKey:@"chatQueue"] addObject:message];
     }
 }
+
 
 // NOTE: We don't need to worry about receiving duplicates because
 // duplicates will be overwritten in the Dictionary.
@@ -156,17 +165,7 @@
 {
     ChatroomMessage* message = notification.object;
     Chatroom* c = [Chatroom chatroomWithChatroomMessage:message];
-    if ([self canJoinChatroom:c]) {
-        if (![_chatrooms objectForKey:c.cid]) {
-            if (c.isGlobal) {
-                [_globalChatrooms addObject:c];
-            }
-            else {
-                [_localChatrooms addObject:c];
-            }
-            [_chatrooms setObject:c forKey:c.cid];
-        }
-    }
+    [self addChatroom:c];
 }
 
 - (void)receivedJoinedChatroom:(NSNotification*)notification
@@ -195,14 +194,59 @@
     }
 }
 
+// Received an invite to a chatroom from another user
 - (void)receivedInviteUser:(NSNotification*)notification
 {
-    // TODO: if this chatroom is not already in chatrooms list, add it--
-    // this way, private that this user was invited to will show up
+    // If the chatroom is not in out list-- which means it's private--
+    // add it to our list.
+    if (![_chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]]) {
+        // Chatroom is not in our list. It's either a private chatroom, or out of our range.
+        Chatroom* c = [Chatroom chatroomWithInviteUserMessage:notification.object];
+        
+        // Check that the user can join this chatroom. If so, add it to the list.
+        [self addChatroom:c];
+    }
+    
+    Chatroom* invitedChatroom = [_chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]];
+    [self displayInvite:notification.object toChatroom:invitedChatroom];
 }
 
 
+#pragma mark - UIAlertViewDelegate et al
 
+// Display an invite alert, with an attached chatroom object.
+- (void)displayInvite:(InviteUserMessage*)message toChatroom:(Chatroom*)chatroom
+{
+    NSString* alertMsg = [NSString stringWithFormat:@"%@ has invited you to chatroom %@",
+                          message.senderHandle,message.chatroomName];
+    NSLog(@"%@",alertMsg);
+    UIInviteAlertView* alert = [[UIInviteAlertView alloc] initWithTitle:@"Invitation!"
+                                                                message:alertMsg
+                                                               delegate:self
+                                                      cancelButtonTitle:nil
+                                                      otherButtonTitles:@"Join",@"Decline",nil];
+    alert.chatroom = chatroom;
+    [inviteAlerts addObject:alert];
+    [alert show];
+}
+
+- (void)dismissAllInviteAlerts
+{
+    for (UIAlertView* alert in inviteAlerts) {
+        [alert dismissWithClickedButtonIndex:1 animated:YES];
+    }
+}
+
+// If the user decides to join the chatroom, send a notification to the current view.
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    // 0 == JOIN
+    if (0 == buttonIndex) {
+        // Send segue notification to current view
+        [[NSNotificationQueue defaultQueue] postNotificationName:@"segueToChatroomNotification"
+                                                          object:((UIInviteAlertView*)alertView).chatroom];
+    }
+}
 
 
 @end

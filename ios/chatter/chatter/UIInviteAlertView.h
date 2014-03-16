@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Messages.h"
+#import "Chatroom.h"
 
 @interface UIInviteAlertView : UIAlertView
 
-@property (nonatomic, retain) InviteUserMessage* inviteMessage;
+@property (nonatomic, strong) Chatroom* chatroom;
 
 @end

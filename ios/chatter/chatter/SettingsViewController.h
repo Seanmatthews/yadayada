@@ -13,29 +13,16 @@
 #import "ChatroomManagement.h"
 
 @interface SettingsViewController : UIViewController <UITextFieldDelegate, UIBarPositioningDelegate>
-{
-    Connection* connection;
-    UserDetails* ud;
-    BOOL viewIsVisible;
-    UIImageView* iconView;
-    ChatroomManagement* chatManager;
-}
 
 @property (nonatomic,retain) IBOutlet UITextField* handleTextField;
 @property (nonatomic,retain) IBOutlet UISegmentedControl* chatroomNotificationControl;
 @property (nonatomic,retain) IBOutlet UISegmentedControl* messageNotificationControl;
 @property (nonatomic,retain) IBOutlet UIScrollView* scrollView;
 @property (nonatomic,retain) IBOutlet UISegmentedControl* inviteNotificationControl;
-@property (nonatomic,strong) NSString* unwindSegueName;
-
 
 - (void)initCode;
-- (void)messageCallback:(MessageBase*)message;
-- (void)reregisterHandle;
-- (void)registerForKeyboardNotifications;
 - (IBAction)chatroomNotificationValueChanged:(id)sender;
 - (IBAction)messageNotificationValueChanged:(id)sender;
 - (IBAction)applySettingsButtonPressed:(id)sender;
-- (void)leaveCurrentChatroom;
 
 @end

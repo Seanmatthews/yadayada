@@ -13,11 +13,14 @@
 
 
 @interface CreateChatViewController ()
+
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
-- (void)receivedInviteUser:(NSNotification*)notification;
 - (void)receivedChatroom:(NSNotification*)notification;
 - (void)receivedCreateChatroomReject:(NSNotification*)notification;
+- (void)receivedJoinedChatroom:(NSNotification*)notification;
+- (void)segueToChatroom:(NSNotification*)notification;
+
 @end
 
 @implementation CreateChatViewController
@@ -45,7 +48,12 @@ const double MILES_TO_METERS = 1609.34;
 
 - (void)registerForNotifications
 {
-    for (NSString* notificationName in @[@"Chatroom", @"CreateChatroomReject", @"InviteUser"]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(segueToChatroom:)
+                                                 name:@"segueToChatroomNotification"
+                                               object:nil];
+    
+    for (NSString* notificationName in @[@"Chatroom", @"CreateChatroomReject", @"JoinedChatroom"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:NSSelectorFromString(selectorName)
@@ -170,21 +178,30 @@ const double MILES_TO_METERS = 1609.34;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    if ([segue.identifier isEqualToString:@"createChatroomSegue"]) {
+//        [segue.destinationViewController setChatroom:sender];
+        ViewController* vc = (ViewController*)segue.destinationViewController;
+        vc.chatroom = sender;
+    }
+}
 
+- (void)segueToChatroom:(NSNotification*)notification
+{
+    // Not really creating a chatroom... consider renaming the segue
+    [self performSegueWithIdentifier:@"createChatroomSegue" sender:notification.object];
 }
 
 
 #pragma mark - I/O
 
-- (void)receivedInviteUser:(NSNotification*)notification
-{
-    // TODO: show alert view to see if they want to join the chat
-}
-
 - (void)receivedChatroom:(NSNotification*)notification
 {
-    // TODO: set going to join? (in chatmanager) and join chatroom
-    // NOTE: maybe don't do the unwind thing before we join-- it looks hokey
+    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
+    jcm.userId = ud.userId;
+    jcm.chatroomId = [notification.object chatroomId];
+    jcm.latitude = [location currentLat];
+    jcm.longitude = [location currentLong];
+    [connection sendMessage:jcm];
 }
 
 - (void)receivedCreateChatroomReject:(NSNotification*)notification
@@ -195,6 +212,13 @@ const double MILES_TO_METERS = 1609.34;
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
     [alert show];
+}
+
+- (void)receivedJoinedChatroom:(NSNotification*)notification
+{
+    NSLog(@"joined chatroom");
+    Chatroom* c = [chatManager.chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]];
+    [self performSegueWithIdentifier:@"createChatroomSegue" sender:c];
 }
 
 

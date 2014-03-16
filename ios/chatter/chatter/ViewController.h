@@ -17,9 +17,7 @@
 #import "Chatroom.h"
 #import "Contacts.h"
 
-@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource,
-                                              ABPeoplePickerNavigationControllerDelegate, UIBarPositioningDelegate,
-                                              UIAlertViewDelegate>
+@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate, UIBarPositioningDelegate>
 
 
 //@property (nonatomic, strong) NSString* userHandle;
@@ -38,6 +36,5 @@
 - (void)tappedCell:(id)sender;
 - (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue;
-
 
 @end

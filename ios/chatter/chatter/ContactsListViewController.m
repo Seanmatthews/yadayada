@@ -7,8 +7,13 @@
 //
 
 #import "ContactsListViewController.h"
+#import "ViewController.h"
 
 @interface ContactsListViewController ()
+
+- (void)registerForNotifications;
+- (void)unregisterForNotifications;
+- (void)segueToChatroom:(NSNotification*)notification;
 
 @end
 
@@ -37,6 +42,19 @@
 	[_tableView reloadData];
     
 
+}
+
+- (void)registerForNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(segueToChatroom:)
+                                                 name:@"segueToChatroomNotification"
+                                               object:nil];
+}
+
+- (void)unregisterForNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -95,6 +113,23 @@
 {
     [contacts setInvitedContact:[contacts.contactsList objectAtIndex:indexPath.row]];
     [self performSegueWithIdentifier:@"unwindToChatroom" sender:nil];
+}
+
+
+#pragma mark - Segues
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"unwindToChatroom"] && sender) {
+        //        [segue.destinationViewController setChatroom:sender];
+        ViewController* vc = (ViewController*)segue.destinationViewController;
+        vc.chatroom = sender;
+    }
+}
+
+- (void)segueToChatroom:(NSNotification*)notification
+{
+    [self performSegueWithIdentifier:@"unwindToChatroom" sender:notification.object];
 }
 
 

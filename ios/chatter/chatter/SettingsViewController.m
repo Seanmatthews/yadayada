@@ -8,19 +8,28 @@
 
 #import "SettingsViewController.h"
 #import "Messages.h"
+#import "ViewController.h"
 
 
 @interface SettingsViewController ()
 
+- (void)reregisterHandle;
+- (void)registerForKeyboardNotifications;
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
 - (void)receivedLoginAccept:(NSNotification*)notification;
 - (void)receivedLoginReject:(NSNotification*)notification;
-- (void)receivedInviteUser:(NSNotification*)notification;
+- (void)segueToChatroom:(NSNotification*)notification;
 
 @end
 
 @implementation SettingsViewController
+{
+    Connection* connection;
+    UserDetails* ud;
+    UIImageView* iconView;
+    ChatroomManagement* chatManager;
+}
 
 - (void)initCode
 {
@@ -41,8 +50,17 @@
 
 - (void)registerForNotifications
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(segueToChatroom:)
+                                                 name:@"segueToChatroomNotification"
+                                               object:nil];
+    
     for (NSString* notificationName in @[@"LoginAccept", @"LoginAccept", @"InviteUser"]) {
-        
+        NSString* selectorName = [NSString stringWithFormat:@"received%@",notificationName];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:NSSelectorFromString(selectorName)
+                                                     name:[NSString stringWithFormat:@"%@Message",notificationName]
+                                                   object:nil];
     }
 }
 
@@ -94,6 +112,10 @@
     if ([segue.identifier isEqualToString:@"unwindToChatList"]) {
 
     }
+    else if ([segue.identifier isEqualToString:@"settings2ChatroomSegue"]) {
+        ViewController* vc = (ViewController*)segue.destinationViewController;
+        vc.chatroom = sender;
+    }
 //    if ([segue.identifier isEqualToString:@"settingsEmbedSegue"]) {
 //        DragImageController* dic = (DragImageController*)segue.destinationViewController;
 //        if (ud.userIcon) {
@@ -103,6 +125,11 @@
 //        // ARC is enabled, but is this being retained?
 //        iconView = dic.imageView;
 //    }
+}
+
+- (void)segueToChatroom:(NSNotification*)notification
+{
+    [self performSegueWithIdentifier:@"settings2ChatroomSegue" sender:notification.object];
 }
 
 
@@ -214,7 +241,7 @@
 //    }
 }
 
-
+// Changed handle and settings successfully. Revert to chat list view.
 - (void)receivedLoginAccept:(NSNotification*)notification
 {
     ud.handle = [_handleTextField text];
@@ -222,6 +249,7 @@
     [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
 }
 
+// Handle change was unsuccessful. Stay on the view.
 - (void)receivedLoginReject:(NSNotification*)notification
 {
     [_handleTextField setText:ud.handle];
@@ -231,11 +259,6 @@
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
     [alert show];
-}
-
-- (void)receivedInviteUser:(NSNotification*)notification
-{
-    // TODO: show alert view to see if they want to join the chat
 }
 
 - (void)leaveCurrentChatroom

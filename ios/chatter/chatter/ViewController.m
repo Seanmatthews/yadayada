@@ -17,16 +17,16 @@
 
 
 @interface ViewController ()
+
 - (void)keyboardWasShown:(NSNotification*)aNotification;
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
 - (void)receivedInviteUserSuccess:(NSNotification*)notification;
 - (void)receivedInviteUserReject:(NSNotification*)notification;
-- (void)receivedInviteUser:(NSNotification*)notification;
+- (void)segueToChatroom:(NSNotification*)notification;
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
 - (void)addMessageAtIndexPath:(NSIndexPath*)indexPath;
-- (void)showInviteAlert:(InviteUserMessage*)ium;
-- (void)dismissAllInviteAlerts;
+
 @end
 
 @implementation ViewController
@@ -89,7 +89,12 @@
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
     
-    for (NSString* notificationName in @[@"InviteUser", @"InviteUserSuccess", @"InviteUserReject"]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(segueToChatroom:)
+                                                 name:@"segueToChatroomNotification"
+                                               object:nil];
+    
+    for (NSString* notificationName in @[@"InviteUserSuccess", @"InviteUserReject"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:NSSelectorFromString(selectorName)
@@ -321,12 +326,6 @@
     [mTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
 }
 
-- (void)receivedInviteUser:(NSNotification *)notification
-{
-    NSLog(@"invited to chatroom, going");
-    [self showInviteAlert:notification.object];
-}
-
 - (void)receivedInviteUserSuccess:(NSNotification*)notification
 {
     // TODO: add message in the midst of chat messages, when inivitiation was a success
@@ -335,6 +334,13 @@
 - (void)receivedInviteUserReject:(NSNotification*)notification
 {
     // TODO: add message in the midst of chat messages, when invitation failed
+}
+
+- (void)segueToChatroom:(NSNotification*)notification
+{
+    _chatroom = notification.object;
+    [self viewDidDisappear:NO];
+    [self viewWillAppear:NO];
 }
 
 
@@ -496,36 +502,6 @@
 {
     return NO;
 }
-
-
-#pragma mark - Alerts & UIAlertViewDelegate
-
-- (void)showInviteAlert:(InviteUserMessage*)ium
-{
-    NSString* alertMsg = [NSString stringWithFormat:@"%@ has invite you to chatroom %@",ium.senderHandle,ium.chatroomName];
-    NSLog(@"%@",alertMsg);
-    UIInviteAlertView* alert = [[UIInviteAlertView alloc] initWithTitle:@"Invitation!" message:alertMsg delegate:self cancelButtonTitle:nil otherButtonTitles:@"Join",@"Decline",nil];
-    alert.inviteMessage = ium;
-    [inviteAlerts addObject:alert];
-    [alert show];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    // 0 == JOIN
-    if (0 == buttonIndex) {
-//        [self setGoingToJoin:((UIInviteAlertView*)alertView).inviteMessage];
-//        [self dismissAllInviteAlerts];
-    }
-}
-
-- (void)dismissAllInviteAlerts
-{
-    for (UIAlertView* alert in inviteAlerts) {
-        [alert dismissWithClickedButtonIndex:1 animated:YES];
-    }
-}
-
 
 
 @end

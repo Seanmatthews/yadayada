@@ -34,8 +34,10 @@
 
 - (id)init;
 - (id)initWithChatroomMessage:(ChatroomMessage*)message;
+- (id)initWithInviteUserMessage:(InviteUserMessage*)message;
 //- (id)initWithJoinedChatroomMessage:(JoinedChatroomMessage*)message;
 + (Chatroom*)chatroomWithChatroomMessage:(ChatroomMessage*)message;
++ (Chatroom*)chatroomWithInviteUserMessage:(InviteUserMessage*)message;
 //+ (Chatroom*)chatroomWithJoinedChatroomMessage:(JoinedChatroomMessage*)message;
 
 //- (void)insertObject:(NSObject *)message inChatQueueAtIndex:(NSUInteger)index;

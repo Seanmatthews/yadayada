@@ -27,10 +27,10 @@
 - (void)receivedChatroom:(NSNotification*)notification;
 - (void)receivedJoinedChatroom:(NSNotification*)notification;
 - (void)receivedJoinChatroomReject:(NSNotification*)notification;
-- (void)receivedInviteUser:(NSNotification*)notification;
 - (BOOL)canJoinChatroom:(Chatroom*)chatroom;
 - (void)refreshTable:(UIRefreshControl*)refreshControl;
 - (void)searchChatrooms;
+- (void)segueToChatroom:(NSNotification*)notification;
 
 // Map view
 - (void)addChatroomAnnotation:(ChatroomMessage*)message;
@@ -76,7 +76,12 @@ const int MAX_RECENT_CHATS = 5;
                                                  name:@"ChatListLoaded"
                                                object:nil];
     
-    for (NSString* notificationName in @[@"Chatroom", @"JoinedChatroom", @"JoinChatroomReject", @"InviteUser"]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(segueToChatroom:)
+                                                 name:@"segueToChatroomNotification"
+                                               object:nil];
+    
+    for (NSString* notificationName in @[@"Chatroom", @"JoinedChatroom", @"JoinChatroomReject"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:NSSelectorFromString(selectorName)
@@ -180,7 +185,7 @@ const int MAX_RECENT_CHATS = 5;
     
     // Only display local chatrooms that the user is able to join
     if (distance - [chatroom.radius longLongValue] > 0) {
-        NSLog(@"Chatroom is too far away");
+        NSLog(@"[chat list view] Chatroom is too far away");
         return NO;
     }
     return YES;
@@ -217,11 +222,6 @@ const int MAX_RECENT_CHATS = 5;
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
     [alert show];
-}
-
-- (void)receivedInviteUser:(NSNotification*)notification
-{
-    // TODO: show alert view to see if they want to join the chat
 }
 
 
@@ -333,6 +333,11 @@ const int MAX_RECENT_CHATS = 5;
 - (IBAction)unwindToChatList:(UIStoryboardSegue*)unwindSegue
 {
 
+}
+
+- (void)segueToChatroom:(NSNotification*)notification
+{
+    [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:notification.object];
 }
 
 

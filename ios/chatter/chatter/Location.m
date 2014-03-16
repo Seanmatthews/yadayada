@@ -19,7 +19,7 @@
 }
 
 static const double kDegreesToRadians = M_PI / 180.0;
-static const double kRadiansToDegrees = 180.0 / M_PI;
+//static const double kRadiansToDegrees = 180.0 / M_PI;
 static const double MILES_METERS = 1609.34;
 
 - (id)init
