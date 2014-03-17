@@ -13,6 +13,7 @@
 #import "Chatroom.h"
 
 typedef void (^JoinCompletion)(void);
+typedef void (^CreateCompletion)(long long);
 
 @interface ChatroomManagement : NSObject
 
@@ -32,6 +33,7 @@ typedef void (^JoinCompletion)(void);
 - (void)searchChatrooms;
 - (void)joinChatroom:(Chatroom*)chatroom withCompletion:(JoinCompletion)completion;
 - (void)joinChatroomWithId:(NSNumber*)chatroomId withCompletion:(JoinCompletion)completion;
+- (void)createChatroom:(Chatroom*)chatroom withCompletion:(CreateCompletion)completion;
 - (BOOL)alreadyJoinedChatroom:(Chatroom*)chatroom;
 
 @end

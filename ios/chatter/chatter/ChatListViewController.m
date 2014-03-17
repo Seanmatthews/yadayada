@@ -65,7 +65,7 @@ const int MAX_RECENT_CHATS = 5;
 
 - (void)registerForNotifications
 {
-    for (NSString* notificationName in @[@"JoinChatroomReject"]) {
+    for (NSString* notificationName in @[@"JoinChatroomReject", @"Chatroom"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:NSSelectorFromString(selectorName)

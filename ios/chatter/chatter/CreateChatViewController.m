@@ -7,19 +7,14 @@
 //
 
 #import "CreateChatViewController.h"
-#import <QuartzCore/QuartzCore.h>
-#import "Messages.h"
+#import "Connection.h"
+#import "Location.h"
+#import "UserDetails.h"
+#import "ChatroomManagement.h"
 #import "ViewController.h"
 
 
 @interface CreateChatViewController ()
-
-- (void)registerForNotifications;
-- (void)unregisterForNotifications;
-- (void)receivedChatroom:(NSNotification*)notification;
-- (void)receivedCreateChatroomReject:(NSNotification*)notification;
-- (void)receivedJoinedChatroom:(NSNotification*)notification;
-- (void)segueToChatroom:(NSNotification*)notification;
 
 @end
 
@@ -46,27 +41,6 @@ const double MILES_TO_METERS = 1609.34;
     return self;
 }
 
-- (void)registerForNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(segueToChatroom:)
-                                                 name:@"segueToChatroomNotification"
-                                               object:nil];
-    
-    for (NSString* notificationName in @[@"Chatroom", @"CreateChatroomReject", @"JoinedChatroom"]) {
-        NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:NSSelectorFromString(selectorName)
-                                                     name:[NSString stringWithFormat:@"%@Message",notificationName]
-                                                   object:nil];
-    }
-}
-
-- (void)unregisterForNotifications
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -77,13 +51,11 @@ const double MILES_TO_METERS = 1609.34;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self registerForNotifications];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self unregisterForNotifications];
 }
 
 - (void)didReceiveMemoryWarning
@@ -148,19 +120,24 @@ const double MILES_TO_METERS = 1609.34;
         return;
     }
     
-    CreateChatroomMessage* msg = [[CreateChatroomMessage alloc] init];
-    msg.chatroomName = _chatroomNameTextField.text;
-    if (_globalChatSelect.selectedSegmentIndex == 0) {
-        msg.radius = 0;
+    __block Chatroom* chatroom = [[Chatroom alloc] init];
+    chatroom.chatroomName = _chatroomNameTextField.text;
+    chatroom.origin = [location currentLocation];
+    chatroom.private = _inviteOnlyControl.selectedSegmentIndex == 0;
+    chatroom.global = _globalChatSelect.selectedSegmentIndex == 0;
+    if (chatroom.global) {
+        chatroom.radius = 0;
     }
     else {
-        msg.radius = [_chatroomRadiusLabel.text floatValue] * MILES_TO_METERS;
+        chatroom.radius = [NSNumber numberWithLongLong:[_chatroomRadiusLabel.text floatValue] * MILES_TO_METERS];
     }
-    msg.ownerId = ud.userId;
-    msg.latitude = [location currentLat];
-    msg.longitude = [location currentLong];
-    msg.isPrivate = _inviteOnlyControl.selectedSegmentIndex == 0;
-    [connection sendMessage:msg];
+    [chatManager createChatroom:chatroom withCompletion:^(long long cid){
+        chatroom.cid = [NSNumber numberWithLongLong:cid];
+        [chatManager joinChatroom:chatroom withCompletion:^{
+            Chatroom* created = [[[ChatroomManagement sharedInstance] chatrooms] objectForKey:chatroom.cid];
+            [self performSegueWithIdentifier:@"createChatroomSegue" sender:created];
+        }];
+    }];
 }
 
 
@@ -183,42 +160,6 @@ const double MILES_TO_METERS = 1609.34;
         ViewController* vc = (ViewController*)segue.destinationViewController;
         vc.chatroom = sender;
     }
-}
-
-- (void)segueToChatroom:(NSNotification*)notification
-{
-    // Not really creating a chatroom... consider renaming the segue
-    [self performSegueWithIdentifier:@"createChatroomSegue" sender:notification.object];
-}
-
-
-#pragma mark - I/O
-
-- (void)receivedChatroom:(NSNotification*)notification
-{
-    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
-    jcm.userId = ud.userId;
-    jcm.chatroomId = [notification.object chatroomId];
-    jcm.latitude = [location currentLat];
-    jcm.longitude = [location currentLong];
-    [connection sendMessage:jcm];
-}
-
-- (void)receivedCreateChatroomReject:(NSNotification*)notification
-{
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Woops!"
-                                                    message:[notification.object reason]
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
-
-- (void)receivedJoinedChatroom:(NSNotification*)notification
-{
-    NSLog(@"joined chatroom");
-    Chatroom* c = [chatManager.chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]];
-    [self performSegueWithIdentifier:@"createChatroomSegue" sender:c];
 }
 
 

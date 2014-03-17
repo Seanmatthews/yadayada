@@ -7,13 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Connection.h"
-#import "Location.h"
-#import "UserDetails.h"
-#import "ChatroomManagement.h"
+
 
 @interface CreateChatViewController : UIViewController <UITextFieldDelegate, UIBarPositioningDelegate>
-
 
 @property (nonatomic, retain) IBOutlet UITextField* chatroomNameTextField;
 @property (nonatomic, retain) IBOutlet UIButton* chatroomIconButton;
@@ -26,7 +22,5 @@
 - (IBAction)sliderChanged:(id)sender;
 - (IBAction)createChatroom:(id)sender;
 - (IBAction)globalChatSelection:(id)sender;
-
-
 
 @end

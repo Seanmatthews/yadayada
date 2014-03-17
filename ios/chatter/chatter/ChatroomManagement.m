@@ -31,6 +31,7 @@
 - (void)unregisterForNotifications;
 - (void)displayInvite:(InviteUserMessage*)message toChatroom:(Chatroom*)chatroom;
 - (void)dismissAllInviteAlerts;
+- (void)createChatroom:(Chatroom*)chatroom withCompletion:(CreateCompletion)completion;
 
 @end
 
@@ -43,6 +44,7 @@
     Location* location;
     NSMutableArray* inviteAlerts;
     JoinCompletion joinCompletion;
+    CreateCompletion createCompletion;
 }
 
 //const int MESSAGE_NUM_THRESH = 20;
@@ -53,6 +55,7 @@
     
     if (self) {
         joinCompletion = nil;
+        createCompletion = nil;
         connection = [Connection sharedInstance];
         _chatrooms = [[NSMutableDictionary alloc] init];
         _globalChatrooms = [[NSMutableArray alloc] init];
@@ -87,7 +90,8 @@
 - (void)registerForNotifications
 {
     for (NSString* notificationName in @[@"Message", @"JoinedChatroom", @"JoinChatroomReject",
-                                         @"LeftChatroom", @"InviteUser", @"Chatroom"]) {
+                                         @"LeftChatroom", @"InviteUser", @"Chatroom",
+                                         @"CreateChatroomReject"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:NSSelectorFromString(selectorName)
@@ -189,6 +193,19 @@
     }
 }
 
+- (void)createChatroom:(Chatroom*)chatroom withCompletion:(CreateCompletion)completion
+{
+    CreateChatroomMessage* ccm = [[CreateChatroomMessage alloc] init];
+    ccm.ownerId = ud.userId;
+    ccm.chatroomName = chatroom.chatroomName;
+    ccm.isPrivate = chatroom.isPrivate;
+    ccm.latitude = [location currentLat];
+    ccm.longitude = [location currentLong];
+    ccm.radius = [chatroom.radius longLongValue];
+    [connection sendMessage:ccm];
+    createCompletion = completion;
+}
+
 
 #pragma mark - Notifications
 
@@ -209,6 +226,11 @@
     ChatroomMessage* message = notification.object;
     Chatroom* c = [Chatroom chatroomWithChatroomMessage:message];
     [self addChatroom:c];
+    
+    if (createCompletion) {
+        createCompletion([c.cid longLongValue]);
+        createCompletion = nil;
+    }
 }
 
 - (void)receivedJoinedChatroom:(NSNotification*)notification
@@ -218,7 +240,7 @@
     if (message.userId == ud.userId) {
         [_joinedChatrooms insertObject:c atIndex:0];
         joinCompletion();
-        joinCompletion = NULL;
+        joinCompletion = nil;
     }
     else {
         [[c mutableArrayValueForKey:@"chatQueue"] addObject:message];
@@ -258,6 +280,16 @@
 - (void)receivedJoinChatroomReject:(NSNotification*)notification
 {
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Woops!"
+                                                    message:[notification.object reason]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
+- (void)receivedCreateChatroomReject:(NSNotification*)notification
+{
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Woops!"
                                                     message:[notification.object reason]
                                                    delegate:nil
                                           cancelButtonTitle:@"OK"
