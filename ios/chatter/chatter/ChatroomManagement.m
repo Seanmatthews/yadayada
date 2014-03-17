@@ -15,15 +15,16 @@
 #import "ChatroomManagement.h"
 #import "Connection.h"
 #import "UIInviteAlertView.h"
+#import "Connection.h"
 
 @interface ChatroomManagement()
 
 - (id)init;
-
 - (void)addChatroom:(Chatroom*)chatroom;
 - (void)receivedMessage:(NSNotification*)notification;
 - (void)receivedChatroom:(NSNotification*)notification;
 - (void)receivedJoinedChatroom:(NSNotification*)notification;
+- (void)receivedJoinChatroomReject:(NSNotification*)notification;
 - (void)receivedLeftChatroom:(NSNotification*)notification;
 - (void)receivedInviteUser:(NSNotification*)notification;
 - (void)registerForNotifications;
@@ -36,9 +37,12 @@
 
 @implementation ChatroomManagement
 {
+    
+    Connection* connection;
     UserDetails* ud;
     Location* location;
     NSMutableArray* inviteAlerts;
+    JoinCompletion joinCompletion;
 }
 
 //const int MESSAGE_NUM_THRESH = 20;
@@ -48,6 +52,8 @@
     self = [super init];
     
     if (self) {
+        joinCompletion = nil;
+        connection = [Connection sharedInstance];
         _chatrooms = [[NSMutableDictionary alloc] init];
         _globalChatrooms = [[NSMutableArray alloc] init];
         _localChatrooms = [[NSMutableArray alloc] init];
@@ -55,8 +61,8 @@
         inviteAlerts = [[NSMutableArray alloc] init];
         ud = [UserDetails sharedInstance];
         location = [Location sharedInstance];
-        _goingToJoin = nil;
-        _createdToJoin = nil;
+//        _goingToJoin = nil;
+//        _createdToJoin = nil;
         [self registerForNotifications];
     }
     return self;
@@ -80,7 +86,7 @@
 
 - (void)registerForNotifications
 {
-    for (NSString* notificationName in @[@"Message", @"JoinedChatroom",
+    for (NSString* notificationName in @[@"Message", @"JoinedChatroom", @"JoinChatroomReject",
                                          @"LeftChatroom", @"InviteUser", @"Chatroom"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -98,11 +104,6 @@
 
 #pragma mark - Convenience
 
-// NOTE: Assumes one joined chatroom
-- (Chatroom*)currentChatroom
-{
-    return[[_joinedChatrooms objectEnumerator] nextObject];
-}
 
 - (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius
 {
@@ -142,12 +143,54 @@
     }
 }
 
-
-#pragma mark - Managing chatroom memberships
-
+- (BOOL)alreadyJoinedChatroom:(Chatroom*)chatroom
+{
+    if ([_joinedChatrooms containsObject:[_chatrooms objectForKey:chatroom.cid]]) {
+        return YES;
+    }
+    return NO;
+}
 
 
 #pragma mark - Messages
+
+- (void)searchChatrooms
+{
+    SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
+    msg.latitude = [location currentLat];
+    msg.longitude = [location currentLong];
+    msg.onlyJoinable = YES;
+    msg.metersFromCoords = 0;
+    [connection sendMessage:msg];
+}
+
+- (void)joinChatroom:(Chatroom*)chatroom withCompletion:(JoinCompletion)completion
+{
+    [self joinChatroomWithId:chatroom.cid withCompletion:completion];
+}
+
+- (void)joinChatroomWithId:(NSNumber*)chatroomId withCompletion:(JoinCompletion)completion
+{
+    Chatroom* c = [_chatrooms objectForKey:chatroomId];
+    
+    if ([_joinedChatrooms containsObject:c]) {
+        [_joinedChatrooms removeObject:c];
+        [_joinedChatrooms insertObject:c atIndex:0];
+        completion();
+    }
+    else {
+        JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
+        jcm.chatroomId = [chatroomId longLongValue];
+        jcm.latitude = [location currentLat];
+        jcm.longitude = [location currentLong];
+        jcm.userId = ud.userId;
+        [connection sendMessage:jcm];
+        joinCompletion = completion;
+    }
+}
+
+
+#pragma mark - Notifications
 
 - (void)receivedMessage:(NSNotification*)notification
 {
@@ -171,12 +214,13 @@
 - (void)receivedJoinedChatroom:(NSNotification*)notification
 {
     JoinedChatroomMessage* message = notification.object;
-    NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
+    Chatroom* c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]];
     if (message.userId == ud.userId) {
-        [_joinedChatrooms addObject:[_chatrooms objectForKey:cid]];
+        [_joinedChatrooms insertObject:c atIndex:0];
+        joinCompletion();
+        joinCompletion = NULL;
     }
     else {
-        Chatroom* c = [_chatrooms objectForKey:cid];
         [[c mutableArrayValueForKey:@"chatQueue"] addObject:message];
     }
 }
@@ -211,6 +255,16 @@
     [self displayInvite:notification.object toChatroom:invitedChatroom];
 }
 
+- (void)receivedJoinChatroomReject:(NSNotification*)notification
+{
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Woops!"
+                                                    message:[notification.object reason]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
 
 #pragma mark - UIAlertViewDelegate et al
 
@@ -243,8 +297,10 @@
     // 0 == JOIN
     if (0 == buttonIndex) {
         // Send segue notification to current view
-        [[NSNotificationQueue defaultQueue] postNotificationName:@"segueToChatroomNotification"
-                                                          object:((UIInviteAlertView*)alertView).chatroom];
+        [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
+                                                                 notificationWithName:@"segueToChatroomNotification"
+                                                                               object:((UIInviteAlertView*)alertView).chatroom]
+                                                   postingStyle:NSPostNow];
     }
 }
 

@@ -20,6 +20,7 @@
 - (void)receivedLoginAccept:(NSNotification*)notification;
 - (void)receivedLoginReject:(NSNotification*)notification;
 - (void)segueToChatroom:(NSNotification*)notification;
+- (void)leaveAllChatrooms;
 
 @end
 
@@ -261,10 +262,9 @@
     [alert show];
 }
 
-- (void)leaveCurrentChatroom
+- (void)leaveAllChatrooms
 {
-    Chatroom* c = [chatManager currentChatroom];
-    if (c) {
+    for (Chatroom* c in [chatManager joinedChatrooms]) {
         LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
         msg.userId = ud.userId;
         msg.chatroomId = [c.cid longLongValue];
@@ -275,7 +275,7 @@
 - (void)reregisterHandle
 {
     // Leave current chatroom
-    [self leaveCurrentChatroom];
+    [self leaveAllChatrooms];
     
     NSLog(@"Logging in with handle: %@",_handleTextField.text);
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];

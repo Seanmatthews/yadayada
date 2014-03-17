@@ -19,17 +19,11 @@
 
 @interface ChatListViewController ()
 
-- (void)scheduledToJoin;
-- (void)joinChatroom:(Chatroom*)chatroom;
-- (void)joinChatroomWithId:(long long)chatId;
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
 - (void)receivedChatroom:(NSNotification*)notification;
-- (void)receivedJoinedChatroom:(NSNotification*)notification;
-- (void)receivedJoinChatroomReject:(NSNotification*)notification;
 - (BOOL)canJoinChatroom:(Chatroom*)chatroom;
 - (void)refreshTable:(UIRefreshControl*)refreshControl;
-- (void)searchChatrooms;
 - (void)segueToChatroom:(NSNotification*)notification;
 
 // Map view
@@ -71,17 +65,7 @@ const int MAX_RECENT_CHATS = 5;
 
 - (void)registerForNotifications
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(scheduledToJoin)
-                                                 name:@"ChatListLoaded"
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(segueToChatroom:)
-                                                 name:@"segueToChatroomNotification"
-                                               object:nil];
-    
-    for (NSString* notificationName in @[@"Chatroom", @"JoinedChatroom", @"JoinChatroomReject"]) {
+    for (NSString* notificationName in @[@"JoinChatroomReject"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:NSSelectorFromString(selectorName)
@@ -134,7 +118,6 @@ const int MAX_RECENT_CHATS = 5;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ChatListLoaded" object:self];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -200,42 +183,16 @@ const int MAX_RECENT_CHATS = 5;
         [_tableView reloadData];
     }
     
+    // TODO: map should be grabbing data from chat manager?
+    // Should we display rooms that are too far away?
     if (!_mapParentView.isHidden) {
         [self addChatroomAnnotation:notification.object];
         [self reloadMapAnnotations];
     }
 }
 
-- (void)receivedJoinedChatroom:(NSNotification*)notification
-{
-    if ([notification.object userId] == ud.userId) {
-        Chatroom* c = [chatManager.chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]];
-        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:c];
-    }
-}
-
-- (void)receivedJoinChatroomReject:(NSNotification*)notification
-{
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Woops!"
-                                                    message:[notification.object reason]
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
-
 
 #pragma mark - Convenience Methods
-
-- (void)searchChatrooms
-{
-    SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
-    msg.latitude = [location currentLat];
-    msg.longitude = [location currentLong];
-    msg.onlyJoinable = YES;
-    msg.metersFromCoords = 0;
-    [connection sendMessage:msg];
-}
 
 - (void)joinChatroomFromMap:(id)sender
 {
@@ -243,62 +200,11 @@ const int MAX_RECENT_CHATS = 5;
     //    ChatPointAnnotation* cpa = (ChatPointAnnotation*)mkp.annotation;
     ChatPointAnnotation* cpa = (ChatPointAnnotation*)(((SmartButton*)sender).parent);
     [_mapView deselectAnnotation:cpa animated:NO];
-    [self joinChatroomWithId:cpa.chatroomId];
-}
-
-- (void)joinChatroom:(Chatroom*)chatroom
-{
-    if ([chatManager.joinedChatrooms containsObject:chatroom]) {
-        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:chatroom];
-    }
-    else {
-        JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
-        msg.chatroomId = [chatroom.cid longLongValue];
-        msg.userId = ud.userId;
-        msg.latitude = [location currentLat];
-        msg.longitude = [location currentLong];
-        [connection sendMessage:msg];
-    }
-}
-
-- (void)joinChatroomWithId:(long long)chatId
-{
-    Chatroom* c = [chatManager currentChatroom];
-    if ([c.cid longLongValue] == chatId) {
-        
-        // This is a bad solution.
-        // TODO: make this better
-        
-        JoinedChatroomMessage* msg = [[JoinedChatroomMessage alloc] init];
-        msg.chatroomId = [c.cid longLongValue];
-        msg.chatroomName = c.chatroomName;
-        msg.userId = ud.userId;
-        msg.userHandle = ud.handle;
-        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:msg];
-    }
-    else {
-        // First, leave our current chatroom, if any
-        [self leaveCurrentChatroom];
-        
-        JoinChatroomMessage* msg = [[JoinChatroomMessage alloc] init];
-        msg.chatroomId = chatId;
-        msg.userId = ud.userId;
-        msg.latitude = [location currentLat];
-        msg.longitude = [location currentLong];
-        [connection sendMessage:msg];
-    }
-}
-
-- (void)leaveCurrentChatroom
-{
-    if ([chatManager.joinedChatrooms count] > 0) {
-        Chatroom* c = [chatManager currentChatroom];
-        LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
-        msg.userId = ud.userId;
-        msg.chatroomId = [c.cid longLongValue];
-        NSLog(@"Leaving chatroom %lld",msg.chatroomId);
-        [connection sendMessage:msg];
-    }
+    Chatroom* c = [chatManager.chatrooms objectForKey:[NSNumber numberWithLongLong:cpa.chatroomId]];
+    [chatManager joinChatroom:c
+               withCompletion:^{
+                   [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:c];
+               }];
 }
 
 
@@ -310,22 +216,6 @@ const int MAX_RECENT_CHATS = 5;
     if ([segue.identifier isEqualToString:@"pickedChatroomSegue"]) {
         ViewController* vc = (ViewController*)segue.destinationViewController;
         vc.chatroom = sender;
-    }
-}
-
-- (void)scheduledToJoin
-{
-    // This property is set in another view controller before it unwinds to this view controller's view
-    if ([chatManager goingToJoin]) {
-        if ([self canJoinChatroom:chatManager.goingToJoin]) {
-            [self joinChatroom:chatManager.goingToJoin];
-            [chatManager setGoingToJoin:nil];
-        }
-    }
-    else if ([chatManager createdToJoin]) {
-        NSLog(@"[chat list] created to join");
-        [self joinChatroom:chatManager.createdToJoin];
-        [chatManager setCreatedToJoin:nil];
     }
 }
 
@@ -486,7 +376,14 @@ const int MAX_RECENT_CHATS = 5;
         tappedCellInfo = (Chatroom*)[[chatManager globalChatrooms] objectAtIndex:indexPath.row];
     }
     
-    [self joinChatroom:tappedCellInfo];
+//    if ([chatManager alreadyJoinedChatroom:tappedCellInfo]){
+//        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:tappedCellInfo];
+//    }
+//    else {
+        [chatManager joinChatroom:tappedCellInfo withCompletion:^{
+            [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:tappedCellInfo];
+        }];
+//    }
 }
 
 
@@ -494,11 +391,13 @@ const int MAX_RECENT_CHATS = 5;
 
 - (void)refreshTable:(UIRefreshControl*)refreshControl
 {
-    [_tableView reloadData];
-    [self searchChatrooms]; // TODO: move this function to chat manager
+//    [_tableView reloadData];
+    [chatManager searchChatrooms]; // TODO: move this function to chat manager
     if (refreshControl) {
         [refreshControl endRefreshing];
     }
+    NSLog(@"%lu",(unsigned long)[[chatManager globalChatrooms] count]);
+    [_tableView reloadData];
 }
 
 
@@ -507,6 +406,8 @@ const int MAX_RECENT_CHATS = 5;
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
     if (!_mapParentView.isHidden) {
+        
+        // TODO: call from chatmanager
         NSLog(@"region changed");
         [mapView removeAnnotations:mapView.annotations];
         SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
