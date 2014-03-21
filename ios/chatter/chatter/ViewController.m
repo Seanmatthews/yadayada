@@ -122,11 +122,6 @@
     userInputTextField.returnKeyType = UIReturnKeySend;
     
     mTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    
-    // Pass chatId to UserDetails, which will use it to
-    // save which chatrooms the user was joined to when
-    // the app enters the background
-    ud.chatroomId = [_chatroom.cid longLongValue];
 }
 
 - (void)viewWillAppear:(BOOL)animated

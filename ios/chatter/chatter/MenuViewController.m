@@ -116,8 +116,7 @@
 
 - (void)receivedConnectAccept:(NSNotification*)notification
 {
-    NSLog(@"Connected!");
-    ud.chatroomId = [notification.object globalChatId];
+    [chatManager setGlobalChatroomId:[NSNumber numberWithLongLong:[notification.object globalChatId]]];
     ud.iconDownloadURL = [notification.object imageDownloadUrl];
     ud.iconUploadURL = [notification.object imageUploadUrl];
     
@@ -140,6 +139,9 @@
 {
     ud.userId = [notification.object userId];
     [chatManager searchChatrooms];
+    
+    // Join global chatroom automatically on startup
+    [chatManager joinChatroomWithId:chatManager.globalChatroomId withCompletion:nil];
     [self performSegueWithIdentifier:@"chatListSegue" sender:nil];
 }
 

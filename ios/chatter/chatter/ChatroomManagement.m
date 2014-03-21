@@ -180,7 +180,10 @@
     if ([_joinedChatrooms containsObject:c]) {
         [_joinedChatrooms removeObject:c];
         [_joinedChatrooms insertObject:c atIndex:0];
-        completion();
+        
+        if (completion) {
+            completion();
+        }
     }
     else {
         JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
@@ -239,8 +242,11 @@
     Chatroom* c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]];
     if (message.userId == ud.userId) {
         [_joinedChatrooms insertObject:c atIndex:0];
-        joinCompletion();
-        joinCompletion = nil;
+        
+        if (joinCompletion) {
+            joinCompletion();
+            joinCompletion = nil;
+        }
     }
     else {
         [[c mutableArrayValueForKey:@"chatQueue"] addObject:message];
@@ -289,6 +295,8 @@
 
 - (void)receivedCreateChatroomReject:(NSNotification*)notification
 {
+    
+    
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Woops!"
                                                     message:[notification.object reason]
                                                    delegate:nil

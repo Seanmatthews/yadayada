@@ -21,6 +21,7 @@ typedef void (^CreateCompletion)(long long);
 @property (atomic,strong) NSMutableArray* globalChatrooms;
 @property (atomic,strong) NSMutableArray* localChatrooms;
 @property (atomic,strong) NSMutableArray* joinedChatrooms;
+@property (nonatomic,strong) NSNumber* globalChatroomId;
 
 // Combine these two
 //@property (atomic, retain) Chatroom* goingToJoin;

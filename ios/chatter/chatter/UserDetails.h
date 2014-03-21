@@ -25,10 +25,6 @@
 @property NSString* iconUploadURL;
 @property NSString* iconDownloadURL;
 
-// TODO: The type of this property will change ot accommodate
-// being joined to several chats at once.
-@property long long chatroomId;
-
 + (id)sharedInstance;
 + (void)save;
 - (id)init;
