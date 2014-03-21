@@ -57,7 +57,7 @@
                                                object:nil];
     
     for (NSString* notificationName in @[@"LoginAccept", @"LoginAccept", @"InviteUser"]) {
-        NSString* selectorName = [NSString stringWithFormat:@"received%@",notificationName];
+        NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:NSSelectorFromString(selectorName)
                                                      name:[NSString stringWithFormat:@"%@Message",notificationName]
