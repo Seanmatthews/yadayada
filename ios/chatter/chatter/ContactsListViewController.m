@@ -40,8 +40,16 @@
 //    _tableView.layer.masksToBounds = YES;
     [contacts getAllContacts];
 	[_tableView reloadData];
-    
+}
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self registerForNotifications];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self unregisterForNotifications];
 }
 
 - (void)registerForNotifications

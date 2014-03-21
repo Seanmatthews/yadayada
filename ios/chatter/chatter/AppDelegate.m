@@ -47,6 +47,8 @@ const NSTimeInterval LOCATE_DURATION = 3.;
         uvc = [uis instantiateViewControllerWithIdentifier:@"mainPage"];
     }
     else {
+        ud.receiveInviteNotifications = YES;
+        [UserDetails save];
         UIPageControl *pageControl = [UIPageControl appearance];
         pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
         pageControl.currentPageIndicatorTintColor = [UIColor blackColor];

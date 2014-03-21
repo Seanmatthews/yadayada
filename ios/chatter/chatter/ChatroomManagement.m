@@ -336,10 +336,17 @@
 {
     // 0 == JOIN
     if (0 == buttonIndex) {
+        Chatroom* c = ((UIInviteAlertView*)alertView).chatroom;
+        
+        // Join the chatroom
+        [self joinChatroom:c withCompletion:nil];
+        
+        [self dismissAllInviteAlerts];
+        
         // Send segue notification to current view
         [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
                                                                  notificationWithName:@"segueToChatroomNotification"
-                                                                               object:((UIInviteAlertView*)alertView).chatroom]
+                                                                               object:c]
                                                    postingStyle:NSPostNow];
     }
 }
