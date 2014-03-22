@@ -321,6 +321,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqual:@"chatQueue"]) {
+        NSLog(@"new chat");
 //        [change objectForKey:NSKeyValueChangeNewKey];
         NSIndexPath* ipath = [NSIndexPath indexPathForRow:([[object chatQueue] count]-1) inSection:0];
         [self addMessageAtIndexPath:ipath];

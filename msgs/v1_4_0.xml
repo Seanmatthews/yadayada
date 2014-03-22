@@ -174,5 +174,9 @@
         <field name="inviteeHandle" type="String" />
         <field name="chatroomName" type="String" />
     </msg>
+    
+    <msg name="StreamReset" val="60" origin="client">
+        <field name="userId" type="long" />
+    </msg>
 
 </schema>

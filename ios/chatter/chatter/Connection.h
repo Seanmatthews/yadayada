@@ -8,7 +8,7 @@
 
 @import Foundation;
 #import "MessageUtils.h"
-#import "UserDetails.h"
+
 
 
 @interface Connection : NSObject <NSStreamDelegate>

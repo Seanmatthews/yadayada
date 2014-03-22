@@ -24,7 +24,7 @@ typedef enum {
     Message = 22,
     SubmitMessageReject = 23,
     SearchChatrooms = 31,
-    mChatroom = 32,
+    Chatroom = 32,
     JoinChatroom = 33,
     LeaveChatroom = 34,
     CreateChatroom = 35,
@@ -36,6 +36,7 @@ typedef enum {
     InviteUser = 50,
     InviteUserReject = 51,
     InviteUserSuccess = 52,
+    StreamReset = 60,
 } MessageTypes;
 
 @interface MessageBase : NSObject
@@ -333,5 +334,13 @@ typedef enum {
 @property long long inviteeUserId;
 @property NSString* inviteeHandle;
 @property NSString* chatroomName;
+
+@end
+
+@interface StreamResetMessage : MessageBase
+
+- (id)init;
+
+@property long long userId;
 
 @end

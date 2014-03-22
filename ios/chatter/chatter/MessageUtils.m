@@ -16,7 +16,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
 
 + (MessageBase*)messageWithType:(MessageTypes)type
 {
-    MessageBase* mb = nil;
+    MessageBase* mb;
 
     switch (type) {
         case Register:
@@ -79,7 +79,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[SearchChatroomsMessage alloc] init];
         break;
 
-        case mChatroom:
+        case Chatroom:
         mb = [[ChatroomMessage alloc] init];
         break;
 
@@ -127,6 +127,10 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[InviteUserSuccessMessage alloc] init];
         break;
 
+        case StreamReset:
+        mb = [[StreamResetMessage alloc] init];
+        break;
+
     }
     return mb;
 }
@@ -139,7 +143,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     // NOTE: This will only get properties for the subclass passed to the function
     OrderedDictionary* props = [self classPropsFor:[message class]];
     
-    // going to replace this below
+    // going to replace this
     [data appendBytes:&msgLen length:2];
     Byte b = message.type;
     [data appendBytes:&b length:1];
@@ -166,7 +170,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             msgLen += 2;
         }
         else if ([typename isEqualToString:@"i"]) {
-            int i = CFSwapInt32HostToBig([[message valueForKey:key] intValue]);
+            int i = CFSwapInt32HostToBig([[message valueForKey:key] integerValue]);
             [data appendBytes:&i length:4];
             msgLen += 4;
         }
@@ -201,10 +205,6 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
     Byte type = *(Byte*)&data[idx];
     idx++;
     mb = [self messageWithType:type];
-    
-    if (!mb) {
-        return nil;
-    }
     
     // NOTE: This will only get properties for the subclass passed to the function
     OrderedDictionary* props = [self classPropsFor:[mb class]];

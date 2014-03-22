@@ -7,6 +7,7 @@
 //
 
 #import "Connection.h"
+#import "UserDetails.h"
 
 @interface Connection()
 - (void)parseMessage:(BUFTYPE)buffer withLength:(NSInteger)length;
@@ -90,7 +91,6 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     [os open];
 }
 
-
 - (void)reconnect
 {
     NSLog(@"in reconnect, status: %lu", (unsigned long)[os streamStatus]);
@@ -99,7 +99,11 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         [is streamStatus] == NSStreamStatusError) {
 
         [self connect];
-        NSLog(@"reopen both");
+        
+        // Need to reset the recorded stream on the server
+        StreamResetMessage* srm = [[StreamResetMessage alloc] init];
+        srm.userId = [[UserDetails sharedInstance] userId];
+        [self sendMessage:srm];
     }
 }
 
@@ -178,14 +182,10 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         }
         
         MessageBase* m = [MessageUtils deserializeMessage:internalBuffer+2 withLength:msgLen];
-//        if (m) {
-//            for (NSString* sender in tmpControllers) {
-//                ((void (^)(MessageBase*))[tmpControllers objectForKey:sender])(m);
-//            }
-//        }
         
         // Post message as a notification to all observers for that message
         if (m) {
+            NSLog(@"%@",NSStringFromClass([m class]));
             [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
                                                                      notificationWithName:NSStringFromClass([m class])
                                                                      object:m]

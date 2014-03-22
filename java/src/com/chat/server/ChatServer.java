@@ -24,6 +24,8 @@ public interface ChatServer {
 
     void quickLogin(ClientConnection sender, String handle, String UUID, long phoneNumber);
 
+    void streamReset(ClientConnection senderConnection, User user);
+
     void createChatroom(ClientConnection sender, User user, String name, long latitude, long longitude, long radius,
                         boolean isPrivate);
 

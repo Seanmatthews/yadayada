@@ -1,7 +1,7 @@
 package com.chat.server;
 
 import com.chat.*;
-import com.chat.msgs.v1_3_0.*;
+import com.chat.msgs.v1_4_0.*;
 import com.chat.select.EventService;
 import com.chat.server.cluster.ChatroomCluster;
 import org.apache.logging.log4j.LogManager;
@@ -77,6 +77,11 @@ public class ChatServerImpl implements ChatServer {
     @Override
     public void connect(ClientConnection sender, int apiVersion, String uuid) {
         sender.sendMessage(new ConnectAcceptMessage(apiVersion, 1, "", ""));
+    }
+
+    @Override
+    public void streamReset(ClientConnection senderConnection, User user) {
+        userConnectionMap.put(user, senderConnection);
     }
 
     @Override

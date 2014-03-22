@@ -1,8 +1,8 @@
 package com.chat.client;
 
 import com.chat.msgs.Message;
-import com.chat.msgs.V1_3_0Dispatcher;
-import com.chat.msgs.v1_3_0.ConnectMessage;
+import com.chat.msgs.V1_4_0Dispatcher;
+import com.chat.msgs.v1_4_0.ConnectMessage;
 import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
 import com.chat.select.impl.ClientSocketImpl;
@@ -48,7 +48,7 @@ public class ChatClientConnection implements TCPCrackerClientListener {
     @Override
     public void onConnect(TCPCrackerClient client) {
         connected = true;
-        sendMessage(new ConnectMessage(V1_3_0Dispatcher.VERSION_ID, name));
+        sendMessage(new ConnectMessage(V1_4_0Dispatcher.VERSION_ID, name));
     }
 
     @Override

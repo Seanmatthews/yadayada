@@ -316,3 +316,14 @@
 }
 
 @end
+
+@implementation StreamResetMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 60;
+    return self;
+}
+
+@end

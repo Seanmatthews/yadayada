@@ -4,7 +4,7 @@ import com.chat.ChatroomRepository;
 import com.chat.MessageRepository;
 import com.chat.UserRepository;
 import com.chat.msgs.MessageDispatcher;
-import com.chat.msgs.V1_3_0Dispatcher;
+import com.chat.msgs.V1_4_0Dispatcher;
 import com.chat.msgs.ValidationError;
 import com.chat.select.ClientSocket;
 import com.chat.select.EventService;
@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutionException;
 public class ServerListener {
     public ServerListener(EventService eventService, int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
         final ChatServer server = new ChatServerImpl(eventService, userRepo, chatroomRepo, messageRepo);
-        final MessageDispatcher dispatcher = new V1_3_0Dispatcher(server, userRepo, chatroomRepo);
+        final MessageDispatcher dispatcher = new V1_4_0Dispatcher(server, userRepo, chatroomRepo);
         final Logger log = LogManager.getLogger();
 
         new TCPCrackerServer(eventService, port, new TwoByteLengthMessageCracker(), new TCPCrackerClientFactory() {

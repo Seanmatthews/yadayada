@@ -214,6 +214,7 @@
 
 - (void)receivedMessage:(NSNotification*)notification
 {
+    NSLog(@"[chatmaager] message");
     MessageMessage* message = notification.object;
     Chatroom* c;
     if ((c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]])) {
@@ -226,6 +227,7 @@
 // duplicates will be overwritten in the Dictionary.
 - (void)receivedChatroom:(NSNotification*)notification
 {
+    NSLog(@"[chat manager] chatroom");
     ChatroomMessage* message = notification.object;
     Chatroom* c = [Chatroom chatroomWithChatroomMessage:message];
     [self addChatroom:c];
