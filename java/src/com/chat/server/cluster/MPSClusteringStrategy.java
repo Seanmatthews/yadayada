@@ -23,8 +23,8 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
     private final double maxMPS;
     private final int[] mpsBuckets = new int[120];
 
-    private final Map<User, RateCluster> userClusterMap = new HashMap<>();
-    private final List<RateCluster> clusters = new ArrayList<>();
+    private final Map<User, SimpleCluster> userClusterMap = new HashMap<>();
+    private final List<SimpleCluster> clusters = new ArrayList<>();
 
     private final Random random = new Random();
 
@@ -44,12 +44,12 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
         if (userClusterMap.size() == 0)
             recluster();
 
-        RateCluster cluster = userClusterMap.get(user);
+        SimpleCluster cluster = userClusterMap.get(user);
 
         if (cluster == null) {
             // make sure we're in a default cluster
             cluster = clusters.get(random.nextInt(numClusters));
-            cluster.users.add(user);
+            cluster.addUser(user);
             userClusterMap.put(user, cluster);
         }
 
@@ -61,7 +61,7 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
         if (userClusterMap.size() == 0)
             recluster();
 
-        RateCluster cluster = userClusterMap.remove(user);
+        SimpleCluster cluster = userClusterMap.remove(user);
         Iterator<User> users = cluster.getUsers();
 
         while(users.hasNext()) {
@@ -110,14 +110,14 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
         clusters.clear();
 
         for (int i=0; i<numClusters; i++) {
-            clusters.add(new RateCluster(2 * chatroom.getUserCount() / numClusters));
+            clusters.add(new SimpleCluster(2 * chatroom.getUserCount() / numClusters));
         }
 
         Iterator<User> users = chatroom.getUsers();
         while(users.hasNext()) {
             User user = users.next();
-            RateCluster cluster = clusters.get(random.nextInt(numClusters));
-            cluster.users.add(user);
+            SimpleCluster cluster = clusters.get(random.nextInt(numClusters));
+            cluster.addUser(user);
             userClusterMap.put(user, cluster);
         }
     }
@@ -127,18 +127,5 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
         for (int mps : mpsBuckets)
             total += mps;
         return 1.0 * total / mpsBuckets.length;
-    }
-
-    private class RateCluster implements ChatroomCluster {
-        final List<User> users;
-
-        public RateCluster(int size) {
-            users = new ArrayList<>(size);
-        }
-
-        @Override
-        public Iterator<User> getUsers() {
-            return users.iterator();
-        }
     }
 }

@@ -12,5 +12,8 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 public interface ChatroomCluster {
+    void removeUser(User user);
+    void addUser(User user);
     Iterator<User> getUsers();
+    void clear();
 }
