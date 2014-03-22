@@ -52,6 +52,7 @@ const int MESSAGE_CHAR_LIMIT = 200;
         hiddenView.alpha = 0.25;
         hiddenView.frame = self.contentView.bounds; // Should this be set after init?
         hiddenView.userInteractionEnabled = NO;
+        hiddenView.tag = 3;
         
         if (_userIcon) {
             [self.contentView addSubview:iconView];
@@ -120,6 +121,9 @@ const int MESSAGE_CHAR_LIMIT = 200;
 
 + (CGFloat)heightForText:(NSString*)text
 {
+    if (!text) {
+        return 0.;
+    }
     CGFloat totalPadding = (2*BORDER_WIDTH) + PADDING;
     CGFloat webViewWidth = 300 - totalPadding;
     NSString* pageCSS = @"body { margin:0; padding:1; }";

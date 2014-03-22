@@ -18,6 +18,13 @@
 
 @interface ViewController ()
 
+- (void)initCode;
+- (void)swipeCell:(ChatroomMessageCell*)cell withAnimation:(UITableViewRowAnimation)animation;
+- (void)swipedCellLeft:(UIGestureRecognizer*)sender;
+- (void)swipedCellRight:(UIGestureRecognizer*)sender;
+- (void)tappedCell:(id)sender;
+- (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
+
 - (void)keyboardWasShown:(NSNotification*)aNotification;
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification;
 - (void)receivedInviteUserSuccess:(NSNotification*)notification;
@@ -40,7 +47,6 @@
     NSString* pageCSS;
     NSString* selfMsgCSS;
     NSString* selfHandleCSS;
-    NSInteger swipedCellIndex;
     ChatroomManagement* chatManager;
     NSMutableArray* inviteAlerts;
 }
@@ -160,49 +166,63 @@
 }
 
 
-#pragma mark - Other UI behaviors
+#pragma mark - Voting UI
 
-- (void)tappedCell:(id)sender
+- (void)tappedCell:(UIGestureRecognizer*)sender
 {
-    // Make cell flash
-    UITableViewCell* cell = [mTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:swipedCellIndex inSection:0]];
-    UIView* wv = (UIView*)[cell.contentView viewWithTag:3];
+    ChatroomMessageCell* tappedCell = (ChatroomMessageCell*)sender.view;
+    NSInteger row = [_chatroom.chatQueue indexOfObject:tappedCell.messageObj];
+    NSLog(@"tapped %ld",(long)row);
 
-    // Send upvote
-    id aMsg = [[_chatroom chatQueue] objectAtIndex:swipedCellIndex];
-    if ([aMsg isMemberOfClass:[MessageMessage class]]) {
-        MessageMessage* msg = aMsg;
-        [self upvote:YES user:msg.senderId becauseOfMessage:msg.messageId];
-        
-        [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
-        {
-            [cell setHighlighted:YES animated:YES];
-            [wv setBackgroundColor:[UIColor blueColor]];
-        } completion:^(BOOL finished)
-        {
-            [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
-             {
-                 [cell setHighlighted:NO animated:NO];
-                 [wv setBackgroundColor:[UIColor clearColor]];
-             } completion: NULL];
-        }];
+    // Make cell flash & Send upvote
+    if (row < [[_chatroom chatQueue] count]) {
+        id aMsg = [[_chatroom chatQueue] objectAtIndex:row];
+        if ([aMsg isMemberOfClass:[MessageMessage class]]) {
+            UIView* wv = (UIView*)[tappedCell.contentView viewWithTag:3];
+            MessageMessage* msg = aMsg;
+            [self upvote:YES user:msg.senderId becauseOfMessage:msg.messageId];
+            
+            [UIView animateWithDuration:0.2
+                                  delay:0.0
+                                options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut
+                             animations:^{
+                                [tappedCell setHighlighted:YES animated:YES];
+                                [wv setBackgroundColor:[UIColor blueColor]];
+                             }
+                             completion:^(BOOL finished) {
+                                 [UIView animateWithDuration:0.2
+                                                       delay:0.0
+                                                     options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut
+                                                  animations:^{
+                                                     [tappedCell setHighlighted:NO animated:NO];
+                                                     [wv setBackgroundColor:[UIColor clearColor]];
+                             } completion: NULL];
+            }];
+        }
     }
 }
 
-- (void)swipeCell:(UITableViewRowAnimation)animation
+- (void)swipeCell:(ChatroomMessageCell*)cell withAnimation:(UITableViewRowAnimation)animation
 {
-    NSIndexPath* cellPath = [NSIndexPath indexPathForRow:swipedCellIndex inSection:0];
-    NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
+    NSInteger row = [_chatroom.chatQueue indexOfObject:cell.messageObj];
+    NSLog(@"row: %ld",(long)row);
     
     // Send downvote
-    MessageMessage* msg = [[_chatroom chatQueue] objectAtIndex:cellPath.row];
-    [self upvote:NO user:msg.senderId becauseOfMessage:msg.messageId];
-    
-    // Remove cell
-    [mTableView beginUpdates];
-    [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:animation];
-    [[_chatroom chatQueue] removeObjectAtIndex:cellPath.row];
-    [mTableView endUpdates];
+    if (row < [[_chatroom chatQueue] count]) {
+        id aMsg = [[_chatroom chatQueue] objectAtIndex:row];
+        if ([aMsg isMemberOfClass:[MessageMessage class]]) {
+            NSIndexPath* cellPath = [NSIndexPath indexPathForRow:row inSection:0];
+            NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
+            MessageMessage* msg = [[_chatroom chatQueue] objectAtIndex:row];
+            [self upvote:NO user:msg.senderId becauseOfMessage:msg.messageId];
+            
+            // Remove cell
+            [mTableView beginUpdates];
+            [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:animation];
+            [[_chatroom chatQueue] removeObjectAtIndex:row];
+            [mTableView endUpdates];
+        }
+    }
 }
 
 - (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId
@@ -221,14 +241,14 @@
     [connection sendMessage:msg];
 }
 
-- (void)swipedCellRight:(id)sender
+- (void)swipedCellRight:(UIGestureRecognizer*)sender
 {
-    [self swipeCell:UITableViewRowAnimationRight];
+    [self swipeCell:(ChatroomMessageCell*)sender.view withAnimation:UITableViewRowAnimationRight];
 }
 
-- (void)swipedCellLeft:(id)sender
+- (void)swipedCellLeft:(UIGestureRecognizer*)sender
 {
-    [self swipeCell:UITableViewRowAnimationLeft];
+    [self swipeCell:(ChatroomMessageCell*)sender.view withAnimation:UITableViewRowAnimationLeft];
 }
 
 
@@ -300,7 +320,6 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    NSLog(@"queue changed");
     if ([keyPath isEqual:@"chatQueue"]) {
 //        [change objectForKey:NSKeyValueChangeNewKey];
         NSIndexPath* ipath = [NSIndexPath indexPathForRow:([[object chatQueue] count]-1) inSection:0];
@@ -310,7 +329,6 @@
 
 - (void)addMessageAtIndexPath:(NSIndexPath*)indexPath
 {
-    NSLog(@"idx %@",indexPath);
     [mTableView beginUpdates];
     if ([mTableView numberOfRowsInSection:0] == _chatroom.MESSAGE_NUM_THRESH) {
         NSIndexPath* delPath = [NSIndexPath indexPathForRow:0 inSection:0];
@@ -340,11 +358,6 @@
 
 
 #pragma mark - UITableViewDelegate methods
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    swipedCellIndex = indexPath.row;
-}
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -399,7 +412,7 @@
             
             // Add voting gestures to the cell
             UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
-            tapped.numberOfTapsRequired = 2;
+            tapped.numberOfTapsRequired = 1;
             [cell addGestureRecognizer:tapped];
             UISwipeGestureRecognizer* swipedLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellLeft:)];
             swipedLeft.direction = UISwipeGestureRecognizerDirectionLeft;
@@ -413,6 +426,7 @@
         [cell setUserIcon:nil];
         [cell setSelfMessage:(msg.senderId == ud.userId ? YES : NO)];
         [cell arrangeElements];
+        [cell setMessageObj:msg];
         
         return cell;
     }
@@ -421,6 +435,8 @@
         cell.backgroundColor = [UIColor clearColor];
         cell.textLabel.font = [UIFont fontWithName:@"System" size:12.];
         cell.textLabel.textColor = [UIColor grayColor];
+        cell.selected = NO;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         if ([rootMsg isMemberOfClass:[JoinedChatroomMessage class]]) {
             NSString* userHandle = ((JoinedChatroomMessage*)rootMsg).userHandle;

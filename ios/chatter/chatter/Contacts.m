@@ -149,7 +149,7 @@
 
 - (void)getAllContacts
 {
-    if (_haveContactsAccess) {
+    if (_haveContactsAccess && [_contactsList count] < 1) {
         ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
         ABRecordRef me = ABAddressBookGetPersonWithRecordID(addressBook, 1);
         NSArray *thePeople = (__bridge NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);

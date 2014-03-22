@@ -29,12 +29,7 @@
 @property (nonatomic, strong) Chatroom* chatroom;
 
 
-- (void)initCode;
-- (void)swipeCell:(UITableViewRowAnimation)animation;
-- (void)swipedCellLeft:(id)sender;
-- (void)swipedCellRight:(id)sender;
-- (void)tappedCell:(id)sender;
-- (void)upvote:(BOOL)upvote user:(long long)theirId becauseOfMessage:(long long)msgId;
+
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue;
 
 @end
