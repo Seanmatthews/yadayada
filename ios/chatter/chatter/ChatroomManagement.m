@@ -269,18 +269,20 @@
 // Received an invite to a chatroom from another user
 - (void)receivedInviteUser:(NSNotification*)notification
 {
-    // If the chatroom is not in out list-- which means it's private--
-    // add it to our list.
-    if (![_chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]]) {
-        // Chatroom is not in our list. It's either a private chatroom, or out of our range.
-        Chatroom* c = [Chatroom chatroomWithInviteUserMessage:notification.object];
+    if (ud.receiveInviteNotifications) {
+        // If the chatroom is not in out list-- which means it's private--
+        // add it to our list.
+        if (![_chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]]) {
+            // Chatroom is not in our list. It's either a private chatroom, or out of our range.
+            Chatroom* c = [Chatroom chatroomWithInviteUserMessage:notification.object];
+            
+            // Check that the user can join this chatroom. If so, add it to the list.
+            [self addChatroom:c];
+        }
         
-        // Check that the user can join this chatroom. If so, add it to the list.
-        [self addChatroom:c];
+        Chatroom* invitedChatroom = [_chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]];
+        [self displayInvite:notification.object toChatroom:invitedChatroom];
     }
-    
-    Chatroom* invitedChatroom = [_chatrooms objectForKey:[NSNumber numberWithLongLong:[notification.object chatroomId]]];
-    [self displayInvite:notification.object toChatroom:invitedChatroom];
 }
 
 - (void)receivedJoinChatroomReject:(NSNotification*)notification
@@ -343,6 +345,7 @@
         
         [self dismissAllInviteAlerts];
         
+        NSLog(@"sending segue notification");
         // Send segue notification to current view
         [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
                                                                  notificationWithName:@"segueToChatroomNotification"

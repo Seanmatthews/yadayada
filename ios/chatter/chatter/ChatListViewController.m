@@ -65,6 +65,11 @@ const int MAX_RECENT_CHATS = 5;
 
 - (void)registerForNotifications
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(segueToChatroom:)
+                                                 name:@"segueToChatroomNotification"
+                                               object:nil];
+    
     for (NSString* notificationName in @[@"JoinChatroomReject", @"Chatroom"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -227,6 +232,7 @@ const int MAX_RECENT_CHATS = 5;
 
 - (void)segueToChatroom:(NSNotification*)notification
 {
+    NSLog(@"[chat list view] Going to segue");
     [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:notification.object];
 }
 
