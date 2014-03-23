@@ -141,6 +141,7 @@
     [chatManager searchChatrooms];
     
     // Join global chatroom automatically on startup
+    [chatManager leaveChatroomWithId:chatManager.globalChatroomId withCompletion:nil];
     [chatManager joinChatroomWithId:chatManager.globalChatroomId withCompletion:nil];
     [self performSegueWithIdentifier:@"chatListSegue" sender:nil];
 }

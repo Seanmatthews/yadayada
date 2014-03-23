@@ -10,6 +10,7 @@
 #import "UserDetails.h"
 
 @interface Connection()
+
 - (void)parseMessage:(BUFTYPE)buffer withLength:(NSInteger)length;
 @end
 
@@ -17,13 +18,16 @@
 {
     NSInputStream* is;
     NSOutputStream* os;
-    NSInputStream* imgIs;
-    NSOutputStream* imgOs;
-    NSMutableDictionary* controllers;
+//    NSInputStream* imgIs;
+//    NSOutputStream* imgOs;
     BUFDECLTYPE internalBuffer[8096];
     int internalBufferLen;
-    NSNotificationQueue* notificationQueue;
+    BOOL reconnecting;
+    
+    dispatch_queue_t sendMessageQueue;
+    dispatch_queue_t inputStreamQueue;
 }
+
 
 const int IMAGE_SERVER_PORT = 5001;
 const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
@@ -32,12 +36,10 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 {
     self = [super init];
     if (self) {
-        _streamReady = NO;
-        controllers = [[NSMutableDictionary alloc] init];
+        reconnecting = NO;
         internalBufferLen = 0;
-        _parseQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        _parseGroup = dispatch_group_create();
-        notificationQueue = [NSNotificationQueue defaultQueue];
+        inputStreamQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+        sendMessageQueue = dispatch_queue_create("outgoingMessageQueue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -93,81 +95,25 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 - (void)reconnect
 {
-    NSLog(@"in reconnect, status: %lu", (unsigned long)[os streamStatus]);
+    NSLog(@"in reconnect, (os, is) status: %lu, %lu", (unsigned long)[os streamStatus],(unsigned long)[is streamStatus]);
     if ([is streamStatus] == NSStreamStatusNotOpen ||
         [is streamStatus] == NSStreamStatusClosed ||
         [is streamStatus] == NSStreamStatusError) {
 
+        reconnecting = YES;
         [self connect];
-        
-        // Need to reset the recorded stream on the server
-        StreamResetMessage* srm = [[StreamResetMessage alloc] init];
-        srm.userId = [[UserDetails sharedInstance] userId];
-        [self sendMessage:srm];
     }
 }
 
-- (void)connectToImageServer
-{
-    CFReadStreamRef imgReadStream;
-    CFWriteStreamRef imgWriteStream;
-    CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"ec2-54-200-202-37.us-west-2.compute.amazonaws.com", 5001, &imgReadStream, &imgWriteStream);
-    
-    imgIs = (__bridge NSInputStream*)imgReadStream;
-    imgOs = (__bridge NSOutputStream*)imgWriteStream;
-    
-    [imgIs setDelegate:self];
-    [imgOs setDelegate:self];
-    
-    [imgIs scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [imgOs scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    
-    [imgIs open];
-    [imgOs open];
-}
+
 
 - (void)sendMessage:(MessageBase*)message
 {
-    //NSLog(@"Sending message of type %d",(MessageTypes)message.type);
-    NSData* d = [MessageUtils serializeMessage:message];
-    [os write:[d bytes] maxLength:[d length]];
+    dispatch_async(sendMessageQueue, ^{
+        NSData* d = [MessageUtils serializeMessage:message];
+        [os write:[d bytes] maxLength:[d length]];
+    });
 }
-
-- (void)uploadImage:(UIImage*)image forUserId:(long long)userId toURL:(NSString*)url
-{
-    NSMutableData* imageData = [[NSMutableData alloc] init];
-    long long uid = CFSwapInt64HostToBig(userId);
-    NSData* b = [NSData dataWithBytes:&uid length:sizeof(long long)];
-    [imageData appendData:b];
-    [imageData appendData:UIImageJPEGRepresentation(image, JPEG_COMPRESSION_QUALITY)];
-    [imgOs write:[b bytes] maxLength:[b length]];
-}
-
-// See https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/WorkingwithBlocks/WorkingwithBlocks.html
-// to understand how this callback function works.
-//- (void)parseMessage:(BUFTYPE)buffer withLength:(int)length
-//{
-//    NSLog(@"parse");
-//    if (length < 3) {
-//        memcpy(internalBuffer, buffer+internalBufferLen, length);
-//        internalBufferLen = length;
-//    }
-//    
-//    if ((internalBufferLen > 2 && length != internalBufferLen) || length > 2) {
-//        int len = internalBufferLen+length;
-//        BUFDECLTYPE tmp[len];
-//        memcpy(tmp, internalBuffer, internalBufferLen);
-//        memcpy(tmp+internalBufferLen, buffer, length);
-//        internalBufferLen = 0;
-//        while (len > 0) {
-//            MessageBase* m = [MessageUtils deserializeMessage:tmp withLength:&len];
-//            for (NSString* sender in controllers) {
-//                ((void (^)(MessageBase*))[controllers objectForKey:sender])(m);
-//            }
-//        }
-//    }
-//}
-
 
 - (void)parseMessage:(BUFTYPE)buffer withLength:(NSInteger)length
 {
@@ -200,17 +146,12 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     }
 }
 
-
-#pragma mark - Adding/Removing Callbacks
-
-- (void)addCallbackBlock:(void (^)(MessageBase*))block fromSender:(NSString*)sender
+- (void)streamReset
 {
-    [controllers setObject:block forKey:sender];
-}
-
-- (void)removeCallbackBlockFromSender:(NSString*)sender
-{
-    [controllers removeObjectForKey:sender];
+    // Need to reset the recorded stream on the server
+    StreamResetMessage* srm = [[StreamResetMessage alloc] init];
+    srm.userId = [[UserDetails sharedInstance] userId];
+    [self sendMessage:srm];
 }
 
 
@@ -218,46 +159,119 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
-    switch (eventCode) {
-        case NSStreamEventOpenCompleted:
-            NSLog(@"Stream opened");
-            _streamReady = YES;
-            break;
-            
-        case NSStreamEventHasBytesAvailable:
-            if (aStream == is) {
-                BUFDECLTYPE buffer[1024];
-                NSInteger len;
-                
-                while ([is hasBytesAvailable]) {
-                    len = [is read:buffer maxLength:1024];
-                    if (len > 0) {
-                        [self parseMessage:buffer withLength:len];
+    dispatch_async(inputStreamQueue, ^{
+        switch (eventCode) {
+            case NSStreamEventOpenCompleted:
+                NSLog(@"Stream opened");
+                if ([is streamStatus] == NSStreamStatusOpen &&
+                    [os streamStatus] == NSStreamStatusOpen) {
+                    NSLog(@"Both streams open");
+                    
+                    if (reconnecting) {
+                        NSLog(@"reconnecting");
+                        
+                        [self performSelectorInBackground:@selector(streamReset) withObject:nil];
+                        
+                        NSLog(@"ok");
+                        [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
+                                                                                 notificationWithName:@"RejoinChatroomsNotification"
+                                                                                 object:nil]
+                                                                   postingStyle:NSPostNow];
+                        reconnecting = NO;
                     }
                 }
-            }
-            break;
-            
-        case NSStreamEventErrorOccurred:
-            NSLog(@"Cannot connect to the host");
-            [self reconnect];
-            break;
-            
-        case NSStreamEventEndEncountered:
-            NSLog(@"Event End Encountered");
-            break;
-            
-        case NSStreamEventHasSpaceAvailable:
-            break;
-            
-        case NSStreamEventNone:
-            NSLog(@"Event None");
-            break;
-            
-        default:
-            NSLog(@"unknown event");
-    }
+                break;
+                
+            case NSStreamEventHasBytesAvailable:
+                if (aStream == is) {
+                    BUFDECLTYPE buffer[1024];
+                    NSInteger len;
+                    
+                    while ([is hasBytesAvailable]) {
+                        len = [is read:buffer maxLength:1024];
+                        if (len > 0) {
+                            [self parseMessage:buffer withLength:len];
+                        }
+                    }
+                }
+                break;
+                
+            case NSStreamEventErrorOccurred:
+                NSLog(@"Cannot connect to the host");
+                [self reconnect];
+                break;
+                
+            case NSStreamEventEndEncountered:
+                NSLog(@"Event End Encountered");
+                break;
+                
+            case NSStreamEventHasSpaceAvailable:
+                break;
+                
+            case NSStreamEventNone:
+                NSLog(@"Event None");
+                break;
+                
+            default:
+                NSLog(@"unknown event");
+        }
+    });
 }
+
+
+//- (void)connectToImageServer
+//{
+//    CFReadStreamRef imgReadStream;
+//    CFWriteStreamRef imgWriteStream;
+//    CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"ec2-54-200-202-37.us-west-2.compute.amazonaws.com", 5001, &imgReadStream, &imgWriteStream);
+//
+//    imgIs = (__bridge NSInputStream*)imgReadStream;
+//    imgOs = (__bridge NSOutputStream*)imgWriteStream;
+//
+//    [imgIs setDelegate:self];
+//    [imgOs setDelegate:self];
+//
+//    [imgIs scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+//    [imgOs scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+//
+//    [imgIs open];
+//    [imgOs open];
+//}
+
+//- (void)uploadImage:(UIImage*)image forUserId:(long long)userId toURL:(NSString*)url
+//{
+//    NSMutableData* imageData = [[NSMutableData alloc] init];
+//    long long uid = CFSwapInt64HostToBig(userId);
+//    NSData* b = [NSData dataWithBytes:&uid length:sizeof(long long)];
+//    [imageData appendData:b];
+//    [imageData appendData:UIImageJPEGRepresentation(image, JPEG_COMPRESSION_QUALITY)];
+//    [imgOs write:[b bytes] maxLength:[b length]];
+//}
+
+// See https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/WorkingwithBlocks/WorkingwithBlocks.html
+// to understand how this callback function works.
+//- (void)parseMessage:(BUFTYPE)buffer withLength:(int)length
+//{
+//    NSLog(@"parse");
+//    if (length < 3) {
+//        memcpy(internalBuffer, buffer+internalBufferLen, length);
+//        internalBufferLen = length;
+//    }
+//
+//    if ((internalBufferLen > 2 && length != internalBufferLen) || length > 2) {
+//        int len = internalBufferLen+length;
+//        BUFDECLTYPE tmp[len];
+//        memcpy(tmp, internalBuffer, internalBufferLen);
+//        memcpy(tmp+internalBufferLen, buffer, length);
+//        internalBufferLen = 0;
+//        while (len > 0) {
+//            MessageBase* m = [MessageUtils deserializeMessage:tmp withLength:&len];
+//            for (NSString* sender in controllers) {
+//                ((void (^)(MessageBase*))[controllers objectForKey:sender])(m);
+//            }
+//        }
+//    }
+//}
 
 
 @end

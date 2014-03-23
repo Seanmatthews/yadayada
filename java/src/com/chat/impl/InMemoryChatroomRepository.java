@@ -9,6 +9,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -24,6 +27,8 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
     private final Map<Long, Chatroom> chatroomIdMap = new ConcurrentHashMap<>();
 
     private final Map<Chatroom, Set<User>> chatroomUserMap = new ConcurrentHashMap<>();
+
+    private final Logger log = LogManager.getLogger();
 
     @Override
     public Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius, boolean isPrivate) {
@@ -94,12 +99,16 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
 
     @Override
     public void addUser(Chatroom chatroom, User user) {
+        log.debug("[chat repo] add user");
         chatroomUserMap.get(chatroom).add(user);
     }
 
     @Override
     public void removeUser(Chatroom chatroom, User user) {
-        chatroomUserMap.get(chatroom).remove(user);
+        if (chatroomUserMap.get(chatroom).contains(user)) {
+            log.info("[chatroom repo] removing user");
+            chatroomUserMap.get(chatroom).remove(user);
+        }
     }
 
     @Override

@@ -61,13 +61,16 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
         if (userClusterMap.size() == 0)
             recluster();
 
-        RateCluster cluster = userClusterMap.remove(user);
-        Iterator<User> users = cluster.getUsers();
+        if (userClusterMap.containsKey(user)) {
+            log.info("removing user");
+            RateCluster cluster = userClusterMap.remove(user);
+            Iterator<User> users = cluster.getUsers();
 
-        while(users.hasNext()) {
-            if (users.next().equals(user)) {
-                users.remove();
-                break;
+            while(users.hasNext()) {
+                if (users.next().equals(user)) {
+                    users.remove();
+                    break;
+                }
             }
         }
     }

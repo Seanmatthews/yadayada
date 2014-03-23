@@ -32,6 +32,8 @@
 - (void)displayInvite:(InviteUserMessage*)message toChatroom:(Chatroom*)chatroom;
 - (void)dismissAllInviteAlerts;
 - (void)createChatroom:(Chatroom*)chatroom withCompletion:(CreateCompletion)completion;
+- (void)rejoinChatrooms;
+- (void)rejoinChatroomsInBackground;
 
 @end
 
@@ -89,6 +91,11 @@
 
 - (void)registerForNotifications
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(rejoinChatroomsInBackground)
+                                                 name:@"RejoinChatroomsNotification"
+                                               object:nil];
+    
     for (NSString* notificationName in @[@"Message", @"JoinedChatroom", @"JoinChatroomReject",
                                          @"LeftChatroom", @"InviteUser", @"Chatroom",
                                          @"CreateChatroomReject"]) {
@@ -155,6 +162,36 @@
     return NO;
 }
 
+- (void)rejoinChatroomsInBackground
+{
+    [self performSelectorInBackground:@selector(rejoinChatrooms) withObject:nil];
+}
+
+// Assumes we lost connection to all chatrooms
+- (void)rejoinChatrooms
+{
+    NSLog(@"rejoining all chatrooms");
+    // Clear out recent chatrooms
+    NSArray* pastJoined = [NSArray arrayWithArray:_joinedChatrooms];
+    [_joinedChatrooms removeAllObjects];
+    
+    // Leave all chatrooms
+    LeaveChatroomMessage* lcm = [[LeaveChatroomMessage alloc] init];
+    lcm.userId = ud.userId;
+    
+    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
+    jcm.userId = ud.userId;
+    jcm.latitude = [location currentLat];
+    jcm.longitude = [location currentLong];
+    
+    for (Chatroom* c in pastJoined) {
+        lcm.chatroomId = [c.cid longLongValue];
+        [connection sendMessage:lcm];
+        jcm.chatroomId = [c.cid longLongValue];
+        [connection sendMessage:jcm];
+    }
+}
+
 
 #pragma mark - Messages
 
@@ -193,6 +230,23 @@
         jcm.userId = ud.userId;
         [connection sendMessage:jcm];
         joinCompletion = completion;
+    }
+}
+
+- (void)leaveChatroomWithId:(NSNumber*)chatroomId withCompletion:(LeaveCompletion)completion
+{
+    // Don't check beforehand if we're joined to the chatroom--
+    // sometimes we want to send a just-in-case leave chatroom message.
+    
+    LeaveChatroomMessage* lcm = [[LeaveChatroomMessage alloc] init];
+    lcm.userId = ud.userId;
+    lcm.chatroomId = [chatroomId longLongValue];
+    [connection sendMessage:lcm];
+    
+    // If the chatroom is in the list of joined chatrooms, remove it
+    Chatroom* c = [_chatrooms objectForKey:chatroomId];
+    if (c) {
+        [_joinedChatrooms removeObject:c];
     }
 }
 

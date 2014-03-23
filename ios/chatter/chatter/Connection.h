@@ -13,20 +13,15 @@
 
 @interface Connection : NSObject <NSStreamDelegate>
 
-@property BOOL streamReady;
-@property NSCondition* messageCondition;
-@property dispatch_group_t parseGroup;
-@property dispatch_queue_t parseQueue;
-
 + (id)sharedInstance;
 - (id)init;
 - (void)connect;
 - (void)reconnect;
-- (void)connectToImageServer;
 - (void)sendMessage:(MessageBase*)message;
-- (void)uploadImage:(UIImage*)image forUserId:(long long)userId toURL:(NSString*)url;
-- (void)addCallbackBlock:(void (^)(MessageBase*))block fromSender:(id)sender;
-- (void)removeCallbackBlockFromSender:(NSString*)sender;
-- (int)getImageServerPort;
+
+
+//- (void)connectToImageServer;
+//- (void)uploadImage:(UIImage*)image forUserId:(long long)userId toURL:(NSString*)url;
+//- (int)getImageServerPort;
 
 @end
