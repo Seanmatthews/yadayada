@@ -65,6 +65,22 @@ const int MAX_RECENT_CHATS = 5;
 
 - (void)registerForNotifications
 {
+    // KVOs so we know when to reload table/map
+    [chatManager addObserver:self
+                  forKeyPath:@"joinedChatrooms"
+                     options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+                     context:nil];
+    
+    [chatManager addObserver:self
+                  forKeyPath:@"localChatrooms"
+                     options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+                     context:nil];
+    
+    [chatManager addObserver:self
+                  forKeyPath:@"globalChatrooms"
+                     options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+                     context:nil];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(segueToChatroom:)
                                                  name:@"segueToChatroomNotification"
@@ -82,6 +98,10 @@ const int MAX_RECENT_CHATS = 5;
 - (void)unregisterForNotifications
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [chatManager removeObserver:self forKeyPath:@"joinedChatrooms"];
+    [chatManager removeObserver:self forKeyPath:@"localChatrooms"];
+    [chatManager removeObserver:self forKeyPath:@"globalChatrooms"];
 }
 
 - (void)viewDidLoad
@@ -98,8 +118,6 @@ const int MAX_RECENT_CHATS = 5;
     _tableParentView.layer.masksToBounds = YES;
     _mapParentView.layer.cornerRadius = 5;
     _mapParentView.layer.masksToBounds = YES;
-    
-
     
     // Setup the refresh control
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
@@ -180,14 +198,10 @@ const int MAX_RECENT_CHATS = 5;
 }
 
 
-#pragma mark - incoming and outgoing messages
+#pragma mark - Notifications
 
 - (void)receivedChatroom:(NSNotification*)notification
 {
-    if (!_tableParentView.isHidden) {
-        [_tableView reloadData];
-    }
-    
     // TODO: map should be grabbing data from chat manager?
     // Should we display rooms that are too far away?
     if (!_mapParentView.isHidden) {
@@ -195,6 +209,21 @@ const int MAX_RECENT_CHATS = 5;
         [self reloadMapAnnotations];
     }
 }
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqual:@"joinedChatrooms"]) {
+        
+    }
+    else if ([keyPath isEqual:@"localChatrooms"]) {
+        
+    }
+    else if ([keyPath isEqual:@"globalChatrooms"]) {
+        
+    }
+    [_tableView reloadData];
+}
+
 
 
 #pragma mark - Convenience Methods
@@ -397,12 +426,10 @@ const int MAX_RECENT_CHATS = 5;
 
 - (void)refreshTable:(UIRefreshControl*)refreshControl
 {
-//    [_tableView reloadData];
     [chatManager searchChatrooms]; // TODO: move this function to chat manager
     if (refreshControl) {
         [refreshControl endRefreshing];
     }
-    NSLog(@"%lu",(unsigned long)[[chatManager globalChatrooms] count]);
     [_tableView reloadData];
 }
 

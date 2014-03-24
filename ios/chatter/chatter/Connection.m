@@ -8,6 +8,7 @@
 
 #import "Connection.h"
 #import "UserDetails.h"
+#import "Messages.h"
 
 @interface Connection()
 
@@ -22,7 +23,7 @@
 //    NSOutputStream* imgOs;
     BUFDECLTYPE internalBuffer[8096];
     int internalBufferLen;
-    BOOL reconnecting;
+    __block BOOL reconnecting;
     
     dispatch_queue_t sendMessageQueue;
     dispatch_queue_t inputStreamQueue;
@@ -106,7 +107,10 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 }
 
 
-
+// WARNING: Be careful with the messages sent into this method--
+// once an object is passed, altering and resubmitting that object
+// to this function will result in the block not seeing the changes
+// to the object.
 - (void)sendMessage:(MessageBase*)message
 {
     dispatch_async(sendMessageQueue, ^{
@@ -159,7 +163,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
-    dispatch_async(inputStreamQueue, ^{
+//    dispatch_async(inputStreamQueue, ^{
         switch (eventCode) {
             case NSStreamEventOpenCompleted:
                 NSLog(@"Stream opened");
@@ -170,7 +174,8 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
                     if (reconnecting) {
                         NSLog(@"reconnecting");
                         
-                        [self performSelectorInBackground:@selector(streamReset) withObject:nil];
+//                        [self performSelectorInBackground:@selector(streamReset) withObject:nil];
+                        [self streamReset];
                         
                         NSLog(@"ok");
                         [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
@@ -215,7 +220,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
             default:
                 NSLog(@"unknown event");
         }
-    });
+//    });
 }
 
 

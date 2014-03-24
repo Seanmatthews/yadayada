@@ -92,7 +92,7 @@
 - (void)registerForNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(rejoinChatroomsInBackground)
+                                             selector:@selector(rejoinChatrooms)
                                                  name:@"RejoinChatroomsNotification"
                                                object:nil];
     
@@ -144,13 +144,28 @@
     if ([self canJoinChatroom:chatroom]) {
         if (![_chatrooms objectForKey:chatroom.cid]) {
             if (chatroom.isGlobal) {
-                [_globalChatrooms addObject:chatroom];
+                [[self mutableArrayValueForKey:@"globalChatrooms"] addObject:chatroom];
+//                [_globalChatrooms addObject:chatroom];
             }
             else {
-                [_localChatrooms addObject:chatroom];
+                [[self mutableArrayValueForKey:@"localChatrooms"] addObject:chatroom];
+//                [_localChatrooms addObject:chatroom];
             }
             [_chatrooms setObject:chatroom forKey:chatroom.cid];
         }
+    }
+}
+
+- (void)removeChatroom:(Chatroom*)chatroom
+{
+    if ([_chatrooms objectForKey:chatroom.cid]) {
+        if (chatroom.isGlobal) {
+            [[self mutableArrayValueForKey:@"globalChatrooms"] removeObject:chatroom];
+        }
+        else {
+            [[self mutableArrayValueForKey:@"localChatrooms"] removeObject:chatroom];
+        }
+        [_chatrooms removeObjectForKey:chatroom.cid];
     }
 }
 
@@ -173,20 +188,18 @@
     NSLog(@"rejoining all chatrooms");
     // Clear out recent chatrooms
     NSArray* pastJoined = [NSArray arrayWithArray:_joinedChatrooms];
-    [_joinedChatrooms removeAllObjects];
-    
-    // Leave all chatrooms
-    LeaveChatroomMessage* lcm = [[LeaveChatroomMessage alloc] init];
-    lcm.userId = ud.userId;
-    
-    JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
-    jcm.userId = ud.userId;
-    jcm.latitude = [location currentLat];
-    jcm.longitude = [location currentLong];
-    
+    [[self mutableArrayValueForKey:@"joinedChatrooms"] removeAllObjects];
+     
     for (Chatroom* c in pastJoined) {
+        LeaveChatroomMessage* lcm = [[LeaveChatroomMessage alloc] init];
+        lcm.userId = ud.userId;
         lcm.chatroomId = [c.cid longLongValue];
         [connection sendMessage:lcm];
+        
+        JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
+        jcm.userId = ud.userId;
+        jcm.latitude = [location currentLat];
+        jcm.longitude = [location currentLong];
         jcm.chatroomId = [c.cid longLongValue];
         [connection sendMessage:jcm];
     }
@@ -215,8 +228,8 @@
     Chatroom* c = [_chatrooms objectForKey:chatroomId];
     
     if ([_joinedChatrooms containsObject:c]) {
-        [_joinedChatrooms removeObject:c];
-        [_joinedChatrooms insertObject:c atIndex:0];
+        [[self mutableArrayValueForKey:@"joinedChatrooms"] removeObject:c];
+        [[self mutableArrayValueForKey:@"joinedChatrooms"] insertObject:c atIndex:0];
         
         if (completion) {
             completion();
@@ -246,7 +259,7 @@
     // If the chatroom is in the list of joined chatrooms, remove it
     Chatroom* c = [_chatrooms objectForKey:chatroomId];
     if (c) {
-        [_joinedChatrooms removeObject:c];
+        [[self mutableArrayValueForKey:@"joinedChatrooms"] removeObject:c];
     }
 }
 
@@ -268,7 +281,6 @@
 
 - (void)receivedMessage:(NSNotification*)notification
 {
-    NSLog(@"[chatmaager] message");
     MessageMessage* message = notification.object;
     Chatroom* c;
     if ((c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]])) {
@@ -281,7 +293,6 @@
 // duplicates will be overwritten in the Dictionary.
 - (void)receivedChatroom:(NSNotification*)notification
 {
-    NSLog(@"[chat manager] chatroom");
     ChatroomMessage* message = notification.object;
     Chatroom* c = [Chatroom chatroomWithChatroomMessage:message];
     [self addChatroom:c];
@@ -297,8 +308,7 @@
     JoinedChatroomMessage* message = notification.object;
     Chatroom* c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]];
     if (message.userId == ud.userId) {
-        [_joinedChatrooms insertObject:c atIndex:0];
-        
+        [[self mutableArrayValueForKey:@"joinedChatrooms"] insertObject:c atIndex:0];
         if (joinCompletion) {
             joinCompletion();
             joinCompletion = nil;
@@ -307,6 +317,8 @@
     else {
         [[c mutableArrayValueForKey:@"chatQueue"] addObject:message];
     }
+    
+    
 }
 
 - (void)receivedLeftChatroom:(NSNotification*)notification
@@ -314,7 +326,7 @@
     LeftChatroomMessage* message = notification.object;
     NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
     if (message.userId == ud.userId) {
-        [_joinedChatrooms removeObject:[_chatrooms objectForKey:cid]];
+        [[self mutableArrayValueForKey:@"joinedChatrooms"] removeObject:[_chatrooms objectForKey:cid]];
     }
     else {
         Chatroom* c = [_chatrooms objectForKey:cid];
@@ -401,7 +413,6 @@
         
         [self dismissAllInviteAlerts];
         
-        NSLog(@"sending segue notification");
         // Send segue notification to current view
         [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
                                                                  notificationWithName:@"segueToChatroomNotification"
