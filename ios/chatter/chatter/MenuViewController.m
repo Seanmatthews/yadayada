@@ -19,6 +19,7 @@
 - (void)receivedConnectReject:(NSNotification*)notification;
 - (void)receivedLoginAccept:(NSNotification*)notification;
 - (void)receivedLoginReject:(NSNotification*)notification;
+- (void)receivedJoinedChatroom:(NSNotification*)notification;
 
 @end
 
@@ -46,7 +47,7 @@
                                                  name:@"LocationUpdateNotification"
                                                object:nil];
     
-    for (NSString* notificationName in @[@"ConnectAccept", @"LoginReject",
+    for (NSString* notificationName in @[@"ConnectAccept", @"LoginReject", //@"JoinedChatroom",
                                          @"ConnectReject", @"LoginAccept"]) {
         
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
@@ -153,6 +154,11 @@
     
     // TODO: uialrtview-- need to give user a chance to change their handle..
     // that's the only reason they would be rejected from logging in.
+}
+
+- (void)receivedJoinedChatroom:(NSNotification*)notification
+{
+//    [self performSegueWithIdentifier:@"chatListSegue" sender:nil];
 }
 
 @end

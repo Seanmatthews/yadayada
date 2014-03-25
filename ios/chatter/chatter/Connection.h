@@ -10,7 +10,6 @@
 #import "MessageUtils.h"
 
 
-
 @interface Connection : NSObject <NSStreamDelegate>
 
 + (id)sharedInstance;
@@ -18,7 +17,9 @@
 - (void)connect;
 - (void)reconnect;
 - (void)sendMessage:(MessageBase*)message;
+- (void)streamReset;
 
+@property (nonatomic,strong) NSString* connectMode;
 
 //- (void)connectToImageServer;
 //- (void)uploadImage:(UIImage*)image forUserId:(long long)userId toURL:(NSString*)url;

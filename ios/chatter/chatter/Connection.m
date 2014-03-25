@@ -41,6 +41,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         internalBufferLen = 0;
         inputStreamQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
         sendMessageQueue = dispatch_queue_create("outgoingMessageQueue", DISPATCH_QUEUE_SERIAL);
+        _connectMode = @"";
     }
     return self;
 }
@@ -78,8 +79,12 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     // Local testing -- change IP for you
     //CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.1.108", 5001, &readStream, &writeStream);
     
+    NSLog(@"connect mode %@",_connectMode);
+    
 //    CFReadStreamSetProperty(readStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanFalse);
 //    CFWriteStreamSetProperty(writeStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanFalse);
+//    CFReadStreamSetProperty(readStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP);
+//    CFWriteStreamSetProperty(writeStream, kCFStreamNetworkServiceType, kCFStreamNetworkServiceTypeVoIP);
     
     is = (__bridge NSInputStream*)readStream;
     os = (__bridge NSOutputStream*)writeStream;
@@ -97,9 +102,10 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 - (void)reconnect
 {
     NSLog(@"in reconnect, (os, is) status: %lu, %lu", (unsigned long)[os streamStatus],(unsigned long)[is streamStatus]);
-    if ([is streamStatus] == NSStreamStatusNotOpen ||
+    if (([is streamStatus] == NSStreamStatusNotOpen ||
         [is streamStatus] == NSStreamStatusClosed ||
-        [is streamStatus] == NSStreamStatusError) {
+        [is streamStatus] == NSStreamStatusError) &&
+        !reconnecting) {
 
         reconnecting = YES;
         [self connect];
@@ -135,7 +141,6 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         
         // Post message as a notification to all observers for that message
         if (m) {
-            NSLog(@"%@",NSStringFromClass([m class]));
             [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
                                                                      notificationWithName:NSStringFromClass([m class])
                                                                      object:m]
@@ -168,22 +173,16 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
             case NSStreamEventOpenCompleted:
                 NSLog(@"Stream opened");
                 if ([is streamStatus] == NSStreamStatusOpen &&
-                    [os streamStatus] == NSStreamStatusOpen) {
-                    NSLog(@"Both streams open");
-                    
-                    if (reconnecting) {
-                        NSLog(@"reconnecting");
+                    [os streamStatus] == NSStreamStatusOpen &&
+                    reconnecting) {
                         
-//                        [self performSelectorInBackground:@selector(streamReset) withObject:nil];
-                        [self streamReset];
-                        
-                        NSLog(@"ok");
-                        [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
-                                                                                 notificationWithName:@"RejoinChatroomsNotification"
-                                                                                 object:nil]
-                                                                   postingStyle:NSPostNow];
-                        reconnecting = NO;
-                    }
+                    NSLog(@"reconnecting");
+                    [self streamReset];
+                    [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
+                                                                             notificationWithName:@"RejoinChatroomsNotification"
+                                                                             object:nil]
+                                                               postingStyle:NSPostNow];
+                    reconnecting = NO;
                 }
                 break;
                 

@@ -180,6 +180,7 @@
 - (void)rejoinChatrooms
 {
     NSLog(@"rejoining all chatrooms");
+    [self leaveJoinedChatrooms];
     
     if (ud.joinedChatroomIds) {
         for (NSNumber* cid in ud.joinedChatroomIds) {
@@ -202,6 +203,7 @@
         LeaveChatroomMessage* lcm = [[LeaveChatroomMessage alloc] init];
         lcm.userId = ud.userId;
         lcm.chatroomId = [c.cid longLongValue];
+        NSLog(@"leaving %llu",lcm.chatroomId);
         [connection sendMessage:lcm];
     }
 }
