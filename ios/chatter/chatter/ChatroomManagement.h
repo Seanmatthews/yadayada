@@ -38,5 +38,7 @@ typedef void (^CreateCompletion)(long long);
 - (void)leaveChatroomWithId:(NSNumber*)chatroomId withCompletion:(LeaveCompletion)completion;
 - (void)createChatroom:(Chatroom*)chatroom withCompletion:(CreateCompletion)completion;
 - (BOOL)alreadyJoinedChatroom:(Chatroom*)chatroom;
+- (void)leaveJoinedChatrooms;
+- (void)rejoinChatrooms;
 
 @end

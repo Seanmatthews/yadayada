@@ -20,6 +20,8 @@
 @property BOOL receiveMessageNotifications;
 @property BOOL receiveInviteNotifications;
 @property UIImage* userIcon;
+@property (nonatomic,strong) NSArray* joinedChatroomIds;
+
 
 // This is not a user detail, but rather an app global
 @property NSString* iconUploadURL;
@@ -30,5 +32,6 @@
 - (id)init;
 - (id)initWithHandle:(NSString*)handle;
 - (void)setHandle:(NSString *)handle;
+
 
 @end

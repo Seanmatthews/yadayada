@@ -123,7 +123,7 @@ const double MILES_TO_METERS = 1609.34;
     __block Chatroom* chatroom = [[Chatroom alloc] init];
     chatroom.chatroomName = _chatroomNameTextField.text;
     chatroom.origin = [location currentLocation];
-    chatroom.private = _inviteOnlyControl.selectedSegmentIndex == 0;
+    chatroom.exclusive = _inviteOnlyControl.selectedSegmentIndex == 0;
     chatroom.global = _globalChatSelect.selectedSegmentIndex == 0;
     if (chatroom.global) {
         chatroom.radius = 0;

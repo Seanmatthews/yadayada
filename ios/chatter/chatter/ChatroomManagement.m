@@ -32,8 +32,7 @@
 - (void)displayInvite:(InviteUserMessage*)message toChatroom:(Chatroom*)chatroom;
 - (void)dismissAllInviteAlerts;
 - (void)createChatroom:(Chatroom*)chatroom withCompletion:(CreateCompletion)completion;
-- (void)rejoinChatrooms;
-- (void)rejoinChatroomsInBackground;
+
 
 @end
 
@@ -112,7 +111,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-
 #pragma mark - Convenience
 
 
@@ -134,7 +132,8 @@
         return YES;
     }
     else {
-        return [self canJoinChatroomWithCoord:chatroom.origin andRadius:[chatroom.radius longLongValue]];
+        return [self canJoinChatroomWithCoord:chatroom.origin
+                                    andRadius:[chatroom.radius longLongValue]];
 
     }
 }
@@ -177,31 +176,33 @@
     return NO;
 }
 
-- (void)rejoinChatroomsInBackground
-{
-    [self performSelectorInBackground:@selector(rejoinChatrooms) withObject:nil];
-}
-
 // Assumes we lost connection to all chatrooms
 - (void)rejoinChatrooms
 {
     NSLog(@"rejoining all chatrooms");
-    // Clear out recent chatrooms
+    
+    if (ud.joinedChatroomIds) {
+        for (NSNumber* cid in ud.joinedChatroomIds) {
+            JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
+            jcm.userId = ud.userId;
+            jcm.latitude = [location currentLat];
+            jcm.longitude = [location currentLong];
+            jcm.chatroomId = [cid longLongValue];
+            [connection sendMessage:jcm];
+        }
+    }
+}
+
+- (void)leaveJoinedChatrooms
+{
     NSArray* pastJoined = [NSArray arrayWithArray:_joinedChatrooms];
     [[self mutableArrayValueForKey:@"joinedChatrooms"] removeAllObjects];
-     
+    
     for (Chatroom* c in pastJoined) {
         LeaveChatroomMessage* lcm = [[LeaveChatroomMessage alloc] init];
         lcm.userId = ud.userId;
         lcm.chatroomId = [c.cid longLongValue];
         [connection sendMessage:lcm];
-        
-        JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
-        jcm.userId = ud.userId;
-        jcm.latitude = [location currentLat];
-        jcm.longitude = [location currentLong];
-        jcm.chatroomId = [c.cid longLongValue];
-        [connection sendMessage:jcm];
     }
 }
 

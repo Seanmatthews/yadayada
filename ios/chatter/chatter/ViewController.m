@@ -33,6 +33,7 @@
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
 - (void)addMessageAtIndexPath:(NSIndexPath*)indexPath;
+- (void)initMessageCell:(ChatroomMessageCell*)cell withReuseIdentifier:(NSString*)reuseId;
 
 @end
 
@@ -331,7 +332,7 @@
 - (void)addMessageAtIndexPath:(NSIndexPath*)indexPath
 {
     [mTableView beginUpdates];
-    if ([mTableView numberOfRowsInSection:0] == _chatroom.MESSAGE_NUM_THRESH) {
+    if ([mTableView numberOfRowsInSection:0] == [_chatroom.MESSAGE_NUM_THRESH integerValue]) {
         NSIndexPath* delPath = [NSIndexPath indexPathForRow:0 inSection:0];
         [mTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:delPath] withRowAnimation:NO];
     }
@@ -395,6 +396,22 @@
     return [[_chatroom chatQueue] count];
 }
 
+- (void)initMessageCell:(ChatroomMessageCell*)cell withReuseIdentifier:(NSString*)reuseId
+{
+    cell = [[ChatroomMessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseId];
+    
+    // Add voting gestures to the cell
+    UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
+    tapped.numberOfTapsRequired = 1;
+    [cell addGestureRecognizer:tapped];
+    UISwipeGestureRecognizer* swipedLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellLeft:)];
+    swipedLeft.direction = UISwipeGestureRecognizerDirectionLeft;
+    [cell addGestureRecognizer:swipedLeft];
+    UISwipeGestureRecognizer* swipedRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellRight:)];
+    swipedRight.direction = UISwipeGestureRecognizerDirectionRight;
+    [cell addGestureRecognizer:swipedRight];
+}
+
 // This function is for recovering cells, or initializing a new one.
 // It is not for filling in cell data.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -405,7 +422,6 @@
     if ([rootMsg isMemberOfClass:[MessageMessage class]]) {
     
         MessageMessage* msg = [[_chatroom chatQueue] objectAtIndex:indexPath.row];
-//        NSString *CellIdentifier = [NSString stringWithFormat:@"%ld_%ld",(long)indexPath.section,(long)indexPath.row];
         ChatroomMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
         if (nil == cell) {

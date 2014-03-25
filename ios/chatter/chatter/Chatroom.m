@@ -9,13 +9,14 @@
 #import "Chatroom.h"
 #import "Location.h"
 
+
 @implementation Chatroom
 
 - (id)init
 {
     self = [super init];
     if (self) {
-        _MESSAGE_NUM_THRESH = 50;
+        _MESSAGE_NUM_THRESH = @50;
         _chatQueue = [[NSMutableArray alloc] init];
         _members = [[NSMutableDictionary alloc] init];
     }
@@ -26,13 +27,13 @@
 {
     self = [super init];
     if (self) {
-        _MESSAGE_NUM_THRESH = 50;
+        _MESSAGE_NUM_THRESH = @50;
         _cid = [NSNumber numberWithLongLong:message.chatroomId];
         _chatroomName = message.chatroomName;
         _chatQueue = [[NSMutableArray alloc] init];
         _members = [[NSMutableDictionary alloc] init];
         _origin = CLLocationCoordinate2DMake([Location fromLongLong:message.latitude],
-                                             [Location fromLongLong:message.longitude]);
+                                              [Location fromLongLong:message.longitude]);
         _radius = [NSNumber numberWithLongLong:message.radius];
         _chatroomOwnerId = [NSNumber numberWithLongLong:message.chatroomOwnerId];
         _chatroomOwnerHandle = message.chatroomOwnerHandle;
@@ -48,13 +49,15 @@
 {
     self = [super init];
     if (self) {
-        _MESSAGE_NUM_THRESH = 50;
+        _MESSAGE_NUM_THRESH = @50;
         _cid = [NSNumber numberWithLongLong:message.chatroomId];
         _chatroomName = message.chatroomName;
         _chatQueue = [[NSMutableArray alloc] init];
         _members = [[NSMutableDictionary alloc] init];
+//        _origin = CLLocationCoordinate2DMake([Location fromLongLong:message.latitude],
+//                                             [Location fromLongLong:message.longitude]);
         _origin = CLLocationCoordinate2DMake([Location fromLongLong:message.chatroomLat],
-                                             [Location fromLongLong:message.chatroomLong]);
+                                              [Location fromLongLong:message.chatroomLong]);
         _radius = [NSNumber numberWithLongLong:message.chatroomRadius];
 //        _chatroomOwnerId = [NSNumber numberWithLongLong:];
 //        _chatroomOwnerHandle = message.chatroomOwnerHandle;
@@ -75,51 +78,6 @@
 {
     return [[Chatroom alloc] initWithInviteUserMessage:message];
 }
-
-//- (id)initWithJoinedChatroomMessage:(JoinedChatroomMessage *)message
-//{
-//    self = [super init];
-//    if (self) {
-//        _MESSAGE_NUM_THRESH = 50;
-//        _cid = [NSNumber numberWithLongLong:message.chatroomId];
-//        _chatroomName = message.chatroomName;
-//        _chatQueue = [[NSMutableArray alloc] init];
-//        _members = [[NSMutableDictionary alloc] init];
-//        _origin = CLLocationCoordinate2DMake([Location fromLongLong:message.latitude],
-//                                             [Location fromLongLong:message.longitude]);
-//        _radius = [NSNumber numberWithLongLong:message.radius];
-//        _chatroomOwnerId = [NSNumber numberWithLongLong:message.chatroomOwnerId];
-//        _chatroomOwnerHandle = message.chatroomOwnerHandle;
-//        _userCount = [NSNumber numberWithInt:message.userCount];
-//        _chatActivity = [NSNumber numberWithShort:message.chatActivity];
-//        _exclusive = NO;
-//        _global = message.radius <= 0;
-//    }
-//    return self;
-//}
-//
-//+ (Chatroom*)chatroomWithJoinedChatroomMessage:(JoinedChatroomMessage*)message
-//{
-//    return [[Chatroom alloc] initWithJoinedChatroomMessage:message];
-//}
-
-//- (void)insertObject:(id)message inChatQueueAtIndex:(NSUInteger)index
-//{
-//    [self.chatQueue insertObject:message atIndex:index];
-//    return;
-//}
-//
-//- (void)removeObjectFromChatQueueAtIndex:(NSUInteger)index
-//{
-//    [self.chatQueue removeObjectAtIndex:index];
-//}
-//
-//- (void)replaceObjectInChatQueueAtIndex:(NSUInteger)index withObject:(id)anObject
-//{
-//    
-//    [self.chatQueue replaceObjectAtIndex:index withObject:anObject];
-//}
-
 
 
 @end

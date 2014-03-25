@@ -7,6 +7,13 @@
 //
 
 #import "UserDetails.h"
+#import "Chatroom.h"
+
+@interface UserDetails()
+
+
+
+@end
 
 @implementation UserDetails
 
@@ -24,6 +31,7 @@
         _receiveInviteNotifications = [[NSUserDefaults standardUserDefaults] boolForKey:@"ReceiveInviteNotifications"];
         _finishedTutorial = [[NSUserDefaults standardUserDefaults] boolForKey:@"HasFinishedTutorial"];
         _userIcon = [[NSUserDefaults standardUserDefaults] objectForKey:@"UserIcon"];
+        _joinedChatroomIds = [[NSUserDefaults standardUserDefaults] objectForKey:@"JoinedChatrooms"];
         
         // This will be the same while the user has any apps installed with the
         // same com.whatever app identifier, and will change when the user
@@ -72,6 +80,7 @@
     [[NSUserDefaults standardUserDefaults] setBool:ud.receiveInviteNotifications forKey:@"ReceiveInviteNotifications"];
     [[NSUserDefaults standardUserDefaults] setBool:ud.finishedTutorial forKey:@"HasFinishedTutorial"];
     [[NSUserDefaults standardUserDefaults] setObject:ud.userIcon forKey:@"UserIcon"];
+    [[NSUserDefaults standardUserDefaults] setObject:ud.joinedChatroomIds forKey:@"JoinedChatrooms"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
