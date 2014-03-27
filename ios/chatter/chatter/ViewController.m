@@ -206,7 +206,6 @@
 - (void)swipeCell:(ChatroomMessageCell*)cell withAnimation:(UITableViewRowAnimation)animation
 {
     NSInteger row = [_chatroom.chatQueue indexOfObject:cell.messageObj];
-    NSLog(@"row: %ld",(long)row);
     
     // Send downvote
     if (row < [[_chatroom chatQueue] count]) {

@@ -39,13 +39,14 @@
 
 @implementation ChatroomManagement
 {
-    
     Connection* connection;
     UserDetails* ud;
     Location* location;
     NSMutableArray* inviteAlerts;
     JoinCompletion joinCompletion;
     CreateCompletion createCompletion;
+    UIBackgroundTaskIdentifier leaveChatroomsTask;
+    NSInteger joinedCount;
 }
 
 //const int MESSAGE_NUM_THRESH = 20;
@@ -55,6 +56,8 @@
     self = [super init];
     
     if (self) {
+        joinedCount = 0;
+        leaveChatroomsTask = UIBackgroundTaskInvalid;
         joinCompletion = nil;
         createCompletion = nil;
         connection = [Connection sharedInstance];
@@ -180,7 +183,7 @@
 - (void)rejoinChatrooms
 {
     NSLog(@"rejoining all chatrooms");
-    [self leaveJoinedChatrooms];
+//    [self leaveJoinedChatrooms];
     
     if (ud.joinedChatroomIds) {
         for (NSNumber* cid in ud.joinedChatroomIds) {
@@ -198,6 +201,13 @@
 {
     NSArray* pastJoined = [NSArray arrayWithArray:_joinedChatrooms];
     [[self mutableArrayValueForKey:@"joinedChatrooms"] removeAllObjects];
+    
+    if ([pastJoined count] > 0) {
+        joinedCount = [pastJoined count];
+        leaveChatroomsTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            leaveChatroomsTask = UIBackgroundTaskInvalid;
+        }];
+    }
     
     for (Chatroom* c in pastJoined) {
         LeaveChatroomMessage* lcm = [[LeaveChatroomMessage alloc] init];
@@ -330,6 +340,13 @@
     NSNumber* cid = [NSNumber numberWithLongLong:message.chatroomId];
     if (message.userId == ud.userId) {
         [[self mutableArrayValueForKey:@"joinedChatrooms"] removeObject:[_chatrooms objectForKey:cid]];
+        
+        // If we tried to leave all the chatrooms, it started a background task
+        if (leaveChatroomsTask != UIBackgroundTaskInvalid) {
+            if (--joinedCount <= 0) {
+                [[UIApplication sharedApplication] endBackgroundTask:leaveChatroomsTask];
+            }
+        }
     }
     else {
         Chatroom* c = [_chatrooms objectForKey:cid];

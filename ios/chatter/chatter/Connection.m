@@ -112,7 +112,6 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     }
 }
 
-
 // WARNING: Be careful with the messages sent into this method--
 // once an object is passed, altering and resubmitting that object
 // to this function will result in the block not seeing the changes
