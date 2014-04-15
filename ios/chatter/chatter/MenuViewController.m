@@ -117,6 +117,7 @@
 
 - (void)receivedConnectAccept:(NSNotification*)notification
 {
+    NSLog(@"Connect Accept");
     [chatManager setGlobalChatroomId:[NSNumber numberWithLongLong:[notification.object globalChatId]]];
     ud.iconDownloadURL = [notification.object imageDownloadUrl];
     ud.iconUploadURL = [notification.object imageUploadUrl];
@@ -138,6 +139,7 @@
 
 - (void)receivedLoginAccept:(NSNotification*)notification
 {
+    NSLog(@"Login Accept");
     ud.userId = [notification.object userId];
     [chatManager searchChatrooms];
     

@@ -108,7 +108,10 @@ public class ChatServerImpl implements ChatServer {
             ClientConnection connection = userConnectionMap.get(user);
 
             if (connection != null)
-                connection.sendMessage(msgToSend);
+                // TEST
+                for (int i=0; i<10; ++i) {
+                    connection.sendMessage(msgToSend);
+                }
         }
     }
 

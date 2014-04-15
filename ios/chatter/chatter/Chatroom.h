@@ -29,7 +29,7 @@
 @property (nonatomic,strong) NSNumber* chatActivity;
 @property (nonatomic,getter=isPrivate,setter=setPrivate:) BOOL exclusive;
 @property (nonatomic,getter=isGlobal) BOOL global;
-@property (nonatomic) NSNumber* MESSAGE_NUM_THRESH;
+@property (nonatomic) NSInteger MESSAGE_NUM_THRESH;
 
 - (id)init;
 - (id)initWithChatroomMessage:(ChatroomMessage*)message;

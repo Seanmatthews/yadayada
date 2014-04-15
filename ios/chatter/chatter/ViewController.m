@@ -32,7 +32,7 @@
 - (void)segueToChatroom:(NSNotification*)notification;
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
-- (void)addMessageAtIndexPath:(NSIndexPath*)indexPath;
+- (void)addMessageAtIndexPath;
 - (void)initMessageCell:(ChatroomMessageCell*)cell withReuseIdentifier:(NSString*)reuseId;
 
 @end
@@ -50,6 +50,8 @@
     NSString* selfHandleCSS;
     ChatroomManagement* chatManager;
     NSMutableArray* inviteAlerts;
+    NSMutableArray* indexPathsToDisplay;
+    NSMutableArray* displayedIndexPaths;
 }
 
 @synthesize userInputTextField;
@@ -62,6 +64,8 @@
     contacts = [Contacts sharedInstance];
     chatManager = [ChatroomManagement sharedInstance];
     connection = [Connection sharedInstance];
+    indexPathsToDisplay = [[NSMutableArray alloc] init];
+    displayedIndexPaths = [[NSMutableArray alloc] init];
     
     // CSS for table cells
     pageCSS = @"body { margin:0; padding:1; }";
@@ -69,6 +73,12 @@
     handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#DADADA }";
     selfMsgCSS = @"div.msg { font:13px/14px baskerville,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0 }";
     selfHandleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#DADADA; text-align:right }";
+    
+    [NSTimer scheduledTimerWithTimeInterval:0.25
+                                     target:self
+                                   selector:@selector(addMessageAtIndexPath)
+                                   userInfo:nil
+                                    repeats:YES];
 }
 
 // This is called whenever the view is loaded through storyboard segues
@@ -324,20 +334,44 @@
         NSLog(@"new chat");
 //        [change objectForKey:NSKeyValueChangeNewKey];
         NSIndexPath* ipath = [NSIndexPath indexPathForRow:([[object chatQueue] count]-1) inSection:0];
-        [self addMessageAtIndexPath:ipath];
+        //[self addMessageAtIndexPath:ipath];
+        [indexPathsToDisplay addObject:ipath];
+        [displayedIndexPaths addObject:ipath];
+        
+        while ([displayedIndexPaths count] > _chatroom.MESSAGE_NUM_THRESH) {
+            [displayedIndexPaths removeObjectAtIndex:0];
+        }
     }
 }
 
-- (void)addMessageAtIndexPath:(NSIndexPath*)indexPath
+//- (void)addMessageAtIndexPath:(NSIndexPath*)indexPath
+- (void)addMessageAtIndexPath
 {
-    [mTableView beginUpdates];
-    if ([mTableView numberOfRowsInSection:0] == [_chatroom.MESSAGE_NUM_THRESH integerValue]) {
-        NSIndexPath* delPath = [NSIndexPath indexPathForRow:0 inSection:0];
-        [mTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:delPath] withRowAnimation:NO];
+    if ([indexPathsToDisplay count] < 1) {
+        return;
     }
-    [mTableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    
+    [CATransaction begin];
+    NSIndexPath* path = [indexPathsToDisplay lastObject];
+    [CATransaction setCompletionBlock:^{
+        [mTableView scrollToRowAtIndexPath:path
+                          atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+    }];
+    
+    [mTableView beginUpdates];
+    NSInteger totalDisplayMessages = [displayedIndexPaths count] + [indexPathsToDisplay count];
+    if (totalDisplayMessages > _chatroom.MESSAGE_NUM_THRESH) {
+        NSMutableArray* deletePaths = [[NSMutableArray alloc] init];
+        for (NSInteger i=0; i<totalDisplayMessages; ++i) {
+            [deletePaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+        }
+        [mTableView deleteRowsAtIndexPaths:deletePaths withRowAnimation:UITableViewRowAnimationNone];
+    }
+    [mTableView insertRowsAtIndexPaths:indexPathsToDisplay withRowAnimation:UITableViewRowAnimationNone];
     [mTableView endUpdates];
-    [mTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+    [CATransaction commit];
+    
+    [indexPathsToDisplay removeAllObjects];
 }
 
 - (void)receivedInviteUserSuccess:(NSNotification*)notification
@@ -390,9 +424,8 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // There will only ever be one section for a table.
-    // TODO: alter this behavior for multiple chatrooms
-//    NSLog(@"[viewcontroller] count %lu",(unsigned long)[[chatManager currentChatQueue] count]);
-    return [[_chatroom chatQueue] count];
+    return [displayedIndexPaths count];
+//    return [[_chatroom chatQueue] count];
 }
 
 - (void)initMessageCell:(ChatroomMessageCell*)cell withReuseIdentifier:(NSString*)reuseId
@@ -462,8 +495,9 @@
             NSString* userHandle = ((LeftChatroomMessage*)rootMsg).userHandle;
             cell.textLabel.text = [NSString stringWithFormat:@"%@ left.",userHandle];
         }
+        
         return cell;
-    }
+    }    
 }
 
 

@@ -16,7 +16,7 @@
 {
     self = [super init];
     if (self) {
-        _MESSAGE_NUM_THRESH = @50;
+        _MESSAGE_NUM_THRESH = 50;
         _chatQueue = [[NSMutableArray alloc] init];
         _members = [[NSMutableDictionary alloc] init];
     }
@@ -27,7 +27,7 @@
 {
     self = [super init];
     if (self) {
-        _MESSAGE_NUM_THRESH = @50;
+        _MESSAGE_NUM_THRESH = 50;
         _cid = [NSNumber numberWithLongLong:message.chatroomId];
         _chatroomName = message.chatroomName;
         _chatQueue = [[NSMutableArray alloc] init];
@@ -49,7 +49,7 @@
 {
     self = [super init];
     if (self) {
-        _MESSAGE_NUM_THRESH = @50;
+        _MESSAGE_NUM_THRESH = 50;
         _cid = [NSNumber numberWithLongLong:message.chatroomId];
         _chatroomName = message.chatroomName;
         _chatQueue = [[NSMutableArray alloc] init];
