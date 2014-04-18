@@ -62,8 +62,6 @@ typedef enum {
 @property NSString* handle;
 @property NSString* UUID;
 @property long long phoneNumber;
-@property NSString* deviceToken;
-@property short heartbeatInterval;
 
 @end
 
@@ -124,6 +122,7 @@ typedef enum {
 
 @property int APIVersion;
 @property NSString* UUID;
+@property NSString* deviceToken;
 
 @end
 
@@ -135,6 +134,7 @@ typedef enum {
 @property long long globalChatId;
 @property NSString* imageUploadUrl;
 @property NSString* imageDownloadUrl;
+@property short heartbeatInterval;
 
 @end
 

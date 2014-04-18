@@ -10,8 +10,6 @@ public class RegisterMessage implements Message {
     private final String handle;
     private final String UUID;
     private final long phoneNumber;
-    private final String deviceToken;
-    private final short heartbeatInterval;
 
     public RegisterMessage(ReadBuffer stream) {
         this.userName = stream.readString();
@@ -19,18 +17,14 @@ public class RegisterMessage implements Message {
         this.handle = stream.readString();
         this.UUID = stream.readString();
         this.phoneNumber = stream.readLong();
-        this.deviceToken = stream.readString();
-        this.heartbeatInterval = stream.readShort();
     }
 
-    public RegisterMessage(String userName, String password, String handle, String UUID, long phoneNumber, String deviceToken, short heartbeatInterval) {
+    public RegisterMessage(String userName, String password, String handle, String UUID, long phoneNumber) {
         this.userName = userName;
         this.password = password;
         this.handle = handle;
         this.UUID = UUID;
         this.phoneNumber = phoneNumber;
-        this.deviceToken = deviceToken;
-        this.heartbeatInterval = heartbeatInterval;
     }
 
     public String getUserName() {
@@ -53,14 +47,6 @@ public class RegisterMessage implements Message {
         return phoneNumber;
     }
 
-    public String getDeviceToken() {
-        return deviceToken;
-    }
-
-    public short getHeartbeatInterval() {
-        return heartbeatInterval;
-    }
-
     @Override
     public void write(ReadWriteBuffer stream) {
         int position = stream.position();
@@ -73,8 +59,6 @@ public class RegisterMessage implements Message {
         stream.writeString(getHandle());
         stream.writeString(getUUID());
         stream.writeLong(getPhoneNumber());
-        stream.writeString(getDeviceToken());
-        stream.writeShort(getHeartbeatInterval());
 
         // write out length of message
         stream.writeShort(position, stream.position() - position - 2);
@@ -89,8 +73,6 @@ public class RegisterMessage implements Message {
         builder.append(",Handle=").append(getHandle());
         builder.append(",UUID=").append(getUUID());
         builder.append(",PhoneNumber=").append(getPhoneNumber());
-        builder.append(",DeviceToken=").append(getDeviceToken());
-        builder.append(",HeartbeatInterval=").append(getHeartbeatInterval());
         return builder.toString();        
     }
 } 

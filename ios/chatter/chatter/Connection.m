@@ -70,11 +70,11 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 // Whenever the heartbeat interval is set, stop previously
 // scheduled heartbeats and start a new one.
-- (void)setHeartbeatInterval:(NSTimeInterval *)heartbeatInterval
+- (void)setHeartbeatInterval:(NSTimeInterval)heartbeatInterval
 {
     _heartbeatInterval = heartbeatInterval;
     [heartbeatTimer invalidate];
-    heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:10.0
+    heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:heartbeatInterval
                                                       target:self
                                                     selector:@selector(sendHeartbeatMessage)
                                                     userInfo:nil

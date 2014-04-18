@@ -118,9 +118,11 @@
 - (void)receivedConnectAccept:(NSNotification*)notification
 {
     NSLog(@"Connect Accept");
-    [chatManager setGlobalChatroomId:[NSNumber numberWithLongLong:[notification.object globalChatId]]];
-    ud.iconDownloadURL = [notification.object imageDownloadUrl];
-    ud.iconUploadURL = [notification.object imageUploadUrl];
+    ConnectAcceptMessage* cam = notification.object;
+    [chatManager setGlobalChatroomId:[NSNumber numberWithLongLong:cam.globalChatId]];
+    ud.iconDownloadURL = cam.imageDownloadUrl;
+    ud.iconUploadURL = cam.imageUploadUrl;
+    [connection setHeartbeatInterval:cam.heartbeatInterval];
     
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
     qlm.handle = ud.handle;

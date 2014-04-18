@@ -5,8 +5,6 @@
         <field name="handle" type="String" />
         <field name="UUID" type="String" />
         <field name="phoneNumber" type="long" />
-        <field name="deviceToken" type="String" />
-        <field name="heartbeatInterval" type="short" />
     </msg>
 
     <msg name="RegisterAccept" val="2" origin="server">
@@ -39,6 +37,7 @@
     <msg name="Connect" val="16" origin="client">
         <field name="APIVersion" type="int" />
         <field name="UUID" type="String" />
+        <field name="deviceToken" type="String" />
     </msg>
 
     <msg name="ConnectAccept" val="17" origin="server">
@@ -46,6 +45,7 @@
         <field name="globalChatId" type="long" />
         <field name="imageUploadUrl" type="String" />
         <field name="imageDownloadUrl" type="String" />
+        <field name="heartbeatInterval" type="short" />
     </msg>
 
     <msg name="ConnectReject" val="18" origin="server">
