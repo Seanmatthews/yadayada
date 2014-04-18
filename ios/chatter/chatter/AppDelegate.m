@@ -22,6 +22,9 @@ const NSTimeInterval LOCATE_DURATION = 3.;
     NSLog(@"Release Mode");
 #endif
     
+    [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
+    
     // start location service
     location = [Location sharedInstance];
     [location startServiceWithInterval:LOCATE_INTERVAL andDuration:LOCATE_DURATION];
@@ -99,6 +102,27 @@ const NSTimeInterval LOCATE_DURATION = 3.;
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     ud.joinedChatroomIds = [NSArray arrayWithArray:[chatManager.joinedChatrooms valueForKeyPath:@"cid"]];
     [UserDetails save];
+}
+
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken {
+    const void *devTokenBytes = [devToken bytes];
+//    self.registered = YES;
+//    [self sendProviderDeviceToken:devTokenBytes]; // custom method
+}
+
+- (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
+    NSLog(@"Error in registration. Error: %@", err);
+}
+
+- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    NSLog(@"Remote Notification userInfo is %@", userInfo);
+    
+    if (userInfo[@"aps"][@"content-available"]) {
+        [connection parsePushNotification:userInfo];
+    }
+    
+    completionHandler(UIBackgroundFetchResultNewData);
 }
 
 @end

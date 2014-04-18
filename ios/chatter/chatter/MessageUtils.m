@@ -79,7 +79,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[SearchChatroomsMessage alloc] init];
         break;
 
-        case aChatroom:
+        case Chatroom:
         mb = [[ChatroomMessage alloc] init];
         break;
 
@@ -301,6 +301,17 @@ static const char *getPropertyType(objc_property_t property) {
     
     // returning a copy here to make sure the dictionary is immutable
     return [OrderedDictionary dictionaryWithDictionary:results];
+}
+
+
++ (MessageBase*)messageWithPushNotification:(NSDictionary*)notification
+{
+    MessageBase* m = [MessageUtils messageWithType:(MessageTypes)notification[@"message"][@"messageType"]];
+    OrderedDictionary* props = [self classPropsFor:[m class]];
+    for (NSString* key in props) {
+        [m setValue:notification[@"message"][key] forKey:key];
+    }
+    return m;
 }
 
 @end

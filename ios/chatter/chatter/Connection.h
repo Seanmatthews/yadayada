@@ -18,8 +18,10 @@
 - (void)reconnect;
 - (void)sendMessage:(MessageBase*)message;
 - (void)streamReset;
+- (void)parsePushNotification:(NSDictionary*)notification;
 
 @property (nonatomic,strong) NSString* connectMode;
+@property (nonatomic) NSTimeInterval* heartbeatInterval;
 
 //- (void)connectToImageServer;
 //- (void)uploadImage:(UIImage*)image forUserId:(long long)userId toURL:(NSString*)url;

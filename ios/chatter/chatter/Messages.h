@@ -24,7 +24,7 @@ typedef enum {
     Message = 22,
     SubmitMessageReject = 23,
     SearchChatrooms = 31,
-    aChatroom = 32,
+    Chatroom = 32,
     JoinChatroom = 33,
     LeaveChatroom = 34,
     CreateChatroom = 35,
@@ -62,6 +62,8 @@ typedef enum {
 @property NSString* handle;
 @property NSString* UUID;
 @property long long phoneNumber;
+@property NSString* deviceToken;
+@property short heartbeatInterval;
 
 @end
 
@@ -148,6 +150,9 @@ typedef enum {
 
 - (id)init;
 
+@property long long timestamp;
+@property long long latitude;
+@property long long longitude;
 
 @end
 

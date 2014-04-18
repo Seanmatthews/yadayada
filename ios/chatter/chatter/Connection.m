@@ -9,10 +9,13 @@
 #import "Connection.h"
 #import "UserDetails.h"
 #import "Messages.h"
+#import "Location.h"
 
 @interface Connection()
 
 - (void)parseMessage:(BUFTYPE)buffer withLength:(NSInteger)length;
+- (void)sendHeartbeatMessage;
+
 @end
 
 @implementation Connection
@@ -27,6 +30,8 @@
     
     dispatch_queue_t sendMessageQueue;
     dispatch_queue_t inputStreamQueue;
+    
+    NSTimer* heartbeatTimer;
 }
 
 
@@ -42,6 +47,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         inputStreamQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
         sendMessageQueue = dispatch_queue_create("outgoingMessageQueue", DISPATCH_QUEUE_SERIAL);
         _connectMode = @"";
+        heartbeatTimer = nil;
     }
     return self;
 }
@@ -60,6 +66,19 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 - (int)getImageServerPort
 {
     return IMAGE_SERVER_PORT;
+}
+
+// Whenever the heartbeat interval is set, stop previously
+// scheduled heartbeats and start a new one.
+- (void)setHeartbeatInterval:(NSTimeInterval *)heartbeatInterval
+{
+    _heartbeatInterval = heartbeatInterval;
+    [heartbeatTimer invalidate];
+    heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:10.0
+                                                      target:self
+                                                    selector:@selector(sendHeartbeatMessage)
+                                                    userInfo:nil
+                                                     repeats:YES];
 }
 
 - (void)connect
@@ -122,6 +141,24 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         NSData* d = [MessageUtils serializeMessage:message];
         [os write:[d bytes] maxLength:[d length]];
     });
+}
+
+- (void)sendHeartbeatMessage
+{
+    HeartbeatMessage* hbm = [[HeartbeatMessage alloc] init];
+    hbm.timestamp = [NSDate timeIntervalSinceReferenceDate];
+    hbm.latitude = [[Location sharedInstance] currentLat];
+    hbm.longitude = [[Location sharedInstance] currentLong];
+    [self sendMessage:hbm];
+}
+
+- (void)parsePushNotification:(NSDictionary*)notification
+{
+    MessageBase* m = [MessageUtils messageWithPushNotification:notification];
+    [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
+                                                             notificationWithName:NSStringFromClass([m class])
+                                                             object:m]
+                                               postingStyle:NSPostNow];
 }
 
 - (void)parseMessage:(BUFTYPE)buffer withLength:(NSInteger)length

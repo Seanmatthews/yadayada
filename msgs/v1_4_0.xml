@@ -5,6 +5,8 @@
         <field name="handle" type="String" />
         <field name="UUID" type="String" />
         <field name="phoneNumber" type="long" />
+        <field name="deviceToken" type="String" />
+        <field name="heartbeatInterval" type="short" />
     </msg>
 
     <msg name="RegisterAccept" val="2" origin="server">
@@ -51,6 +53,9 @@
     </msg>
 
     <msg name="Heartbeat" val="19" origin="server,client">
+        <field name="timestamp" type="long" />
+        <field name="latitude" type="long" />
+        <field name="longitude" type="long" />
     </msg>
 
     <msg name="SubmitMessage" val="21" origin="client">

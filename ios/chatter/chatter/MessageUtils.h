@@ -20,5 +20,6 @@ typedef const uint8_t* BUFTYPE;
 + (NSData*)serializeMessage:(MessageBase*)message;
 + (MessageBase*)deserializeMessage:(BUFTYPE)data withLength:(short)length;
 + (OrderedDictionary *)classPropsFor:(Class)klass;
++ (MessageBase*)messageWithPushNotification:(NSDictionary*)notification;
 
 @end
