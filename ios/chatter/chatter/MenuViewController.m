@@ -27,6 +27,7 @@
 @implementation MenuViewController
 {
     ChatroomManagement* chatManager;
+    NSTimeInterval heartbeatInterval;
 }
 
 
@@ -122,7 +123,7 @@
     [chatManager setGlobalChatroomId:[NSNumber numberWithLongLong:cam.globalChatId]];
     ud.iconDownloadURL = cam.imageDownloadUrl;
     ud.iconUploadURL = cam.imageUploadUrl;
-    [connection setHeartbeatInterval:cam.heartbeatInterval];
+    heartbeatInterval = cam.heartbeatInterval;
     
     QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
     qlm.handle = ud.handle;
@@ -144,6 +145,7 @@
     NSLog(@"Login Accept");
     ud.userId = [notification.object userId];
     [chatManager searchChatrooms];
+    [connection setHeartbeatInterval:heartbeatInterval];
     
 //    // Join global chatroom automatically on startup
 //    [chatManager leaveChatroomWithId:chatManager.globalChatroomId withCompletion:nil];

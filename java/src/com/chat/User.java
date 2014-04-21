@@ -1,5 +1,6 @@
 package com.chat;
 
+import java.util.Calendar;
 import java.util.Iterator;
 
 /**
@@ -16,6 +17,9 @@ public class User {
     private final String handle;
     private final long phoneNumber;
     private final UserRepository repo;
+    private double latitude;
+    private double longitude;
+    private  long lastHeartbeat;
 
     public User(long id, String handle, long phoneNumber, UserRepository repo) {
         this(id, "QR", "QR", handle, phoneNumber, repo);
@@ -28,7 +32,30 @@ public class User {
         this.handle = handle;
         this.phoneNumber = phoneNumber;
         this.repo = repo;
+        this.latitude = 0;
+        this.longitude = 0;
+        lastHeartbeat = Calendar.getInstance().getTimeInMillis() / 1000L;
     }
+
+    public void setLatitude(long latitude) {
+        // convert from message latitude
+        this.latitude = latitude / 1000000. - 400;
+    }
+
+    public void setLongitude(long longitude) {
+        // convert from message longitude
+        this.longitude = longitude / 1000000. - 400;
+    }
+
+    public void setLastHeartbeat(long timestamp) {
+        this.lastHeartbeat = timestamp;
+    }
+
+    public double getLatitude() { return latitude; }
+
+    public double getLongitude() { return longitude; }
+
+    public long getLastHeartbeat() { return lastHeartbeat; }
 
     public long getId() {
         return id;

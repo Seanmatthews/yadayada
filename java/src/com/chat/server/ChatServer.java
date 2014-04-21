@@ -35,7 +35,11 @@ public interface ChatServer {
                          byte onlyJoinable);
 
     void joinChatroom(ClientConnection sender, User user, Chatroom chatroom);
+
     void leaveChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom);
+
     void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone)
             throws ExecutionException, InterruptedException;
+
+    void heartbeat(ClientConnection sender, long timestamp, long latitude, long longitude);
 }

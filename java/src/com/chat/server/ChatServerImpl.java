@@ -76,7 +76,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void connect(ClientConnection sender, int apiVersion, String uuid) {
-        sender.sendMessage(new ConnectAcceptMessage(apiVersion, 1, "", ""));
+        sender.sendMessage(new ConnectAcceptMessage(apiVersion, 1, "", "", (short) 30));
     }
 
     @Override
@@ -107,11 +107,21 @@ public class ChatServerImpl implements ChatServer {
 
             ClientConnection connection = userConnectionMap.get(user);
 
-            if (connection != null)
-                // TEST
-                for (int i=0; i<10; ++i) {
+            if (connection != null) {
+//                // TEST
+//                for (int i=0; i<10; ++i) {
+//                    connection.sendMessage(msgToSend);
+//                }
+
+                long currentTime = Calendar.getInstance().getTimeInMillis() / 1000L;
+                if (currentTime - user.getLastHeartbeat() > 30 + 5) { // +5 to allow for transmission delays
+                    // Send APNS
+
+                }
+                else {
                     connection.sendMessage(msgToSend);
                 }
+            }
         }
     }
 
@@ -396,4 +406,13 @@ public class ChatServerImpl implements ChatServer {
         }
     }
 
+    @Override
+    public void heartbeat(ClientConnection sender, long timestamp, long latitude, long longitude) {
+        log.debug("Received heartbeat from user {}", sender.getUser().getId());
+
+        User user = sender.getUser();
+        user.setLatitude(latitude);
+        user.setLongitude(longitude);
+        user.setLastHeartbeat(timestamp);
+    }
 }

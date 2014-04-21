@@ -52,7 +52,7 @@
         <field name="reason" type="String" />
     </msg>
 
-    <msg name="Heartbeat" val="19" origin="server,client">
+    <msg name="Heartbeat" val="19" origin="client">
         <field name="timestamp" type="long" />
         <field name="latitude" type="long" />
         <field name="longitude" type="long" />

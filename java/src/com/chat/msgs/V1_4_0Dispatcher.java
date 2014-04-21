@@ -2,6 +2,19 @@ package com.chat.msgs;
 
 import com.chat.*;
 import com.chat.msgs.v1_4_0.*;
+import com.chat.msgs.v1_4_0.ConnectMessage;
+import com.chat.msgs.v1_4_0.CreateChatroomMessage;
+import com.chat.msgs.v1_4_0.InviteUserMessage;
+import com.chat.msgs.v1_4_0.JoinChatroomMessage;
+import com.chat.msgs.v1_4_0.LeaveChatroomMessage;
+import com.chat.msgs.v1_4_0.LoginMessage;
+import com.chat.msgs.v1_4_0.MessageTypes;
+import com.chat.msgs.v1_4_0.QuickLoginMessage;
+import com.chat.msgs.v1_4_0.RegisterMessage;
+import com.chat.msgs.v1_4_0.SearchChatroomsMessage;
+import com.chat.msgs.v1_4_0.SubmitMessageMessage;
+import com.chat.msgs.v1_4_0.VoteMessage;
+import com.chat.msgs.v1_4_0.HeartbeatMessage;
 import com.chat.server.ChatServer;
 import com.chat.util.buffer.ReadBuffer;
 import org.apache.logging.log4j.LogManager;
@@ -130,6 +143,10 @@ public class V1_4_0Dispatcher implements MessageDispatcher {
                 server.streamReset(stream, srUser);
                 break;
 
+            case Heartbeat:
+                HeartbeatMessage hbMsg = new HeartbeatMessage(buffer);
+                logMsg(hbMsg);
+                server.heartbeat(stream, hbMsg.getTimestamp(), hbMsg.getLatitude(), hbMsg.getLongitude());
             default:
                 throw new ValidationError("Unhandled message: " + type);
         }

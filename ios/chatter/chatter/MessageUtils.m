@@ -79,7 +79,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[SearchChatroomsMessage alloc] init];
         break;
 
-        case Chatroom:
+        case aChatroom:
         mb = [[ChatroomMessage alloc] init];
         break;
 
