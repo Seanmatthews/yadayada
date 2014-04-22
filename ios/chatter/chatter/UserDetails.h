@@ -21,6 +21,7 @@
 @property BOOL receiveInviteNotifications;
 @property UIImage* userIcon;
 @property (nonatomic,strong) NSArray* joinedChatroomIds;
+@property (nonatomic,strong) NSData* deviceToken;
 
 
 // This is not a user detail, but rather an app global

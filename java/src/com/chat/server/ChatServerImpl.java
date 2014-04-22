@@ -13,6 +13,10 @@ import java.util.concurrent.ExecutionException;
 import static com.chat.UserRepository.UserRepositoryActionResult;
 import static com.chat.UserRepository.UserRepositoryCompletionHandler;
 
+import com.relayrides.pushy.apns.*;
+import com.relayrides.pushy.apns.util.*;
+import org.json.simple.JSONObject;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -22,6 +26,8 @@ import static com.chat.UserRepository.UserRepositoryCompletionHandler;
  */
 public class ChatServerImpl implements ChatServer {
     private final Logger log = LogManager.getLogger();
+    private PushManagerFactory<SimpleApnsPushNotification> pushManagerFactory;
+    private PushManager<SimpleApnsPushNotification> pushManager;
 
     private final EventService eventService;
     private final ChatroomRepository chatroomRepo;
@@ -34,6 +40,63 @@ public class ChatServerImpl implements ChatServer {
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
         this.messageRepo = messageRepo;
+
+
+    }
+
+    @Override
+    public void startAPNSService() {
+
+        String keyStore = System.getProperty("javax.net.ssl.keyStore");
+        String keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword");
+
+        try {
+            pushManagerFactory = new PushManagerFactory<SimpleApnsPushNotification>(
+                    ApnsEnvironment.getSandboxEnvironment(),
+                    PushManagerFactory.createDefaultSSLContext(keyStore, keyStorePassword));
+        }
+        catch (Exception e) {
+            log.debug("Pushy exception {}", e.getMessage());
+        }
+
+        pushManager = pushManagerFactory.buildPushManager();
+        pushManager.start();
+    }
+
+    @Override
+    public void stopAPNSService() {
+        try {
+            pushManager.shutdown();
+        }
+        catch (Exception e) {
+            log.debug("Pushy exception {}", e.getMessage());
+        }
+    }
+
+    private void sendMessageAsNotification(User toUser, MessageMessage mm) throws InterruptedException {
+        JSONObject aps = new JSONObject();
+        aps.put("content-available", 1);
+        aps.put("sound", "");
+
+        JSONObject msgBody = new JSONObject();
+        msgBody.put("message", mm.getMessage());
+        msgBody.put("messageTimestamp", mm.getMessageTimestamp());
+        msgBody.put("senderHandle", mm.getSenderHandle());
+        msgBody.put("chatroomId", mm.getChatroomId());
+        msgBody.put("messageId", mm.getMessageId());
+        msgBody.put("senderId", mm.getSenderId());
+
+        JSONObject msg = new JSONObject();
+        msg.put("msgType", MessageTypes.Message);
+        msg.put("msgBody", msgBody);
+
+        JSONObject payload = new JSONObject();
+        payload.put("aps", aps);
+        payload.put("msg", msg);
+
+        String payloadString = payload.toJSONString();
+
+        pushManager.getQueue().put(new SimpleApnsPushNotification(toUser.getDeviceToken(), payloadString));
     }
 
     @Override
@@ -115,8 +178,13 @@ public class ChatServerImpl implements ChatServer {
 
                 long currentTime = Calendar.getInstance().getTimeInMillis() / 1000L;
                 if (currentTime - user.getLastHeartbeat() > 30 + 5) { // +5 to allow for transmission delays
-                    // Send APNS
-
+                    try {
+                        // Send APNS
+                        sendMessageAsNotification(user, msgToSend);
+                    }
+                    catch (InterruptedException e) {
+                        log.debug("Pushy exception {}", e.getMessage());
+                    }
                 }
                 else {
                     connection.sendMessage(msgToSend);
@@ -151,7 +219,8 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void registerUser(final ClientConnection senderConnection, final String login, String password, String handle, String UUID, long phoneNumber) {
+    public void registerUser(final ClientConnection senderConnection, final String login, String password,
+                             String handle, String UUID, long phoneNumber, String deviceTokenString) {
         log.debug("Registering user {}", login);
 
         if (login.length() == 0) {
@@ -167,7 +236,8 @@ public class ChatServerImpl implements ChatServer {
             return;
         }
 
-        userRepo.registerUser(login, password, handle, UUID, phoneNumber, new UserRepositoryCompletionHandler() {
+        userRepo.registerUser(login, password, handle, UUID, phoneNumber, deviceTokenString,
+                new UserRepositoryCompletionHandler() {
             @Override
             public void onCompletion(final UserRepositoryActionResult result) {
                 Runnable complete = new Runnable() {
@@ -244,7 +314,8 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void quickLogin(final ClientConnection senderConnection, String handle, String UUID, long phoneNumber) {
+    public void quickLogin(final ClientConnection senderConnection, String handle, String UUID,
+                           long phoneNumber, String deviceTokenString) {
         log.debug("Quick login user {}", handle);
 
         if (handle.length() == 0) {
@@ -257,7 +328,8 @@ public class ChatServerImpl implements ChatServer {
             return;
         }
 
-        userRepo.registerUser(handle, handle, handle, UUID, phoneNumber, new UserRepositoryCompletionHandler() {
+        userRepo.registerUser(handle, handle, handle, UUID, phoneNumber, deviceTokenString,
+                new UserRepositoryCompletionHandler() {
                 @Override
                 public void onCompletion(final UserRepositoryActionResult result) {
                     Runnable complete = new Runnable() {

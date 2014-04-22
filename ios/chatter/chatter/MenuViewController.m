@@ -129,6 +129,8 @@
     qlm.handle = ud.handle;
     qlm.UUID = ud.UUID;
     qlm.phoneNumber = [[contacts getMyPhoneNumber] longLongValue];
+#warning Assumes data is already null terminated
+    qlm.deviceToken = [NSString stringWithUTF8String:[ud.deviceToken bytes]];
     [connection sendMessage:qlm];
 }
 

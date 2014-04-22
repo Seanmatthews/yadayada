@@ -18,11 +18,11 @@ public interface ChatServer {
     void disconnect(ClientConnection sender);
 
     void registerUser(ClientConnection sender, String login, String password, String handle, String UUID,
-                      long phoneNumber);
+                      long phoneNumber, String deviceTokenString);
 
     void login(ClientConnection sender, String login, String password);
 
-    void quickLogin(ClientConnection sender, String handle, String UUID, long phoneNumber);
+    void quickLogin(ClientConnection sender, String handle, String UUID, long phoneNumber, String deviceTokenString);
 
     void streamReset(ClientConnection senderConnection, User user);
 
@@ -42,4 +42,9 @@ public interface ChatServer {
             throws ExecutionException, InterruptedException;
 
     void heartbeat(ClientConnection sender, long timestamp, long latitude, long longitude);
+
+    // APNS -- keep this here?
+    void startAPNSService();
+    void stopAPNSService();
+
 }

@@ -1,5 +1,7 @@
 package com.chat;
 
+import com.relayrides.pushy.apns.util.TokenUtil;
+
 import java.util.Calendar;
 import java.util.Iterator;
 
@@ -19,13 +21,15 @@ public class User {
     private final UserRepository repo;
     private double latitude;
     private double longitude;
-    private  long lastHeartbeat;
+    private long lastHeartbeat;
+    private final byte[] deviceToken;
 
-    public User(long id, String handle, long phoneNumber, UserRepository repo) {
-        this(id, "QR", "QR", handle, phoneNumber, repo);
+    public User(long id, String handle, long phoneNumber, String deviceTokenString, UserRepository repo) {
+        this(id, "QR", "QR", handle, phoneNumber, deviceTokenString, repo);
     }
 
-    public User(long id, String login, String password, String handle, long phoneNumber, UserRepository repo) {
+    public User(long id, String login, String password, String handle, long phoneNumber, String deviceTokenString,
+                UserRepository repo) {
         this.id = id;
         this.login = login;
         this.password = password;
@@ -34,7 +38,8 @@ public class User {
         this.repo = repo;
         this.latitude = 0;
         this.longitude = 0;
-        lastHeartbeat = Calendar.getInstance().getTimeInMillis() / 1000L;
+        this.lastHeartbeat = Calendar.getInstance().getTimeInMillis() / 1000L;
+        this.deviceToken = TokenUtil.tokenStringToByteArray(deviceTokenString);
     }
 
     public void setLatitude(long latitude) {
@@ -50,6 +55,8 @@ public class User {
     public void setLastHeartbeat(long timestamp) {
         this.lastHeartbeat = timestamp;
     }
+
+    public byte[] getDeviceToken() { return deviceToken; }
 
     public double getLatitude() { return latitude; }
 

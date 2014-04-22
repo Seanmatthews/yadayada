@@ -104,13 +104,13 @@ const NSTimeInterval LOCATE_DURATION = 3.;
     [UserDetails save];
 }
 
-- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken {
-    const void *devTokenBytes = [devToken bytes];
-//    self.registered = YES;
-//    [self sendProviderDeviceToken:devTokenBytes]; // custom method
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken
+{
+    ud.deviceToken = devToken;
 }
 
-- (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
+- (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
+{
     NSLog(@"Error in registration. Error: %@", err);
 }
 
