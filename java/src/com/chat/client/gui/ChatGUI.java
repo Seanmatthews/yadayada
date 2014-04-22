@@ -135,7 +135,7 @@ public class ChatGUI implements ChatClient {
 
     @Override
     public void onLoginAccept(long userId) {
-        user = new User(userId, userName, phoneNumber, userRepo);
+        user = new User(userId, userName, phoneNumber, "", userRepo);
         userRepo.addUser(user);
     }
 

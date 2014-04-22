@@ -154,7 +154,7 @@ public class ChatClientDispatcher {
         synchronized (userRepo) {
             owner = userRepo.get(userId, null).get().getUser();
             if (owner == null) {
-                owner = new User(userId, userName, "", userName, phoneNumber, userRepo);
+                owner = new User(userId, userName, "", userName, phoneNumber, "", userRepo);
                 userRepo.addUser(owner);
             }
         }

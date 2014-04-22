@@ -5,6 +5,7 @@
         <field name="handle" type="String" />
         <field name="UUID" type="String" />
         <field name="phoneNumber" type="long" />
+        <field name="deviceToken" type="String" />
     </msg>
 
     <msg name="RegisterAccept" val="2" origin="server">

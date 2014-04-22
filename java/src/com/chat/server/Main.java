@@ -69,7 +69,7 @@ public class Main {
         }
         else {
             userRepo = new InMemoryUserRepository();
-            admin = userRepo.registerUser("admin", "admin", "admin", "ADMIN_UUID", 12155551212L, null).get().getUser();
+            admin = userRepo.registerUser("admin", "admin", "admin", "ADMIN_UUID", 12155551212L, "", null).get().getUser();
 
             logger.info("Loaded in-memory user repository");
         }

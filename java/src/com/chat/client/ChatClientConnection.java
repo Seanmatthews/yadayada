@@ -48,7 +48,7 @@ public class ChatClientConnection implements TCPCrackerClientListener {
     @Override
     public void onConnect(TCPCrackerClient client) {
         connected = true;
-        sendMessage(new ConnectMessage(V1_4_0Dispatcher.VERSION_ID, name));
+        sendMessage(new ConnectMessage(V1_4_0Dispatcher.VERSION_ID, name, ""));
     }
 
     @Override

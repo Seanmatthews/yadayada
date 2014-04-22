@@ -106,6 +106,7 @@ const NSTimeInterval LOCATE_DURATION = 3.;
 
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken
 {
+    NSLog(@"device token %@",devToken);
     ud.deviceToken = devToken;
 }
 
@@ -122,7 +123,8 @@ const NSTimeInterval LOCATE_DURATION = 3.;
         [connection parsePushNotification:userInfo];
     }
     
-    completionHandler(UIBackgroundFetchResultNewData);
+    completionHandler(UIBackgroundFetchResultNoData);
+//    completionHandler(UIBackgroundFetchResultNewData);
 }
 
 @end

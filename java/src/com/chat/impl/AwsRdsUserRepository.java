@@ -32,7 +32,10 @@ public class AwsRdsUserRepository implements UserRepository {
     }
 
     @Override
-    public Future<UserRepositoryActionResult> registerUser(final String login, final String password, final String handle, final String UUID, final long phoneNumber, final UserRepositoryCompletionHandler completionHandler) {
+    public Future<UserRepositoryActionResult> registerUser(final String login, final String password,
+                                                           final String handle, final String UUID,
+                                                           final long phoneNumber, final String deviceTokenString,
+                                                           final UserRepositoryCompletionHandler completionHandler) {
         final UserFuture future = new UserFuture(completionHandler);
 
         // submit a new thread to contact the database and let us know when we've inserted
@@ -83,7 +86,7 @@ public class AwsRdsUserRepository implements UserRepository {
 
                         if (generatedKeys.next()) {
                             long id = generatedKeys.getLong("GENERATED_KEY");
-                            User user = new User(id, login, password, handle, phoneNumber, AwsRdsUserRepository.this);
+                            User user = new User(id, login, password, handle, phoneNumber, deviceTokenString, AwsRdsUserRepository.this);
                             idToUserMap.put(id, user);
 
                             future.setResult(new UserRepositoryActionResult(user, true));
@@ -125,7 +128,8 @@ public class AwsRdsUserRepository implements UserRepository {
                         long id = results.getLong("UserId");
                         String handle = results.getString("Handle");
                         long phoneNumber = results.getLong("PhoneNumber");
-                        User user = new User(id, login, password, handle, phoneNumber, AwsRdsUserRepository.this);
+                        String deviceToken = results.getString("DeviceToken");
+                        User user = new User(id, login, password, handle, phoneNumber, deviceToken, AwsRdsUserRepository.this);
                         addUser(user);
 
                         future.setResult(new UserRepositoryActionResult(user, true));
@@ -176,7 +180,8 @@ public class AwsRdsUserRepository implements UserRepository {
                         String login = results.getString("Login");
                         String handle = results.getString("Handle");
                         long phoneNumber = results.getLong("PhoneNumber");
-                        User user2 = new User(id, login, "<BLANK>", handle, phoneNumber, AwsRdsUserRepository.this);
+                        String deviceToken = results.getString("DeviceToken");
+                        User user2 = new User(id, login, "<BLANK>", handle, phoneNumber, deviceToken, AwsRdsUserRepository.this);
                         addUser(user2);
 
                         future.setResult(new UserRepositoryActionResult(user2, true));
