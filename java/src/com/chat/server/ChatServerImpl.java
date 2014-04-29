@@ -15,7 +15,6 @@ import static com.chat.UserRepository.UserRepositoryCompletionHandler;
 
 import com.relayrides.pushy.apns.*;
 import com.relayrides.pushy.apns.util.*;
-import org.json.simple.JSONObject;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,30 +43,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     private void sendMessageAsNotification(User toUser, MessageMessage mm) throws InterruptedException {
-//        JSONObject aps = new JSONObject();
-//        aps.put("content-available", 1);
-//        aps.put("sound", "");
-//
-//        JSONObject msgBody = new JSONObject();
-//        msgBody.put("message", mm.getMessage());
-//        msgBody.put("messageTimestamp", mm.getMessageTimestamp());
-//        msgBody.put("senderHandle", mm.getSenderHandle());
-//        msgBody.put("chatroomId", mm.getChatroomId());
-//        msgBody.put("messageId", mm.getMessageId());
-//        msgBody.put("senderId", mm.getSenderId());
-//
-//        JSONObject msg = new JSONObject();
-//        msg.put("msgType", MessageTypes.Message);
-//        msg.put("msgBody", msgBody);
-//
-//        JSONObject payload = new JSONObject();
-//        payload.put("aps", aps);
-//        payload.put("msg", msg);
-//
-//        String payloadString = payload.toJSONString();
-
         log.debug("sending push notification");
-
         HashMap<String,Object> messageFields = new HashMap<String,Object>();
         messageFields.put("message", mm.getMessage());
         messageFields.put("messageTimestamp", mm.getMessageTimestamp());
@@ -78,7 +54,6 @@ public class ChatServerImpl implements ChatServer {
 
         final byte[] token = TokenUtil.tokenStringToByteArray(toUser.getDeviceToken());
         final ApnsPayloadBuilder payloadBuilder = new ApnsPayloadBuilder();
-//        payloadBuilder.setAlertBody("jjj");
         payloadBuilder.setSoundFileName("");
         payloadBuilder.setContentAvailable(true);
         payloadBuilder.addCustomProperty("messageType", MessageTypes.Message.getValue());
@@ -95,30 +70,36 @@ public class ChatServerImpl implements ChatServer {
 
         if (user != null) {
             sender.setUser(null);
+
+            // Remove the user's specific connection information
             userConnectionMap.remove(user);
 
-            log.debug("Removing connection {} {}", user, sender);
+            // When a user disconnects, it means their connection was interrupted,
+            // not necessarily that they desire to disconnect.
+            // So, mark the user as disconnected, but do not remove the from chatrooms yet.
+            log.debug("{} {} has disconnected", user, sender);
+            user.setConnected(false);
 
-            Iterator<Chatroom> chatrooms = user.getChatrooms();
-
-            while(chatrooms != null && chatrooms.hasNext()) {
-                Chatroom chatroom = chatrooms.next();
-
-                // Remove our user
-                chatroom.removeUser(user);
-                chatrooms.remove();
-                //user.removeFromChatroom(chatroom);
-
-                Iterator<User> users = chatroom.getUsers();
-
-                while(users.hasNext()) {
-                    User chatroomUser = users.next();
-                    ClientConnection chatroomUserConnection = userConnectionMap.get(chatroomUser);
-
-                    if (chatroomUserConnection != null)
-                        leaveChatroom(chatroomUserConnection, user, chatroom);
-                }
-            }
+//            log.debug("Removing connection {} {}", user, sender);
+//            Iterator<Chatroom> chatrooms = user.getChatrooms();
+//            while(chatrooms != null && chatrooms.hasNext()) {
+//                Chatroom chatroom = chatrooms.next();
+//
+//                // Remove our user
+//                chatroom.removeUser(user);
+//                chatrooms.remove();
+//                //user.removeFromChatroom(chatroom);
+//
+//                Iterator<User> users = chatroom.getUsers();
+//
+//                while(users.hasNext()) {
+//                    User chatroomUser = users.next();
+//                    ClientConnection chatroomUserConnection = userConnectionMap.get(chatroomUser);
+//
+//                    if (chatroomUserConnection != null)
+//                        leaveChatroom(chatroomUserConnection, user, chatroom);
+//                }
+//            }
         }
         else {
             log.debug("Removing connection {}", sender);

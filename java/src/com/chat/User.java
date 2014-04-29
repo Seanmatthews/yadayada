@@ -23,6 +23,7 @@ public class User {
     private double longitude;
     private long lastHeartbeat;
     private final String deviceToken;
+    private boolean connected;
 
     public User(long id, String handle, long phoneNumber, String deviceTokenString, UserRepository repo) {
         this(id, "QR", "QR", handle, phoneNumber, deviceTokenString, repo);
@@ -40,6 +41,15 @@ public class User {
         this.longitude = 0;
         this.lastHeartbeat = Calendar.getInstance().getTimeInMillis() / 1000L;
         this.deviceToken = deviceTokenString;
+        this.connected = true;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 
     public void setLatitude(long latitude) {
