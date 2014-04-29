@@ -131,6 +131,10 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[StreamResetMessage alloc] init];
         break;
 
+        case Terminate:
+        mb = [[TerminateMessage alloc] init];
+        break;
+
     }
     return mb;
 }
@@ -306,12 +310,10 @@ static const char *getPropertyType(objc_property_t property) {
 
 + (MessageBase*)messageWithPushNotification:(NSDictionary*)notification
 {
-    // Enums are unsigned ints
-    MessageBase* m = [MessageUtils messageWithType:[notification[@"messageType"] unsignedIntValue]];
-    
+    MessageBase* m = [MessageUtils messageWithType:(MessageTypes)notification[@"message"][@"messageType"]];
     OrderedDictionary* props = [self classPropsFor:[m class]];
     for (NSString* key in props) {
-        [m setValue:notification[@"msg"][key] forKey:key];
+        [m setValue:notification[@"message"][key] forKey:key];
     }
     return m;
 }

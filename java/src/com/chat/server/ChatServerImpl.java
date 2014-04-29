@@ -457,4 +457,37 @@ public class ChatServerImpl implements ChatServer {
         user.setLongitude(longitude);
         user.setLastHeartbeat(timestamp);
     }
+
+    @Override
+    public void terminate(ClientConnection sender) {
+
+        User user = sender.getUser();
+
+        if (user != null) {
+            // Remove user from all chatrooms
+            log.debug("Removing connection {} {}", user, sender);
+            Iterator<Chatroom> chatrooms = user.getChatrooms();
+            while(chatrooms != null && chatrooms.hasNext()) {
+                Chatroom chatroom = chatrooms.next();
+
+                // Remove our user
+                chatroom.removeUser(user);
+                chatrooms.remove();
+                //user.removeFromChatroom(chatroom);
+
+                Iterator<User> users = chatroom.getUsers();
+
+                while(users.hasNext()) {
+                    User chatroomUser = users.next();
+                    ClientConnection chatroomUserConnection = userConnectionMap.get(chatroomUser);
+
+                    if (chatroomUserConnection != null)
+                        leaveChatroom(chatroomUserConnection, user, chatroom);
+                }
+            }
+
+            // Remove user connections
+            userConnectionMap.remove(user);
+        }
+    }
 }

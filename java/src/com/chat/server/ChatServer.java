@@ -42,4 +42,6 @@ public interface ChatServer {
             throws ExecutionException, InterruptedException;
 
     void heartbeat(ClientConnection sender, long timestamp, long latitude, long longitude);
+
+    void terminate(ClientConnection sender);
 }

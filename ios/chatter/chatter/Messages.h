@@ -37,6 +37,7 @@ typedef enum {
     InviteUserReject = 51,
     InviteUserSuccess = 52,
     StreamReset = 60,
+    Terminate = 70,
 } MessageTypes;
 
 @interface MessageBase : NSObject
@@ -349,5 +350,12 @@ typedef enum {
 - (id)init;
 
 @property long long userId;
+
+@end
+
+@interface TerminateMessage : MessageBase
+
+- (id)init;
+
 
 @end

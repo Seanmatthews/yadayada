@@ -185,5 +185,8 @@
     <msg name="StreamReset" val="60" origin="client">
         <field name="userId" type="long" />
     </msg>
+    
+    <msg name="Terminate" val="70" origin="client">
+    </msg>
 
 </schema>

@@ -327,3 +327,14 @@
 }
 
 @end
+
+@implementation TerminateMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 70;
+    return self;
+}
+
+@end

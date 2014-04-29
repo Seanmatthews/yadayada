@@ -151,6 +151,12 @@ public class V1_4_0Dispatcher implements MessageDispatcher {
 //                server.heartbeat(stream, hbMsg.getTimestamp(), hbMsg.getLatitude(), hbMsg.getLongitude());
                 break;
 
+            case Terminate:
+                TerminateMessage tMsg = new TerminateMessage(buffer);
+                logMsg(tMsg);
+                server.terminate(stream);
+                break;
+
             default:
                 throw new ValidationError("Unhandled message: " + type);
         }
