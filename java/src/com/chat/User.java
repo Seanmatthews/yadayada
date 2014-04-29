@@ -22,7 +22,7 @@ public class User {
     private double latitude;
     private double longitude;
     private long lastHeartbeat;
-    private final byte[] deviceToken;
+    private final String deviceToken;
 
     public User(long id, String handle, long phoneNumber, String deviceTokenString, UserRepository repo) {
         this(id, "QR", "QR", handle, phoneNumber, deviceTokenString, repo);
@@ -39,7 +39,7 @@ public class User {
         this.latitude = 0;
         this.longitude = 0;
         this.lastHeartbeat = Calendar.getInstance().getTimeInMillis() / 1000L;
-        this.deviceToken = TokenUtil.tokenStringToByteArray(deviceTokenString);
+        this.deviceToken = deviceTokenString;
     }
 
     public void setLatitude(long latitude) {
@@ -56,7 +56,7 @@ public class User {
         this.lastHeartbeat = timestamp;
     }
 
-    public byte[] getDeviceToken() { return deviceToken; }
+    public String getDeviceToken() { return deviceToken; }
 
     public double getLatitude() { return latitude; }
 

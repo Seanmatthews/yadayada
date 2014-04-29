@@ -19,6 +19,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 
+import com.relayrides.pushy.apns.*;
+import com.relayrides.pushy.apns.util.*;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -79,6 +82,21 @@ public class Main {
         ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
         chatroomRepo.createChatroom(admin, "Global", 0, 0, 0, false);
 
-        new ServerListener(new EventServiceImpl(), port, userRepo, chatroomRepo, messageRepo);
+        PushManager<SimpleApnsPushNotification> pushManager = null;
+        try {
+            String keyStore = System.getProperty("javax.net.ssl.keyStore");
+            String keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword");
+            PushManagerFactory<SimpleApnsPushNotification> pushManagerFactory =
+                    new PushManagerFactory<SimpleApnsPushNotification>(
+                    ApnsEnvironment.getSandboxEnvironment(),
+                    PushManagerFactory.createDefaultSSLContext(keyStore, keyStorePassword));
+            pushManager = pushManagerFactory.buildPushManager();
+            pushManager.start();
+        }
+        catch (Exception e) {
+            logger.debug("Pushy exception {}", e.getMessage());
+        }
+
+        new ServerListener(new EventServiceImpl(), port, userRepo, chatroomRepo, messageRepo, pushManager);
     }
 }

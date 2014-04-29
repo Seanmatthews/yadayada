@@ -297,6 +297,7 @@
     MessageMessage* message = notification.object;
     Chatroom* c;
     if ((c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]])) {
+        NSLog(@"message message added");
         [[c mutableArrayValueForKey:@"chatQueue"] addObject:message];
     }
 }
@@ -330,6 +331,7 @@
         }
     }
     else {
+        NSLog(@"joined message added");
         [[c mutableArrayValueForKey:@"chatQueue"] addObject:message];
     }
     
@@ -352,6 +354,7 @@
     }
     else {
         Chatroom* c = [_chatrooms objectForKey:cid];
+        NSLog(@"left message added");
         [[c mutableArrayValueForKey:@"chatQueue"] addObject:message];
     }
 }

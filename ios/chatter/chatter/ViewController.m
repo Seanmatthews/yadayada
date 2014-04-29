@@ -147,7 +147,9 @@
     navBar.topItem.title = _chatroom.chatroomName;
     [self registerForNotifications];
     
-    // TODO: Load all messages from from the chatmanager queue when we come into view
+    // Load all messages from from the chatmanager queue when we come into view
+    [displayedIndexPaths removeAllObjects];
+    [displayedIndexPaths addObjectsFromArray:[_chatroom chatQueue]];
     [mTableView reloadData];
     
     // setup KVO with chatqueue
@@ -331,7 +333,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqual:@"chatQueue"]) {
-        NSLog(@"new chat");
+        NSLog(@"new chat %lu", (unsigned long)[[object chatQueue] count]);
 //        [change objectForKey:NSKeyValueChangeNewKey];
         NSIndexPath* ipath = [NSIndexPath indexPathForRow:([[object chatQueue] count]-1) inSection:0];
         //[self addMessageAtIndexPath:ipath];

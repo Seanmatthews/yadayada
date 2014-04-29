@@ -42,9 +42,4 @@ public interface ChatServer {
             throws ExecutionException, InterruptedException;
 
     void heartbeat(ClientConnection sender, long timestamp, long latitude, long longitude);
-
-    // APNS -- keep this here?
-    void startAPNSService();
-    void stopAPNSService();
-
 }

@@ -148,7 +148,9 @@ public class V1_4_0Dispatcher implements MessageDispatcher {
             case Heartbeat:
                 HeartbeatMessage hbMsg = new HeartbeatMessage(buffer);
                 logMsg(hbMsg);
-                server.heartbeat(stream, hbMsg.getTimestamp(), hbMsg.getLatitude(), hbMsg.getLongitude());
+//                server.heartbeat(stream, hbMsg.getTimestamp(), hbMsg.getLatitude(), hbMsg.getLongitude());
+                break;
+
             default:
                 throw new ValidationError("Unhandled message: " + type);
         }

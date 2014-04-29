@@ -306,10 +306,12 @@ static const char *getPropertyType(objc_property_t property) {
 
 + (MessageBase*)messageWithPushNotification:(NSDictionary*)notification
 {
-    MessageBase* m = [MessageUtils messageWithType:(MessageTypes)notification[@"message"][@"messageType"]];
+    // Enums are unsigned ints
+    MessageBase* m = [MessageUtils messageWithType:[notification[@"messageType"] unsignedIntValue]];
+    
     OrderedDictionary* props = [self classPropsFor:[m class]];
     for (NSString* key in props) {
-        [m setValue:notification[@"message"][key] forKey:key];
+        [m setValue:notification[@"msg"][key] forKey:key];
     }
     return m;
 }

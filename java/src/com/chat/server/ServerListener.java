@@ -15,6 +15,7 @@ import com.chat.util.tcp.TCPCrackerClient;
 import com.chat.util.tcp.TCPCrackerClientFactory;
 import com.chat.util.tcp.TCPCrackerClientListener;
 import com.chat.util.tcp.TCPCrackerServer;
+import com.relayrides.pushy.apns.util.SimpleApnsPushNotification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import com.relayrides.pushy.apns.*;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgreco
@@ -32,8 +35,10 @@ import java.util.concurrent.ExecutionException;
  * To change this template use File | Settings | File Templates.
  */
 public class ServerListener {
-    public ServerListener(EventService eventService, int port, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) throws IOException {
-        final ChatServer server = new ChatServerImpl(eventService, userRepo, chatroomRepo, messageRepo);
+    public ServerListener(EventService eventService, int port, UserRepository userRepo,
+                          ChatroomRepository chatroomRepo, MessageRepository messageRepo,
+                          PushManager<SimpleApnsPushNotification> pushManager) throws IOException {
+        final ChatServer server = new ChatServerImpl(eventService, userRepo, chatroomRepo, messageRepo, pushManager);
         final MessageDispatcher dispatcher = new V1_4_0Dispatcher(server, userRepo, chatroomRepo);
         final Logger log = LogManager.getLogger();
 

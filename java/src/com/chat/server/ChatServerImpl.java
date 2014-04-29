@@ -26,7 +26,6 @@ import org.json.simple.JSONObject;
  */
 public class ChatServerImpl implements ChatServer {
     private final Logger log = LogManager.getLogger();
-    private PushManagerFactory<SimpleApnsPushNotification> pushManagerFactory;
     private PushManager<SimpleApnsPushNotification> pushManager;
 
     private final EventService eventService;
@@ -35,68 +34,57 @@ public class ChatServerImpl implements ChatServer {
     private final MessageRepository messageRepo;
     private final Map<User, ClientConnection> userConnectionMap = new HashMap<>();
 
-    public ChatServerImpl(EventService eventService, UserRepository userRepo, ChatroomRepository chatroomRepo, MessageRepository messageRepo) {
+    public ChatServerImpl(EventService eventService, UserRepository userRepo, ChatroomRepository chatroomRepo,
+                          MessageRepository messageRepo, PushManager<SimpleApnsPushNotification> pushManager) {
         this.eventService = eventService;
         this.chatroomRepo = chatroomRepo;
         this.userRepo = userRepo;
         this.messageRepo = messageRepo;
-
-
-    }
-
-    @Override
-    public void startAPNSService() {
-
-        String keyStore = System.getProperty("javax.net.ssl.keyStore");
-        String keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword");
-
-        try {
-            pushManagerFactory = new PushManagerFactory<SimpleApnsPushNotification>(
-                    ApnsEnvironment.getSandboxEnvironment(),
-                    PushManagerFactory.createDefaultSSLContext(keyStore, keyStorePassword));
-        }
-        catch (Exception e) {
-            log.debug("Pushy exception {}", e.getMessage());
-        }
-
-        pushManager = pushManagerFactory.buildPushManager();
-        pushManager.start();
-    }
-
-    @Override
-    public void stopAPNSService() {
-        try {
-            pushManager.shutdown();
-        }
-        catch (Exception e) {
-            log.debug("Pushy exception {}", e.getMessage());
-        }
+        this.pushManager = pushManager;
     }
 
     private void sendMessageAsNotification(User toUser, MessageMessage mm) throws InterruptedException {
-        JSONObject aps = new JSONObject();
-        aps.put("content-available", 1);
-        aps.put("sound", "");
+//        JSONObject aps = new JSONObject();
+//        aps.put("content-available", 1);
+//        aps.put("sound", "");
+//
+//        JSONObject msgBody = new JSONObject();
+//        msgBody.put("message", mm.getMessage());
+//        msgBody.put("messageTimestamp", mm.getMessageTimestamp());
+//        msgBody.put("senderHandle", mm.getSenderHandle());
+//        msgBody.put("chatroomId", mm.getChatroomId());
+//        msgBody.put("messageId", mm.getMessageId());
+//        msgBody.put("senderId", mm.getSenderId());
+//
+//        JSONObject msg = new JSONObject();
+//        msg.put("msgType", MessageTypes.Message);
+//        msg.put("msgBody", msgBody);
+//
+//        JSONObject payload = new JSONObject();
+//        payload.put("aps", aps);
+//        payload.put("msg", msg);
+//
+//        String payloadString = payload.toJSONString();
 
-        JSONObject msgBody = new JSONObject();
-        msgBody.put("message", mm.getMessage());
-        msgBody.put("messageTimestamp", mm.getMessageTimestamp());
-        msgBody.put("senderHandle", mm.getSenderHandle());
-        msgBody.put("chatroomId", mm.getChatroomId());
-        msgBody.put("messageId", mm.getMessageId());
-        msgBody.put("senderId", mm.getSenderId());
+        log.debug("sending push notification");
 
-        JSONObject msg = new JSONObject();
-        msg.put("msgType", MessageTypes.Message);
-        msg.put("msgBody", msgBody);
+        HashMap<String,Object> messageFields = new HashMap<String,Object>();
+        messageFields.put("message", mm.getMessage());
+        messageFields.put("messageTimestamp", mm.getMessageTimestamp());
+        messageFields.put("senderHandle", mm.getSenderHandle());
+        messageFields.put("chatroomId", mm.getChatroomId());
+        messageFields.put("messageId", mm.getMessageId());
+        messageFields.put("senderId", mm.getSenderId());
 
-        JSONObject payload = new JSONObject();
-        payload.put("aps", aps);
-        payload.put("msg", msg);
-
-        String payloadString = payload.toJSONString();
-
-        pushManager.getQueue().put(new SimpleApnsPushNotification(toUser.getDeviceToken(), payloadString));
+        final byte[] token = TokenUtil.tokenStringToByteArray(toUser.getDeviceToken());
+        final ApnsPayloadBuilder payloadBuilder = new ApnsPayloadBuilder();
+//        payloadBuilder.setAlertBody("jjj");
+        payloadBuilder.setSoundFileName("");
+        payloadBuilder.setContentAvailable(true);
+        payloadBuilder.addCustomProperty("messageType", MessageTypes.Message.getValue());
+        payloadBuilder.addCustomProperty("msg", messageFields);
+        final String payload = payloadBuilder.buildWithDefaultMaximumLength();
+        pushManager.getQueue().put(new SimpleApnsPushNotification(token, payload));
     }
 
     @Override
@@ -176,8 +164,8 @@ public class ChatServerImpl implements ChatServer {
 //                    connection.sendMessage(msgToSend);
 //                }
 
-                long currentTime = Calendar.getInstance().getTimeInMillis() / 1000L;
-                if (currentTime - user.getLastHeartbeat() > 30 + 5) { // +5 to allow for transmission delays
+//                long currentTime = Calendar.getInstance().getTimeInMillis() / 1000L;
+//                if (currentTime - user.getLastHeartbeat() > 30 + 5) { // +5 to allow for transmission delays
                     try {
                         // Send APNS
                         sendMessageAsNotification(user, msgToSend);
@@ -185,10 +173,10 @@ public class ChatServerImpl implements ChatServer {
                     catch (InterruptedException e) {
                         log.debug("Pushy exception {}", e.getMessage());
                     }
-                }
-                else {
-                    connection.sendMessage(msgToSend);
-                }
+//                }
+//                else {
+//                    connection.sendMessage(msgToSend);
+//                }
             }
         }
     }
@@ -480,6 +468,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void heartbeat(ClientConnection sender, long timestamp, long latitude, long longitude) {
+        log.debug("Received heartbeat");
         log.debug("Received heartbeat from user {}", sender.getUser().getId());
 
         User user = sender.getUser();

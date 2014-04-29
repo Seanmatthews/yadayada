@@ -122,9 +122,14 @@ const NSTimeInterval LOCATE_DURATION = 3.;
     if (userInfo[@"aps"][@"content-available"]) {
         [connection parsePushNotification:userInfo];
     }
-    
+
     completionHandler(UIBackgroundFetchResultNoData);
 //    completionHandler(UIBackgroundFetchResultNewData);
+}
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+{
+    NSLog(@"complete!");
 }
 
 @end

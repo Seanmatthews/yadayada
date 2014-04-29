@@ -119,6 +119,9 @@ public class ChatClientDispatcher {
                     client.onMessage(theMsg);
                     break;
 
+                case Heartbeat:
+                    break;
+
                 default:
                     throw new ValidationError("Ignoring unhandled message: " + msgType);
             }
