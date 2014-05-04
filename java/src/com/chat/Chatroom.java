@@ -100,6 +100,18 @@ public class Chatroom {
         return repo.containsUser(this, user);
     }
 
+    public boolean usernameInUse(User user) {
+        Iterator<User> users = repo.getUsers(this);
+        while (users.hasNext()) {
+            User u = users.next();
+            if (u.getId() != user.getId() && u.getHandle().equals(user.getHandle())) {
+                return true;
+            }
+            users.remove();
+        }
+        return false;
+    }
+
     public int getUserCount() {
         return repo.getChatroomUserCount(this);
     }

@@ -154,6 +154,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 - (void)parsePushNotification:(NSDictionary*)notification
 {
+    NSLog(@"notification %@",notification);
     MessageBase* m = [MessageUtils messageWithPushNotification:notification];
     [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
                                                              notificationWithName:NSStringFromClass([m class])
@@ -211,13 +212,15 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
                 if ([is streamStatus] == NSStreamStatusOpen &&
                     [os streamStatus] == NSStreamStatusOpen &&
                     reconnecting) {
-                        
+                    
                     NSLog(@"reconnecting");
                     [self streamReset];
-                    [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
-                                                                             notificationWithName:@"RejoinChatroomsNotification"
-                                                                             object:nil]
-                                                               postingStyle:NSPostNow];
+                    
+                    // Send notification to rejoin all chatrooms
+//                    [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
+//                                                                             notificationWithName:@"RejoinChatroomsNotification"
+//                                                                             object:nil]
+//                                                               postingStyle:NSPostNow];
                     reconnecting = NO;
                 }
                 break;

@@ -9,6 +9,25 @@
 #import "Chatroom.h"
 #import "Location.h"
 
+//@implementation PersistentChatroom
+//
+//- (id)initWithChatroom:(Chatroom*)chatroom
+//{
+//    self = [super init];
+//    if (self) {
+//        _cid = chatroom.cid;
+//        _chatroomName = chatroom.chatroomName;
+//        _radius = chatroom.radius;
+//        _latitude = [NSNumber numberWithDouble:chatroom.origin.latitude];
+//        _longitude = [NSNumber numberWithDouble:chatroom.origin.longitude];
+//        _userCount = chatroom.userCount;
+//        _chatActivity = chatroom.chatActivity;
+//    }
+//    return self;
+//}
+//
+//@end
+
 
 @implementation Chatroom
 

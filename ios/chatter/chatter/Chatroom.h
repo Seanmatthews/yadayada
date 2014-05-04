@@ -14,6 +14,19 @@
 
 @end
 
+//@interface PersistentChatroom : NSObject
+//
+//@property (nonatomic,strong) NSNumber* cid;
+//@property (nonatomic,strong) NSString* chatroomName;
+//@property (nonatomic,strong) NSNumber* userCount;
+//@property (nonatomic,strong) NSNumber* chatActivity;
+//@property (nonatomic,strong) NSNumber* radius;
+//@property (nonatomic,strong) NSNumber* latitude;
+//@property (nonatomic,strong) NSNumber* longitude;
+//
+//- (id)initWithChatroom:(Chatroom*)chatroom;
+//
+//@end
 
 @interface Chatroom : NSObject
 

@@ -114,6 +114,7 @@ public class ChatServerImpl implements ChatServer {
     @Override
     public void streamReset(ClientConnection senderConnection, User user) {
         userConnectionMap.put(user, senderConnection);
+        user.setConnected(true);
     }
 
     @Override
@@ -145,8 +146,7 @@ public class ChatServerImpl implements ChatServer {
 //                    connection.sendMessage(msgToSend);
 //                }
 
-//                long currentTime = Calendar.getInstance().getTimeInMillis() / 1000L;
-//                if (currentTime - user.getLastHeartbeat() > 30 + 5) { // +5 to allow for transmission delays
+                if (!user.isConnected()) {
                     try {
                         // Send APNS
                         sendMessageAsNotification(user, msgToSend);
@@ -154,10 +154,10 @@ public class ChatServerImpl implements ChatServer {
                     catch (InterruptedException e) {
                         log.debug("Pushy exception {}", e.getMessage());
                     }
-//                }
-//                else {
-//                    connection.sendMessage(msgToSend);
-//                }
+                }
+                else {
+                    connection.sendMessage(msgToSend);
+                }
             }
         }
     }
@@ -347,8 +347,8 @@ public class ChatServerImpl implements ChatServer {
     public void joinChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom) {
         log.debug("Adding {} to {}", sender, chatroom);
 
-        if (chatroom.containsUser(sender)) {
-            senderConnection.sendMessage(new JoinChatroomRejectMessage(chatroom.getId(), sender + " is already in " + chatroom));
+        if (chatroom.usernameInUse(sender)) {
+            senderConnection.sendMessage(new JoinChatroomRejectMessage(chatroom.getId(), sender + " handle already used in " + chatroom));
             return;
         }
 
@@ -465,7 +465,7 @@ public class ChatServerImpl implements ChatServer {
 
         if (user != null) {
             // Remove user from all chatrooms
-            log.debug("Removing connection {} {}", user, sender);
+            log.debug("Terminating user {} {}", user, sender);
             Iterator<Chatroom> chatrooms = user.getChatrooms();
             while(chatrooms != null && chatrooms.hasNext()) {
                 Chatroom chatroom = chatrooms.next();

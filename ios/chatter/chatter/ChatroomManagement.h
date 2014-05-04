@@ -24,10 +24,6 @@ typedef void (^CreateCompletion)(long long);
 @property (atomic,strong) NSMutableArray* joinedChatrooms;
 @property (nonatomic,strong) NSNumber* globalChatroomId;
 
-// Combine these two
-//@property (atomic, retain) Chatroom* goingToJoin;
-//@property (atomic, retain) Chatroom* createdToJoin;
-
 
 + (id)sharedInstance;
 - (BOOL)canJoinChatroom:(Chatroom*)chatroom;

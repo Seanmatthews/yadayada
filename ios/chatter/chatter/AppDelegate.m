@@ -76,13 +76,13 @@ const NSTimeInterval LOCATE_DURATION = 3.;
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     ud.joinedChatroomIds = [NSArray arrayWithArray:[chatManager.joinedChatrooms valueForKeyPath:@"cid"]];
     for (NSNumber* n in ud.joinedChatroomIds) {
-        NSLog(@"%@",n);
+        NSLog(@"was joined to %@",n);
     }
     [UserDetails save];
-    [chatManager leaveJoinedChatrooms];
+//    [chatManager leaveJoinedChatrooms];
 
     // Do this just in case
-    [[chatManager joinedChatrooms] removeAllObjects];
+//    [[chatManager joinedChatrooms] removeAllObjects];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -99,7 +99,11 @@ const NSTimeInterval LOCATE_DURATION = 3.;
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    // NOTE: this method is not called. See:
+    // http://stackoverflow.com/questions/7818045/applicationwillterminate-when-is-it-called-and-when-not
+    
+    TerminateMessage* tm = [[TerminateMessage alloc] init];
+    [connection sendMessage:tm];
     ud.joinedChatroomIds = [NSArray arrayWithArray:[chatManager.joinedChatrooms valueForKeyPath:@"cid"]];
     [UserDetails save];
 }
