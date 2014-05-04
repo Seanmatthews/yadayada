@@ -99,13 +99,8 @@ const NSTimeInterval LOCATE_DURATION = 3.;
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    // NOTE: this method is not called. See:
+    // NOTE: this method is not called in apps that have background modes. See:
     // http://stackoverflow.com/questions/7818045/applicationwillterminate-when-is-it-called-and-when-not
-    
-    TerminateMessage* tm = [[TerminateMessage alloc] init];
-    [connection sendMessage:tm];
-    ud.joinedChatroomIds = [NSArray arrayWithArray:[chatManager.joinedChatrooms valueForKeyPath:@"cid"]];
-    [UserDetails save];
 }
 
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken
