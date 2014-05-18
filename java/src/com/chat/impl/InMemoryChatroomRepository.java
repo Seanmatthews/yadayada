@@ -113,6 +113,10 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
 
     @Override
     public boolean containsUser(Chatroom chatroom, User sender) {
+        Iterator<User> users = chatroomUserMap.get(chatroom).iterator();
+        while (users.hasNext()) {
+            log.debug("User {} in chatroom {}", users.next(), chatroom);
+        }
         return chatroomUserMap.get(chatroom).contains(sender);
     }
 

@@ -107,7 +107,6 @@ public class Chatroom {
             if (u.getId() != user.getId() && u.getHandle().equals(user.getHandle())) {
                 return true;
             }
-            users.remove();
         }
         return false;
     }

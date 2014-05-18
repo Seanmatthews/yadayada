@@ -120,23 +120,28 @@ public class ChatServerImpl implements ChatServer {
     @Override
     public void newMessage(ClientConnection senderConnection, User sender, Chatroom chatroom, String message) {
         if (message.length() == 0 || message.length() > ChatMessage.MAX_LENGTH) {
-            senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(), "Invalid message length: " + message.length()));
+            senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(),
+                    "Invalid message length: " + message.length()));
             return;
         }
 
         if (!chatroomRepo.containsUser(chatroom, sender)) {
-            senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(), "Not in chatroom: " + chatroom.getName()));
+            log.debug("Chat sender {} {} not in chatroom {}", sender, sender.getId(), chatroom);
+            senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(),
+                    "Not in chatroom: " + chatroom.getName()));
             return;
         }
 
         ChatMessage msg = messageRepo.create(chatroom, sender, message);
         ChatroomCluster cluster = chatroom.addMessage(msg);
 
-        MessageMessage msgToSend = new MessageMessage(msg.getId(), msg.getTimestamp(), msg.getSender().getId(), msg.getChatroom().getId(), msg.getSender().getHandle(), msg.getMessage());
+        MessageMessage msgToSend = new MessageMessage(msg.getId(), msg.getTimestamp(),
+                msg.getSender().getId(), msg.getChatroom().getId(), msg.getSender().getHandle(), msg.getMessage());
 
         Iterator<User> chatUsers = cluster.getUsers();
         while (chatUsers.hasNext()) {
             User user = chatUsers.next();
+            log.debug("Sending message to user {} {}", user, user.getId());
 
             ClientConnection connection = userConnectionMap.get(user);
 
@@ -311,6 +316,7 @@ public class ChatServerImpl implements ChatServer {
                                     User user = result.getUser();
                                     userConnectionMap.put(user, senderConnection);
                                     senderConnection.setUser(user);
+                                    user.setConnected(true);
                                     senderConnection.sendMessage(new LoginAcceptMessage(user.getId()));
                                     break;
                                 case ConnectionError:
@@ -348,7 +354,9 @@ public class ChatServerImpl implements ChatServer {
         log.debug("Adding {} to {}", sender, chatroom);
 
         if (chatroom.usernameInUse(sender)) {
-            senderConnection.sendMessage(new JoinChatroomRejectMessage(chatroom.getId(), sender + " handle already used in " + chatroom));
+            senderConnection.sendMessage(new JoinChatroomRejectMessage(chatroom.getId(),
+                    sender + " handle already used in " + chatroom));
+            log.debug("User {} already in chatroom {}", sender, chatroom);
             return;
         }
 
