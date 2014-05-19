@@ -350,6 +350,7 @@ typedef enum {
 - (id)init;
 
 @property long long userId;
+@property Byte appAwake;
 
 @end
 

@@ -197,6 +197,7 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     // Need to reset the recorded stream on the server
     StreamResetMessage* srm = [[StreamResetMessage alloc] init];
     srm.userId = [[UserDetails sharedInstance] userId];
+    srm.appAwake = [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive ? 1 : 0;
     [self sendMessage:srm];
 }
 

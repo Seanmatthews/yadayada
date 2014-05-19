@@ -69,7 +69,9 @@ public class ChatServerImpl implements ChatServer {
         log.debug("Disconnect {}", sender);
 
         if (user != null) {
-            sender.setUser(null);
+            // Also, don't set this user to null, but do remove their connection
+            // from the user connection map below.
+//            sender.setUser(null);
 
             // Remove the user's specific connection information
             userConnectionMap.remove(user);
@@ -112,9 +114,13 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void streamReset(ClientConnection senderConnection, User user) {
-        userConnectionMap.put(user, senderConnection);
-        user.setConnected(true);
+    public void streamReset(ClientConnection senderConnection, User user, Byte appAwake) {
+        // If the client is in a background mode, we want to send it push notifications,
+        // and not regular messages over this connection
+        if (1 == appAwake) {
+            userConnectionMap.put(user, senderConnection);
+            user.setConnected(true);
+        }
     }
 
     @Override
@@ -141,7 +147,7 @@ public class ChatServerImpl implements ChatServer {
         Iterator<User> chatUsers = cluster.getUsers();
         while (chatUsers.hasNext()) {
             User user = chatUsers.next();
-            log.debug("Sending message to user {} {}", user, user.getId());
+            log.debug("Message to user {}", user);
 
             ClientConnection connection = userConnectionMap.get(user);
 
@@ -151,17 +157,29 @@ public class ChatServerImpl implements ChatServer {
 //                    connection.sendMessage(msgToSend);
 //                }
 
-                if (!user.isConnected()) {
-                    try {
-                        // Send APNS
-                        sendMessageAsNotification(user, msgToSend);
-                    }
-                    catch (InterruptedException e) {
-                        log.debug("Pushy exception {}", e.getMessage());
-                    }
-                }
-                else {
+//                if (!user.isConnected()) {
+//                    try {
+//                        // Send APNS
+//                        log.debug("Sending APNS to user {} {}", user, user.getId());
+//                        sendMessageAsNotification(user, msgToSend);
+//                    }
+//                    catch (InterruptedException e) {
+//                        log.debug("Pushy exception {}", e.getMessage());
+//                    }
+//                }
+//                else {
+                    log.debug("Sending message to user {} {}", user, user.getId());
                     connection.sendMessage(msgToSend);
+//                }
+            }
+            else {
+                try {
+                    // Send APNS
+                    log.debug("Sending APNS to user {} {}", user, user.getId());
+                    sendMessageAsNotification(user, msgToSend);
+                }
+                catch (InterruptedException e) {
+                    log.debug("Pushy exception {}", e.getMessage());
                 }
             }
         }

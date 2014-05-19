@@ -142,7 +142,7 @@ public class V1_4_0Dispatcher implements MessageDispatcher {
                 StreamResetMessage srMsg = new StreamResetMessage(buffer);
                 logMsg(srMsg);
                 User srUser = getAndValidateUser(srMsg.getUserId());
-                server.streamReset(stream, srUser);
+                server.streamReset(stream, srUser, srMsg.getAppAwake());
                 break;
 
             case Heartbeat:

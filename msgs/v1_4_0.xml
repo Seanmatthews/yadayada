@@ -184,6 +184,7 @@
     
     <msg name="StreamReset" val="60" origin="client">
         <field name="userId" type="long" />
+        <field name="appAwake" type="byte" />
     </msg>
     
     <msg name="Terminate" val="70" origin="client">
