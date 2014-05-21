@@ -149,15 +149,16 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    NSLog(@"chat view will appear");
     [super viewWillAppear:animated];
-    navBar.topItem.title = _chatroom.chatroomName;
     [self registerForNotifications];
-    
-    // Load all messages from from the chatmanager queue when we come into view
-    [displayedIndexPaths removeAllObjects];
-    [displayedIndexPaths addObjectsFromArray:[_chatroom chatQueue]];
-    [mTableView reloadData];
+    [self refreshView:nil];
+
+//    navBar.topItem.title = _chatroom.chatroomName;
+//
+//    // Load all messages from from the chatmanager queue when we come into view
+//    [displayedIndexPaths removeAllObjects];
+//    [displayedIndexPaths addObjectsFromArray:[_chatroom chatQueue]];
+//    [mTableView reloadData];
     
     // setup KVO with chatqueue
     [_chatroom addObserver:self
@@ -183,7 +184,14 @@
 
 - (void)refreshView:(NSNotification*)notification
 {
-    NSLog(@"[chat view] refresh the view now!");
+    NSLog(@"[ViewController] Refreshing, the view");
+    navBar.topItem.title = _chatroom.chatroomName;
+    
+    
+    // Load all messages from from the chatmanager queue when we come into view
+    [displayedIndexPaths removeAllObjects];
+    [displayedIndexPaths addObjectsFromArray:[_chatroom chatQueue]];
+    [mTableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning
