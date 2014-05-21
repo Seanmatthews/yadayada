@@ -349,6 +349,9 @@
     Chatroom* c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]];
     if (message.userId == ud.userId) {
         NSLog(@"joined");
+        if ([_joinedChatrooms containsObject:c]) {
+            [[self mutableArrayValueForKey:@"joinedChatrooms"] removeObject:c];
+        }
         [[self mutableArrayValueForKey:@"joinedChatrooms"] insertObject:c atIndex:0];
         if (joinCompletion) {
             joinCompletion();

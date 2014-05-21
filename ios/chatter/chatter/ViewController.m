@@ -19,6 +19,7 @@
 @interface ViewController ()
 
 - (void)initCode;
+- (void)refreshView:(NSNotification*)notification;
 - (void)swipeCell:(ChatroomMessageCell*)cell withAnimation:(UITableViewRowAnimation)animation;
 - (void)swipedCellLeft:(UIGestureRecognizer*)sender;
 - (void)swipedCellRight:(UIGestureRecognizer*)sender;
@@ -97,6 +98,11 @@
     // new messages to its descriptor name.
     
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(refreshView:)
+                                                 name:NSStringFromClass([self class])
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWasShown:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
@@ -143,6 +149,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    NSLog(@"chat view will appear");
     [super viewWillAppear:animated];
     navBar.topItem.title = _chatroom.chatroomName;
     [self registerForNotifications];
@@ -159,6 +166,12 @@
                    context:nil];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+//    NSLog(@"chat view did appear");
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"viewDidAppear" object:self];
+}
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
@@ -166,6 +179,11 @@
     
     // Remove KVO
     [_chatroom removeObserver:self forKeyPath:@"chatQueue"];
+}
+
+- (void)refreshView:(NSNotification*)notification
+{
+    NSLog(@"[chat view] refresh the view now!");
 }
 
 - (void)didReceiveMemoryWarning

@@ -118,6 +118,15 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     [os open];
 }
 
+- (void)disconnect
+{
+    [is close];
+    [os close];
+    
+    [is removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [os removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+}
+
 - (void)reconnect
 {
     NSLog(@"in reconnect, (os, is) status: %lu, %lu", (unsigned long)[os streamStatus],(unsigned long)[is streamStatus]);
@@ -127,6 +136,10 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         if (!reconnecting) {
             reconnecting = YES;
             [self connect];
+            StreamResetMessage* srm = [[StreamResetMessage alloc] init];
+            srm.userId = [[UserDetails sharedInstance] userId];
+            srm.appAwake = 1;
+            [self sendMessage:srm];
         }
     }
 }
@@ -154,7 +167,6 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
 
 - (void)parsePushNotification:(NSDictionary*)notification
 {
-    NSLog(@"notification %@",notification);
     MessageBase* m = [MessageUtils messageWithPushNotification:notification];
     [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
                                                              notificationWithName:NSStringFromClass([m class])

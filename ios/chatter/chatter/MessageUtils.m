@@ -310,10 +310,11 @@ static const char *getPropertyType(objc_property_t property) {
 
 + (MessageBase*)messageWithPushNotification:(NSDictionary*)notification
 {
-    MessageBase* m = [MessageUtils messageWithType:(MessageTypes)notification[@"message"][@"messageType"]];
+    NSNumber* messageType = notification[@"messageType"];
+    MessageBase* m = [MessageUtils messageWithType:(MessageTypes)[messageType intValue]];
     OrderedDictionary* props = [self classPropsFor:[m class]];
     for (NSString* key in props) {
-        [m setValue:notification[@"message"][key] forKey:key];
+        [m setValue:notification[@"msg"][key] forKey:key];
     }
     return m;
 }

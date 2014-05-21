@@ -15,6 +15,7 @@
 + (id)sharedInstance;
 - (id)init;
 - (void)connect;
+- (void)disconnect;
 - (void)reconnect;
 - (void)sendMessage:(MessageBase*)message;
 - (void)streamReset;

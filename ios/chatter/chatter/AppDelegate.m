@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "CurrentViewNotifier.h"
 
 @implementation AppDelegate
 
@@ -40,6 +41,9 @@ const NSTimeInterval LOCATE_DURATION = 3.;
     // Do this here?
     [contacts getAddressBookPermissions];
     
+    // Register the current view notifier
+    [[CurrentViewNotifier sharedNotifier] registerForNotifications];
+    
     UIStoryboard *uis = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     self.window = [[UIWindow alloc]
                    initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -68,6 +72,10 @@ const NSTimeInterval LOCATE_DURATION = 3.;
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    
+    // This method is called when the user puts the app in the background!
+    NSLog(@"[AppDelegate] Going to become inactive");
+    
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -79,10 +87,6 @@ const NSTimeInterval LOCATE_DURATION = 3.;
         NSLog(@"was joined to %@",n);
     }
     [UserDetails save];
-//    [chatManager leaveJoinedChatrooms];
-
-    // Do this just in case
-//    [[chatManager joinedChatrooms] removeAllObjects];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -94,7 +98,7 @@ const NSTimeInterval LOCATE_DURATION = 3.;
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-//    [chatManager rejoinChatrooms];
+    [[CurrentViewNotifier sharedNotifier] notifyCurrentView];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -121,14 +125,22 @@ const NSTimeInterval LOCATE_DURATION = 3.;
     if (userInfo[@"aps"][@"content-available"]) {
         [connection parsePushNotification:userInfo];
     }
-
+    [connection disconnect];
+    
     completionHandler(UIBackgroundFetchResultNoData);
 //    completionHandler(UIBackgroundFetchResultNewData);
 }
 
-- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
-{
-    NSLog(@"complete!");
-}
+
+// Is this needed?
+//- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+//{
+//    // Why isn't this called?
+//    NSLog(@"complete!");
+//    completionHandler(UIBackgroundFetchResultNoData);
+//    // TODO drop connection ?
+//    // TODO see what happens when you don't sever the connection
+//    
+//}
 
 @end
