@@ -35,6 +35,5 @@ typedef void (^CreateCompletion)(long long);
 - (void)createChatroom:(Chatroom*)chatroom withCompletion:(CreateCompletion)completion;
 - (BOOL)alreadyJoinedChatroom:(Chatroom*)chatroom;
 - (void)leaveJoinedChatrooms;
-- (void)rejoinChatrooms;
 
 @end

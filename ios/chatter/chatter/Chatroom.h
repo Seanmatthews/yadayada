@@ -14,19 +14,6 @@
 
 @end
 
-//@interface PersistentChatroom : NSObject
-//
-//@property (nonatomic,strong) NSNumber* cid;
-//@property (nonatomic,strong) NSString* chatroomName;
-//@property (nonatomic,strong) NSNumber* userCount;
-//@property (nonatomic,strong) NSNumber* chatActivity;
-//@property (nonatomic,strong) NSNumber* radius;
-//@property (nonatomic,strong) NSNumber* latitude;
-//@property (nonatomic,strong) NSNumber* longitude;
-//
-//- (id)initWithChatroom:(Chatroom*)chatroom;
-//
-//@end
 
 @interface Chatroom : NSObject
 
@@ -44,11 +31,17 @@
 @property (nonatomic,getter=isGlobal) BOOL global;
 @property (nonatomic) NSInteger MESSAGE_NUM_THRESH;
 
+@property (nonatomic,strong) NSDictionary* chatroomDictionary;
+
 - (id)init;
 - (id)initWithChatroomMessage:(ChatroomMessage*)message;
 - (id)initWithInviteUserMessage:(InviteUserMessage*)message;
+- (id)initWithDictionary:(NSDictionary*)dictionary;
 + (Chatroom*)chatroomWithChatroomMessage:(ChatroomMessage*)message;
 + (Chatroom*)chatroomWithInviteUserMessage:(InviteUserMessage*)message;
++ (Chatroom*)chatroomWithDictionary:(NSDictionary*)dictionary;
+- (void)createChatroomDictionary;
+
 
 
 @end

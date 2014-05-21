@@ -20,7 +20,8 @@
 @property BOOL receiveMessageNotifications;
 @property BOOL receiveInviteNotifications;
 @property UIImage* userIcon;
-@property (nonatomic,strong) NSArray* joinedChatroomIds;
+//@property (nonatomic,strong) NSArray* joinedChatroomIds;
+@property (nonatomic,strong) NSArray* joinedChatroomDicts;
 @property (nonatomic,strong) NSData* deviceToken;
 
 

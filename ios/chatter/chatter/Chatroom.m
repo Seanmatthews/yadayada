@@ -9,24 +9,6 @@
 #import "Chatroom.h"
 #import "Location.h"
 
-//@implementation PersistentChatroom
-//
-//- (id)initWithChatroom:(Chatroom*)chatroom
-//{
-//    self = [super init];
-//    if (self) {
-//        _cid = chatroom.cid;
-//        _chatroomName = chatroom.chatroomName;
-//        _radius = chatroom.radius;
-//        _latitude = [NSNumber numberWithDouble:chatroom.origin.latitude];
-//        _longitude = [NSNumber numberWithDouble:chatroom.origin.longitude];
-//        _userCount = chatroom.userCount;
-//        _chatActivity = chatroom.chatActivity;
-//    }
-//    return self;
-//}
-//
-//@end
 
 
 @implementation Chatroom
@@ -88,6 +70,23 @@
     return self;
 }
 
+- (id) initWithDictionary:(NSDictionary *)dictionary
+{
+    self = [super init];
+    if (self) {
+        _MESSAGE_NUM_THRESH = 50;
+        _chatQueue = [[NSMutableArray alloc] init];
+        _members = [[NSMutableDictionary alloc] init];
+        _cid = dictionary[@"cid"];
+        _chatroomName = dictionary[@"chatroomName"];
+        _origin.latitude = [dictionary[@"latitude"] doubleValue];
+        _origin.longitude = [dictionary[@"longitude"] doubleValue];
+        _radius = dictionary[@"radius"];
+        _global = [_radius intValue] <= 0;
+    }
+    return self;
+}
+
 + (Chatroom*)chatroomWithChatroomMessage:(ChatroomMessage*)message
 {
     return [[Chatroom alloc] initWithChatroomMessage:message];
@@ -98,5 +97,18 @@
     return [[Chatroom alloc] initWithInviteUserMessage:message];
 }
 
++ (Chatroom*)chatroomWithDictionary:(NSDictionary*)dictionary
+{
+    return [[Chatroom alloc] initWithDictionary:dictionary];
+}
+
+- (void)createChatroomDictionary
+{
+    _chatroomDictionary = @{@"cid": _cid,
+                            @"chatroomName": _chatroomName,
+                            @"latitude": [NSNumber numberWithDouble:_origin.latitude],
+                            @"longitude": [NSNumber numberWithDouble:_origin.longitude],
+                            @"radius": _radius};
+}
 
 @end

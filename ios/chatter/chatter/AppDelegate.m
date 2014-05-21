@@ -82,9 +82,11 @@ const NSTimeInterval LOCATE_DURATION = 3.;
 {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    ud.joinedChatroomIds = [NSArray arrayWithArray:[chatManager.joinedChatrooms valueForKeyPath:@"cid"]];
-    for (NSNumber* n in ud.joinedChatroomIds) {
-        NSLog(@"was joined to %@",n);
+    
+    [chatManager.joinedChatrooms makeObjectsPerformSelector:@selector(createChatroomDictionary)];
+    ud.joinedChatroomDicts = [NSArray arrayWithArray:[chatManager.joinedChatrooms valueForKeyPath:@"chatroomDictionary"]];
+    for (NSDictionary* n in ud.joinedChatroomDicts) {
+        NSLog(@"was joined to %@",n[@"chatroomName"]);
     }
     [UserDetails save];
 }

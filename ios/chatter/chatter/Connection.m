@@ -228,12 +228,6 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
                     
                     NSLog(@"reconnecting");
                     [self streamReset];
-                    
-                    // Send notification to rejoin all chatrooms
-//                    [[NSNotificationQueue defaultQueue] enqueueNotification:[NSNotification
-//                                                                             notificationWithName:@"RejoinChatroomsNotification"
-//                                                                             object:nil]
-//                                                               postingStyle:NSPostNow];
                     reconnecting = NO;
                 }
                 break;

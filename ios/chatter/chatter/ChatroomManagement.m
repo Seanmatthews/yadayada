@@ -33,7 +33,7 @@
 - (void)displayInvite:(InviteUserMessage*)message toChatroom:(Chatroom*)chatroom;
 - (void)dismissAllInviteAlerts;
 - (void)createChatroom:(Chatroom*)chatroom withCompletion:(CreateCompletion)completion;
-- (void)loadJoinedChatrooms;
+- (void)loadJoinedChatroomsAtStartup;
 
 
 @end
@@ -49,7 +49,6 @@
     CreateCompletion createCompletion;
     UIBackgroundTaskIdentifier leaveChatroomsTask;
     NSInteger joinedCount;
-    BOOL rejoinChatrooms;
 }
 
 //const int MESSAGE_NUM_THRESH = 20;
@@ -72,8 +71,6 @@
         ud = [UserDetails sharedInstance];
         location = [Location sharedInstance];
         [self registerForNotifications];
-        rejoinChatrooms = YES;
-//        [self loadJoinedChatrooms];
     }
     return self;
 }
@@ -95,26 +92,37 @@
 }
 
 // Load chatrooms that were joined previously
-- (void)loadJoinedChatrooms
+- (void)loadJoinedChatroomsAtStartup
 {
-    for (NSNumber *chatroomId in ud.joinedChatroomIds) {
-        NSLog(@"joining saved chatroom %@",chatroomId);
-        JoinChatroomMessage * msg = [[JoinChatroomMessage alloc] init];
-        msg.userId = ud.userId;
-        msg.chatroomId = [chatroomId longLongValue];
-        msg.latitude = [location currentLat];
-        msg.longitude = [location currentLong];
-        [connection sendMessage:msg];
+    NSLog(@"[ChatroomManagement] Loading joined chatrooms");
+    if (ud.joinedChatroomDicts != nil) {
+        NSLog(@"%@",ud.joinedChatroomDicts);
+        for (NSDictionary* chatroom in ud.joinedChatroomDicts) {
+            Chatroom* c = [Chatroom chatroomWithDictionary:chatroom];
+            if ([self canJoinChatroom:c] && [_chatrooms objectForKey:c.cid]) {
+                [[self mutableArrayValueForKey:@"joinedChatrooms"] insertObject:[_chatrooms objectForKey:c.cid] atIndex:0];
+            }
+            else {
+                // Don't add unjoinable chatrooms to the joined list,
+                // and also leave them on the server side.
+                [self leaveChatroomWithId:c.cid withCompletion:nil];
+            }
+        }
     }
+//    for (NSNumber *chatroomId in ud.joinedChatroomIds) {
+//        NSLog(@"joining saved chatroom %@",chatroomId);
+//        JoinChatroomMessage * msg = [[JoinChatroomMessage alloc] init];
+//        msg.userId = ud.userId;
+//        msg.chatroomId = [chatroomId longLongValue];
+//        msg.latitude = [location currentLat];
+//        msg.longitude = [location currentLong];
+//        [connection sendMessage:msg];
+//    }
 }
+
 
 - (void)registerForNotifications
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(rejoinChatrooms)
-                                                 name:@"RejoinChatroomsNotification"
-                                               object:nil];
-    
     for (NSString* notificationName in @[@"Message", @"JoinedChatroom", @"JoinChatroomReject",
                                          @"LeftChatroom", @"InviteUser", @"Chatroom",
                                          @"CreateChatroomReject", @"LoginAccept"]) {
@@ -194,26 +202,6 @@
         return YES;
     }
     return NO;
-}
-
-// Assumes we lost connection to all chatrooms
-- (void)rejoinChatrooms
-{
-    if (rejoinChatrooms) {
-        rejoinChatrooms = NO;
-        NSLog(@"rejoining all chatrooms");
-        
-        if (ud.joinedChatroomIds) {
-            for (NSNumber* cid in ud.joinedChatroomIds) {
-                JoinChatroomMessage* jcm = [[JoinChatroomMessage alloc] init];
-                jcm.userId = ud.userId;
-                jcm.latitude = [location currentLat];
-                jcm.longitude = [location currentLong];
-                jcm.chatroomId = [cid longLongValue];
-                [connection sendMessage:jcm];
-            }
-        }
-    }
 }
 
 - (void)leaveJoinedChatrooms
@@ -315,8 +303,7 @@
 {
     // Uncomment this if the server removes users from chatroom when the user app is terminated.
     // This would be the case if the client app sends the terminate message upon termination.
-    [self performSelector:@selector(loadJoinedChatrooms) withObject:nil afterDelay:1.0];
-//    _joinedChatrooms = ud.joi
+    [self performSelector:@selector(loadJoinedChatroomsAtStartup) withObject:nil afterDelay:1.0];
 }
 
 - (void)receivedMessage:(NSNotification*)notification
