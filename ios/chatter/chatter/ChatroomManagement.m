@@ -100,7 +100,17 @@
         for (NSDictionary* chatroom in ud.joinedChatroomDicts) {
             Chatroom* c = [Chatroom chatroomWithDictionary:chatroom];
             if ([self canJoinChatroom:c] && [_chatrooms objectForKey:c.cid]) {
-                [[self mutableArrayValueForKey:@"joinedChatrooms"] insertObject:[_chatrooms objectForKey:c.cid] atIndex:0];
+                
+                JoinChatroomMessage * msg = [[JoinChatroomMessage alloc] init];
+                msg.userId = ud.userId;
+                msg.chatroomId = [c.cid longLongValue];
+                msg.latitude = [location currentLat];
+                msg.longitude = [location currentLong];
+                [connection sendMessage:msg];
+                
+                // Took this out because I'm changing the server to sens back a
+                // joined message, even if already joined.
+//                [[self mutableArrayValueForKey:@"joinedChatrooms"] insertObject:[_chatrooms objectForKey:c.cid] atIndex:0];
             }
             else {
                 // Don't add unjoinable chatrooms to the joined list,

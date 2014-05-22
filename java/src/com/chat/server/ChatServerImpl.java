@@ -173,16 +173,6 @@ public class ChatServerImpl implements ChatServer {
                     connection.sendMessage(msgToSend);
                 }
             }
-//            else {
-//                try {
-//                    // Send APNS
-//                    log.debug("Sending APNS to user {} {}", user, user.getId());
-//                    sendMessageAsNotification(user, msgToSend);
-//                }
-//                catch (InterruptedException e) {
-//                    log.debug("Pushy exception {}", e.getMessage());
-//                }
-//            }
         }
     }
 
@@ -372,38 +362,42 @@ public class ChatServerImpl implements ChatServer {
     public void joinChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom) {
         log.debug("Adding {} to {}", sender, chatroom);
 
-        if (chatroom.usernameInUse(sender)) {
-            senderConnection.sendMessage(new JoinChatroomRejectMessage(chatroom.getId(),
-                    sender + " handle already used in " + chatroom));
-            log.debug("User {} already in chatroom {}", sender, chatroom);
-            return;
-        }
-
         JoinedChatroomMessage meJoining = new JoinedChatroomMessage(sender.getId(), sender.getHandle(),
                 chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(),
                 chatroom.getLatitude(), chatroom.getLongitude(), chatroom.getRadius(), chatroom.getUserCount(),
                 chatroom.getChatActivity());
 
-        Iterator<User> users = chatroomRepo.getUsers(chatroom);// chatroom.getUsers();
-        while(users.hasNext()) {
-            // notify me about other user joining chat
-            User chatMember = users.next();
-            senderConnection.sendMessage(new JoinedChatroomMessage(chatMember.getId(), chatMember.getHandle(),
-                    chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(),
-                    chatroom.getLatitude(), chatroom.getLongitude(), chatroom.getRadius(), chatroom.getUserCount(),
-                    chatroom.getChatActivity()));
-
-            // notify other user about me joining chat
-            ClientConnection chatMemberSender = userConnectionMap.get(chatMember);
-            if (chatMemberSender != null) {
-                chatMemberSender.sendMessage(meJoining);
+        if (!chatroom.containsUser(sender)) {
+            if (chatroom.usernameInUse(sender)) {
+                senderConnection.sendMessage(new JoinChatroomRejectMessage(chatroom.getId(),
+                        sender + " handle already used in " + chatroom));
+                log.debug("User {} already in chatroom {}", sender, chatroom);
+                return;
             }
+
+            Iterator<User> users = chatroomRepo.getUsers(chatroom);// chatroom.getUsers();
+            while(users.hasNext()) {
+                // notify me about other user joining chat
+                User chatMember = users.next();
+                senderConnection.sendMessage(new JoinedChatroomMessage(chatMember.getId(), chatMember.getHandle(),
+                        chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(),
+                        chatroom.getLatitude(), chatroom.getLongitude(), chatroom.getRadius(), chatroom.getUserCount(),
+                        chatroom.getChatActivity()));
+
+                // notify other user about me joining chat
+                ClientConnection chatMemberSender = userConnectionMap.get(chatMember);
+                if (chatMemberSender != null) {
+                    chatMemberSender.sendMessage(meJoining);
+                }
+            }
+
+            // Now add our user
+            chatroom.addUser(sender);
+            sender.addToChatroom(chatroom);
         }
 
-        // Now add our user
-        chatroom.addUser(sender);
-        sender.addToChatroom(chatroom);
-
+        // TODO should we send confirmation if the user is already joined?
+        // TODO Maybe yes? This makes it idempotent and predictable
         // Give me confirmation that I've joined the chat
         senderConnection.sendMessage(meJoining);
 

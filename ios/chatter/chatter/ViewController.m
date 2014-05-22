@@ -432,8 +432,6 @@
     id msg = [[_chatroom chatQueue] objectAtIndex:indexPath.row];
     
     if ([msg isMemberOfClass:[MessageMessage class]]) {
-//        NSLog(@"height %f",[ChatroomMessageCell heightForText:msg.message]);
-//        return [ChatroomMessageCell heightForText:((MessageMessage*)msg).message];
         return [ChatroomMessageCell heightForText:[msg message]];
     }
     else { // Assume JoinedChatroom or LeftChatroom
