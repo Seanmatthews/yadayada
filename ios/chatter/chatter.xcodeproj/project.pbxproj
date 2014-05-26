@@ -56,7 +56,6 @@
 		64A10D57181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D56181FA30900A499B0 /* UITableViewCell+UITableViewCellCategory.m */; };
 		64A10D5A181FA45300A499B0 /* UITableView+UITableViewCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */; };
 		64A10DA41824BBDA00A499B0 /* Location.m in Sources */ = {isa = PBXBuildFile; fileRef = 64A10DA31824BBDA00A499B0 /* Location.m */; };
-		64E6AB57187F53B100B46504 /* ChatroomMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */; };
 		B33C55C61835598400EF28B7 /* default-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B33C55C51835598400EF28B7 /* default-icon.png */; };
 		B343A50F18282CF600B36450 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B343A50E18282CF600B36450 /* MenuViewController.m */; };
 		B3E79A481832AE27003227E7 /* ChatroomListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E79A471832AE27003227E7 /* ChatroomListCell.m */; };
@@ -150,8 +149,6 @@
 		64A10D59181FA45300A499B0 /* UITableView+UITableViewCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableView+UITableViewCategory.m"; sourceTree = "<group>"; };
 		64A10DA21824BBDA00A499B0 /* Location.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Location.h; sourceTree = "<group>"; };
 		64A10DA31824BBDA00A499B0 /* Location.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Location.m; sourceTree = "<group>"; };
-		64E6AB55187F53B100B46504 /* ChatroomMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatroomMessageCell.h; sourceTree = "<group>"; };
-		64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomMessageCell.m; sourceTree = "<group>"; };
 		B33C55C51835598400EF28B7 /* default-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-icon.png"; sourceTree = "<group>"; };
 		B343A50D18282CF600B36450 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		B343A50E18282CF600B36450 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
@@ -221,8 +218,6 @@
 				B3E79A491832AF23003227E7 /* ChatroomListCell.xib */,
 				6445107B183DA911000112D4 /* CreateChatViewController.h */,
 				6445107C183DA911000112D4 /* CreateChatViewController.m */,
-				64E6AB55187F53B100B46504 /* ChatroomMessageCell.h */,
-				64E6AB56187F53B100B46504 /* ChatroomMessageCell.m */,
 				14D19A7818A31A560038D149 /* TutorialContentViewController.h */,
 				14D19A7918A31A560038D149 /* TutorialContentViewController.m */,
 				1444DCA418A35838006014C2 /* TutorialStartController.h */,
@@ -501,7 +496,6 @@
 				641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */,
 				B3E79A481832AE27003227E7 /* ChatroomListCell.m in Sources */,
 				6445107D183DA911000112D4 /* CreateChatViewController.m in Sources */,
-				64E6AB57187F53B100B46504 /* ChatroomMessageCell.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
 				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,
 				144718CF18BBDA990045B668 /* UIInviteAlertView.m in Sources */,

@@ -8,10 +8,11 @@
 
 #import "MessageCell.h"
 
-const int MESSAGE_CHAR_LIMIT = 200;
-const CGFloat MAX_CELL_WIDTH = 300;
-const CGFloat BORDER_WIDTH = 2.;
-const CGFloat PADDING = 2.;
+const int MESSAGE_CHAR_LIMIT = 200; // Max characters allowed
+const CGFloat MAX_CELL_WIDTH = 250; // Width of the message container
+const CGFloat BORDER_WIDTH = 4.; // The border around the UITableViewCell that offsets cells
+const CGFloat MSG_PADDING = 7.; // Padding within NSAttributedString object that contains the message
+const CGFloat MSG_OFFSET = 10.; // Offset from the side of the screen
 
 @interface MessageCell ()
 
@@ -62,41 +63,44 @@ const CGFloat PADDING = 2.;
     // otherwise, the view will not be sized properly.
     NSMutableParagraphStyle *p1 = [[NSMutableParagraphStyle alloc] init];
     p1.alignment = NSTextAlignmentLeft;
+    p1.headIndent = MSG_PADDING;
+    p1.firstLineHeadIndent = MSG_PADDING;
     NSMutableParagraphStyle *p2 = [[NSMutableParagraphStyle alloc] init];
     p2.alignment = NSTextAlignmentRight;
+    p2.tailIndent = -MSG_PADDING;
     
     [messageText addAttribute:NSParagraphStyleAttributeName value:p1 range:NSMakeRange(0, _message.length+1)];
     [messageText addAttribute:NSParagraphStyleAttributeName value:p2 range:NSMakeRange(_message.length+1, _userHandle.length)];
     
     // Set label size and position within the cell
     CGSize labelSize = [MessageCell sizeForText:_message username:_userHandle];
-    CGRect labelFrame = CGRectMake(0, 0, labelSize.width, labelSize.height);
+    CGRect labelFrame = CGRectMake(MSG_OFFSET, 0, labelSize.width, labelSize.height);
     
     // if this is a self message, right justify the label
     if (_selfMessage) {
-        labelFrame.origin.x = MAX_CELL_WIDTH - labelSize.width;
+        labelFrame.origin.x = self.layer.bounds.size.width - labelSize.width - MSG_OFFSET;
     }
     
     UILabel* labelView = [[UILabel alloc] initWithFrame:labelFrame];
     labelView.attributedText = messageText;
     [labelView setBackgroundColor:[UIColor whiteColor]];
-    labelView.layer.cornerRadius = 10;
+    labelView.layer.cornerRadius = 15;
     labelView.layer.masksToBounds = YES;
     labelView.lineBreakMode = NSLineBreakByWordWrapping;
     labelView.numberOfLines = 0;
     
     // Hidden view is to catch all user interactions?
-    UIView* hiddenView = [[UIView alloc] init];
-    hiddenView.opaque = NO;
-    hiddenView.backgroundColor = [UIColor clearColor];
-    hiddenView.alpha = 0.25;
-    hiddenView.frame = self.contentView.bounds; // Should this be set after init?
-    hiddenView.userInteractionEnabled = NO;
-    hiddenView.tag = 3;
+//    UIView* hiddenView = [[UIView alloc] init];
+//    hiddenView.opaque = NO;
+//    hiddenView.backgroundColor = [UIColor clearColor];
+//    hiddenView.alpha = 0.25;
+//    hiddenView.frame = self.contentView.bounds; // Should this be set after init?
+//    hiddenView.userInteractionEnabled = NO;
+//    hiddenView.tag = 3;
     
     // Add the views, bottom first
     [self.contentView addSubview:labelView];
-    [self.contentView addSubview:hiddenView]; // add this last (on top)
+//    [self.contentView addSubview:hiddenView]; // add this last (on top)
 }
 
 // The constants that define text style for all parts of the messages are contained within this method
@@ -115,7 +119,7 @@ const CGFloat PADDING = 2.;
                      value:[UIFont boldSystemFontOfSize:13.]
                      range:NSMakeRange(0, [attrUser length])];
     [attrUser addAttribute:NSForegroundColorAttributeName
-                     value:[UIColor greenColor]
+                     value:[UIColor grayColor]
                      range:NSMakeRange(0, [attrUser length])];
     
     [attrText appendAttributedString:attrUser];
@@ -126,18 +130,15 @@ const CGFloat PADDING = 2.;
 + (CGSize)sizeForText:(NSString*)text username:(NSString*)username
 {
     NSMutableAttributedString* attrText = [MessageCell attributedStringFromMessage:text username:username];
-    
-    CGFloat totalPadding = (2*BORDER_WIDTH) + PADDING;
     UILabel *gettingSizeLabel = [[UILabel alloc] init];
     gettingSizeLabel.attributedText = attrText;
     gettingSizeLabel.numberOfLines = 0;
     gettingSizeLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    CGSize maximumLabelSize = CGSizeMake(300, 9999);
+    CGSize maximumLabelSize = CGSizeMake(MAX_CELL_WIDTH, 9999);
     
     CGSize expectedSize = [gettingSizeLabel sizeThatFits:maximumLabelSize];
-    expectedSize.height = ceilf(expectedSize.height) + totalPadding;
-    expectedSize.width = ceilf(expectedSize.width) + totalPadding;
-    NSLog(@"width: %f height: %f", expectedSize.width, expectedSize.height);
+    expectedSize.height = ceilf(expectedSize.height) + 2 * MSG_PADDING;
+    expectedSize.width = ceilf(expectedSize.width) + 2 * MSG_PADDING;
     return expectedSize;
 }
 
