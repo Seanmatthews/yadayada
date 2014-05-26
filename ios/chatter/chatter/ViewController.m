@@ -8,7 +8,8 @@
 
 #import "ViewController.h"
 #import "Messages.h"
-#import "ChatroomMessageCell.h"
+//#import "ChatroomMessageCell.h"
+#import "MessageCell.h"
 #import "SettingsViewController.h"
 #import "UIInviteAlertView.h"
 
@@ -20,7 +21,7 @@
 
 - (void)initCode;
 - (void)refreshView:(NSNotification*)notification;
-- (void)swipeCell:(ChatroomMessageCell*)cell withAnimation:(UITableViewRowAnimation)animation;
+- (void)swipeCell:(MessageCell*)cell withAnimation:(UITableViewRowAnimation)animation;
 - (void)swipedCellLeft:(UIGestureRecognizer*)sender;
 - (void)swipedCellRight:(UIGestureRecognizer*)sender;
 - (void)tappedCell:(id)sender;
@@ -34,7 +35,7 @@
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
 - (void)addMessageAtIndexPath;
-- (void)initMessageCell:(ChatroomMessageCell*)cell withReuseIdentifier:(NSString*)reuseId;
+- (void)initMessageCell:(MessageCell*)cell withReuseIdentifier:(NSString*)reuseId;
 
 @end
 
@@ -209,7 +210,7 @@
 
 - (void)tappedCell:(UIGestureRecognizer*)sender
 {
-    ChatroomMessageCell* tappedCell = (ChatroomMessageCell*)sender.view;
+    MessageCell* tappedCell = (MessageCell*)sender.view;
     NSInteger row = [_chatroom.chatQueue indexOfObject:tappedCell.messageObj];
     NSLog(@"tapped %ld",(long)row);
 
@@ -241,7 +242,7 @@
     }
 }
 
-- (void)swipeCell:(ChatroomMessageCell*)cell withAnimation:(UITableViewRowAnimation)animation
+- (void)swipeCell:(MessageCell*)cell withAnimation:(UITableViewRowAnimation)animation
 {
     NSInteger row = [_chatroom.chatQueue indexOfObject:cell.messageObj];
     
@@ -281,12 +282,12 @@
 
 - (void)swipedCellRight:(UIGestureRecognizer*)sender
 {
-    [self swipeCell:(ChatroomMessageCell*)sender.view withAnimation:UITableViewRowAnimationRight];
+    [self swipeCell:(MessageCell*)sender.view withAnimation:UITableViewRowAnimationRight];
 }
 
 - (void)swipedCellLeft:(UIGestureRecognizer*)sender
 {
-    [self swipeCell:(ChatroomMessageCell*)sender.view withAnimation:UITableViewRowAnimationLeft];
+    [self swipeCell:(MessageCell*)sender.view withAnimation:UITableViewRowAnimationLeft];
 }
 
 
@@ -341,7 +342,7 @@
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     NSString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    if (newString.length >= [ChatroomMessageCell getMessageCharLimit]) {
+    if (newString.length >= MESSAGE_CHAR_LIMIT) {
         // Send message automatically
         SubmitMessageMessage* sm = [[SubmitMessageMessage alloc] init];
         sm.userId = ud.userId;
@@ -432,7 +433,7 @@
     id msg = [[_chatroom chatQueue] objectAtIndex:indexPath.row];
     
     if ([msg isMemberOfClass:[MessageMessage class]]) {
-        return [ChatroomMessageCell heightForText:[msg message]];
+        return [MessageCell sizeForText:[msg message] username:[msg senderHandle]].height;
     }
     else { // Assume JoinedChatroom or LeftChatroom
         return 30.;
@@ -454,9 +455,9 @@
 //    return [[_chatroom chatQueue] count];
 }
 
-- (void)initMessageCell:(ChatroomMessageCell*)cell withReuseIdentifier:(NSString*)reuseId
+- (void)initMessageCell:(MessageCell*)cell withReuseIdentifier:(NSString*)reuseId
 {
-    cell = [[ChatroomMessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseId];
+    cell = [[MessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseId];
     
     // Add voting gestures to the cell
     UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
@@ -480,10 +481,10 @@
     if ([rootMsg isMemberOfClass:[MessageMessage class]]) {
     
         MessageMessage* msg = [[_chatroom chatQueue] objectAtIndex:indexPath.row];
-        ChatroomMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        MessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
         if (nil == cell) {
-            cell = [[ChatroomMessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell = [[MessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             
             // Add voting gestures to the cell
             UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
@@ -498,7 +499,6 @@
         }
         [cell setUserHandle:msg.senderHandle];
         [cell setMessage:msg.message];
-        [cell setUserIcon:nil];
         [cell setSelfMessage:(msg.senderId == ud.userId ? YES : NO)];
         [cell arrangeElements];
         [cell setMessageObj:msg];

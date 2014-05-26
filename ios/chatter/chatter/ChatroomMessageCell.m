@@ -16,12 +16,12 @@ const CGFloat ICON_SIZE = 50. - (2 * BORDER_WIDTH) - PADDING;
 const int CHARS_PER_LINE = 50;
 const CGFloat DEFAULT_CELL_HEIGHT = 50.;
 const CGFloat HEIGHT_PER_LINE = 15.;
-const int MESSAGE_CHAR_LIMIT = 200;
+//const int MESSAGE_CHAR_LIMIT = 200;
 
 
 + (int)getMessageCharLimit
 {
-    return MESSAGE_CHAR_LIMIT;
+    return 200; // MESSAGE_CHAR_LIMIT;
 }
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -134,20 +134,23 @@ const int MESSAGE_CHAR_LIMIT = 200;
     
     NSAttributedString *strml = [[NSAttributedString alloc] initWithData:[html dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType} documentAttributes:nil error:nil];
 
-//    UIFont *font = [UIFont fontWithName:@"HelveticaNeue" size:13];
-//    NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text
-//        attributes:@
-//        {
-//            NSFontAttributeName: font
-//        }];
+
     CGRect rect = [strml boundingRectWithSize:(CGSize){webViewWidth, CGFLOAT_MAX}
                                                options:NSStringDrawingUsesLineFragmentOrigin
                                                context:nil];
 
-//    NSLog(@"height %f",rect.size.height);
-    return ceilf(rect.size.height)+(2*BORDER_WIDTH)+PADDING;
+//    return ceilf(rect.size.height)+(2*BORDER_WIDTH)+PADDING;
     
-//    return MAX(DEFAULT_CELL_HEIGHT, HEIGHT_PER_LINE * ( ceilf((CGFloat)_message.length / (CGFloat)CHARS_PER_LINE) + 1.)); // 1 extra for the handle line
+    
+    UILabel *gettingSizeLabel = [[UILabel alloc] init];
+    gettingSizeLabel.font = [UIFont fontWithName:@"helveticaneue" size:13];
+    gettingSizeLabel.text = [text stringByAppendingString:@"\nusername"];
+    gettingSizeLabel.numberOfLines = 0;
+    CGSize maximumLabelSize = CGSizeMake(300, 9999);
+    
+    CGSize expectedSize = [gettingSizeLabel sizeThatFits:maximumLabelSize];
+    NSLog(@"width: %f height: %f", expectedSize.width, expectedSize.height);
+    return ceilf(expectedSize.height)+totalPadding;
 }
 
 
