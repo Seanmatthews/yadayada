@@ -53,7 +53,7 @@
     ChatroomManagement* chatManager;
     NSMutableArray* inviteAlerts;
     NSMutableArray* indexPathsToDisplay;
-    NSMutableArray* displayedIndexPaths;
+    NSMutableArray* displayedMessages;
 }
 
 @synthesize userInputTextField;
@@ -67,7 +67,7 @@
     chatManager = [ChatroomManagement sharedInstance];
     connection = [Connection sharedInstance];
     indexPathsToDisplay = [[NSMutableArray alloc] init];
-    displayedIndexPaths = [[NSMutableArray alloc] init];
+    displayedMessages = [[NSMutableArray alloc] init];
     
     // CSS for table cells
     pageCSS = @"body { margin:0; padding:1; }";
@@ -155,11 +155,6 @@
     [self refreshView:nil];
 
 //    navBar.topItem.title = _chatroom.chatroomName;
-//
-//    // Load all messages from from the chatmanager queue when we come into view
-//    [displayedIndexPaths removeAllObjects];
-//    [displayedIndexPaths addObjectsFromArray:[_chatroom chatQueue]];
-//    [mTableView reloadData];
     
     // setup KVO with chatqueue
     [_chatroom addObserver:self
@@ -188,10 +183,11 @@
     NSLog(@"[ViewController] Refreshing, the view");
     navBar.topItem.title = _chatroom.chatroomName;
     
-    
-    // Load all messages from from the chatmanager queue when we come into view
-    [displayedIndexPaths removeAllObjects];
-    [displayedIndexPaths addObjectsFromArray:[_chatroom chatQueue]];
+    // Load the last MESSAGE_NUM_THRESH messages when we refresh
+    NSRange displayRange = NSMakeRange(MAX(0, (int)[_chatroom chatQueue].count - MESSAGE_NUM_THRESH),
+                                        MIN(50, [_chatroom chatQueue].count));
+    [displayedMessages removeAllObjects];
+    [displayedMessages addObjectsFromArray:[[_chatroom chatQueue] subarrayWithRange:displayRange]];
     [mTableView reloadData];
 }
 
@@ -250,15 +246,14 @@
     if (row < [[_chatroom chatQueue] count]) {
         id aMsg = [[_chatroom chatQueue] objectAtIndex:row];
         if ([aMsg isMemberOfClass:[MessageMessage class]]) {
-            NSIndexPath* cellPath = [NSIndexPath indexPathForRow:row inSection:0];
-            NSArray *deleteIndexPath = [[NSArray alloc] initWithObjects:cellPath, nil];
-            MessageMessage* msg = [[_chatroom chatQueue] objectAtIndex:row];
-            [self upvote:NO user:msg.senderId becauseOfMessage:msg.messageId];
+            NSIndexPath* deleteIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
+            [self upvote:NO user:[aMsg senderId] becauseOfMessage:[aMsg messageId]];
             
             // Remove cell
             [mTableView beginUpdates];
-            [mTableView deleteRowsAtIndexPaths:deleteIndexPath withRowAnimation:animation];
+            [mTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:deleteIndexPath] withRowAnimation:animation];
             [[_chatroom chatQueue] removeObjectAtIndex:row];
+            [displayedMessages removeObject:aMsg];
             [mTableView endUpdates];
         }
     }
@@ -365,10 +360,10 @@
         NSIndexPath* ipath = [NSIndexPath indexPathForRow:([[object chatQueue] count]-1) inSection:0];
         //[self addMessageAtIndexPath:ipath];
         [indexPathsToDisplay addObject:ipath];
-        [displayedIndexPaths addObject:ipath];
+        [displayedMessages addObject:[[object chatQueue] lastObject]];
         
-        while ([displayedIndexPaths count] > _chatroom.MESSAGE_NUM_THRESH) {
-            [displayedIndexPaths removeObjectAtIndex:0];
+        while ([displayedMessages count] > MESSAGE_NUM_THRESH) {
+            [displayedMessages removeObjectAtIndex:0];
         }
     }
 }
@@ -388,8 +383,8 @@
     }];
     
     [mTableView beginUpdates];
-    NSInteger totalDisplayMessages = [displayedIndexPaths count] + [indexPathsToDisplay count];
-    if (totalDisplayMessages > _chatroom.MESSAGE_NUM_THRESH) {
+    NSInteger totalDisplayMessages = [displayedMessages count] + [indexPathsToDisplay count];
+    if (totalDisplayMessages > MESSAGE_NUM_THRESH) {
         NSMutableArray* deletePaths = [[NSMutableArray alloc] init];
         for (NSInteger i=0; i<totalDisplayMessages; ++i) {
             [deletePaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
@@ -451,7 +446,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // There will only ever be one section for a table.
-    return [displayedIndexPaths count];
+    return [displayedMessages count];
 //    return [[_chatroom chatQueue] count];
 }
 
