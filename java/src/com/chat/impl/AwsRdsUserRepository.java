@@ -86,7 +86,7 @@ public class AwsRdsUserRepository implements UserRepository {
 
                         if (generatedKeys.next()) {
                             long id = generatedKeys.getLong("GENERATED_KEY");
-                            User user = new User(id, login, password, handle, phoneNumber, deviceTokenString, AwsRdsUserRepository.this);
+                            User user = new User(id, UUID, login, password, handle, phoneNumber, deviceTokenString, AwsRdsUserRepository.this);
                             idToUserMap.put(id, user);
 
                             future.setResult(new UserRepositoryActionResult(user, true));
@@ -129,7 +129,8 @@ public class AwsRdsUserRepository implements UserRepository {
                         String handle = results.getString("Handle");
                         long phoneNumber = results.getLong("PhoneNumber");
                         String deviceToken = results.getString("DeviceToken");
-                        User user = new User(id, login, password, handle, phoneNumber, deviceToken, AwsRdsUserRepository.this);
+                        String UUID = results.getString("UUID");
+                        User user = new User(id, UUID, login, password, handle, phoneNumber, deviceToken, AwsRdsUserRepository.this);
                         addUser(user);
 
                         future.setResult(new UserRepositoryActionResult(user, true));
@@ -181,7 +182,8 @@ public class AwsRdsUserRepository implements UserRepository {
                         String handle = results.getString("Handle");
                         long phoneNumber = results.getLong("PhoneNumber");
                         String deviceToken = results.getString("DeviceToken");
-                        User user2 = new User(id, login, "<BLANK>", handle, phoneNumber, deviceToken, AwsRdsUserRepository.this);
+                        String UUID = results.getString("UUID");
+                        User user2 = new User(id, UUID, login, "<BLANK>", handle, phoneNumber, deviceToken, AwsRdsUserRepository.this);
                         addUser(user2);
 
                         future.setResult(new UserRepositoryActionResult(user2, true));

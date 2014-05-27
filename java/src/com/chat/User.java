@@ -14,6 +14,7 @@ import java.util.Iterator;
  */
 public class User {
     private final long id;
+    private final String uuid;
     private final String login;
     private final String password;
     private final String handle;
@@ -25,13 +26,14 @@ public class User {
     private final String deviceToken;
     private boolean connected;
 
-    public User(long id, String handle, long phoneNumber, String deviceTokenString, UserRepository repo) {
-        this(id, "QR", "QR", handle, phoneNumber, deviceTokenString, repo);
+    public User(long id, String uuid, String handle, long phoneNumber, String deviceTokenString, UserRepository repo) {
+        this(id, uuid, "QR", "QR", handle, phoneNumber, deviceTokenString, repo);
     }
 
-    public User(long id, String login, String password, String handle, long phoneNumber, String deviceTokenString,
+    public User(long id, String uuid, String login, String password, String handle, long phoneNumber, String deviceTokenString,
                 UserRepository repo) {
         this.id = id;
+        this.uuid = uuid;
         this.login = login;
         this.password = password;
         this.handle = handle;
@@ -77,6 +79,8 @@ public class User {
     public long getId() {
         return id;
     }
+
+    public String getUUID() { return uuid; }
 
     public String getLogin() {
         return login;

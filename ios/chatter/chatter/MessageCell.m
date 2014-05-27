@@ -66,11 +66,10 @@ const CGFloat MSG_OFFSET = 10.; // Offset from the side of the screen
     p1.headIndent = MSG_PADDING;
     p1.firstLineHeadIndent = MSG_PADDING;
     NSMutableParagraphStyle *p2 = [[NSMutableParagraphStyle alloc] init];
-    p2.alignment = NSTextAlignmentRight;
-    p2.tailIndent = -MSG_PADDING;
     
-    [messageText addAttribute:NSParagraphStyleAttributeName value:p1 range:NSMakeRange(0, _message.length+1)];
-    [messageText addAttribute:NSParagraphStyleAttributeName value:p2 range:NSMakeRange(_message.length+1, _userHandle.length)];
+    
+    
+    
     
     // Set label size and position within the cell
     CGSize labelSize = [MessageCell sizeForText:_message username:_userHandle];
@@ -79,7 +78,17 @@ const CGFloat MSG_OFFSET = 10.; // Offset from the side of the screen
     // if this is a self message, right justify the label
     if (_selfMessage) {
         labelFrame.origin.x = self.layer.bounds.size.width - labelSize.width - MSG_OFFSET;
+        p2.alignment = NSTextAlignmentRight;
+        p2.tailIndent = -MSG_PADDING;
     }
+    else {
+        p2.alignment = NSTextAlignmentLeft;
+        p2.headIndent = MSG_PADDING;
+        p2.firstLineHeadIndent = MSG_PADDING;
+    }
+    
+    [messageText addAttribute:NSParagraphStyleAttributeName value:p1 range:NSMakeRange(0, _message.length+1)];
+    [messageText addAttribute:NSParagraphStyleAttributeName value:p2 range:NSMakeRange(_message.length+1, _userHandle.length)];
     
     UILabel* labelView = [[UILabel alloc] initWithFrame:labelFrame];
     labelView.attributedText = messageText;

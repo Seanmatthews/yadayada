@@ -35,7 +35,7 @@ public class InMemoryUserRepository implements UserRepository {
             return new UserFuture(result, handler);
         }
 
-        user = new User(nextUserId++, login, password, handle, phoneNumber, deviceTokenString, this);
+        user = new User(nextUserId++, UUID, login, password, handle, phoneNumber, deviceTokenString, this);
 
         addUser(user);
 
@@ -75,6 +75,7 @@ public class InMemoryUserRepository implements UserRepository {
 
 
     public void addUser(User user) {
+        // This seems OK to handle device re-register, as long as logins are unique
         loginToUserMap.put(user.getLogin(), user);
         idToUserMap.put(user.getId(), user);
         phoneToUserMap.put(user.getPhoneNumber(), user);

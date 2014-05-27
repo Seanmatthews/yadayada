@@ -133,7 +133,7 @@ public class ChatServerImpl implements ChatServer {
         }
 
         if (!chatroomRepo.containsUser(chatroom, sender)) {
-            log.debug("Chat sender {} {} not in chatroom {}", sender, sender.getId(), chatroom);
+            log.debug("Chat sender {} not in chatroom {}", sender, chatroom);
             senderConnection.sendMessage(new SubmitMessageRejectMessage(sender.getId(), chatroom.getId(),
                     "Not in chatroom: " + chatroom.getName()));
             return;
@@ -148,7 +148,7 @@ public class ChatServerImpl implements ChatServer {
         Iterator<User> chatUsers = cluster.getUsers();
         while (chatUsers.hasNext()) {
             User user = chatUsers.next();
-            log.debug("Message to user {}", user);
+            log.debug("Message to user {} {}", user, user.getUUID());
 
             ClientConnection connection = userConnectionMap.get(user);
 
@@ -323,6 +323,18 @@ public class ChatServerImpl implements ChatServer {
                                 case OK:
                                 case UserAlreadyExists:
                                     User user = result.getUser();
+
+                                    // Need to check userConnectionMap for duplicate UUID--
+                                    // this weeds out old users that were created by this device.
+                                    Iterator it = userConnectionMap.entrySet().iterator();
+                                    while (it.hasNext()) {
+                                        Map.Entry pairs = (Map.Entry)it.next();
+                                        User u = (User)pairs.getKey();
+                                        if (u.getDeviceToken().equalsIgnoreCase(user.getDeviceToken())) {
+                                            terminate((ClientConnection)pairs.getValue());
+                                        }
+                                    }
+
                                     userConnectionMap.put(user, senderConnection);
                                     senderConnection.setUser(user);
                                     user.setConnected(true);
@@ -360,7 +372,7 @@ public class ChatServerImpl implements ChatServer {
 
     @Override
     public void joinChatroom(ClientConnection senderConnection, User sender, Chatroom chatroom) {
-        log.debug("Adding {} to {}", sender, chatroom);
+        log.debug("Adding {} {} to {}", sender, sender.getId(), chatroom);
 
         JoinedChatroomMessage meJoining = new JoinedChatroomMessage(sender.getId(), sender.getHandle(),
                 chatroom.getId(), chatroom.getOwner().getId(), chatroom.getName(), chatroom.getOwner().getHandle(),
