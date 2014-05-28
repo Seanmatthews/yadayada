@@ -78,8 +78,13 @@ public class V1_4_0Dispatcher implements MessageDispatcher {
                 JoinChatroomMessage jcMsg = new JoinChatroomMessage(buffer);
                 logMsg(jcMsg);
                 User jcUser = getAndValidateUser(jcMsg.getUserId());
-                Chatroom jcChatroom = getAndValidateChatroom(jcMsg.getChatroomId());
-                server.joinChatroom(stream, jcUser, jcChatroom);
+                try {
+                    Chatroom jcChatroom = getAndValidateChatroom(jcMsg.getChatroomId());
+                    server.joinChatroom(stream, jcUser, jcChatroom);
+                }
+                catch (ValidationError ve) {
+                    stream.sendMessage(new JoinChatroomRejectMessage(jcMsg.getChatroomId(), "Chatroom does not exist"));
+                }
                 break;
 
             case LeaveChatroom:

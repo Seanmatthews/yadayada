@@ -21,6 +21,7 @@
 
 - (id)init;
 - (void)addChatroom:(Chatroom*)chatroom;
+- (void)removeChatroomWithId:(NSNumber*)chatroomId;
 - (void)receivedMessage:(NSNotification*)notification;
 - (void)receivedChatroom:(NSNotification*)notification;
 - (void)receivedJoinedChatroom:(NSNotification*)notification;
@@ -187,6 +188,20 @@
             
             [_chatrooms setObject:chatroom forKey:chatroom.cid];
         }
+    }
+}
+
+- (void)removeChatroomWithId:(NSNumber*)chatroomId
+{
+    Chatroom* c = [_chatrooms objectForKey:chatroomId];
+    if (c) {
+        if (c.isGlobal) {
+            [[self mutableArrayValueForKey:@"globalChatrooms"] removeObject:c];
+        }
+        else {
+            [[self mutableArrayValueForKey:@"localChatrooms"] removeObject:c];
+        }
+        [_chatrooms removeObjectForKey:chatroomId];
     }
 }
 
@@ -398,6 +413,7 @@
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
     [alert show];
+    [self removeChatroomWithId:[NSNumber numberWithLongLong:[notification.object chatroomId]]];
 }
 
 - (void)receivedCreateChatroomReject:(NSNotification*)notification
