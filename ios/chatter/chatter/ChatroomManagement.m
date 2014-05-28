@@ -201,6 +201,7 @@
         else {
             [[self mutableArrayValueForKey:@"localChatrooms"] removeObject:c];
         }
+        [[self mutableArrayValueForKey:@"joinedChatrooms"] removeObject:c];
         [_chatrooms removeObjectForKey:chatroomId];
     }
 }
