@@ -148,7 +148,7 @@ public class ChatServerImpl implements ChatServer {
         Iterator<User> chatUsers = cluster.getUsers();
         while (chatUsers.hasNext()) {
             User user = chatUsers.next();
-            log.debug("Message to user {} {}", user, user.getUUID());
+            log.debug("Message to user {} {} {}", user, user.getUUID(), user.getDeviceToken());
 
             ClientConnection connection = userConnectionMap.get(user);
 

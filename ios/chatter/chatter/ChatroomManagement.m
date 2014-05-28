@@ -51,8 +51,6 @@
     NSInteger joinedCount;
 }
 
-//const int MESSAGE_NUM_THRESH = 20;
-
 - (id)init
 {
     self = [super init];
@@ -182,12 +180,11 @@
         if (![_chatrooms objectForKey:chatroom.cid]) {
             if (chatroom.isGlobal) {
                 [[self mutableArrayValueForKey:@"globalChatrooms"] addObject:chatroom];
-//                [_globalChatrooms addObject:chatroom];
             }
             else {
                 [[self mutableArrayValueForKey:@"localChatrooms"] addObject:chatroom];
-//                [_localChatrooms addObject:chatroom];
             }
+            
             [_chatrooms setObject:chatroom forKey:chatroom.cid];
         }
     }
@@ -204,14 +201,6 @@
         }
         [_chatrooms removeObjectForKey:chatroom.cid];
     }
-}
-
-- (BOOL)alreadyJoinedChatroom:(Chatroom*)chatroom
-{
-    if ([_joinedChatrooms containsObject:[_chatrooms objectForKey:chatroom.cid]]) {
-        return YES;
-    }
-    return NO;
 }
 
 - (void)leaveJoinedChatrooms

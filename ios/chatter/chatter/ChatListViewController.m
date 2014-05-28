@@ -21,16 +21,18 @@
 
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
-- (void)receivedChatroom:(NSNotification*)notification;
-- (BOOL)canJoinChatroom:(Chatroom*)chatroom;
+//- (void)receivedChatroom:(NSNotification*)notification;
 - (void)refreshTable:(UIRefreshControl*)refreshControl;
 - (void)segueToChatroom:(NSNotification*)notification;
 
 // Map view
-- (void)addChatroomAnnotation:(ChatroomMessage*)message;
+//- (void)addChatroomAnnotation:(ChatroomMessage*)message;
+- (void)addAnnotationForChatroom:(Chatroom*)chatroom;
+- (void)removeAnnotationForChatroom:(Chatroom*)chatroom;
 - (void)joinChatroomFromMap:(id)sender;
 - (void)deselectAllAnnotations;
 - (void)reloadMapAnnotations;
+- (void)adjustMapAnnotationsFromChatArray:(NSArray*)oldChatArray;
 
 @end
 
@@ -85,14 +87,6 @@ const int MAX_RECENT_CHATS = 5;
                                              selector:@selector(segueToChatroom:)
                                                  name:@"segueToChatroomNotification"
                                                object:nil];
-    
-    for (NSString* notificationName in @[@"Chatroom"]) {
-        NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:NSSelectorFromString(selectorName)
-                                                     name:[NSString stringWithFormat:@"%@Message",notificationName]
-                                                   object:nil];
-    }
 }
 
 - (void)unregisterForNotifications
@@ -136,6 +130,7 @@ const int MAX_RECENT_CHATS = 5;
     [super viewWillAppear:animated];
     [self registerForNotifications];
     [self refreshTable:nil];
+    [self reloadMapAnnotations];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -182,56 +177,45 @@ const int MAX_RECENT_CHATS = 5;
 }
 
 
-#pragma mark - Convenience functions
-
-
-- (BOOL)canJoinChatroom:(Chatroom*)chatroom
-{
-    NSUInteger distance = [location metersToCurrentLocationFrom:chatroom.origin];
-    
-    // Only display local chatrooms that the user is able to join
-    if (distance - [chatroom.radius longLongValue] > 0) {
-        NSLog(@"[chat list view] Chatroom is too far away");
-        return NO;
-    }
-    return YES;
-}
-
-
 #pragma mark - Notifications
-
-- (void)receivedChatroom:(NSNotification*)notification
-{
-    // TODO: map should be grabbing data from chat manager?
-    // Should we display rooms that are too far away?
-    if (!_mapParentView.isHidden) {
-        [self addChatroomAnnotation:notification.object];
-        [self reloadMapAnnotations];
-    }
-}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
+    NSArray* oldChatList = [change objectForKey:@"localChatrooms"];
     if ([keyPath isEqual:@"joinedChatrooms"]) {
         
     }
     else if ([keyPath isEqual:@"localChatrooms"]) {
-        
+        // TODO this may be faster
+        [self adjustMapAnnotationsFromChatArray:oldChatList];
+//        [self reloadMapAnnotations];
     }
     else if ([keyPath isEqual:@"globalChatrooms"]) {
-        
+        // TODO this may be faster
+        [self adjustMapAnnotationsFromChatArray:oldChatList];
+//        [self reloadMapAnnotations];
     }
     [_tableView reloadData];
+//    [self reloadMapAnnotations];
 }
 
+- (void)adjustMapAnnotationsFromChatArray:(NSArray*)oldChatArray
+{
+    // apply only the change
+    if (oldChatArray.count < chatManager.localChatrooms.count) {
+        [self addAnnotationForChatroom:chatManager.localChatrooms.lastObject];
+    }
+    else if (oldChatArray.count > chatManager.localChatrooms.count) {
+        // TODO
+//        [self removeAnnotationForChatroom:oldChatArray.lastObject];
+    }
+}
 
 
 #pragma mark - Convenience Methods
 
 - (void)joinChatroomFromMap:(id)sender
 {
-    //    MKPinAnnotationView* mkp = (MKPinAnnotationView*)(((SmartButton*)sender).parent);
-    //    ChatPointAnnotation* cpa = (ChatPointAnnotation*)mkp.annotation;
     ChatPointAnnotation* cpa = (ChatPointAnnotation*)(((SmartButton*)sender).parent);
     [_mapView deselectAnnotation:cpa animated:NO];
     Chatroom* c = [chatManager.chatrooms objectForKey:[NSNumber numberWithLongLong:cpa.chatroomId]];
@@ -292,22 +276,11 @@ const int MAX_RECENT_CHATS = 5;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"ChatroomListCell";
-//    ChatroomListCell *cell = (ChatroomListCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
-//        NSArray* topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ChatroomListCell" owner:self options:nil];
-//        for (id currentObject in topLevelObjects) {
-//            if ([currentObject isKindOfClass:[UITableViewCell class]]) {
-//                cell = (ChatroomListCell*)currentObject;
-//                cell.selectionStyle = UITableViewCellSelectionStyleGray;
-//                break;
-//            }
-//        }
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
         cell.selectionStyle = UITableViewCellSelectionStyleGray;
-//        cell.layer.borderWidth = 1.;
-//        cell.layer.borderColor = [UIColor lightGrayColor].CGColor;
     }
     
     // Configure the cell based on whether chatroom is global or local
@@ -335,15 +308,8 @@ const int MAX_RECENT_CHATS = 5;
         chatroom.chatActivity = @0;
     }
     
-    // TODO: get an image
-//    cell.chatroomImage.image = [[UIImage alloc] init];
-//    cell.chatroomName.text = chatroom.chatroomName;
-//    cell.milesFromOrigin.text = [NSString stringWithFormat:@"%@ miles away",distanceStr];
     NSString* activityStr = [format stringFromNumber:chatroom.chatActivity];
-//    cell.percentActive.text = [NSString stringWithFormat:@"%@%% active",activityStr];
     NSString* userStr = [format stringFromNumber:chatroom.userCount];
-//    cell.numberOfUsers.text = [NSString stringWithFormat:@"%@ users",userStr];
-//    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ miles away  %@%% active  %@ users", distanceStr, activityStr, userStr];
     cell.textLabel.text = chatroom.chatroomName;
     return cell;
@@ -375,7 +341,6 @@ const int MAX_RECENT_CHATS = 5;
 //    [_tableView.layer setShadowOffset:CGSizeMake(0, 0)];
 //    [_tableView.layer setShadowRadius:5.0];
 //    [_tableView.layer setShadowOpacity:1];
-    
     UILabel *label = [[UILabel alloc] init];
     label.text = [self tableView:tableView titleForHeaderInSection:section];
     label.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.];
@@ -411,14 +376,9 @@ const int MAX_RECENT_CHATS = 5;
         tappedCellInfo = (Chatroom*)[[chatManager globalChatrooms] objectAtIndex:indexPath.row];
     }
     
-//    if ([chatManager alreadyJoinedChatroom:tappedCellInfo]){
-//        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:tappedCellInfo];
-//    }
-//    else {
-        [chatManager joinChatroom:tappedCellInfo withCompletion:^{
-            [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:tappedCellInfo];
-        }];
-//    }
+    [chatManager joinChatroom:tappedCellInfo withCompletion:^{
+        [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:tappedCellInfo];
+    }];
 }
 
 
@@ -431,6 +391,7 @@ const int MAX_RECENT_CHATS = 5;
         [refreshControl endRefreshing];
     }
     [_tableView reloadData];
+    [self reloadMapAnnotations];
 }
 
 
@@ -438,18 +399,7 @@ const int MAX_RECENT_CHATS = 5;
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
-    if (!_mapParentView.isHidden) {
-        
-        // TODO: call from chatmanager
-        NSLog(@"region changed");
-        [mapView removeAnnotations:mapView.annotations];
-        SearchChatroomsMessage* msg = [[SearchChatroomsMessage alloc] init];
-        msg.latitude = [location currentLat];
-        msg.longitude = [location currentLong];
-        msg.onlyJoinable = YES;
-        msg.metersFromCoords = 1609.34 * 5.; // TODO: change to screen region bounds
-        [connection sendMessage:msg];
-    }
+
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id < MKAnnotation >)annotation
@@ -476,35 +426,34 @@ const int MAX_RECENT_CHATS = 5;
 
 #pragma mark - Map Annotations
 
-- (void)addChatroomAnnotation:(ChatroomMessage*)message
+- (void)addAnnotationForChatroom:(Chatroom*)chatroom
 {
     ChatPointAnnotation* mpa = [[ChatPointAnnotation alloc] init];
-    CLLocationCoordinate2D coord;
-    coord = [Location fromLongLongLatitude:message.latitude Longitude:message.longitude];
+    CGFloat milesToChat = [location milesToCurrentLocationFrom:chatroom.origin];
+    NSNumberFormatter* format = [[NSNumberFormatter alloc] init];
+    [format setNumberStyle:NSNumberFormatterDecimalStyle];
+    [format setMaximumFractionDigits:2];
     
-    // Need this check because in case of bad lat/long data.
-    // iOS throws a nondescript deallocation error if you try to draw out of bounds lat/long annotations.
-    if (coord.latitude >= -90. && coord.latitude <=90. && coord.longitude >= -180. && coord.longitude <= 180.) {
-        NSNumberFormatter* format = [[NSNumberFormatter alloc] init];
-        [format setNumberStyle:NSNumberFormatterDecimalStyle];
-        [format setMaximumFractionDigits:2];
-        
-        mpa.chatroomId = message.chatroomId;
-        mpa.coordinate = coord;
-        mpa.title = message.chatroomName;
-        CGFloat milesToChat = [location milesToCurrentLocationFrom:mpa.coordinate];
-        mpa.subtitle = [NSString stringWithFormat:@"%@miles  %dusers  %d%%",[format stringFromNumber:[NSNumber numberWithFloat:milesToChat]],message.userCount,message.chatActivity];
-        [_mapView addAnnotation:mpa];
-    }
+    mpa.chatroomId = [chatroom.cid longLongValue];
+    mpa.coordinate = chatroom.origin;
+    mpa.title = chatroom.chatroomName;
+    mpa.subtitle = [NSString stringWithFormat:@"%@miles  %dusers  %d%%",
+                    [format stringFromNumber:[NSNumber numberWithFloat:milesToChat]],
+                    [chatroom.userCount shortValue],[chatroom.chatActivity shortValue]];
+    [_mapView addAnnotation:mpa];
+}
+
+- (void)removeAnnotationForChatroom:(Chatroom*)chatroom
+{
+    // TODO: If this requires the exact object, we'll need to keep a dict of added annotations
 }
 
 - (void)reloadMapAnnotations
 {
-    // Figure out our current region
-    
-    // Determine which chatrooms haven't been placed
-    
-    // Place them
+    [_mapView removeAnnotations:_mapView.annotations];
+    for (Chatroom* c in chatManager.chatrooms.allValues) {
+        [self addAnnotationForChatroom:c];
+    }
 }
 
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl*)control
