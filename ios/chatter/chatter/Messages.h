@@ -38,6 +38,9 @@ typedef enum {
     InviteUserSuccess = 52,
     StreamReset = 60,
     Terminate = 70,
+    ChangeHandle = 80,
+    ChangeHandleAccept = 81,
+    ChangeHandleReject = 82,
 } MessageTypes;
 
 @interface MessageBase : NSObject
@@ -358,5 +361,33 @@ typedef enum {
 
 - (id)init;
 
+
+@end
+
+@interface ChangeHandleMessage : MessageBase
+
+- (id)init;
+
+@property long long userId;
+@property NSString* oldHandle;
+@property NSString* handle;
+
+@end
+
+@interface ChangeHandleAcceptMessage : MessageBase
+
+- (id)init;
+
+@property NSString* handle;
+
+@end
+
+@interface ChangeHandleRejectMessage : MessageBase
+
+- (id)init;
+
+@property NSString* handle;
+@property NSString* oldHandle;
+@property NSString* reason;
 
 @end

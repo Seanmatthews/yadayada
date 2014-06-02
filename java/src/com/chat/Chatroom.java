@@ -111,6 +111,17 @@ public class Chatroom {
         return false;
     }
 
+    public boolean usernameInUse(String username) {
+        Iterator<User> users = repo.getUsers(this);
+        while (users.hasNext()) {
+            User u = users.next();
+            if (u.getHandle().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public int getUserCount() {
         return repo.getChatroomUserCount(this);
     }

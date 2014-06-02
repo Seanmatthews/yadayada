@@ -44,4 +44,6 @@ public interface ChatServer {
     void heartbeat(ClientConnection sender, long timestamp, long latitude, long longitude);
 
     void terminate(ClientConnection sender);
+
+    void changeUserHandle(ClientConnection sender, long userId, String oldHandle, String newHandle);
 }

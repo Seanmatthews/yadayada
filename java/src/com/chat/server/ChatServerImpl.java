@@ -43,7 +43,6 @@ public class ChatServerImpl implements ChatServer {
     }
 
     private void sendMessageAsNotification(User toUser, MessageMessage mm) throws InterruptedException {
-        log.debug("sending push notification");
         HashMap<String,Object> messageFields = new HashMap<String,Object>();
         messageFields.put("message", mm.getMessage());
         messageFields.put("messageTimestamp", mm.getMessageTimestamp());
@@ -522,5 +521,29 @@ public class ChatServerImpl implements ChatServer {
             // Remove user connections
             userConnectionMap.remove(user);
         }
+    }
+
+    @Override
+    public void changeUserHandle(ClientConnection sender, long userId, String oldHandle, String newHandle) {
+        User user = sender.getUser();
+//        User user = userRepo.get(userId, null).get().getUser();
+
+        if (user != null) {
+
+            // Reject if the new handle exists in one of a user's joined chatrooms
+            Iterator it = user.getChatrooms();
+            while (it.hasNext()) {
+                Chatroom chatroom = (Chatroom)it.next();
+                if (chatroom.usernameInUse(newHandle)) {
+                    sender.sendMessage(new ChangeHandleRejectMessage(newHandle, oldHandle,
+                            "Handle in use in a joined chatroom"));
+                    return;
+                }
+            }
+
+            user.setHandle(newHandle);
+            sender.sendMessage(new ChangeHandleAcceptMessage(newHandle));
+        }
+
     }
 }

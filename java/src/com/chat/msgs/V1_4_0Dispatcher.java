@@ -162,6 +162,12 @@ public class V1_4_0Dispatcher implements MessageDispatcher {
                 server.terminate(stream);
                 break;
 
+            case ChangeHandle:
+                ChangeHandleMessage chMsg = new ChangeHandleMessage(buffer);
+                logMsg(chMsg);
+                server.changeUserHandle(stream, chMsg.getUserId(), chMsg.getOldHandle(), chMsg.getHandle());
+                break;
+
             default:
                 throw new ValidationError("Unhandled message: " + type);
         }

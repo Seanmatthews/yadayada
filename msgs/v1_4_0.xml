@@ -189,5 +189,21 @@
     
     <msg name="Terminate" val="70" origin="client">
     </msg>
+    
+    <msg name="ChangeHandle" val="80" origin="client">
+        <field name="userId" type="long" />
+        <field name="oldHandle" type="String" />
+        <field name="handle" type="String" />
+    </msg>
+    
+    <msg name="ChangeHandleAccept" val="81" origin="server">
+        <field name="handle" type="String" />
+    </msg>
+    
+    <msg name="ChangeHandleReject" val="82" origin="server">
+        <field name="handle" type="String" />
+        <field name="oldHandle" type="String" />
+        <field name="reason" type="String" />
+    </msg>
 
 </schema>

@@ -338,3 +338,36 @@
 }
 
 @end
+
+@implementation ChangeHandleMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 80;
+    return self;
+}
+
+@end
+
+@implementation ChangeHandleAcceptMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 81;
+    return self;
+}
+
+@end
+
+@implementation ChangeHandleRejectMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 82;
+    return self;
+}
+
+@end

@@ -13,14 +13,15 @@
 
 @interface SettingsViewController ()
 
-- (void)reregisterHandle;
+//- (void)reregisterHandle;
+- (void)changeHandle:(NSString*)handle;
 - (void)registerForKeyboardNotifications;
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
-- (void)receivedLoginAccept:(NSNotification*)notification;
-- (void)receivedLoginReject:(NSNotification*)notification;
+- (void)receivedChangeHandleAccept:(NSNotification*)notification;
+- (void)receivedChangeHandleReject:(NSNotification*)notification;
 - (void)segueToChatroom:(NSNotification*)notification;
-- (void)leaveAllChatrooms;
+//- (void)leaveAllChatrooms;
 
 @end
 
@@ -56,7 +57,7 @@
                                                  name:@"segueToChatroomNotification"
                                                object:nil];
     
-    for (NSString* notificationName in @[@"LoginAccept", @"LoginAccept", @"InviteUser"]) {
+    for (NSString* notificationName in @[@"ChangeHandleAccept", @"ChangeHandleReject", @"InviteUser"]) {
         NSString* selectorName = [NSString stringWithFormat:@"received%@:",notificationName];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:NSSelectorFromString(selectorName)
@@ -156,16 +157,12 @@
 
 - (IBAction)applySettingsButtonPressed:(id)sender
 {
-    
-    
     if (![_handleTextField.text isEqualToString:ud.handle]) {
-        [self reregisterHandle];
+        [self changeHandle:_handleTextField.text];
     }
-    else {
-        [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
-    }
-    
-    
+//    else {
+//        [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
+//    }
     
     //UIImage* img = iconView.image;
     //[connection uploadImage:[UIImage imageNamed:@"lena.jpg"] forUserId:ud.userId toURL:ud.iconUploadURL];
@@ -182,8 +179,14 @@
 
 - (void)registerForKeyboardNotifications
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWasShown:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillBeHidden:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
 }
 
 // Called when the UIKeyboardDidShowNotification is sent.
@@ -219,39 +222,16 @@
 
 #pragma mark - Message I/O
 
-- (void)messageCallback:(MessageBase*)message
-{
-//    if (viewIsVisible) {
-//        UIAlertView* alert;
-//        switch (message.type) {
-//                
-//            case LoginAccept:
-//                NSLog(@"[Settings] login accept");
-//                ud.handle = [_handleTextField text];
-//                ud.userId = ((LoginAcceptMessage*)message).userId;
-//                [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
-//                break;
-//                
-//            case LoginReject:
-//                NSLog(@"[Settings] login reject");
-//                [_handleTextField setText:ud.handle];
-//                alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:((LoginRejectMessage*)message).reason delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//                [alert show];
-//                break;
-//        }
-//    }
-}
-
 // Changed handle and settings successfully. Revert to chat list view.
-- (void)receivedLoginAccept:(NSNotification*)notification
+- (void)receivedChangeHandleAccept:(NSNotification*)notification
 {
-    ud.handle = [_handleTextField text];
-    ud.userId = [notification.object userId];
-    [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
+    NSLog(@"[SettingsViewController] handle successfully changed");
+    ud.handle = [notification.object handle];
+//    [self performSegueWithIdentifier:@"unwindToChatList" sender:nil];
 }
 
 // Handle change was unsuccessful. Stay on the view.
-- (void)receivedLoginReject:(NSNotification*)notification
+- (void)receivedChangeHandleReject:(NSNotification*)notification
 {
     [_handleTextField setText:ud.handle];
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Woops!"
@@ -262,27 +242,39 @@
     [alert show];
 }
 
-- (void)leaveAllChatrooms
+//- (void)leaveAllChatrooms
+//{
+//    for (Chatroom* c in [chatManager joinedChatrooms]) {
+//        LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
+//        msg.userId = ud.userId;
+//        msg.chatroomId = [c.cid longLongValue];
+//        [connection sendMessage:msg];
+//    }
+//}
+
+- (void)changeHandle:(NSString*)handle
 {
-    for (Chatroom* c in [chatManager joinedChatrooms]) {
-        LeaveChatroomMessage* msg = [[LeaveChatroomMessage alloc] init];
-        msg.userId = ud.userId;
-        msg.chatroomId = [c.cid longLongValue];
-        [connection sendMessage:msg];
-    }
+    ChangeHandleMessage* chm = [[ChangeHandleMessage alloc] init];
+    chm.oldHandle = ud.handle;
+    chm.handle = handle;
+    chm.userId = ud.userId;
+    [connection sendMessage:chm];
 }
 
-- (void)reregisterHandle
-{
-    // Leave current chatroom
-    [self leaveAllChatrooms];
-    
-    NSLog(@"Logging in with handle: %@",_handleTextField.text);
-    QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
-    qlm.handle = _handleTextField.text;
-    qlm.UUID = ud.UUID;
-    [connection sendMessage:qlm];
-}
+//- (void)reregisterHandle
+//{
+//    // Leave current chatrooms
+//    [self leaveAllChatrooms];
+//    
+//    NSLog(@"Logging in with handle: %@",_handleTextField.text);
+//    QuickLoginMessage* qlm = [[QuickLoginMessage alloc] init];
+//    qlm.handle = _handleTextField.text;
+//    qlm.UUID = ud.UUID;
+//    qlm.phoneNumber = [[[Contacts sharedInstance] getMyPhoneNumber] longLongValue];
+//    //#warning Assumes data is already null terminated
+//    qlm.deviceToken = [NSString stringWithFormat:@"%@",ud.deviceToken]; //[NSString stringWithUTF8String:[ud.deviceToken bytes]];
+//    [connection sendMessage:qlm];
+//}
 
 
 @end

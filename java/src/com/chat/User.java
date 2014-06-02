@@ -17,7 +17,7 @@ public class User {
     private final String uuid;
     private final String login;
     private final String password;
-    private final String handle;
+    private String handle;
     private final long phoneNumber;
     private final UserRepository repo;
     private double latitude;
@@ -67,6 +67,8 @@ public class User {
     public void setLastHeartbeat(long timestamp) {
         this.lastHeartbeat = timestamp;
     }
+
+    public void setHandle(String newHandle) { this.handle = newHandle; }
 
     public String getDeviceToken() { return deviceToken; }
 

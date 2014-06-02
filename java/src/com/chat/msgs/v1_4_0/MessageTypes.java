@@ -33,6 +33,9 @@ public enum MessageTypes {
     InviteUserSuccess((byte)52),
     StreamReset((byte)60),
     Terminate((byte)70),
+    ChangeHandle((byte)80),
+    ChangeHandleAccept((byte)81),
+    ChangeHandleReject((byte)82),
     ;
 
     private final byte value;

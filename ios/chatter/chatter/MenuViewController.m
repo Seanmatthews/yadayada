@@ -129,10 +129,10 @@
     qlm.handle = ud.handle;
     qlm.UUID = ud.UUID;
     qlm.phoneNumber = [[contacts getMyPhoneNumber] longLongValue];
-#warning Assumes data is already null terminated
+    //#warning Assumes data is already null terminated
     qlm.deviceToken = [NSString stringWithFormat:@"%@",ud.deviceToken]; //[NSString stringWithUTF8String:[ud.deviceToken bytes]];
-    NSLog(@"device token again %@",qlm.deviceToken);
     [connection sendMessage:qlm];
+    NSLog(@"[MenuViewController] %@ %@", qlm.handle, qlm.UUID);
 }
 
 - (void)receivedConnectReject:(NSNotification*)notification

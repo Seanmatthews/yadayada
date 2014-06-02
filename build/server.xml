@@ -3,6 +3,7 @@
 
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
 
+    <property name="certs" location="../ios" />
     <property name="src" location="src" />
     <property name="build" location="../build/tmp" />
     <property name="dist" location="../build/out" />
@@ -38,6 +39,7 @@
         <copy file="${build}/../run.sh" todir="${dist}" />
         <copy file="${src}/com/chat/log4j2.xml" todir="${dist}" />
         <copy file="${web}/maps.html" todir="${dist}" />
+        <copy file="${certs}/yadayada-cert.p12" todir="${dist}" />
 
         <tar destfile="/tmp/chatter.tar">
              <fileset dir="${dist}">

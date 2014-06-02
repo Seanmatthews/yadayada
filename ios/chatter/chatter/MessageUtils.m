@@ -135,6 +135,18 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[TerminateMessage alloc] init];
         break;
 
+        case ChangeHandle:
+        mb = [[ChangeHandleMessage alloc] init];
+        break;
+
+        case ChangeHandleAccept:
+        mb = [[ChangeHandleAcceptMessage alloc] init];
+        break;
+
+        case ChangeHandleReject:
+        mb = [[ChangeHandleRejectMessage alloc] init];
+        break;
+
     }
     return mb;
 }
