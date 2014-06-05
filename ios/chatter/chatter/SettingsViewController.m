@@ -166,6 +166,12 @@
     
     //UIImage* img = iconView.image;
     //[connection uploadImage:[UIImage imageNamed:@"lena.jpg"] forUserId:ud.userId toURL:ud.iconUploadURL];
+    
+    self.view.alpha = 0.0;
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.25];
+    self.view.alpha = 1.0;
+    [UIView commitAnimations];
 }
 
 

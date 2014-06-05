@@ -524,7 +524,7 @@ public class ChatServerImpl implements ChatServer {
     }
 
     @Override
-    public void changeUserHandle(ClientConnection sender, long userId, String oldHandle, String newHandle) {
+    public void changeUserHandle(ClientConnection sender, long userId, String oldHandle, String handle) {
         User user = sender.getUser();
 //        User user = userRepo.get(userId, null).get().getUser();
 
@@ -534,15 +534,16 @@ public class ChatServerImpl implements ChatServer {
             Iterator it = user.getChatrooms();
             while (it.hasNext()) {
                 Chatroom chatroom = (Chatroom)it.next();
-                if (chatroom.usernameInUse(newHandle)) {
-                    sender.sendMessage(new ChangeHandleRejectMessage(newHandle, oldHandle,
+                if (chatroom.usernameInUse(handle)) {
+                    sender.sendMessage(new ChangeHandleRejectMessage(handle, oldHandle,
                             "Handle in use in a joined chatroom"));
                     return;
                 }
             }
 
-            user.setHandle(newHandle);
-            sender.sendMessage(new ChangeHandleAcceptMessage(newHandle));
+            user.setHandle(handle);
+            user.setLogin(handle);
+            sender.sendMessage(new ChangeHandleAcceptMessage(handle));
         }
 
     }

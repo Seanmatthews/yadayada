@@ -15,7 +15,7 @@ import java.util.Iterator;
 public class User {
     private final long id;
     private final String uuid;
-    private final String login;
+    private String login;
     private final String password;
     private String handle;
     private final long phoneNumber;
@@ -68,7 +68,9 @@ public class User {
         this.lastHeartbeat = timestamp;
     }
 
-    public void setHandle(String newHandle) { this.handle = newHandle; }
+    public void setHandle(String handle) { this.handle = handle; }
+
+    public void setLogin(String login) { this.login = login; }
 
     public String getDeviceToken() { return deviceToken; }
 
