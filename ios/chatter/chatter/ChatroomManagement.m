@@ -93,11 +93,13 @@
 // Load chatrooms that were joined previously
 - (void)loadJoinedChatroomsAtStartup
 {
-    NSLog(@"[ChatroomManagement] Loading joined chatrooms");
+    NSLog(@"[ChatroomManagement] Loading joined chatrooms %lu", (unsigned long)_chatrooms.count);
     if (ud.joinedChatroomDicts != nil) {
         NSLog(@"%@",ud.joinedChatroomDicts);
         for (NSDictionary* chatroom in ud.joinedChatroomDicts) {
             Chatroom* c = [Chatroom chatroomWithDictionary:chatroom];
+            
+            // Chatrooms form the initial search have already been received here
             if ([self canJoinChatroom:c] && [_chatrooms objectForKey:c.cid]) {
                 
                 JoinChatroomMessage * msg = [[JoinChatroomMessage alloc] init];
@@ -107,7 +109,7 @@
                 msg.longitude = [location currentLong];
                 [connection sendMessage:msg];
                 
-                // Took this out because I'm changing the server to sens back a
+                // Took this out because I'm changing the server to send back a
                 // joined message, even if already joined.
 //                [[self mutableArrayValueForKey:@"joinedChatrooms"] insertObject:[_chatrooms objectForKey:c.cid] atIndex:0];
             }
@@ -118,15 +120,6 @@
             }
         }
     }
-//    for (NSNumber *chatroomId in ud.joinedChatroomIds) {
-//        NSLog(@"joining saved chatroom %@",chatroomId);
-//        JoinChatroomMessage * msg = [[JoinChatroomMessage alloc] init];
-//        msg.userId = ud.userId;
-//        msg.chatroomId = [chatroomId longLongValue];
-//        msg.latitude = [location currentLat];
-//        msg.longitude = [location currentLong];
-//        [connection sendMessage:msg];
-//    }
 }
 
 
@@ -414,6 +407,8 @@
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
     [alert show];
+    
+    // This is probably not necessary
     [self removeChatroomWithId:[NSNumber numberWithLongLong:[notification.object chatroomId]]];
 }
 
