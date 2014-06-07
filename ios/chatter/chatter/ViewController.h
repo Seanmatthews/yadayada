@@ -17,7 +17,7 @@
 #import "Chatroom.h"
 #import "Contacts.h"
 
-@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate, UIBarPositioningDelegate>
+@interface ViewController : UIViewController <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, UIBarPositioningDelegate>
 
 
 //@property (nonatomic, strong) NSString* userHandle;

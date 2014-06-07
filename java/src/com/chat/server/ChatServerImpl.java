@@ -298,7 +298,7 @@ public class ChatServerImpl implements ChatServer {
     @Override
     public void quickLogin(final ClientConnection senderConnection, String handle, String UUID,
                            long phoneNumber, String deviceTokenString) {
-        log.debug("Quick login user {}", handle);
+        log.debug("Quick login user {} {}", handle, phoneNumber);
 
         if (handle.length() == 0) {
             senderConnection.sendMessage(new LoginRejectMessage("Invalid handle"));
@@ -541,8 +541,8 @@ public class ChatServerImpl implements ChatServer {
                 }
             }
 
+            userRepo.changeLogin(user, handle);
             user.setHandle(handle);
-            user.setLogin(handle);
             sender.sendMessage(new ChangeHandleAcceptMessage(handle));
         }
 

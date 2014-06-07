@@ -34,7 +34,7 @@
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="VfN-6V-EOF">
                                             <connections>
-                                                <segue destination="VFK-PU-iIe" kind="modal" identifier="inviteContactSegue" modalTransitionStyle="crossDissolve" animates="NO" id="U3K-xC-1m2"/>
+                                                <segue destination="Z5U-50-9BJ" kind="modal" modalTransitionStyle="crossDissolve" id="RNx-uR-qvp"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -149,6 +149,74 @@
                 <exit id="AUB-UC-0kn" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1348" y="1287"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="Bcb-je-Wpk">
+            <objects>
+                <viewController id="Z5U-50-9BJ" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="QfW-Au-iRm"/>
+                        <viewControllerLayoutGuide type="bottom" id="II3-7B-aEy"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="tzv-ft-mqV">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HBc-8A-K4J">
+                                <rect key="frame" x="0.0" y="106" width="320" height="462"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </tableView>
+                            <searchBar contentMode="redraw" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wSf-qS-fx5">
+                                <rect key="frame" x="0.0" y="62" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="Z5U-50-9BJ" id="TC6-4Y-oxa"/>
+                                </connections>
+                            </searchBar>
+                            <navigationBar opaque="NO" alpha="0.75" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DfT-RL-cwI">
+                                <rect key="frame" x="0.0" y="18" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="barTintColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <textAttributes key="titleTextAttributes">
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <offsetWrapper key="textShadowOffset" horizontal="0.0" vertical="0.0"/>
+                                </textAttributes>
+                                <items>
+                                    <navigationItem title="Invite" id="YRZ-92-4Wo">
+                                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="oe3-dB-l3o">
+                                            <connections>
+                                                <segue destination="W1m-6w-INV" kind="unwind" unwindAction="unwindToChatroom:" id="ZvW-o0-BeO"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                                <connections>
+                                    <outlet property="delegate" destination="VFK-PU-iIe" id="xZc-Rm-w1I"/>
+                                </connections>
+                            </navigationBar>
+                        </subviews>
+                        <color key="backgroundColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <connections>
+                        <outlet property="searchDisplayController" destination="coV-1u-g5r" id="GMT-Qb-vwb"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9mU-nU-DeA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="W1m-6w-INV" userLabel="Exit" sceneMemberID="exit"/>
+                <searchDisplayController id="coV-1u-g5r">
+                    <connections>
+                        <outlet property="delegate" destination="Z5U-50-9BJ" id="EPQ-mH-K0u"/>
+                        <outlet property="searchBar" destination="wSf-qS-fx5" id="nfu-o0-QNV"/>
+                        <outlet property="searchContentsController" destination="Z5U-50-9BJ" id="KGz-UX-8QV"/>
+                        <outlet property="searchResultsDataSource" destination="Z5U-50-9BJ" id="rBD-6r-YpT"/>
+                        <outlet property="searchResultsDelegate" destination="Z5U-50-9BJ" id="bjA-qz-3MV"/>
+                    </connections>
+                </searchDisplayController>
+            </objects>
+            <point key="canvasLocation" x="1348" y="1961"/>
         </scene>
         <!--Create Chat View Controller-->
         <scene sceneID="7NA-pW-LDU">
@@ -320,7 +388,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Handle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="20M-cC-vBU">
-                                        <rect key="frame" x="30" y="20" width="55" height="21"/>
+                                        <rect key="frame" x="30" y="24" width="55" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>

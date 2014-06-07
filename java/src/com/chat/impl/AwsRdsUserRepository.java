@@ -223,6 +223,11 @@ public class AwsRdsUserRepository implements UserRepository {
         return userChatroomMap.get(user).iterator();
     }
 
+    @Override
+    public void changeLogin(User user, String login) {
+        // TODO
+    }
+
     private static class UserFuture implements Future<UserRepositoryActionResult> {
         private final CountDownLatch latch;
         private volatile UserRepositoryActionResult result;

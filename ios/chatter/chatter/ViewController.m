@@ -548,42 +548,4 @@
 }
 
 
-#pragma mark - ABPeoplePickerNavigationControllerDelegate
-
-- (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
-{
-    // Do nothing
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-    if (person) {
-        InviteUserMessage* ium = [[InviteUserMessage alloc] init];
-        ium.chatroomId = [_chatroom.cid longLongValue];
-        ium.senderId = ud.userId;
-        ium.recipientId = 0;
-        ium.recipientPhoneNumber = [[contacts iPhoneNumberForRecord:person] longLongValue];
-        
-        if (!ium.recipientPhoneNumber) {
-            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Woops!" message:@"Contact does not have iPhone" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-        }
-        else {
-            [connection sendMessage:ium];
-        }
-    }
-    return NO;
-}
-
-- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
-      shouldContinueAfterSelectingPerson:(ABRecordRef)person
-                                property:(ABPropertyID)property
-                              identifier:(ABMultiValueIdentifier)identifier
-{
-    return NO;
-}
-
-
 @end

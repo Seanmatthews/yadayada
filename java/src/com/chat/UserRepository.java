@@ -21,6 +21,7 @@ public interface UserRepository {
     void addToChatroom(User user, Chatroom chatroom);
     void removeFromChatroom(User user, Chatroom chatroom);
     Iterator<Chatroom> getChatrooms(User user);
+    void changeLogin(User user, String login);
 
     public interface UserRepositoryCompletionHandler {
         void onCompletion(UserRepositoryActionResult user);

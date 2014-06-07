@@ -93,6 +93,7 @@
         ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
         ABRecordRef me = ABAddressBookGetPersonWithRecordID(addressBookRef, 1);
         ABMultiValueRef multiPhones = ABRecordCopyValue(me, kABPersonPhoneProperty);
+        NSLog(@"multi %@", multiPhones);
         
         // Get iphone number
         for (int i=0; i<ABMultiValueGetCount(multiPhones); ++i) {
