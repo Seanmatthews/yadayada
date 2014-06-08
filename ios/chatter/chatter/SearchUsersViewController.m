@@ -53,6 +53,11 @@
     // TODO: Send message request for user names & user ids
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self.view endEditing:YES];
+}
+
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
