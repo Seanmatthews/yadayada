@@ -91,10 +91,18 @@ public class V1_4_0Dispatcher implements MessageDispatcher {
                 LeaveChatroomMessage lcMsg = new LeaveChatroomMessage(buffer);
                 logMsg(lcMsg);
                 User lcUser = getAndValidateUser(lcMsg.getUserId());
-                Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
-                server.leaveChatroom(stream, lcUser, lcChatroom);
-                lcChatroom.removeUser(lcUser);
-                lcUser.removeFromChatroom(lcChatroom);
+
+                try {
+                    Chatroom lcChatroom = getAndValidateChatroom(lcMsg.getChatroomId());
+                    server.leaveChatroom(stream, lcUser, lcChatroom);
+                    lcChatroom.removeUser(lcUser);
+                    lcUser.removeFromChatroom(lcChatroom);
+                }
+                catch (ValidationError ve) {
+                    // Chatroom doesn't exist. Let's pretend they left.
+                    stream.sendMessage(new LeftChatroomMessage(
+                            lcMsg.getChatroomId(), lcUser.getId(), lcUser.getHandle()));
+                }
                 break;
 
             case Register:

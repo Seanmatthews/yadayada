@@ -102,9 +102,7 @@
     if (isSearching) {
         return [filteredContentList count];
     }
-    else {
-        return [contentList count];
-    }
+    return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -118,9 +116,6 @@
     // Configure the cell...
     if (isSearching) {
         cell.textLabel.text = [filteredContentList objectAtIndex:indexPath.row];
-    }
-    else {
-        cell.textLabel.text = [contentList objectAtIndex:indexPath.row];
     }
     return cell;
     
@@ -145,7 +140,7 @@
     else {
         isSearching = NO;
     }
-    // [self.tblContentList reloadData];
+    [self.tblContentList reloadData];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
