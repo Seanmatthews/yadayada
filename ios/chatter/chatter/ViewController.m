@@ -45,11 +45,6 @@
     Connection* connection;
     Contacts* contacts;
     NSThread* connectionThread;
-    NSString* cellMsgCSS;
-    NSString* handleCSS;
-    NSString* pageCSS;
-    NSString* selfMsgCSS;
-    NSString* selfHandleCSS;
     ChatroomManagement* chatManager;
     NSMutableArray* inviteAlerts;
     NSMutableArray* indexPathsToDisplay;
@@ -68,13 +63,6 @@
     connection = [Connection sharedInstance];
     indexPathsToDisplay = [[NSMutableArray alloc] init];
     displayedMessages = [[NSMutableArray alloc] init];
-    
-    // CSS for table cells
-    pageCSS = @"body { margin:0; padding:1; }";
-    cellMsgCSS = @"div.msg { font:13px/14px baskerville,serif; color:#004C3D; text-align:left; vertical-align:text-top; margin:0; padding:0 }";
-    handleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#DADADA }";
-    selfMsgCSS = @"div.msg { font:13px/14px baskerville,serif; color:#004C3D; text-align:right; vertical-align:text-top; margin:0; padding:0 }";
-    selfHandleCSS = @"div.handle { font:11px/12px baskerville,serif; color:#DADADA; text-align:right }";
     
     [NSTimer scheduledTimerWithTimeInterval:0.25
                                      target:self

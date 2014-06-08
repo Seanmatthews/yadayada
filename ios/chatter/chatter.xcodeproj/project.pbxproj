@@ -20,6 +20,7 @@
 		14E010E718B1B27B00F45EDD /* Contacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 14E010E618B1B27B00F45EDD /* Contacts.m */; };
 		14E010E918B1D5C900F45EDD /* DialingCodes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 14E010E818B1D5C900F45EDD /* DialingCodes.plist */; };
 		14E474C31942E46C00ADF56D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 14E474C21942E46C00ADF56D /* Main.storyboard */; };
+		14E474C619441F2400ADF56D /* SearchUsersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14E474C519441F2400ADF56D /* SearchUsersViewController.m */; };
 		14F9568318C3E5DD001A00F0 /* v1.2.1.xml in Resources */ = {isa = PBXBuildFile; fileRef = 14F9568218C3E5DD001A00F0 /* v1.2.1.xml */; };
 		641C147B182C7D31001D8959 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147A182C7D31001D8959 /* SettingsViewController.m */; };
 		641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 641C147D182C7D6C001D8959 /* ChatListViewController.m */; };
@@ -95,6 +96,8 @@
 		14E010E618B1B27B00F45EDD /* Contacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contacts.m; sourceTree = "<group>"; };
 		14E010E818B1D5C900F45EDD /* DialingCodes.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = DialingCodes.plist; sourceTree = "<group>"; };
 		14E474C21942E46C00ADF56D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		14E474C419441F2400ADF56D /* SearchUsersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchUsersViewController.h; sourceTree = "<group>"; };
+		14E474C519441F2400ADF56D /* SearchUsersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchUsersViewController.m; sourceTree = "<group>"; };
 		14F9568218C3E5DD001A00F0 /* v1.2.1.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = v1.2.1.xml; sourceTree = "<group>"; };
 		641C1479182C7D31001D8959 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		641C147A182C7D31001D8959 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
@@ -226,6 +229,8 @@
 				1432C74D18B9AB3300690009 /* ContactsListViewController.m */,
 				140029F3192EFB9300A6B049 /* MessageCell.h */,
 				140029F4192EFB9300A6B049 /* MessageCell.m */,
+				14E474C419441F2400ADF56D /* SearchUsersViewController.h */,
+				14E474C519441F2400ADF56D /* SearchUsersViewController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -482,6 +487,7 @@
 				14E010E718B1B27B00F45EDD /* Contacts.m in Sources */,
 				B343A50F18282CF600B36450 /* MenuViewController.m in Sources */,
 				147445C218CA8A7100EE5D49 /* Chatroom.m in Sources */,
+				14E474C619441F2400ADF56D /* SearchUsersViewController.m in Sources */,
 				140029F5192EFB9300A6B049 /* MessageCell.m in Sources */,
 				6477058C187BAD9900A97F74 /* ChatPointAnnotation.m in Sources */,
 				1432C74E18B9AB3300690009 /* ContactsListViewController.m in Sources */,

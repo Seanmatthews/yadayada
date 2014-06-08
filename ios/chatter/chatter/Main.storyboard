@@ -150,10 +150,10 @@
             </objects>
             <point key="canvasLocation" x="1348" y="1287"/>
         </scene>
-        <!--View Controller-->
+        <!--Search Users View Controller-->
         <scene sceneID="Bcb-je-Wpk">
             <objects>
-                <viewController id="Z5U-50-9BJ" sceneMemberID="viewController">
+                <viewController id="Z5U-50-9BJ" customClass="SearchUsersViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="QfW-Au-iRm"/>
                         <viewControllerLayoutGuide type="bottom" id="II3-7B-aEy"/>
@@ -166,6 +166,10 @@
                                 <rect key="frame" x="0.0" y="106" width="320" height="462"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="Z5U-50-9BJ" id="Zuz-Dt-EFy"/>
+                                    <outlet property="delegate" destination="Z5U-50-9BJ" id="1Ue-Ag-X1W"/>
+                                </connections>
                             </tableView>
                             <searchBar contentMode="redraw" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wSf-qS-fx5">
                                 <rect key="frame" x="0.0" y="62" width="320" height="44"/>
@@ -201,7 +205,8 @@
                         <color key="backgroundColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
-                        <outlet property="searchDisplayController" destination="coV-1u-g5r" id="GMT-Qb-vwb"/>
+                        <outlet property="searchBarController" destination="coV-1u-g5r" id="cpy-uG-Ymz"/>
+                        <outlet property="tblContentList" destination="HBc-8A-K4J" id="2r6-W6-045"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9mU-nU-DeA" userLabel="First Responder" sceneMemberID="firstResponder"/>

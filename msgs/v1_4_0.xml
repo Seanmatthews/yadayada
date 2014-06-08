@@ -205,5 +205,15 @@
         <field name="oldHandle" type="String" />
         <field name="reason" type="String" />
     </msg>
+    
+    <msg name="SearchUsers" val="90" origin="client">
+        <field name="query" type="String" />
+    </msg>
+    
+    <msg name="UserInfo" val="91" origin="server">
+        <field name="userId" type="long" />
+        <field name="handle" type="String" />
+        <field name="uuid" type="String" />
+    </msg>
 
 </schema>
