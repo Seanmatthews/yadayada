@@ -83,6 +83,11 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
+    public Collection<User> getAllUsers() {
+        return idToUserMap.values();
+    }
+
+    @Override
     public void addToChatroom(User user, Chatroom chatroom) {
         userChatroomMap.get(user).add(chatroom);
     }

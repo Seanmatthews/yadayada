@@ -176,6 +176,12 @@ public class V1_4_0Dispatcher implements MessageDispatcher {
                 server.changeUserHandle(stream, chMsg.getUserId(), chMsg.getOldHandle(), chMsg.getHandle());
                 break;
 
+            case SearchUsers:
+                SearchUsersMessage suMsg = new SearchUsersMessage(buffer);
+                logMsg(suMsg);
+                server.searchUsers(stream, suMsg.getQuery());
+                break;
+
             default:
                 throw new ValidationError("Unhandled message: " + type);
         }

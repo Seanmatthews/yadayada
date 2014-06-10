@@ -32,6 +32,12 @@ public class AwsRdsUserRepository implements UserRepository {
     }
 
     @Override
+    public Collection<User> getAllUsers() {
+        // TODO
+        return null;
+    }
+
+    @Override
     public Future<UserRepositoryActionResult> registerUser(final String login, final String password,
                                                            final String handle, final String UUID,
                                                            final long phoneNumber, final String deviceTokenString,

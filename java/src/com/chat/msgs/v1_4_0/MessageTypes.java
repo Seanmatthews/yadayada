@@ -36,6 +36,8 @@ public enum MessageTypes {
     ChangeHandle((byte)80),
     ChangeHandleAccept((byte)81),
     ChangeHandleReject((byte)82),
+    SearchUsers((byte)90),
+    UserInfo((byte)91),
     ;
 
     private final byte value;

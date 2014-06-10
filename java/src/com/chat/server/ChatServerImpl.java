@@ -7,6 +7,7 @@ import com.chat.server.cluster.ChatroomCluster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -546,5 +547,49 @@ public class ChatServerImpl implements ChatServer {
             sender.sendMessage(new ChangeHandleAcceptMessage(handle));
         }
 
+    }
+
+//    // TODO download java 1.8
+//    interface Predicate<User> {
+//        boolean test(User u);
+//    }
+//
+//    Iterator<User> searchOnQuery(Collection<User> allUsers, Predicate<User> p) {
+//        List<User> matches = new Vector<User>();
+//        for (User u : allUsers) {
+//            if (p.test(u)) {
+//                matches.add(u);
+//            }
+//        }
+//    }
+
+
+    // WARNING: This function creates a lot of message spam. Also,
+    // it may tie up the server unnecessarily.
+    // Can we do this in a backgroun thread, or is ClientConnection not thread safe?
+    @Override
+    public void searchUsers(ClientConnection sender, String query) {
+        User user = sender.getUser();
+        if (user != null) {
+
+            // TODO fix this search
+//            Iterator it = searchOnQuery(userRepo.getAllUsers(),
+//                           u -> u.getHandle().toLowerCase().startsWith(query.toLowerCase()) &&
+//                                u.getHandle().length() >= query.length() &&
+//                                u.getHandle().length() <= query.length() + query.length());
+
+            Iterator it = userRepo.getAllUsers().iterator();
+            while (it.hasNext()) {
+                User uu = (User)it.next();
+                log.debug("MAtching user {}", uu);
+                if (uu.getHandle().toLowerCase().startsWith(query.toLowerCase()) &&
+                    uu.getHandle().length() >= query.length() &&
+                    uu.getHandle().length() <= query.length() + query.length()) {
+
+                    UserInfoMessage uim = new UserInfoMessage(uu.getId(), uu.getHandle(), uu.getUUID());
+                    sender.sendMessage(uim);
+                }
+            }
+        }
     }
 }

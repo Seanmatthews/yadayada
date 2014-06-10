@@ -46,4 +46,6 @@ public interface ChatServer {
     void terminate(ClientConnection sender);
 
     void changeUserHandle(ClientConnection sender, long userId, String oldHandle, String handle);
+
+    void searchUsers(ClientConnection sender, String query);
 }

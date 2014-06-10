@@ -371,3 +371,25 @@
 }
 
 @end
+
+@implementation SearchUsersMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 90;
+    return self;
+}
+
+@end
+
+@implementation UserInfoMessage
+
+- (id)init
+{
+    self = [super init];
+    _type = 91;
+    return self;
+}
+
+@end

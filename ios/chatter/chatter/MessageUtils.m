@@ -147,6 +147,14 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
         mb = [[ChangeHandleRejectMessage alloc] init];
         break;
 
+        case SearchUsers:
+        mb = [[SearchUsersMessage alloc] init];
+        break;
+
+        case UserInfo:
+        mb = [[UserInfoMessage alloc] init];
+        break;
+
     }
     return mb;
 }

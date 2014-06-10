@@ -7,11 +7,14 @@
 //
 
 #import "SearchUsersViewController.h"
+#import "Messages.h"
+#import "Connection.h"
 
 @interface SearchUsersViewController ()
 {
     NSMutableArray *contentList;
     NSMutableArray *filteredContentList;
+    NSMutableDictionary* handleToInfoMap;
     BOOL isSearching;
 }
 
@@ -43,6 +46,7 @@
 //    contentList = [[NSMutableArray alloc] init];
     contentList = [[NSMutableArray alloc] initWithObjects:@"iPhone", @"iPod", @"iPod touch", @"iMac", @"Mac Pro", @"iBook",@"MacBook", @"MacBook Pro", @"PowerBook", nil];
     filteredContentList = [[NSMutableArray alloc] init];
+    handleToInfoMap = [[NSMutableDictionary alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -50,7 +54,10 @@
     [super viewWillAppear:animated];
     [self registerForNotifications];
     
-    // TODO: Send message request for user names & user ids
+    // Send message request for user names & user ids
+    SearchUsersMessage* sum = [[SearchUsersMessage alloc] init];
+    sum.query = @"*";
+    [[Connection sharedInstance] sendMessage:sum];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -133,28 +140,34 @@
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    NSLog(@"Text change - %d",isSearching);
-    
-    //Remove all objects first.
-    [filteredContentList removeAllObjects];
-    
+//    NSLog(@"Text change - %d",isSearching);
+//    
+//    //Remove all objects first.
+//    [filteredContentList removeAllObjects];
+//    
     if([searchText length] != 0) {
         isSearching = YES;
-        [self searchTableList];
+//        [self searchTableList];
     }
     else {
         isSearching = NO;
     }
-    [self.tblContentList reloadData];
+//    [self.tblContentList reloadData];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    NSLog(@"Cancel clicked");
+//    NSLog(@"Cancel clicked");
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    NSLog(@"Search Clicked");
-    [self searchTableList];
+    if (_searchBar.text.length > 0) {
+        [filteredContentList removeAllObjects];
+        SearchUsersMessage* sum = [[SearchUsersMessage alloc] init];
+        sum.query = [_searchBar.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        [[Connection sharedInstance] sendMessage:sum];
+    }
+    [self.view endEditing:YES];
+//    [self searchTableList];
 }
 
 # pragma mark - Search
@@ -163,7 +176,9 @@
     NSString *searchString = _searchBar.text;
     
     for (NSString *tempStr in contentList) {
-        NSComparisonResult result = [tempStr compare:searchString options:(NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch) range:NSMakeRange(0, [searchString length])];
+        NSComparisonResult result = [tempStr compare:searchString
+                                             options:(NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch)
+                                               range:NSMakeRange(0, [searchString length])];
         if (result == NSOrderedSame) {
             [filteredContentList addObject:tempStr];
         }
@@ -174,8 +189,12 @@
 
 - (void)receivedUserInfo:(NSNotification*)notification
 {
-    // TODO: Add it to full list and refresh filtered list
+    [filteredContentList addObject:[notification.object handle]];
+    [filteredContentList sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    [handleToInfoMap setObject:notification.object forKey:[notification.object handle]];
+    
     // TODO: should delete list and refill it-- user handles may have changed
+    [self.tblContentList reloadData];
 }
 
 @end

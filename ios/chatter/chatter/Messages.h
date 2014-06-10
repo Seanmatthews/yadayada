@@ -41,6 +41,8 @@ typedef enum {
     ChangeHandle = 80,
     ChangeHandleAccept = 81,
     ChangeHandleReject = 82,
+    SearchUsers = 90,
+    UserInfo = 91,
 } MessageTypes;
 
 @interface MessageBase : NSObject
@@ -389,5 +391,23 @@ typedef enum {
 @property NSString* handle;
 @property NSString* oldHandle;
 @property NSString* reason;
+
+@end
+
+@interface SearchUsersMessage : MessageBase
+
+- (id)init;
+
+@property NSString* query;
+
+@end
+
+@interface UserInfoMessage : MessageBase
+
+- (id)init;
+
+@property long long userId;
+@property NSString* handle;
+@property NSString* uuid;
 
 @end

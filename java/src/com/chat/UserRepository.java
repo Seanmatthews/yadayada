@@ -3,6 +3,7 @@ package com.chat;
 import java.io.InvalidObjectException;
 import java.util.Iterator;
 import java.util.concurrent.Future;
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,6 +23,7 @@ public interface UserRepository {
     void removeFromChatroom(User user, Chatroom chatroom);
     Iterator<Chatroom> getChatrooms(User user);
     void changeLogin(User user, String login);
+    Collection<User> getAllUsers();
 
     public interface UserRepositoryCompletionHandler {
         void onCompletion(UserRepositoryActionResult user);
