@@ -517,6 +517,9 @@
     if ([segue.identifier isEqualToString:@"unwindToChatList"]) {
         
     }
+    else if ([segue.identifier isEqualToString:@"searchUsersSegue"]) {
+        [segue.destinationViewController performSelector:@selector(setInviteChatroom:) withObject:_chatroom];
+    }
 }
 
 - (IBAction)unwindToChatroom:(UIStoryboardSegue*)unwindSegue

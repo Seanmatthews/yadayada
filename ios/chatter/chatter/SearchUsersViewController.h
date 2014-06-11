@@ -7,11 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Chatroom.h"
 
 @interface SearchUsersViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
 @property (strong, nonatomic) IBOutlet UISearchDisplayController* searchBarController;
 @property (strong, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (strong, nonatomic) IBOutlet UITableView *tblContentList;
+@property (strong, nonatomic) Chatroom* inviteChatroom;
 
 @end

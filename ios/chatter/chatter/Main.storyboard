@@ -34,7 +34,7 @@
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="VfN-6V-EOF">
                                             <connections>
-                                                <segue destination="Z5U-50-9BJ" kind="modal" modalTransitionStyle="crossDissolve" id="RNx-uR-qvp"/>
+                                                <segue destination="Z5U-50-9BJ" kind="modal" identifier="searchUsersSegue" modalTransitionStyle="crossDissolve" animates="NO" id="RNx-uR-qvp"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>

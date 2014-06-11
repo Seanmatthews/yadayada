@@ -9,6 +9,9 @@
 #import "SearchUsersViewController.h"
 #import "Messages.h"
 #import "Connection.h"
+#import "Contacts.h"
+#import "UserDetails.h"
+#import "Location.h"
 
 @interface SearchUsersViewController ()
 {
@@ -26,10 +29,13 @@
 - (void)receivedUserInfo:(NSNotification*)notification;
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
+- (void)inviteUser:(UserInfoMessage*)message;
 
 @end
 
 @implementation SearchUsersViewController
+
+@synthesize inviteChatroom;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -133,6 +139,14 @@
     
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UserInfoMessage* uim = [filteredContentList objectAtIndex:indexPath.row];
+    [self inviteUser:uim];
+    [self performSegueWithIdentifier:@"unwindToChatroom" sender:nil];
+    
+}
+
 #pragma mark - Search Bar
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
@@ -195,6 +209,22 @@
     
     // TODO: should delete list and refill it-- user handles may have changed
     [self.tblContentList reloadData];
+}
+
+- (void)inviteUser:(UserInfoMessage*)message
+{
+    InviteUserMessage* ium = [[InviteUserMessage alloc] init];
+    ium.senderId = [[UserDetails sharedInstance] userId];
+    ium.senderHandle = [[UserDetails sharedInstance] handle];
+    ium.recipientId = message.userId;
+    ium.chatroomId = [inviteChatroom.cid longLongValue];
+    ium.chatroomName = inviteChatroom.chatroomName;
+    ium.chatroomRadius = [inviteChatroom.radius longLongValue];
+    ium.chatroomLat = [Location toLongLong:inviteChatroom.origin.latitude];
+    ium.chatroomLong = [Location toLongLong:inviteChatroom.origin.longitude];
+    [[Connection sharedInstance] sendMessage:ium];
+    
+    // TODO: add invited user to contacts list
 }
 
 @end
