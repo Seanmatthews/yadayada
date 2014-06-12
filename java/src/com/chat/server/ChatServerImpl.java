@@ -448,10 +448,13 @@ public class ChatServerImpl implements ChatServer {
     public void inviteUser(ClientConnection sender, long chatroomId, long recipientId, long recipientPhone) throws ExecutionException, InterruptedException {
         log.debug("Inviting user {} to chatroom {}", recipientPhone, chatroomId);
 
+        // NOTE: Note using phone number since 6/12/14
+
         // Does the recipient exist in the system?
-        User user;
+        User user = null;
         synchronized (userRepo) {
-            user = userRepo.getFromPhone(recipientPhone, null).get().getUser();
+//            user = userRepo.getFromPhone(recipientPhone, null).get().getUser();
+            user = userRepo.get(recipientId, null).get().getUser();
         }
 
         if (user == null) {

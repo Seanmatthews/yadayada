@@ -208,6 +208,7 @@
                         <outlet property="searchBar" destination="wSf-qS-fx5" id="H4I-zd-Mge"/>
                         <outlet property="searchBarController" destination="coV-1u-g5r" id="cpy-uG-Ymz"/>
                         <outlet property="tblContentList" destination="HBc-8A-K4J" id="2r6-W6-045"/>
+                        <segue destination="W1m-6w-INV" kind="unwind" identifier="unwindToChatroom" unwindAction="unwindToChatroom:" id="hPa-Km-b3i"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9mU-nU-DeA" userLabel="First Responder" sceneMemberID="firstResponder"/>

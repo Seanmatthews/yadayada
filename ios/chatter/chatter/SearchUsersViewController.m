@@ -17,7 +17,6 @@
 {
     NSMutableArray *contentList;
     NSMutableArray *filteredContentList;
-    NSMutableDictionary* handleToInfoMap;
     BOOL isSearching;
 }
 
@@ -52,7 +51,6 @@
 //    contentList = [[NSMutableArray alloc] init];
     contentList = [[NSMutableArray alloc] initWithObjects:@"iPhone", @"iPod", @"iPod touch", @"iMac", @"Mac Pro", @"iBook",@"MacBook", @"MacBook Pro", @"PowerBook", nil];
     filteredContentList = [[NSMutableArray alloc] init];
-    handleToInfoMap = [[NSMutableDictionary alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -133,7 +131,7 @@
     
     // Configure the cell...
     if (isSearching) {
-        cell.textLabel.text = [filteredContentList objectAtIndex:indexPath.row];
+        cell.textLabel.text = [[filteredContentList objectAtIndex:indexPath.row] handle];
     }
     return cell;
     
@@ -141,10 +139,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
     UserInfoMessage* uim = [filteredContentList objectAtIndex:indexPath.row];
     [self inviteUser:uim];
     [self performSegueWithIdentifier:@"unwindToChatroom" sender:nil];
-    
 }
 
 #pragma mark - Search Bar
@@ -203,9 +201,11 @@
 
 - (void)receivedUserInfo:(NSNotification*)notification
 {
-    [filteredContentList addObject:[notification.object handle]];
-    [filteredContentList sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    [handleToInfoMap setObject:notification.object forKey:[notification.object handle]];
+    NSSortDescriptor *handleDescriptor = [[NSSortDescriptor alloc] initWithKey:@""
+                                                                     ascending:YES
+                                                                    selector:@selector(localizedCaseInsensitiveCompare:)];
+    [filteredContentList addObject:notification.object];
+    [filteredContentList sortUsingDescriptors:@[handleDescriptor]];
     
     // TODO: should delete list and refill it-- user handles may have changed
     [self.tblContentList reloadData];
