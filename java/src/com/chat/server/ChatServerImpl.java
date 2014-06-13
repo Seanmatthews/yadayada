@@ -508,20 +508,15 @@ public class ChatServerImpl implements ChatServer {
             while(chatrooms != null && chatrooms.hasNext()) {
                 Chatroom chatroom = chatrooms.next();
 
+                // This sends the leave message for this chatroom to all chateroom users
+                if (sender != null) {
+                    leaveChatroom(sender, user, chatroom);
+                }
+
                 // Remove our user
                 chatroom.removeUser(user);
                 chatrooms.remove();
                 //user.removeFromChatroom(chatroom);
-
-                Iterator<User> users = chatroom.getUsers();
-
-                while(users.hasNext()) {
-                    User chatroomUser = users.next();
-                    ClientConnection chatroomUserConnection = userConnectionMap.get(chatroomUser);
-
-                    if (chatroomUserConnection != null)
-                        leaveChatroom(chatroomUserConnection, user, chatroom);
-                }
             }
 
             // Remove user connections
