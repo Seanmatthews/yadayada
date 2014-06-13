@@ -330,6 +330,7 @@
 {
     ChatroomMessage* message = notification.object;
     Chatroom* c = [Chatroom chatroomWithChatroomMessage:message];
+    NSLog(@"[ChatroomManagement] users %@",c.userCount);
     [self addChatroom:c];
     
     if (createCompletion) {

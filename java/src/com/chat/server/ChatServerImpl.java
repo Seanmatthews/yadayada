@@ -187,8 +187,7 @@ public class ChatServerImpl implements ChatServer {
 
     private void sendChatroom(ClientConnection senderConnection, Chatroom chatroom) {
 
-        senderConnection.sendMessage(
-                new ChatroomMessage(
+        ChatroomMessage cm = new ChatroomMessage(
                 chatroom.getId(),
                 chatroom.getOwner().getId(),
                 chatroom.getName(),
@@ -198,7 +197,10 @@ public class ChatServerImpl implements ChatServer {
                 chatroom.getRadius(),
                 chatroom.getUserCount(),
                 chatroom.getChatActivity(),
-                chatroom.isPrivate() ? (byte)1 : (byte)0));
+                chatroom.isPrivate() ? (byte)1 : (byte)0);
+        log.debug("Chatroom  message {}", cm);
+        senderConnection.sendMessage(cm);
+
     }
 
     @Override

@@ -20,7 +20,8 @@ public class Chatroom {
     private final long longitude;
     private final long radius;
     private final long creationTime;
-    private final short chatActivity;
+    private short chatActivity;
+    private short userCount;
     private final boolean isPrivate;
 
     // back-reference for easy access
@@ -40,6 +41,7 @@ public class Chatroom {
         this.creationTime = System.currentTimeMillis() / 1000L;
         this.chatActivity = 0;
         this.isPrivate = isPrivate;
+        this.userCount = 0;
     }
 
     public long getId() {
@@ -87,11 +89,13 @@ public class Chatroom {
     }
 
     public void addUser(User user) {
+        this.userCount++;
         repo.addUser(this, user);
         clusterStrategy.addUser(user);
     }
 
     public void removeUser(User user) {
+        this.userCount--;
         repo.removeUser(this, user);
         clusterStrategy.removeUser(user);
     }
@@ -123,7 +127,8 @@ public class Chatroom {
     }
 
     public int getUserCount() {
-        return repo.getChatroomUserCount(this);
+        return this.userCount;
+//        return repo.getChatroomUserCount(this);
     }
 
     public long getRadius() {

@@ -255,7 +255,7 @@ const NSStringEncoding STRENC = NSUTF8StringEncoding;
             [mb setValue:[NSNumber numberWithShort:s] forKey:key];
         }
         else if ([typename isEqualToString:@"i"]) {
-            int i = CFSwapInt32BigToHost(*(short*)&data[idx]);
+            int i = CFSwapInt32BigToHost(*(int*)&data[idx]);
             idx += 4;
             [mb setValue:[NSNumber numberWithInt:i] forKey:key];
         }

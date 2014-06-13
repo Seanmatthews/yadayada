@@ -310,6 +310,7 @@ const int MAX_RECENT_CHATS = 5;
     
     NSString* activityStr = [format stringFromNumber:chatroom.chatActivity];
     NSString* userStr = [format stringFromNumber:chatroom.userCount];
+    NSLog(@"[ChatListViewController] user count %@",chatroom.userCount);
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ miles away  %@%% active  %@ users", distanceStr, activityStr, userStr];
     cell.textLabel.text = chatroom.chatroomName;
     return cell;
