@@ -320,11 +320,11 @@ public class ChatServerImpl implements ChatServer {
                     Runnable complete = new Runnable() {
                         @Override
                         public void run() {
+                            User user = result.getUser();
+
                             // assumed to be single threaded
                             switch (result.getCode()) {
                                 case OK:
-                                case UserAlreadyExists:
-                                    User user = result.getUser();
 
                                     // Need to check userConnectionMap for duplicate UUID--
                                     // this weeds out old users that were created by this device.
@@ -336,7 +336,8 @@ public class ChatServerImpl implements ChatServer {
                                             terminate((ClientConnection)pairs.getValue());
                                         }
                                     }
-
+                                    // no break
+                                case UserAlreadyExists:
                                     userConnectionMap.put(user, senderConnection);
                                     senderConnection.setUser(user);
                                     user.setConnected(true);
