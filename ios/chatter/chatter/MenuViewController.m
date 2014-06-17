@@ -11,6 +11,9 @@
 #import "ChatroomManagement.h"
 
 @interface MenuViewController ()
+{
+    
+}
 
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
@@ -20,6 +23,9 @@
 - (void)receivedLoginAccept:(NSNotification*)notification;
 - (void)receivedLoginReject:(NSNotification*)notification;
 - (void)receivedJoinedChatroom:(NSNotification*)notification;
+- (void)cannotConnect;
+- (void)errorUI:(BOOL)hidden;
+- (void)fillErrorMessageArray;
 
 @end
 
@@ -28,8 +34,19 @@
 {
     ChatroomManagement* chatManager;
     NSTimeInterval heartbeatInterval;
+    NSArray* badConnectionMessages;
+    BOOL connected;
 }
 
+
+- (void)fillErrorMessageArray
+{
+    badConnectionMessages = @[@"I feel like we're just not communicating.",
+                              @"Can you speak up?",
+                              @"It's not me, it's you.",
+                              @"I think you know what the problem is just as well as I do.",
+                              @"Daisy, Daisy, give me your answer do."];
+}
 
 - (void)initCode
 {
@@ -86,6 +103,14 @@
         // Maybe not necessary, but just in case
         [UserDetails save];
     }
+    
+    _errorLabel.numberOfLines = 0;
+    _errorLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    
+    connected = NO;
+    [self fillErrorMessageArray];
+    [self errorUI:YES];
+    [self performSelector:@selector(cannotConnect) withObject:nil afterDelay:10.];
 }
 
 - (void)didReceiveMemoryWarning
@@ -98,6 +123,36 @@
 {
     [super viewWillDisappear:animated];
     [self unregisterForNotifications];
+}
+
+- (void)cannotConnect
+{
+    if (!connected) {
+        _errorLabel.text = [NSString stringWithFormat:@"%@\nBad connection",
+                            badConnectionMessages[arc4random() % badConnectionMessages.count]];
+        _errorLabel.textAlignment = NSTextAlignmentCenter;
+        [self errorUI:NO];
+    }
+}
+
+- (void)errorUI:(BOOL)hidden
+{
+    _infoLabel.hidden = !hidden;
+    _errorLabel.hidden = hidden;
+    _retryButton.hidden = hidden;
+    _spinner.hidden = !hidden;
+}
+
+- (IBAction)retryConnection:(id)sender
+{
+    [self performSelector:@selector(cannotConnect) withObject:nil afterDelay:10.];
+    [self errorUI:YES];
+    NSLog(@"Going to try to connect again");
+    [connection connectWithNoReconnect];
+    ConnectMessage* cm = [[ConnectMessage alloc] init];
+    cm.APIVersion = 1;
+    cm.UUID = ud.UUID;
+    [connection sendMessage:cm];
 }
 
 
@@ -119,6 +174,7 @@
 - (void)receivedConnectAccept:(NSNotification*)notification
 {
     NSLog(@"Connect Accept");
+    connected = YES;
     ConnectAcceptMessage* cam = notification.object;
     [chatManager setGlobalChatroomId:[NSNumber numberWithLongLong:cam.globalChatId]];
     ud.iconDownloadURL = cam.imageDownloadUrl;

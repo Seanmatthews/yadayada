@@ -20,6 +20,7 @@
 - (void)sendMessage:(MessageBase*)message;
 - (void)streamReset;
 - (void)parsePushNotification:(NSDictionary*)notification;
+- (void)connectWithNoReconnect;
 
 @property (nonatomic,strong) NSString* connectMode;
 @property (nonatomic) NSTimeInterval heartbeatInterval;

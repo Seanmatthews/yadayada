@@ -681,21 +681,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please wait" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8HE-2x-Eco">
-                                        <rect key="frame" x="107" y="181" width="106" height="26"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="26" id="EHh-J9-EkA"/>
-                                            <constraint firstAttribute="width" constant="106" id="EQn-AX-ve8"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="21"/>
-                                        <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                        <color key="shadowColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
-                                        <size key="shadowOffset" width="0.0" height="0.0"/>
-                                    </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="while your location" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aSp-Br-xg9">
-                                        <rect key="frame" x="74" y="214" width="173" height="26"/>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Locating you..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aSp-Br-xg9">
+                                        <rect key="frame" x="92" y="214" width="137" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="21"/>
                                         <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
@@ -703,30 +690,32 @@
                                         <color key="shadowColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
                                         <size key="shadowOffset" width="0.0" height="0.0"/>
                                     </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="is acquired" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XPO-TV-ADT">
-                                        <rect key="frame" x="110" y="248" width="101" height="26"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="21"/>
-                                        <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                        <color key="shadowColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
-                                        <size key="shadowOffset" width="0.0" height="0.0"/>
-                                    </label>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="6hi-vG-8hp">
-                                        <rect key="frame" x="150" y="289" width="20" height="20"/>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="6hi-vG-8hp">
+                                        <rect key="frame" x="150" y="259" width="20" height="20"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </activityIndicatorView>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wZS-bB-byu">
+                                        <rect key="frame" x="120" y="302" width="81" height="81"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                        <state key="normal" title="Retry">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="retryConnection:" destination="mTE-8Y-ifs" eventType="touchUpInside" id="suV-DP-Sl2"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="13h-dY-Vcy">
+                                        <rect key="frame" x="20" y="64" width="280" height="249"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstItem="XPO-TV-ADT" firstAttribute="top" secondItem="aSp-Br-xg9" secondAttribute="bottom" constant="8" symbolic="YES" id="1IZ-AT-JEu"/>
-                                    <constraint firstItem="8HE-2x-Eco" firstAttribute="centerX" secondItem="dz7-4r-Bgr" secondAttribute="centerX" id="4YR-E5-TqN"/>
                                     <constraint firstAttribute="centerX" secondItem="6hi-vG-8hp" secondAttribute="centerX" id="POP-es-191"/>
-                                    <constraint firstItem="aSp-Br-xg9" firstAttribute="centerX" secondItem="8HE-2x-Eco" secondAttribute="centerX" id="TMi-GY-9ZO"/>
-                                    <constraint firstItem="aSp-Br-xg9" firstAttribute="top" secondItem="8HE-2x-Eco" secondAttribute="bottom" constant="7" id="Uf3-LO-WH3"/>
-                                    <constraint firstItem="aSp-Br-xg9" firstAttribute="centerX" secondItem="XPO-TV-ADT" secondAttribute="centerX" id="WIE-ww-6CF"/>
-                                    <constraint firstItem="6hi-vG-8hp" firstAttribute="top" secondItem="XPO-TV-ADT" secondAttribute="bottom" constant="15" id="gkA-3U-9D2"/>
-                                    <constraint firstItem="8HE-2x-Eco" firstAttribute="top" secondItem="dz7-4r-Bgr" secondAttribute="top" constant="181" id="hID-fW-CJL"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -739,6 +728,10 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="errorLabel" destination="13h-dY-Vcy" id="LGM-i2-cJZ"/>
+                        <outlet property="infoLabel" destination="aSp-Br-xg9" id="bt2-sv-mT0"/>
+                        <outlet property="retryButton" destination="wZS-bB-byu" id="2lh-sa-EoM"/>
+                        <outlet property="spinner" destination="6hi-vG-8hp" id="qM1-52-Rna"/>
                         <segue destination="dcJ-iO-ylN" kind="modal" identifier="chatListSegue" modalTransitionStyle="crossDissolve" id="fW2-sl-Ou5"/>
                     </connections>
                 </viewController>

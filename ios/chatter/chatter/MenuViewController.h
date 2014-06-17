@@ -21,6 +21,12 @@
     Contacts* contacts;
 }
 
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView* spinner;
+@property (nonatomic, strong) IBOutlet UIButton* retryButton;
+@property (nonatomic, strong) IBOutlet UILabel* errorLabel;
+@property (nonatomic, strong) IBOutlet UILabel* infoLabel;
+
 - (void)initCode;
+- (IBAction)retryConnection:(id)sender;
 
 @end

@@ -118,6 +118,17 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
     [os open];
 }
 
+// This is necessary because reconnecting causes a stream reset. Also,
+// connecting after an unsuccesful reconnect causes a stream reset
+// (because reconnecting is still YES). But on the locating screen,
+// we have not yet logged in, and do not yet have a user id to
+// send along with a stream reset message, causing a server exception.
+- (void)connectWithNoReconnect
+{
+    reconnecting = NO;
+    [self connect];
+}
+
 - (void)disconnect
 {
     [is close];
