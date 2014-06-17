@@ -24,6 +24,7 @@
 //- (void)receivedChatroom:(NSNotification*)notification;
 - (void)refreshTable:(UIRefreshControl*)refreshControl;
 - (void)segueToChatroom:(NSNotification*)notification;
+- (void)swipedTable:(UISwipeGestureRecognizer*)sender;
 
 // Map view
 //- (void)addChatroomAnnotation:(ChatroomMessage*)message;
@@ -123,6 +124,13 @@ const int MAX_RECENT_CHATS = 5;
     [_mapView setRegion:region animated:YES];
     [_mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
     [_mapView setCenterCoordinate:[location currentLocation] animated:YES];
+    
+    UISwipeGestureRecognizer* swipedLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedTable:)];
+    swipedLeft.direction = UISwipeGestureRecognizerDirectionLeft;
+    [_tableView addGestureRecognizer:swipedLeft];
+    UISwipeGestureRecognizer* swipedRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedTable:)];
+    swipedRight.direction = UISwipeGestureRecognizerDirectionRight;
+    [_tableView addGestureRecognizer:swipedRight];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -223,6 +231,23 @@ const int MAX_RECENT_CHATS = 5;
                withCompletion:^{
                    [self performSegueWithIdentifier:@"pickedChatroomSegue" sender:c];
                }];
+}
+
+- (void)swipedTable:(UISwipeGestureRecognizer*)sender
+{
+    CGPoint swipeLocation = [sender locationInView:_tableView];
+    NSIndexPath *deleteIndexPath = [_tableView indexPathForRowAtPoint:swipeLocation];
+
+    if (deleteIndexPath && deleteIndexPath.section == 0) {
+        UITableViewRowAnimation animation = sender.direction == UISwipeGestureRecognizerDirectionLeft ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight;
+        
+        // Remove cell
+        [_tableView beginUpdates];
+        [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:deleteIndexPath] withRowAnimation:animation];
+        [chatManager leaveChatroomWithId:[[chatManager.joinedChatrooms objectAtIndex:deleteIndexPath.row] cid]
+                          withCompletion:nil];
+        [_tableView endUpdates];
+    }
 }
 
 
