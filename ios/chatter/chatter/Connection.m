@@ -136,10 +136,10 @@ const CGFloat JPEG_COMPRESSION_QUALITY = 0.75;
         if (!reconnecting) {
             reconnecting = YES;
             [self connect];
-            StreamResetMessage* srm = [[StreamResetMessage alloc] init];
-            srm.userId = [[UserDetails sharedInstance] userId];
-            srm.appAwake = 1;
-            [self sendMessage:srm];
+//            StreamResetMessage* srm = [[StreamResetMessage alloc] init];
+//            srm.userId = [[UserDetails sharedInstance] userId];
+//            srm.appAwake = 1;
+//            [self sendMessage:srm];
         }
     }
 }
