@@ -181,6 +181,34 @@
             
             [_chatrooms setObject:chatroom forKey:chatroom.cid];
         }
+        else {
+            NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
+            
+            // Chatroom already exists, but update its info
+            Chatroom *c = [_chatrooms objectForKey:chatroom.cid];
+            
+            if (c.chatActivity != chatroom.chatActivity || c.userCount != chatroom.userCount) {
+                c.chatActivity = chatroom.chatActivity;
+                c.userCount = chatroom.userCount;
+                
+                NSUInteger globalRow = [_globalChatrooms indexOfObject:c];
+                if (globalRow != NSNotFound) {
+                    [indexPaths addObject:[NSIndexPath indexPathForRow:globalRow inSection:2]];
+                }
+                NSUInteger localRow = [_localChatrooms indexOfObject:c];
+                if (localRow != NSNotFound) {
+                    [indexPaths addObject:[NSIndexPath indexPathForRow:localRow inSection:1]];
+                }
+                NSUInteger joinedRow = [_joinedChatrooms indexOfObject:c];
+                if (joinedRow != NSNotFound) {
+                    [indexPaths addObject:[NSIndexPath indexPathForRow:joinedRow inSection:0]];
+                }
+                
+                // Copy produces an immutable array
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadChatListTableCell"
+                                                                    object:[indexPaths copy]];
+            }
+        }
     }
 }
 
@@ -326,6 +354,7 @@
 
 // NOTE: We don't need to worry about receiving duplicates because
 // duplicates will be overwritten in the Dictionary.
+// NOTE: Actually, we can't do that-- since we're passing the chatroom object around.
 - (void)receivedChatroom:(NSNotification*)notification
 {
     ChatroomMessage* message = notification.object;

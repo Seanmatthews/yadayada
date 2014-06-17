@@ -24,6 +24,7 @@
 //- (void)receivedChatroom:(NSNotification*)notification;
 - (void)refreshTable:(UIRefreshControl*)refreshControl;
 - (void)segueToChatroom:(NSNotification*)notification;
+- (void)reloadTableCell:(NSNotification*)notification;
 - (void)swipedTable:(UISwipeGestureRecognizer*)sender;
 
 // Map view
@@ -87,6 +88,11 @@ const int MAX_RECENT_CHATS = 5;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(segueToChatroom:)
                                                  name:@"segueToChatroomNotification"
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadTableCell:)
+                                                 name:@"reloadChatListTableCell"
                                                object:nil];
 }
 
@@ -217,6 +223,14 @@ const int MAX_RECENT_CHATS = 5;
         // TODO
 //        [self removeAnnotationForChatroom:oldChatArray.lastObject];
     }
+}
+
+- (void)reloadTableCell:(NSNotification*)notification
+{
+    NSArray *indexPaths = notification.object;
+    [_tableView beginUpdates];
+    [_tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+    [_tableView endUpdates];
 }
 
 
