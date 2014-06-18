@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 import static com.chat.UserRepository.UserRepositoryActionResult;
@@ -32,7 +33,7 @@ public class ChatServerImpl implements ChatServer {
     private final ChatroomRepository chatroomRepo;
     private final UserRepository userRepo;
     private final MessageRepository messageRepo;
-    private final Map<User, ClientConnection> userConnectionMap = new HashMap<>();
+    private final Map<User, ClientConnection> userConnectionMap = new ConcurrentHashMap<>();
 
     public ChatServerImpl(EventService eventService, UserRepository userRepo, ChatroomRepository chatroomRepo,
                           MessageRepository messageRepo, PushManager<SimpleApnsPushNotification> pushManager) {
