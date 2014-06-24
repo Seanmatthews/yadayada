@@ -12,6 +12,7 @@
 #import "Contacts.h"
 #import "UserDetails.h"
 #import "Location.h"
+#import "SnarkyErrorMessages.h"
 
 @interface SearchUsersViewController ()
 {
@@ -213,18 +214,27 @@
 
 - (void)inviteUser:(UserInfoMessage*)message
 {
-    InviteUserMessage* ium = [[InviteUserMessage alloc] init];
-    ium.senderId = [[UserDetails sharedInstance] userId];
-    ium.senderHandle = [[UserDetails sharedInstance] handle];
-    ium.recipientId = message.userId;
-    ium.chatroomId = [inviteChatroom.cid longLongValue];
-    ium.chatroomName = inviteChatroom.chatroomName;
-    ium.chatroomRadius = [inviteChatroom.radius longLongValue];
-    ium.chatroomLat = [Location toLongLong:inviteChatroom.origin.latitude];
-    ium.chatroomLong = [Location toLongLong:inviteChatroom.origin.longitude];
-    [[Connection sharedInstance] sendMessage:ium];
-    
-    // TODO: add invited user to contacts list
+    if (message.userId == [[UserDetails sharedInstance] userId]) {
+        UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Invite yourself?"
+                                                        message:[[SnarkyErrorMessages sharedInstance] messageForInviteSelf]
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
+    }
+    else {
+        InviteUserMessage* ium = [[InviteUserMessage alloc] init];
+        ium.senderId = [[UserDetails sharedInstance] userId];
+        ium.senderHandle = [[UserDetails sharedInstance] handle];
+        ium.recipientId = message.userId;
+        ium.chatroomId = [inviteChatroom.cid longLongValue];
+        ium.chatroomName = inviteChatroom.chatroomName;
+        ium.chatroomRadius = [inviteChatroom.radius longLongValue];
+        ium.chatroomLat = [Location toLongLong:inviteChatroom.origin.latitude];
+        ium.chatroomLong = [Location toLongLong:inviteChatroom.origin.longitude];
+        [[Connection sharedInstance] sendMessage:ium];
+        // TODO: add invited user to contacts list
+    }
 }
 
 @end

@@ -9,6 +9,7 @@
 #import "MenuViewController.h"
 #import "ViewController.h"
 #import "ChatroomManagement.h"
+#import "SnarkyErrorMessages.h"
 
 @interface MenuViewController ()
 {
@@ -25,7 +26,6 @@
 - (void)receivedJoinedChatroom:(NSNotification*)notification;
 - (void)cannotConnect;
 - (void)errorUI:(BOOL)hidden;
-- (void)fillErrorMessageArray;
 
 @end
 
@@ -36,16 +36,6 @@
     NSTimeInterval heartbeatInterval;
     NSArray* badConnectionMessages;
     BOOL connected;
-}
-
-
-- (void)fillErrorMessageArray
-{
-    badConnectionMessages = @[@"I feel like we're just not communicating.",
-                              @"Can you speak up?",
-                              @"It's not me, it's you.",
-                              @"I think you know what the problem is just as well as I do.",
-                              @"Daisy, Daisy, give me your answer do."];
 }
 
 - (void)initCode
@@ -108,7 +98,6 @@
     _errorLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
     connected = NO;
-    [self fillErrorMessageArray];
     [self errorUI:YES];
     [self performSelector:@selector(cannotConnect) withObject:nil afterDelay:10.];
 }
@@ -128,8 +117,7 @@
 - (void)cannotConnect
 {
     if (!connected) {
-        _errorLabel.text = [NSString stringWithFormat:@"%@\nBad connection",
-                            badConnectionMessages[arc4random() % badConnectionMessages.count]];
+        _errorLabel.text = [[SnarkyErrorMessages sharedInstance] messageForConnectionError];
         _errorLabel.textAlignment = NSTextAlignmentCenter;
         [self errorUI:NO];
     }

@@ -17,6 +17,7 @@
 		14A4A120192C46AD009E437B /* CurrentViewNotifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 14A4A11F192C46AD009E437B /* CurrentViewNotifier.m */; };
 		14D19A7718A1FAAE0038D149 /* ChatroomManagement.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */; };
 		14D19A7A18A31A560038D149 /* TutorialContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D19A7918A31A560038D149 /* TutorialContentViewController.m */; };
+		14DCA34519595EAD00F3EA5A /* SnarkyErrorMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 14DCA34419595EAD00F3EA5A /* SnarkyErrorMessages.m */; };
 		14E010E718B1B27B00F45EDD /* Contacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 14E010E618B1B27B00F45EDD /* Contacts.m */; };
 		14E010E918B1D5C900F45EDD /* DialingCodes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 14E010E818B1D5C900F45EDD /* DialingCodes.plist */; };
 		14E474C31942E46C00ADF56D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 14E474C21942E46C00ADF56D /* Main.storyboard */; };
@@ -92,6 +93,8 @@
 		14D19A7618A1FAAE0038D149 /* ChatroomManagement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatroomManagement.m; sourceTree = "<group>"; };
 		14D19A7818A31A560038D149 /* TutorialContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialContentViewController.h; sourceTree = "<group>"; };
 		14D19A7918A31A560038D149 /* TutorialContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialContentViewController.m; sourceTree = "<group>"; };
+		14DCA34319595EAD00F3EA5A /* SnarkyErrorMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SnarkyErrorMessages.h; sourceTree = "<group>"; };
+		14DCA34419595EAD00F3EA5A /* SnarkyErrorMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SnarkyErrorMessages.m; sourceTree = "<group>"; };
 		14E010E518B1B27B00F45EDD /* Contacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contacts.h; sourceTree = "<group>"; };
 		14E010E618B1B27B00F45EDD /* Contacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contacts.m; sourceTree = "<group>"; };
 		14E010E818B1D5C900F45EDD /* DialingCodes.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = DialingCodes.plist; sourceTree = "<group>"; };
@@ -201,6 +204,8 @@
 				14E010E618B1B27B00F45EDD /* Contacts.m */,
 				147445C018CA8A7100EE5D49 /* Chatroom.h */,
 				147445C118CA8A7100EE5D49 /* Chatroom.m */,
+				14DCA34319595EAD00F3EA5A /* SnarkyErrorMessages.h */,
+				14DCA34419595EAD00F3EA5A /* SnarkyErrorMessages.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -501,6 +506,7 @@
 				64A10DA41824BBDA00A499B0 /* Location.m in Sources */,
 				641C147E182C7D6C001D8959 /* ChatListViewController.m in Sources */,
 				B3E79A481832AE27003227E7 /* ChatroomListCell.m in Sources */,
+				14DCA34519595EAD00F3EA5A /* SnarkyErrorMessages.m in Sources */,
 				6445107D183DA911000112D4 /* CreateChatViewController.m in Sources */,
 				6458F39D18172E7400AA8E81 /* AppDelegate.m in Sources */,
 				64A10D3D181964DA00A499B0 /* Messages.m in Sources */,

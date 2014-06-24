@@ -444,8 +444,6 @@
 
 - (void)receivedCreateChatroomReject:(NSNotification*)notification
 {
-    
-    
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Woops!"
                                                     message:[notification.object reason]
                                                    delegate:nil
