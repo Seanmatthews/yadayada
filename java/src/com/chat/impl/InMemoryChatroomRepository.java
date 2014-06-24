@@ -5,12 +5,14 @@ import com.chat.ChatroomRepository;
 import com.chat.ChatroomSearchCriteria;
 import com.chat.User;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,16 +21,18 @@ import org.apache.logging.log4j.Logger;
  * Time: 8:47 AM
  * To change this template use File | Settings | File Templates.
  */
-public class InMemoryChatroomRepository implements ChatroomRepository {
+public class InMemoryChatroomRepository implements ChatroomRepository, Serializable {
+
+    // Changing this will make files serialized before the change incompatible
+    private static final long serialVersionUID = -6470090944414208496L;
 
     // We have lots of threads accessing this repository
     // We need to keep nextChatroomId and the map in sync
-    private final AtomicLong nextChatroomId = new AtomicLong(1);
-    private final Map<Long, Chatroom> chatroomIdMap = new ConcurrentHashMap<>();
+    private AtomicLong nextChatroomId = new AtomicLong(1);
+    private Map<Long, Chatroom> chatroomIdMap = new ConcurrentHashMap<>();
+    private Map<Chatroom, Set<User>> chatroomUserMap = new ConcurrentHashMap<>();
 
-    private final Map<Chatroom, Set<User>> chatroomUserMap = new ConcurrentHashMap<>();
-
-    private final Logger log = LogManager.getLogger();
+    transient private final Logger log = LogManager.getLogger();
 
     @Override
     public Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius, boolean isPrivate) {
@@ -138,6 +142,24 @@ public class InMemoryChatroomRepository implements ChatroomRepository {
         double nD = earthRadius * nC;
 
         return (long)(nD * 1000.); // Return our calculated distance in meters
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        // perform the default serialization for all non-transient, non-static fields
+        out.defaultWriteObject();
+
+        out.writeLong(nextChatroomId.get());
+        out.writeObject(chatroomIdMap);
+        out.writeObject(chatroomUserMap);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // always perform the default de-serialization first
+        in.defaultReadObject();
+
+        nextChatroomId = new AtomicLong(in.readLong());
+        chatroomIdMap = new ConcurrentHashMap<>((ConcurrentHashMap<Long, Chatroom>)in.readObject());
+        chatroomUserMap = new ConcurrentHashMap<>((ConcurrentHashMap<Chatroom, Set<User>>)in.readObject());
     }
 }
 

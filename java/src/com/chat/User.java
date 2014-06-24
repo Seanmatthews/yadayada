@@ -1,7 +1,12 @@
 package com.chat;
 
+import com.chat.server.cluster.MPSClusteringStrategy;
+import com.chat.util.SerializeUtil;
 import com.relayrides.pushy.apns.util.TokenUtil;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Iterator;
 
@@ -12,7 +17,7 @@ import java.util.Iterator;
  * Time: 9:14 AM
  * To change this template use File | Settings | File Templates.
  */
-public class User {
+public class User implements Serializable {
     private final long id;
     private final String uuid;
     private String login;
@@ -132,5 +137,42 @@ public class User {
     @Override
     public String toString() {
         return login + "<" + handle + ">";
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        // perform the default serialization for all non-transient, non-static fields
+        out.defaultWriteObject();
+
+        out.writeLong(id);
+        out.writeObject(uuid);
+        out.writeObject(login);
+        out.writeObject(password);
+        out.writeObject(handle);
+        out.writeLong(phoneNumber);
+        // Cyclic references are handled by Java Serialization
+        out.writeObject(repo);
+        out.writeDouble(latitude);
+        out.writeDouble(longitude);
+        out.writeLong(lastHeartbeat);
+        out.writeObject(deviceToken);
+        out.writeBoolean(connected);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // always perform the default de-serialization first
+        in.defaultReadObject();
+
+        SerializeUtil.setPrivateFinalVar(this, "id", new Long(in.readLong()));
+        SerializeUtil.setPrivateFinalVar(this, "uuid", new String((String)in.readObject()));
+        login = new String((String)in.readObject());
+        SerializeUtil.setPrivateFinalVar(this, "password", new String((String)in.readObject()));
+        handle = new String((String)in.readObject());
+        SerializeUtil.setPrivateFinalVar(this, "phoneNumber", new Long(in.readLong()));
+        SerializeUtil.setPrivateFinalVar(this, "repo", (UserRepository)in.readObject());
+        latitude = new Double(in.readDouble());
+        longitude = new Double(in.readDouble());
+        lastHeartbeat = new Long(in.readLong());
+        SerializeUtil.setPrivateFinalVar(this, "deviceToken", new String((String)in.readObject()));
+        connected = new Boolean(in.readBoolean());
     }
 }

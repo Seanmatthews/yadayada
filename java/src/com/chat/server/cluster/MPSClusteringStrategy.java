@@ -2,10 +2,15 @@ package com.chat.server.cluster;
 
 import com.chat.ChatMessage;
 import com.chat.Chatroom;
+import com.chat.ChatroomRepository;
 import com.chat.User;
+import com.chat.util.SerializeUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -15,8 +20,8 @@ import java.util.*;
  * Time: 12:07 PM
  * To change this template use File | Settings | File Templates.
  */
-public class MPSClusteringStrategy implements ClusteringStrategy {
-    private final Logger log = LogManager.getLogger();
+public class MPSClusteringStrategy implements ClusteringStrategy, Serializable {
+    transient private final Logger log = LogManager.getLogger();
 
     private final Chatroom chatroom;
     private final double minMPS;
@@ -35,7 +40,6 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
         this.chatroom = chatroom;
         this.minMPS = minMPS;
         this.maxMPS = maxMPS;
-
         this.numClusters = 1;
     }
 
@@ -129,5 +133,35 @@ public class MPSClusteringStrategy implements ClusteringStrategy {
         for (int mps : mpsBuckets)
             total += mps;
         return 1.0 * total / mpsBuckets.length;
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        // perform the default serialization for all non-transient, non-static fields
+        out.defaultWriteObject();
+
+        out.writeObject(chatroom);
+        out.writeDouble(minMPS);
+        out.writeDouble(maxMPS);
+        out.writeObject(mpsBuckets);
+        out.writeObject(userClusterMap);
+        out.writeObject(clusters);
+        out.writeInt(numClusters);
+        out.writeLong(lastSecond);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // always perform the default de-serialization first
+        in.defaultReadObject();
+
+        SerializeUtil.setPrivateFinalVar(this, "chatroom", (Chatroom)in.readObject());
+        SerializeUtil.setPrivateFinalVar(this, "minMPS", new Double(in.readDouble()));
+        SerializeUtil.setPrivateFinalVar(this, "maxMPS", new Double(in.readDouble()));
+        SerializeUtil.setPrivateFinalVar(this, "mpsBuckets", (int[])in.readObject());
+        SerializeUtil.setPrivateFinalVar(this, "userClusterMap",
+                new HashMap<User, SimpleCluster>((HashMap<User, SimpleCluster>)in.readObject()));
+        SerializeUtil.setPrivateFinalVar(this, "clusters",
+                new ArrayList<SimpleCluster>((ArrayList<SimpleCluster>)in.readObject()));
+        numClusters = new Short(in.readShort());
+        lastSecond = new Short(in.readShort());
     }
 }

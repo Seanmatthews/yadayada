@@ -2,8 +2,15 @@ package com.chat;
 
 import com.chat.server.cluster.ChatroomCluster;
 import com.chat.server.cluster.MPSClusteringStrategy;
+import com.chat.util.SerializeUtil;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +19,7 @@ import java.util.Iterator;
  * Time: 11:48 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Chatroom {
+public class Chatroom implements Serializable {
     private final long id;
     private final String name;
     private final User owner;
@@ -26,6 +33,7 @@ public class Chatroom {
 
     // back-reference for easy access
     private final ChatroomRepository repo;
+    // TODO this should be ClusteringStrategy
     private final MPSClusteringStrategy clusterStrategy;
 
     public Chatroom(long id, String name, User owner, ChatroomRepository inMemoryChatroomRepository, long latitude,
@@ -148,4 +156,42 @@ public class Chatroom {
     public boolean global() { return 0 >= radius; }
 
     public boolean isPrivate() { return isPrivate; }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        // perform the default serialization for all non-transient, non-static fields
+        out.defaultWriteObject();
+
+        out.writeLong(id);
+        out.writeObject(name);
+        out.writeObject(owner);
+        out.writeLong(latitude);
+        out.writeLong(longitude);
+        out.writeLong(radius);
+        out.writeLong(creationTime);
+        out.writeShort(chatActivity);
+        out.writeShort(userCount);
+        out.writeBoolean(isPrivate);
+
+        // Cyclic references are handled by Java Serialization
+        out.writeObject(repo);
+        out.writeObject(clusterStrategy);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // always perform the default de-serialization first
+        in.defaultReadObject();
+
+        SerializeUtil.setPrivateFinalVar(this, "id", new Long(in.readLong()));
+        SerializeUtil.setPrivateFinalVar(this, "name", new String((String)in.readObject()));
+        SerializeUtil.setPrivateFinalVar(this, "owner", (User)in.readObject());
+        SerializeUtil.setPrivateFinalVar(this, "latitude", new Long(in.readLong()));
+        SerializeUtil.setPrivateFinalVar(this, "longitude", new Long(in.readLong()));
+        SerializeUtil.setPrivateFinalVar(this, "radius", new Long(in.readLong()));
+        SerializeUtil.setPrivateFinalVar(this, "creationTime", new Long(in.readLong()));
+        chatActivity = new Short(in.readShort());
+        userCount = new Short(in.readShort());
+        SerializeUtil.setPrivateFinalVar(this, "isPrivate", new Boolean(in.readBoolean()));
+        SerializeUtil.setPrivateFinalVar(this, "repo", (ChatroomRepository)in.readObject());
+        SerializeUtil.setPrivateFinalVar(this, "clusterStrategy", (MPSClusteringStrategy)clusterStrategy);
+    }
 }

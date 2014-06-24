@@ -4,8 +4,12 @@ import com.chat.Chatroom;
 import com.chat.User;
 import com.chat.UserRepository;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
 
@@ -16,13 +20,17 @@ import static com.chat.UserRepository.UserRepositoryActionResultCode.*;
  * Time: 11:55 AM
  * To change this template use File | Settings | File Templates.
  */
-public class InMemoryUserRepository implements UserRepository {
-    private long nextUserId = 1;
+public class InMemoryUserRepository implements UserRepository, Serializable {
 
-    private final Map<Long, User> idToUserMap = new HashMap<>();
-    private final Map<String, User> loginToUserMap = new HashMap<>();
-    private final Map<Long, User> phoneToUserMap = new HashMap<>();
-    private final Map<User, Set<Chatroom>> userChatroomMap = new HashMap<>();
+    // Changing this will make files serialized before the change incompatible
+    private static final long serialVersionUID = -6470090944414208495L;
+
+//    private long nextUserId = 1;
+    private AtomicLong nextUserId = new AtomicLong(1);
+    private Map<Long, User> idToUserMap = new HashMap<>();
+    private Map<String, User> loginToUserMap = new HashMap<>();
+    private Map<Long, User> phoneToUserMap = new HashMap<>();
+    private Map<User, Set<Chatroom>> userChatroomMap = new HashMap<>();
 
     public Future<UserRepositoryActionResult> registerUser(String login, String password, String handle, String UUID,
                                                            long phoneNumber, String deviceTokenString,
@@ -35,7 +43,7 @@ public class InMemoryUserRepository implements UserRepository {
             return new UserFuture(result, handler);
         }
 
-        user = new User(nextUserId++, UUID, login, password, handle, phoneNumber, deviceTokenString, this);
+        user = new User(nextUserId.getAndIncrement(), UUID, login, password, handle, phoneNumber, deviceTokenString, this);
 
         addUser(user);
 
@@ -143,5 +151,27 @@ public class InMemoryUserRepository implements UserRepository {
         public UserRepositoryActionResult get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             return user;
         }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        // perform the default serialization for all non-transient, non-static fields
+        out.defaultWriteObject();
+
+        out.writeLong(nextUserId.get());
+        out.writeObject(idToUserMap);
+        out.writeObject(loginToUserMap);
+        out.writeObject(phoneToUserMap);
+        out.writeObject(userChatroomMap);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // always perform the default de-serialization first
+        in.defaultReadObject();
+
+        nextUserId = new AtomicLong(in.readLong());
+        idToUserMap = new HashMap<>((HashMap<Long, User>)in.readObject());
+        loginToUserMap = new HashMap<>((HashMap<String, User>)in.readObject());
+        phoneToUserMap = new HashMap<>((HashMap<Long, User>)in.readObject());
+        userChatroomMap = new HashMap<>((HashMap<User, Set<Chatroom>>)in.readObject());
     }
 }

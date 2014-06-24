@@ -9,11 +9,13 @@ import com.chat.impl.InMemoryChatroomRepository;
 import com.chat.impl.InMemoryUserRepository;
 import com.chat.impl.STMessageRepository;
 import com.chat.select.impl.EventServiceImpl;
+import com.chat.util.SerializeUtil;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -41,7 +43,7 @@ public class Main {
         myOptions.addOption("sqlpassword", true, "SQL Username");
         CommandLine options;
 
-        Logger logger = LogManager.getLogger();
+        final Logger logger = LogManager.getLogger();
 
         try {
             options = parser.parse(myOptions, args);
@@ -53,6 +55,7 @@ public class Main {
         int port = Integer.parseInt(options.getOptionValue("port", "5000"));
 
         UserRepository userRepo;
+        ChatroomRepository chatroomRepo;
         User admin;
 
         String repo = options.getOptionValue("userrepository", "memory");
@@ -67,21 +70,33 @@ public class Main {
             Connection connection = DriverManager.getConnection(connectionString, username, password);
             userRepo = new AwsRdsUserRepository(connection);
             admin = userRepo.login("admin", "admin", null).get().getUser();
+            chatroomRepo = new InMemoryChatroomRepository();
+            chatroomRepo.createChatroom(admin, "Global", 0, 0, 0, false);
 
             logger.info("Loaded database user repository {} {} Username={} Password={}", driver, connectionString, username, password);
         }
         else {
-            userRepo = new InMemoryUserRepository();
-            admin = userRepo.registerUser("admin", "admin", "admin", "ADMIN_UUID", 12155551212L, "", null).get().getUser();
+            try {
+                userRepo = (InMemoryUserRepository)SerializeUtil.deserialize("/tmp/UserRepo.ser");
+                chatroomRepo = (InMemoryChatroomRepository)SerializeUtil.deserialize("/tmp/ChatroomRepo.ser");
+                logger.debug("Loaded saved server state");
+            }
+            catch(Exception e) {
+                logger.debug("{}",e.toString());
+                logger.debug("Creating fresh server state");
+                userRepo = new InMemoryUserRepository();
+                admin = userRepo.registerUser("admin", "admin", "admin", "ADMIN_UUID", 12155551212L, "", null).get().getUser();
+                chatroomRepo = new InMemoryChatroomRepository();
+                chatroomRepo.createChatroom(admin, "Global", 0, 0, 0, false);
+            }
 
             logger.info("Loaded in-memory user repository");
         }
 
         MessageRepository messageRepo = new STMessageRepository();
         //ChatroomRepository chatroomRepo = new STChatroomRepository();
-        ChatroomRepository chatroomRepo = new InMemoryChatroomRepository();
-        chatroomRepo.createChatroom(admin, "Global", 0, 0, 0, false);
 
+        // Specifically for iOS Apple Push Notification System (APNS)
         PushManager<SimpleApnsPushNotification> pushManager = null;
         try {
             String keyStore = System.getProperty("javax.net.ssl.keyStore");
@@ -96,6 +111,22 @@ public class Main {
         catch (Exception e) {
             logger.debug("Pushy exception {}", e.getMessage());
         }
+
+        final UserRepository userRepoFinal = userRepo;
+        final ChatroomRepository chatroomRepoFinal = chatroomRepo;
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    logger.debug("Saving server state");
+                    SerializeUtil.serialize(userRepoFinal, "/tmp/UserRepo.ser");
+                    SerializeUtil.serialize(chatroomRepoFinal, "/tmp/ChatroomRepo.ser");
+                }
+                catch (IOException i) {
+                    logger.debug("{}", i.toString());
+                }
+            }
+        });
 
         new ServerListener(new EventServiceImpl(), port, userRepo, chatroomRepo, messageRepo, pushManager);
     }
