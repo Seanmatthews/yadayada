@@ -28,7 +28,7 @@ public class Chatroom implements Serializable {
     private final long radius;
     private final long creationTime;
     private short chatActivity;
-    private short userCount;
+    private int userCount;
     private final boolean isPrivate;
 
     // back-reference for easy access

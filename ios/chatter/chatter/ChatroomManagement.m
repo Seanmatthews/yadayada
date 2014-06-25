@@ -147,9 +147,9 @@
 - (BOOL)canJoinChatroomWithCoord:(CLLocationCoordinate2D)coord andRadius:(long long)radius
 {
     NSUInteger distance = [location metersToCurrentLocationFrom:coord];
-    
     // Only display local chatrooms that the user is able to join
-    if (distance - radius > 0) {
+    // NOTE: Make sure to cast distance to a signed number so the calculation is correct
+    if ((long long)distance - radius > 0) {
         NSLog(@"[chat management] Chatroom is too far away");
         return NO;
     }
@@ -371,6 +371,7 @@
 - (void)receivedJoinedChatroom:(NSNotification*)notification
 {
     JoinedChatroomMessage* message = notification.object;
+    NSLog(@"[ChantroomManagement]\n %@",message);
     Chatroom* c = [_chatrooms objectForKey:[NSNumber numberWithLongLong:message.chatroomId]];
     if (message.userId == ud.userId) {
         NSLog(@"joined");
