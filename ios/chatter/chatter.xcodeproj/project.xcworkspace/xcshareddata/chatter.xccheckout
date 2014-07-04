@@ -5,34 +5,34 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>59394126-0B33-4693-9EA7-34F020F25922</string>
+	<string>C194AD20-D195-474D-89BA-BAB91AB78AEF</string>
 	<key>IDESourceControlProjectName</key>
 	<string>chatter</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>F81E8203-9AC8-4EF1-8F65-FACEA6C0A576</key>
-		<string>https://bitbucket.org/rowboat/chatter.git</string>
+		<key>C6884D12-E7DB-41B9-B784-EAB22EE31757</key>
+		<string>https://github.com/Seanmatthews/yadayada.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>ios/chatter/chatter.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>F81E8203-9AC8-4EF1-8F65-FACEA6C0A576</key>
+		<key>C6884D12-E7DB-41B9-B784-EAB22EE31757</key>
 		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://bitbucket.org/rowboat/chatter.git</string>
+	<string>https://github.com/Seanmatthews/yadayada.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>F81E8203-9AC8-4EF1-8F65-FACEA6C0A576</string>
+	<string>C6884D12-E7DB-41B9-B784-EAB22EE31757</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>F81E8203-9AC8-4EF1-8F65-FACEA6C0A576</string>
+			<string>C6884D12-E7DB-41B9-B784-EAB22EE31757</string>
 			<key>IDESourceControlWCCName</key>
 			<string>chatter</string>
 		</dict>
