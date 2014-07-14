@@ -112,8 +112,6 @@ const int MAX_RECENT_CHATS = 5;
     // Give the views rounded corners
     _mapView.layer.cornerRadius = 5;
     _mapView.layer.masksToBounds = YES;
-//    _tableView.layer.cornerRadius = 5;
-//    _tableView.layer.masksToBounds = YES;
     _tableView.allowsSelection = YES;
     _tableParentView.layer.cornerRadius = 5;
     _tableParentView.layer.masksToBounds = YES;
