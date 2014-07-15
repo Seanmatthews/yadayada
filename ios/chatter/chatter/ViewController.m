@@ -35,7 +35,7 @@
 - (void)registerForNotifications;
 - (void)unregisterForNotifications;
 - (void)addMessageAtIndexPath;
-- (void)initMessageCell:(MessageCell*)cell withReuseIdentifier:(NSString*)reuseId;
+- (MessageCell*)messageCellWithReuseIdentifier:(NSString*)reuseId;
 
 @end
 
@@ -438,9 +438,9 @@
 //    return [[_chatroom chatQueue] count];
 }
 
-- (void)initMessageCell:(MessageCell*)cell withReuseIdentifier:(NSString*)reuseId
+- (MessageCell*)messageCellWithReuseIdentifier:(NSString*)reuseId
 {
-    cell = [[MessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseId];
+    MessageCell *cell = [[MessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseId];
     
     // Add voting gestures to the cell
     UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];
@@ -452,6 +452,8 @@
     UISwipeGestureRecognizer* swipedRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedCellRight:)];
     swipedRight.direction = UISwipeGestureRecognizerDirectionRight;
     [cell addGestureRecognizer:swipedRight];
+    
+    return cell;
 }
 
 // This function is for recovering cells, or initializing a new one.
@@ -467,7 +469,8 @@
         MessageCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
         if (nil == cell) {
-            cell = [[MessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+//            cell = [[MessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell = [self messageCellWithReuseIdentifier:CellIdentifier];
             
             // Add voting gestures to the cell
             UITapGestureRecognizer* tapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedCell:)];

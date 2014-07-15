@@ -99,17 +99,20 @@ const CGFloat MSG_OFFSET = 10.; // Offset from the side of the screen
     labelView.numberOfLines = 0;
     
     // Hidden view is to catch all user interactions?
-//    UIView* hiddenView = [[UIView alloc] init];
-//    hiddenView.opaque = NO;
-//    hiddenView.backgroundColor = [UIColor clearColor];
-//    hiddenView.alpha = 0.25;
-//    hiddenView.frame = self.contentView.bounds; // Should this be set after init?
-//    hiddenView.userInteractionEnabled = NO;
-//    hiddenView.tag = 3;
+    UIView* hiddenView = [[UIView alloc] init];
+    hiddenView.opaque = NO;
+    hiddenView.backgroundColor = [UIColor clearColor];
+    hiddenView.alpha = 0.25;
+    hiddenView.frame = labelView.frame;
+    hiddenView.bounds = labelView.bounds;
+    hiddenView.userInteractionEnabled = NO;
+    hiddenView.layer.cornerRadius = 15;
+    hiddenView.layer.masksToBounds = YES;
+    hiddenView.tag = 3;
     
     // Add the views, bottom first
     [self.contentView addSubview:labelView];
-//    [self.contentView addSubview:hiddenView]; // add this last (on top)
+    [self.contentView addSubview:hiddenView]; // add this last (on top)
 }
 
 // The constants that define text style for all parts of the messages are contained within this method
