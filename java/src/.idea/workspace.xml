@@ -67,7 +67,7 @@
       <file leaf-file-name="ChatServerImpl.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/server/ChatServerImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="380" column="61" selection-start="16424" selection-end="16424" vertical-scroll-proportion="0.0" vertical-offset="5700" max-vertical-offset="9030">
+            <state line="189" column="0" selection-start="7967" selection-end="7967" vertical-scroll-proportion="0.0" vertical-offset="2388" max-vertical-offset="8520">
               <folding />
             </state>
           </provider>
@@ -76,7 +76,7 @@
       <file leaf-file-name="JoinedChatroomMessage.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/msgs/v1_4_0/JoinedChatroomMessage.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="32" selection-start="561" selection-end="561" vertical-scroll-proportion="0.0" vertical-offset="240" max-vertical-offset="2070">
+            <state line="16" column="32" selection-start="561" selection-end="561" vertical-scroll-proportion="0.0" vertical-offset="240" max-vertical-offset="1710">
               <folding />
             </state>
           </provider>
@@ -85,7 +85,16 @@
       <file leaf-file-name="InMemoryChatroomRepository.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/impl/InMemoryChatroomRepository.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="28" selection-start="482" selection-end="482" vertical-scroll-proportion="0.0" vertical-offset="315" max-vertical-offset="2565">
+            <state line="39" column="72" selection-start="1475" selection-end="1475" vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="2415">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MPSClusteringStrategy.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/com/chat/server/cluster/MPSClusteringStrategy.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="23" column="14" selection-start="631" selection-end="631" vertical-scroll-proportion="0.0" vertical-offset="1817" max-vertical-offset="2430">
               <folding />
             </state>
           </provider>
@@ -94,16 +103,16 @@
       <file leaf-file-name="ChatroomActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/ChatroomActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="40" selection-start="179" selection-end="179" vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="225">
+            <state line="7" column="34" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LCMVChatroomActivity.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="LCMVChatroomActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/impl/LCMVChatroomActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="23" selection-start="981" selection-end="981" vertical-scroll-proportion="0.0" vertical-offset="480" max-vertical-offset="1590">
+            <state line="131" column="0" selection-start="4856" selection-end="4856" vertical-scroll-proportion="0.0" vertical-offset="1457" max-vertical-offset="2070">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -114,17 +123,19 @@
       <file leaf-file-name="ChatroomRepository.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/ChatroomRepository.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="12" selection-start="804" selection-end="804" vertical-scroll-proportion="0.0" vertical-offset="360" max-vertical-offset="480">
+            <state line="24" column="12" selection-start="804" selection-end="804" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Chatroom.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Chatroom.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/com/chat/Chatroom.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="28" column="36" selection-start="798" selection-end="798" vertical-scroll-proportion="0.0" vertical-offset="420" max-vertical-offset="3045">
-              <folding />
+            <state line="172" column="38" selection-start="4743" selection-end="4743" vertical-scroll-proportion="0.19249593" vertical-offset="2237" max-vertical-offset="2850">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -132,25 +143,7 @@
       <file leaf-file-name="InMemoryUserRepository.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/impl/InMemoryUserRepository.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="150" column="60" selection-start="5396" selection-end="5396" vertical-scroll-proportion="0.0" vertical-offset="2250" max-vertical-offset="2745">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Main.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/com/chat/server/Main.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="85" column="57" selection-start="3513" selection-end="3513" vertical-scroll-proportion="0.0" vertical-offset="1275" max-vertical-offset="2085">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SerializeUtil.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/com/chat/util/SerializeUtil.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="39" column="0" selection-start="1192" selection-end="1192" vertical-scroll-proportion="0.0" vertical-offset="585" max-vertical-offset="735">
+            <state line="151" column="24" selection-start="5503" selection-end="5503" vertical-scroll-proportion="0.0" vertical-offset="2003" max-vertical-offset="2580">
               <folding />
             </state>
           </provider>
@@ -171,7 +164,6 @@
         <option value="$PROJECT_DIR$/com/chat/client/load/LoadTester.java" />
         <option value="$PROJECT_DIR$/com/chat/ChatroomRepository.java" />
         <option value="$PROJECT_DIR$/com/chat/msgs/v1_3_0/ChatroomMessage.java" />
-        <option value="$PROJECT_DIR$/com/chat/impl/STChatroomRepository.java" />
         <option value="$PROJECT_DIR$/com/chat/util/APNS.java" />
         <option value="$PROJECT_DIR$/com/chat/client/ChatClientConnection.java" />
         <option value="$PROJECT_DIR$/com/chat/msgs/V1_3_0Dispatcher.java" />
@@ -191,11 +183,12 @@
         <option value="$PROJECT_DIR$/com/chat/util/SerializeUtil.java" />
         <option value="$PROJECT_DIR$/com/chat/User.java" />
         <option value="$PROJECT_DIR$/com/chat/server/cluster/MPSClusteringStrategy.java" />
-        <option value="$PROJECT_DIR$/com/chat/impl/InMemoryChatroomRepository.java" />
-        <option value="$PROJECT_DIR$/com/chat/Chatroom.java" />
         <option value="$PROJECT_DIR$/com/chat/msgs/v1_4_0/JoinedChatroomMessage.java" />
         <option value="$PROJECT_DIR$/com/chat/ChatroomActivity.java" />
+        <option value="$PROJECT_DIR$/com/chat/impl/InMemoryChatroomRepository.java" />
         <option value="$PROJECT_DIR$/com/chat/impl/LCMVChatroomActivity.java" />
+        <option value="$PROJECT_DIR$/com/chat/impl/STChatroomRepository.java" />
+        <option value="$PROJECT_DIR$/com/chat/Chatroom.java" />
       </list>
     </option>
   </component>
@@ -230,7 +223,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
@@ -278,12 +270,53 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="yadayada" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chat" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cluster" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="yadayada" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chat" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="impl" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -343,6 +376,19 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -368,19 +414,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -458,7 +491,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1280" height="733" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -470,7 +503,6 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32831326" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -481,8 +513,9 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32680723" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32831326" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -549,11 +582,6 @@
     <entry file="file://$PROJECT_DIR$/com/chat/server/cluster/ChatroomCluster.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="13" column="17" selection-start="258" selection-end="258" vertical-scroll-proportion="0.21311475" vertical-offset="0" max-vertical-offset="915" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/impl/STChatroomRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="121" selection-start="828" selection-end="828" vertical-scroll-proportion="0.31596452" vertical-offset="0" max-vertical-offset="1890" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/com/chat/msgs/v1/InviteUserMessage.java">
@@ -708,18 +736,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/server/cluster/MPSClusteringStrategy.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="14" selection-start="631" selection-end="631" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2430" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/impl/InMemoryUserRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="150" column="60" selection-start="5396" selection-end="5396" vertical-scroll-proportion="0.0" vertical-offset="1980" max-vertical-offset="2580">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/com/chat/server/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="85" column="57" selection-start="3513" selection-end="3513" vertical-scroll-proportion="0.0" vertical-offset="1110" max-vertical-offset="1710">
@@ -736,28 +752,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/com/chat/server/ChatServerImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="380" column="61" selection-start="16424" selection-end="16424" vertical-scroll-proportion="0.0" vertical-offset="5700" max-vertical-offset="9030">
+        <state line="189" column="0" selection-start="7967" selection-end="7967" vertical-scroll-proportion="0.0" vertical-offset="2388" max-vertical-offset="8520">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/msgs/v1_4_0/JoinedChatroomMessage.java">
+    <entry file="file://$PROJECT_DIR$/com/chat/ChatroomActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="32" selection-start="561" selection-end="561" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1710">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/Chatroom.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="36" selection-start="798" selection-end="798" vertical-scroll-proportion="0.0" vertical-offset="1431" max-vertical-offset="2670">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/impl/InMemoryChatroomRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="28" selection-start="482" selection-end="482" vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="2400">
+        <state line="7" column="34" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
           <folding />
         </state>
       </provider>
@@ -769,16 +771,53 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/ChatroomActivity.java">
+    <entry file="file://$PROJECT_DIR$/com/chat/impl/InMemoryUserRepository.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="40" selection-start="179" selection-end="179" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="225">
+        <state line="151" column="24" selection-start="5503" selection-end="5503" vertical-scroll-proportion="0.0" vertical-offset="2003" max-vertical-offset="2580">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/chat/msgs/v1_4_0/JoinedChatroomMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="32" selection-start="561" selection-end="561" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1710">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/chat/server/cluster/MPSClusteringStrategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="14" selection-start="631" selection-end="631" vertical-scroll-proportion="0.0" vertical-offset="1817" max-vertical-offset="2430">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/chat/impl/InMemoryChatroomRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="72" selection-start="1475" selection-end="1475" vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="2415">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/chat/impl/STChatroomRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="42" selection-start="988" selection-end="988" vertical-scroll-proportion="0.3691508" vertical-offset="102" max-vertical-offset="1905">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/com/chat/impl/LCMVChatroomActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="23" selection-start="981" selection-end="981" vertical-scroll-proportion="0.0" vertical-offset="480" max-vertical-offset="1590">
+        <state line="131" column="0" selection-start="4856" selection-end="4856" vertical-scroll-proportion="0.0" vertical-offset="1410" max-vertical-offset="2070">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/chat/Chatroom.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="172" column="38" selection-start="4743" selection-end="4743" vertical-scroll-proportion="0.19249593" vertical-offset="2237" max-vertical-offset="2850">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

@@ -23,7 +23,8 @@ public class STChatroomRepository implements ChatroomRepository {
 
     @Override
     public Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius, boolean isPrivate) {
-        Chatroom chatroom = new Chatroom(nextChatroomId++, name, owner, this, latitude, longitude, radius, false);
+        Chatroom chatroom = new Chatroom(nextChatroomId++, name, owner, this, latitude, longitude, radius, false,
+                new LCMVChatroomActivity());
         addChatroom(chatroom);
         return chatroom;
     }

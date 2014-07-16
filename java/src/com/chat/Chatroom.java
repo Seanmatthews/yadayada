@@ -2,6 +2,7 @@ package com.chat;
 
 import com.chat.server.cluster.ChatroomCluster;
 import com.chat.server.cluster.MPSClusteringStrategy;
+import com.chat.ChatroomActivity;
 import com.chat.util.SerializeUtil;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class Chatroom implements Serializable {
     private final long longitude;
     private final long radius;
     private final long creationTime;
-    private short chatActivity;
+    private final ChatroomActivity chatActivity;
     private int userCount;
     private final boolean isPrivate;
 
@@ -37,7 +38,7 @@ public class Chatroom implements Serializable {
     private final MPSClusteringStrategy clusterStrategy;
 
     public Chatroom(long id, String name, User owner, ChatroomRepository inMemoryChatroomRepository, long latitude,
-                    long longitude, long radius, boolean isPrivate) {
+                    long longitude, long radius, boolean isPrivate, ChatroomActivity chatroomActivity) {
         this.id = id;
         this.name = name;
         this.owner = owner;
@@ -47,7 +48,7 @@ public class Chatroom implements Serializable {
         this.radius = radius;
         this.clusterStrategy = new MPSClusteringStrategy(this, 0.33, 2.0);
         this.creationTime = System.currentTimeMillis() / 1000L;
-        this.chatActivity = 0;
+        this.chatActivity = chatroomActivity;
         this.isPrivate = isPrivate;
         this.userCount = 0;
     }
@@ -89,6 +90,7 @@ public class Chatroom implements Serializable {
     }
 
     public ChatroomCluster addMessage(ChatMessage message) {
+        chatActivity.newMessage(message);
         return clusterStrategy.addMessage(message);
     }
 
@@ -151,7 +153,7 @@ public class Chatroom implements Serializable {
         return latitude;
     }
 
-    public short getChatActivity() { return chatActivity; }
+    public short getChatActivity() { return chatActivity.getActivityPercentage(); }
 
     public boolean global() { return 0 >= radius; }
 
@@ -168,7 +170,7 @@ public class Chatroom implements Serializable {
         out.writeLong(longitude);
         out.writeLong(radius);
         out.writeLong(creationTime);
-        out.writeShort(chatActivity);
+        out.writeObject(chatActivity);
         out.writeShort(userCount);
         out.writeBoolean(isPrivate);
 
@@ -188,7 +190,7 @@ public class Chatroom implements Serializable {
         SerializeUtil.setPrivateFinalVar(this, "longitude", new Long(in.readLong()));
         SerializeUtil.setPrivateFinalVar(this, "radius", new Long(in.readLong()));
         SerializeUtil.setPrivateFinalVar(this, "creationTime", new Long(in.readLong()));
-        chatActivity = new Short(in.readShort());
+        SerializeUtil.setPrivateFinalVar(this, "chatActivity", (ChatroomActivity)in.readObject());
         userCount = new Short(in.readShort());
         SerializeUtil.setPrivateFinalVar(this, "isPrivate", new Boolean(in.readBoolean()));
         SerializeUtil.setPrivateFinalVar(this, "repo", (ChatroomRepository)in.readObject());

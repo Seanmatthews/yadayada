@@ -36,7 +36,8 @@ public class InMemoryChatroomRepository implements ChatroomRepository, Serializa
 
     @Override
     public Chatroom createChatroom(User owner, String name, long latitude, long longitude, long radius, boolean isPrivate) {
-        Chatroom chatroom = new Chatroom(nextChatroomId.getAndIncrement(), name, owner, this, latitude, longitude, radius, isPrivate);
+        Chatroom chatroom = new Chatroom(nextChatroomId.getAndIncrement(), name, owner, this, latitude,
+                longitude, radius, isPrivate, new LCMVChatroomActivity());
         addChatroom(chatroom);
         return chatroom;
     }

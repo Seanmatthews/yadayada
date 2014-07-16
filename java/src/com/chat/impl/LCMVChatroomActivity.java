@@ -1,7 +1,12 @@
 package com.chat.impl;
 
+import com.chat.ChatMessage;
 import com.chat.ChatroomActivity;
 
+import java.io.Serializable;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.util.Timer;
 
 /**
@@ -14,7 +19,7 @@ import java.util.Timer;
  * The initial chat activity value starts at 0%.
  *
  */
-public class LCMVChatroomActivity implements ChatroomActivity {
+public class LCMVChatroomActivity implements ChatroomActivity, Serializable {
 
     private long creationTime;
     private long messageGroupStartTime;
@@ -40,7 +45,7 @@ public class LCMVChatroomActivity implements ChatroomActivity {
     // Add a new message and update the chatroom activity
     // Returns: current chatroom activity as percentage
     @Override
-    public short newMessage(String message) {
+    public short newMessage(ChatMessage message) {
         if (isNewGroup()) {
             // A new group is starting, update based on last group
             updateActivity();
@@ -97,4 +102,31 @@ public class LCMVChatroomActivity implements ChatroomActivity {
     private long messageGroupAge() {
         return System.currentTimeMillis() / 1000L - messageGroupStartTime;
     }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        // perform the default serialization for all non-transient, non-static fields
+        out.defaultWriteObject();
+
+        out.writeLong(creationTime);
+        out.writeLong(messageGroupStartTime);
+        out.writeLong(currentGroupMessageCount);
+        out.writeLong(lastMessageTimestamp);
+        out.writeDouble(instantaneousActivity);
+        out.writeDouble(activity);
+        out.writeDouble(seedGroupMessageRate);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // always perform the default de-serialization first
+        in.defaultReadObject();
+
+        creationTime = new Long(in.readLong());
+        messageGroupStartTime = new Long(in.readLong());
+        currentGroupMessageCount = new Long(in.readLong());
+        lastMessageTimestamp = new Long(in.readLong());
+        instantaneousActivity = new Double(in.readDouble());
+        activity = new Double(in.readDouble());
+        seedGroupMessageRate = new Double(in.readDouble());
+    }
 }
+
