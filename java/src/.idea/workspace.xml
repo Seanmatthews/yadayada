@@ -73,6 +73,15 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="ChatClientDispatcher.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/com/chat/client/ChatClientDispatcher.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="149" column="50" selection-start="6177" selection-end="6177" vertical-scroll-proportion="0.0" vertical-offset="98" max-vertical-offset="2475">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="JoinedChatroomMessage.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/msgs/v1_4_0/JoinedChatroomMessage.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -85,7 +94,7 @@
       <file leaf-file-name="InMemoryChatroomRepository.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/impl/InMemoryChatroomRepository.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="39" column="72" selection-start="1475" selection-end="1475" vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="2415">
+            <state line="39" column="72" selection-start="1475" selection-end="1475" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2415">
               <folding />
             </state>
           </provider>
@@ -100,19 +109,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChatroomActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/com/chat/ChatroomActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="34" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LCMVChatroomActivity.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="LCMVChatroomActivity.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/com/chat/impl/LCMVChatroomActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="131" column="0" selection-start="4856" selection-end="4856" vertical-scroll-proportion="0.0" vertical-offset="1457" max-vertical-offset="2070">
+            <state line="63" column="28" selection-start="2182" selection-end="2202" vertical-scroll-proportion="0.4599659" vertical-offset="675" max-vertical-offset="2070">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -120,19 +120,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChatroomRepository.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/com/chat/ChatroomRepository.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="12" selection-start="804" selection-end="804" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Chatroom.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="Chatroom.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/com/chat/Chatroom.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="172" column="38" selection-start="4743" selection-end="4743" vertical-scroll-proportion="0.19249593" vertical-offset="2237" max-vertical-offset="2850">
+            <state line="172" column="38" selection-start="4743" selection-end="4743" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2850">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -171,7 +162,6 @@
         <option value="$PROJECT_DIR$/com/chat/server/ServerListener.java" />
         <option value="$PROJECT_DIR$/com/chat/client/text/ChatTextClient.java" />
         <option value="$PROJECT_DIR$/com/chat/client/gui/ChatGUI.java" />
-        <option value="$PROJECT_DIR$/com/chat/client/ChatClientDispatcher.java" />
         <option value="$PROJECT_DIR$/com/chat/msgs/V1_4_0Dispatcher.java" />
         <option value="$PROJECT_DIR$/com/chat/server/ChatServer.java" />
         <option value="$PROJECT_DIR$/com/chat/UserRepository.java" />
@@ -189,6 +179,7 @@
         <option value="$PROJECT_DIR$/com/chat/impl/LCMVChatroomActivity.java" />
         <option value="$PROJECT_DIR$/com/chat/impl/STChatroomRepository.java" />
         <option value="$PROJECT_DIR$/com/chat/Chatroom.java" />
+        <option value="$PROJECT_DIR$/com/chat/client/ChatClientDispatcher.java" />
       </list>
     </option>
   </component>
@@ -311,6 +302,24 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="impl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="yadayada" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chat" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -694,11 +703,6 @@
         <state line="119" column="5" selection-start="3302" selection-end="3302" vertical-scroll-proportion="0.0" vertical-offset="1350" max-vertical-offset="1860" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/client/ChatClientDispatcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="157" column="20" selection-start="6422" selection-end="6422" vertical-scroll-proportion="0.7624021" vertical-offset="1853" max-vertical-offset="2460" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/com/chat/impl/AwsRdsUserRepository.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="35" column="15" selection-start="990" selection-end="990" vertical-scroll-proportion="0.675" vertical-offset="0" max-vertical-offset="4680" />
@@ -750,13 +754,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/server/ChatServerImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="189" column="0" selection-start="7967" selection-end="7967" vertical-scroll-proportion="0.0" vertical-offset="2388" max-vertical-offset="8520">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/com/chat/ChatroomActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="7" column="34" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
@@ -792,13 +789,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/impl/InMemoryChatroomRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="72" selection-start="1475" selection-end="1475" vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="2415">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/com/chat/impl/STChatroomRepository.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="26" column="42" selection-start="988" selection-end="988" vertical-scroll-proportion="0.3691508" vertical-offset="102" max-vertical-offset="1905">
@@ -806,18 +796,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/impl/LCMVChatroomActivity.java">
+    <entry file="file://$PROJECT_DIR$/com/chat/Chatroom.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="131" column="0" selection-start="4856" selection-end="4856" vertical-scroll-proportion="0.0" vertical-offset="1410" max-vertical-offset="2070">
+        <state line="172" column="38" selection-start="4743" selection-end="4743" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2850">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/chat/Chatroom.java">
+    <entry file="file://$PROJECT_DIR$/com/chat/impl/InMemoryChatroomRepository.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="172" column="38" selection-start="4743" selection-end="4743" vertical-scroll-proportion="0.19249593" vertical-offset="2237" max-vertical-offset="2850">
+        <state line="39" column="72" selection-start="1475" selection-end="1475" vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="2415">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/chat/server/ChatServerImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="189" column="0" selection-start="7967" selection-end="7967" vertical-scroll-proportion="0.0" vertical-offset="2388" max-vertical-offset="8520">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/chat/client/ChatClientDispatcher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="149" column="50" selection-start="6177" selection-end="6177" vertical-scroll-proportion="0.0" vertical-offset="98" max-vertical-offset="2475">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/chat/impl/LCMVChatroomActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="28" selection-start="2182" selection-end="2202" vertical-scroll-proportion="0.4599659" vertical-offset="675" max-vertical-offset="2070">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

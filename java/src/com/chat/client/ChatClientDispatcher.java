@@ -5,6 +5,7 @@ import com.chat.Chatroom;
 import com.chat.ChatroomRepository;
 import com.chat.User;
 import com.chat.impl.InMemoryUserRepository;
+import com.chat.impl.LCMVChatroomActivity;
 import com.chat.msgs.Message;
 import com.chat.msgs.ValidationError;
 import com.chat.msgs.v1.*;
@@ -145,7 +146,8 @@ public class ChatClientDispatcher {
         synchronized (chatroomRepo) {
             chatroom = chatroomRepo.get(chatroomId);
             if (chatroom == null) {
-                chatroom = new Chatroom(chatroomId, chatroomName, owner, chatroomRepo, 0, 0, 0, false);
+                chatroom = new Chatroom(chatroomId, chatroomName, owner, chatroomRepo, 0, 0, 0, false,
+                        new LCMVChatroomActivity());
                 chatroomRepo.addChatroom(chatroom);
             }
         }
