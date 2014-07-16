@@ -76,6 +76,17 @@
     [self unregisterForNotifications];
 }
 
+-(UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
+    // There are two bars in this view-- navigation and search.
+    // If searchbar is given UIBarPositionTopAttached, it overlaps with the navigation bar.
+    if ([bar isKindOfClass:[UINavigationBar class]]) {
+        return UIBarPositionTopAttached;
+    }
+    else {
+        return UIBarPositionAny;
+    }
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

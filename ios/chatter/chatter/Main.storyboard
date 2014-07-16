@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="mTE-8Y-ifs">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="mTE-8Y-ifs">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
@@ -20,19 +20,22 @@
                                 <rect key="frame" x="0.0" y="18" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <color key="barTintColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="barTintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <textAttributes key="titleTextAttributes">
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <offsetWrapper key="textShadowOffset" horizontal="0.0" vertical="1"/>
                                 </textAttributes>
                                 <items>
                                     <navigationItem title="Chatroom" id="sBP-oE-Qkd">
                                         <barButtonItem key="leftBarButtonItem" title="Back" id="ws4-dA-JWi">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
                                                 <segue destination="w3R-cb-9I3" kind="unwind" identifier="" unwindAction="unwindToChatList:" id="am4-Rd-Ypi"/>
                                             </connections>
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="VfN-6V-EOF">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
                                                 <segue destination="Z5U-50-9BJ" kind="modal" identifier="searchUsersSegue" modalTransitionStyle="crossDissolve" animates="NO" id="RNx-uR-qvp"/>
                                             </connections>
@@ -114,13 +117,15 @@
                                 <rect key="frame" x="0.0" y="18" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <color key="barTintColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="barTintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <textAttributes key="titleTextAttributes">
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </textAttributes>
                                 <items>
                                     <navigationItem title="Invite" id="oF5-2v-CO7">
                                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="bXH-lH-m6z">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
                                                 <segue destination="AUB-UC-0kn" kind="unwind" unwindAction="unwindToChatroom:" id="uBA-Al-kXB"/>
                                             </connections>
@@ -182,15 +187,16 @@
                             <navigationBar opaque="NO" alpha="0.75" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DfT-RL-cwI">
                                 <rect key="frame" x="0.0" y="18" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <color key="barTintColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="barTintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <textAttributes key="titleTextAttributes">
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <offsetWrapper key="textShadowOffset" horizontal="0.0" vertical="0.0"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <offsetWrapper key="textShadowOffset" horizontal="0.0" vertical="1"/>
                                 </textAttributes>
                                 <items>
                                     <navigationItem title="Invite" id="YRZ-92-4Wo">
                                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="oe3-dB-l3o">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
                                                 <segue destination="W1m-6w-INV" kind="unwind" unwindAction="unwindToChatroom:" id="ZvW-o0-BeO"/>
                                             </connections>
@@ -198,11 +204,11 @@
                                     </navigationItem>
                                 </items>
                                 <connections>
-                                    <outlet property="delegate" destination="VFK-PU-iIe" id="xZc-Rm-w1I"/>
+                                    <outlet property="delegate" destination="Z5U-50-9BJ" id="Iog-O1-wKk"/>
                                 </connections>
                             </navigationBar>
                         </subviews>
-                        <color key="backgroundColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.8901960784313725" green="0.8901960784313725" blue="0.8901960784313725" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
                         <outlet property="searchBar" destination="wSf-qS-fx5" id="H4I-zd-Mge"/>
@@ -240,14 +246,16 @@
                                 <rect key="frame" x="0.0" y="18" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <color key="barTintColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="barTintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <textAttributes key="titleTextAttributes">
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <offsetWrapper key="textShadowOffset" horizontal="0.0" vertical="0.0"/>
                                 </textAttributes>
                                 <items>
                                     <navigationItem title="Create Chatroom" id="nUr-Fn-mO3">
                                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="JJ4-45-24J">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
                                                 <segue destination="7aN-Zb-7oT" kind="unwind" unwindAction="unwindToChatList:" id="TOR-ff-gD1"/>
                                             </connections>
@@ -485,14 +493,16 @@
                             <navigationBar opaque="NO" alpha="0.74999999999999978" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BV4-kR-VC5">
                                 <rect key="frame" x="0.0" y="18" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <color key="barTintColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="barTintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <textAttributes key="titleTextAttributes">
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <offsetWrapper key="textShadowOffset" horizontal="0.0" vertical="1"/>
                                 </textAttributes>
                                 <items>
                                     <navigationItem title="Settings" id="iEe-nZ-sff">
                                         <barButtonItem key="leftBarButtonItem" systemItem="done" id="0tD-8i-Bwv">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
                                                 <segue destination="bAX-j0-2oJ" kind="unwind" unwindAction="unwindToChatList:" id="bOJ-4o-mDB"/>
                                             </connections>
@@ -551,12 +561,13 @@
                                     <button opaque="NO" alpha="0.59999999999999964" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yX2-gi-muU">
                                         <rect key="frame" x="0.0" y="524" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="44" id="xOb-BX-pgb"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                         <state key="normal" title="Locate">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
@@ -579,11 +590,12 @@
                                 <rect key="frame" x="0.0" y="18" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <color key="barTintColor" red="0.75686274509999996" green="0.96470588239999999" blue="0.86274509799999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="barTintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <items>
                                     <navigationItem id="mv7-9N-6hF">
                                         <nil key="title"/>
                                         <barButtonItem key="leftBarButtonItem" title="Settings" id="Ebr-it-OI4">
+                                            <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
                                                 <segue destination="Jyv-o4-cVp" kind="modal" modalTransitionStyle="crossDissolve" animates="NO" id="a8A-dp-yvd"/>
                                             </connections>
@@ -595,11 +607,13 @@
                                                 <segment title="List"/>
                                                 <segment title="Map"/>
                                             </segments>
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
                                                 <action selector="segmentedControlSwitched:" destination="dcJ-iO-ylN" eventType="valueChanged" id="Dja-jV-ZV3"/>
                                             </connections>
                                         </segmentedControl>
                                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="hgy-re-fzp">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
                                                 <segue destination="h9l-oE-6Ie" kind="modal" modalTransitionStyle="crossDissolve" animates="NO" id="ss2-0S-u31"/>
                                             </connections>
@@ -854,6 +868,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="4J7-bM-CJ7"/>
+        <segue reference="k8i-BL-FoG"/>
     </inferredMetricsTieBreakers>
 </document>
