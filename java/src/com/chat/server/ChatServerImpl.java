@@ -231,12 +231,15 @@ public class ChatServerImpl implements ChatServer {
                     public void run() {
                         switch (result.getCode()) {
                             case OK:
+                            case AlreadyRegistered:
+                                // Everything fine, user registered before
                                 senderConnection.sendMessage(new RegisterAcceptMessage(result.getUser().getId()));
                                 break;
                             case ConnectionError:
                                 senderConnection.sendMessage(new RegisterRejectMessage("Connection error"));
                                 break;
                             case UserAlreadyExists:
+                                // Someone else registered this username
                             case InvalidUserNameOrPassword:
                             default:
                                 senderConnection.sendMessage(new RegisterRejectMessage(result.getMessage()));
@@ -533,16 +536,23 @@ public class ChatServerImpl implements ChatServer {
 
         if (user != null) {
 
-            // Reject if the new handle exists in one of a user's joined chatrooms
-            Iterator it = user.getChatrooms();
-            while (it.hasNext()) {
-                Chatroom chatroom = (Chatroom)it.next();
-                if (chatroom.usernameInUse(handle)) {
-                    sender.sendMessage(new ChangeHandleRejectMessage(handle, oldHandle,
-                            "Handle in use in a joined chatroom"));
-                    return;
-                }
+            // Reject if the handle exists anywhere in the system
+            if (userRepo.usernameInUse(handle)) {
+                sender.sendMessage(new ChangeHandleRejectMessage(handle, oldHandle,
+                        "Handle already in use"));
+                return;
             }
+
+            // Reject if the new handle exists in one of a user's joined chatrooms
+//            Iterator it = user.getChatrooms();
+//            while (it.hasNext()) {
+//                Chatroom chatroom = (Chatroom)it.next();
+//                if (chatroom.usernameInUse(handle)) {
+//                    sender.sendMessage(new ChangeHandleRejectMessage(handle, oldHandle,
+//                            "Handle in use in a joined chatroom"));
+//                    return;
+//                }
+//            }
 
             userRepo.changeLogin(user, handle);
             user.setHandle(handle);

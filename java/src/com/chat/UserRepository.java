@@ -24,6 +24,7 @@ public interface UserRepository {
     Iterator<Chatroom> getChatrooms(User user);
     void changeLogin(User user, String login);
     Collection<User> getAllUsers();
+    boolean usernameInUse(String username);
 
     public interface UserRepositoryCompletionHandler {
         void onCompletion(UserRepositoryActionResult user);
@@ -78,6 +79,7 @@ public interface UserRepository {
         ConnectionError,
         UserAlreadyExists,
         InvalidUserNameOrPassword,
-        InvalidUserId
+        InvalidUserId,
+        AlreadyRegistered
     }
 }

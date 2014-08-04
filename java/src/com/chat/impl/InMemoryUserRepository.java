@@ -39,7 +39,17 @@ public class InMemoryUserRepository implements UserRepository, Serializable {
 
         // already registered
         if (user != null) {
-            UserRepositoryActionResult result = new UserRepositoryActionResult(UserAlreadyExists, "User already exists", user, false);
+            UserRepositoryActionResult result;
+
+            if (user.getUUID().equalsIgnoreCase(UUID)) {
+                // This user already registered. They're OK.
+                result = new UserRepositoryActionResult(AlreadyRegistered, "This user already registered", user, false);
+            }
+            else {
+                // Someone else already has this handle
+                result = new UserRepositoryActionResult(UserAlreadyExists, "User already exists", user, false);
+            }
+
             return new UserFuture(result, handler);
         }
 
@@ -115,6 +125,11 @@ public class InMemoryUserRepository implements UserRepository, Serializable {
         loginToUserMap.remove(user.getLogin());
         loginToUserMap.put(login, user);
         user.setLogin(login);
+    }
+
+    @Override
+    public boolean usernameInUse(String username) {
+        return loginToUserMap.get(username) != null;
     }
 
     private static class UserFuture implements Future<UserRepositoryActionResult> {
